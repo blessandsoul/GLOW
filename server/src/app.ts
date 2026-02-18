@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import fastifyJwt from '@fastify/jwt';
+import multipart from '@fastify/multipart';
 import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import { AppError } from '@/shared/errors/AppError.js';
@@ -35,6 +36,10 @@ export async function buildApp() {
 
   await app.register(fastifyJwt, {
     secret: env.JWT_SECRET,
+  });
+
+  await app.register(multipart, {
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   });
 
   // ── Global error handler ──

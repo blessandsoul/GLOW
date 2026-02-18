@@ -1,6 +1,7 @@
 import { NotFoundError, ForbiddenError } from '../../shared/errors/errors.js';
 import { jobsRepo } from './jobs.repo.js';
 import { applyWatermark } from '../../libs/watermark.js';
+import { redis } from '../../libs/redis.js';
 
 export const jobsService = {
   async downloadJobResult(
@@ -42,5 +43,103 @@ export const jobsService = {
       buffer: finalBuffer,
       filename: `lashme-${jobId}-${variantIndex}.jpg`,
     };
+  },
+
+  async createJobFromFile(
+    _fileBuffer: Buffer,
+    _mimeType: string,
+    settingsStr: string | undefined,
+    userId: string | undefined,
+  ): Promise<{ id: string; status: string; originalUrl: string }> {
+    // For MVP: store a placeholder URL (no S3 yet)
+    // In production this would upload to S3 and get a real URL
+    const originalUrl = `https://picsum.photos/seed/${Date.now()}/400/600`;
+
+    const settings = settingsStr
+      ? (() => {
+          try {
+            return JSON.parse(settingsStr) as object;
+          } catch {
+            return undefined;
+          }
+        })()
+      : undefined;
+
+    const job = await jobsRepo.createJob({
+      userId: userId ?? undefined,
+      originalUrl,
+      settings,
+      status: 'PROCESSING',
+    });
+
+    // Simulate AI processing: update to DONE with mock results after a short delay
+    // In production, this would enqueue a BullMQ job for real AI processing
+    setTimeout(() => {
+      const mockResults = [
+        `https://picsum.photos/seed/${job.id}-0/400/600`,
+        `https://picsum.photos/seed/${job.id}-1/400/600`,
+        `https://picsum.photos/seed/${job.id}-2/400/600`,
+        `https://picsum.photos/seed/${job.id}-3/400/600`,
+      ];
+      jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).catch(() => {
+        // Ignore errors in background processing
+      });
+    }, 4000); // 4 second delay
+
+    return { id: job.id, status: job.status, originalUrl: job.originalUrl };
+  },
+
+  async createGuestJob(
+    fileBuffer: Buffer,
+    mimeType: string,
+    settingsStr: string | undefined,
+    sessionId: string,
+  ): Promise<{ id: string; status: string; originalUrl: string }> {
+    const redisKey = `guest_demo:${sessionId}`;
+    const used = await redis.get(redisKey);
+    if (used) {
+      throw new ForbiddenError(
+        'Вы уже использовали бесплатное демо. Зарегистрируйтесь, чтобы получить 3 бесплатных кредита.',
+        'GUEST_DEMO_EXHAUSTED',
+      );
+    }
+
+    const job = await jobsService.createJobFromFile(fileBuffer, mimeType, settingsStr, undefined);
+
+    // Mark session as used (expires in 24 hours)
+    await redis.set(redisKey, '1', 'EX', 86400);
+
+    return job;
+  },
+
+  async getJobById(
+    id: string,
+    requestingUserId: string | undefined,
+  ): Promise<{ id: string; status: string; originalUrl: string; results: string[] | null; userId: string | null }> {
+    const job = await jobsRepo.findById(id);
+    if (!job) {
+      throw new NotFoundError('Job not found', 'JOB_NOT_FOUND');
+    }
+
+    // Security: only allow owner to see job details, or guest jobs (no userId) are accessible by job ID
+    if (job.userId && job.userId !== requestingUserId) {
+      throw new ForbiddenError('Access denied', 'JOB_FORBIDDEN');
+    }
+
+    return {
+      id: job.id,
+      status: job.status,
+      originalUrl: job.originalUrl,
+      results: job.results as string[] | null,
+      userId: job.userId,
+    };
+  },
+
+  async listUserJobs(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ items: unknown[]; total: number }> {
+    return jobsRepo.findByUserId(userId, page, limit);
   },
 };
