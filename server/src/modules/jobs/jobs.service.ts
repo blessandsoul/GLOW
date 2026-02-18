@@ -1,4 +1,4 @@
-import { NotFoundError, ForbiddenError } from '../../shared/errors/errors.js';
+import { NotFoundError, ForbiddenError, BadRequestError } from '../../shared/errors/errors.js';
 import { jobsRepo } from './jobs.repo.js';
 import { applyWatermark } from '../../libs/watermark.js';
 import { redis } from '../../libs/redis.js';
@@ -141,5 +141,61 @@ export const jobsService = {
     limit: number,
   ): Promise<{ items: unknown[]; total: number }> {
     return jobsRepo.findByUserId(userId, page, limit);
+  },
+
+  async createBatch(
+    files: Array<{ buffer: Buffer; mimeType: string }>,
+    settingsStr: string | undefined,
+    userId: string,
+  ): Promise<{ batchId: string; jobs: Array<{ id: string; status: string }> }> {
+    if (files.length === 0) {
+      throw new BadRequestError('At least one file required', 'NO_FILES');
+    }
+    if (files.length > 10) {
+      throw new BadRequestError('Maximum 10 files per batch', 'TOO_MANY_FILES');
+    }
+
+    const batchId = crypto.randomUUID();
+    const settings = settingsStr
+      ? (() => {
+          try {
+            return JSON.parse(settingsStr) as object;
+          } catch {
+            return undefined;
+          }
+        })()
+      : undefined;
+
+    const jobs = await Promise.all(
+      files.map(async (file) => {
+        const seed = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const originalUrl = `https://picsum.photos/seed/${seed}/400/600`;
+        const job = await jobsRepo.createJob({
+          userId,
+          originalUrl,
+          settings,
+          batchId,
+          status: 'PROCESSING',
+        });
+
+        // Simulate AI processing with staggered completion
+        const delay = 4000 + Math.random() * 2000;
+        setTimeout(() => {
+          const mockResults = [
+            `https://picsum.photos/seed/${job.id}-0/400/600`,
+            `https://picsum.photos/seed/${job.id}-1/400/600`,
+            `https://picsum.photos/seed/${job.id}-2/400/600`,
+            `https://picsum.photos/seed/${job.id}-3/400/600`,
+          ];
+          jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).catch(() => {
+            // Ignore errors in background processing
+          });
+        }, delay);
+
+        return { id: job.id, status: job.status };
+      }),
+    );
+
+    return { batchId, jobs };
   },
 };

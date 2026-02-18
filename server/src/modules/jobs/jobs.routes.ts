@@ -6,6 +6,9 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
   // Authenticated job creation
   app.post('/', { preHandler: [authenticate] }, jobsController.create);
 
+  // Batch job creation (PRO users — authenticated required)
+  app.post('/batch', { preHandler: [authenticate] }, jobsController.createBatch);
+
   // Guest demo creation (no auth required)
   app.post('/guest', jobsController.createGuest);
 

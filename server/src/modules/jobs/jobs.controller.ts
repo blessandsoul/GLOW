@@ -85,4 +85,23 @@ export const jobsController = {
     const { items, total } = await jobsService.listUserJobs(user.id, page, limit);
     await reply.send(paginatedResponse('Jobs retrieved', items, page, limit, total));
   },
+
+  async createBatch(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const user = request.user as JwtPayload;
+    const files: Array<{ buffer: Buffer; mimeType: string }> = [];
+    let settingsStr: string | undefined;
+
+    const parts = request.parts();
+    for await (const part of parts) {
+      if (part.type === 'file') {
+        const buffer = await part.toBuffer();
+        files.push({ buffer, mimeType: part.mimetype });
+      } else if (part.type === 'field' && part.fieldname === 'settings') {
+        settingsStr = String(part.value);
+      }
+    }
+
+    const result = await jobsService.createBatch(files, settingsStr, user.id);
+    await reply.status(201).send(successResponse('Batch jobs created', result));
+  },
 };

@@ -25,6 +25,7 @@ export const jobsRepo = {
     settings?: object;
     status?: string;
     results?: string[];
+    batchId?: string;
   }) {
     return prisma.job.create({
       data: {
@@ -33,6 +34,7 @@ export const jobsRepo = {
         settings: data.settings ?? undefined,
         status: data.status ?? 'PENDING',
         results: data.results ? data.results : undefined,
+        batchId: data.batchId ?? null,
       },
     });
   },
@@ -62,5 +64,12 @@ export const jobsRepo = {
       prisma.job.count({ where: { userId } }),
     ]);
     return { items, total };
+  },
+
+  async findByBatchId(batchId: string) {
+    return prisma.job.findMany({
+      where: { batchId },
+      orderBy: { createdAt: 'asc' },
+    });
   },
 };
