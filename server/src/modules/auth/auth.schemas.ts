@@ -10,6 +10,7 @@ export const RegisterSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().min(1, 'Last name is required').max(50),
+  referralCode: z.string().max(20).optional(),
 });
 
 export const LoginSchema = z.object({

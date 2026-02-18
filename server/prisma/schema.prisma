@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// Phase 0: Core MVP
+// ─────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  username      String?   @unique
+  credits       Int       @default(3)
+  role          String    @default("USER")
+  isActive      Boolean   @default(true)
+  emailVerified Boolean   @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  referralCode     String?    @unique
+  referredById     String?
+
+  refreshTokens    RefreshToken[]
+  jobs             Job[]
+  transactions     CreditTransaction[]
+  brandingProfile  BrandingProfile?
+  masterProfile    MasterProfile?
+  reviews          Review[]         @relation("masterReviews")
+  portfolioItems   PortfolioItem[]
+  scheduledPosts   ScheduledPost[]
+  subscription     Subscription?
+  referralsGiven   Referral[]       @relation("referrerReferrals")
+  referralReceived Referral?        @relation("referredReferral")
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model Job {
+  id          String   @id @default(uuid())
+  userId      String?
+  status      String   @default("PENDING")
+  mode        String   @default("SINGLE")
+  originalUrl String   @db.VarChar(1000)
+  beforeUrl   String?  @db.VarChar(1000)
+  results     Json?
+  settings    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id])
+  captions Caption[]
+  reviews  Review[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("jobs")
+}
+
+model CreditTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  delta     Int
+  reason    String
+  jobId     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("credit_transactions")
+}
+
+// ─────────────────────────────────────────────
+// Phase 1: Platform Round 1
+// ─────────────────────────────────────────────
+
+model BrandingProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  displayName     String?
+  instagramHandle String?
+  logoUrl         String?  @db.VarChar(1000)
+  primaryColor    String   @default("#d4738a")
+  watermarkStyle  String   @default("MINIMAL")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("branding_profiles")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  jobId      String
+  masterId   String
+  rating     Int
+  text       String?  @db.Text
+  clientName String?
+  createdAt  DateTime @default(now())
+
+  job    Job  @relation(fields: [jobId], references: [id])
+  master User @relation("masterReviews", fields: [masterId], references: [id])
+
+  @@index([masterId])
+  @@index([jobId])
+  @@map("reviews")
+}
+
+// ─────────────────────────────────────────────
+// Phase 2: Sticky Features
+// ─────────────────────────────────────────────
+
+model MasterProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  city      String?
+  niche     String?
+  services  Json?
+  bio       String?  @db.Text
+  phone     String?
+  whatsapp  String?
+  telegram  String?
+  instagram String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("master_profiles")
+}
+
+model Caption {
+  id        String   @id @default(uuid())
+  jobId     String
+  variant   String
+  text      String   @db.Text
+  hashtags  String   @db.Text
+  createdAt DateTime @default(now())
+
+  job Job @relation(fields: [jobId], references: [id])
+
+  @@index([jobId])
+  @@map("captions")
+}
+
+model PortfolioItem {
+  id          String   @id @default(uuid())
+  userId      String
+  jobId       String?
+  imageUrl    String   @db.VarChar(1000)
+  title       String?
+  niche       String?
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isPublished])
+  @@map("portfolio_items")
+}
+
+// ─────────────────────────────────────────────
+// Phase 3: Engagement & Monetization
+// ─────────────────────────────────────────────
+
+model ScheduledPost {
+  id          String   @id @default(uuid())
+  userId      String
+  jobId       String?
+  imageUrl    String   @db.VarChar(1000)
+  caption     String?  @db.Text
+  hashtags    String?  @db.Text
+  scheduledAt DateTime
+  status      String   @default("SCHEDULED")
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, scheduledAt])
+  @@index([status])
+  @@map("scheduled_posts")
+}
+
+model TrendTemplate {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  previewUrl  String   @db.VarChar(1000)
+  settings    Json
+  weekOf      DateTime
+  isFree      Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([isActive, weekOf])
+  @@map("trend_templates")
+}
+
+model Subscription {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  plan             String   @default("FREE")
+  status           String   @default("ACTIVE")
+  stripeCustomerId String?
+  stripeSubId      String?
+  currentPeriodEnd DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("subscriptions")
+}
+
+model Referral {
+  id          String   @id @default(uuid())
+  referrerId  String
+  referredId  String   @unique
+  rewardGiven Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  referrer User @relation("referrerReferrals", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User @relation("referredReferral", fields: [referredId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@map("referrals")
+}

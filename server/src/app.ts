@@ -10,6 +10,7 @@ import { successResponse } from '@/shared/responses/successResponse.js';
 import { authRoutes } from '@/modules/auth/auth.routes.js';
 import { jobsRoutes } from '@/modules/jobs/jobs.routes.js';
 import { showcaseRoutes } from '@/modules/showcase/showcase.routes.js';
+import { referralsRoutes } from '@/modules/referrals/referrals.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -100,6 +101,7 @@ export async function buildApp() {
   await app.register(authRoutes, { prefix: '/api/v1/auth' });
   await app.register(jobsRoutes, { prefix: '/api/v1/jobs' });
   await app.register(showcaseRoutes, { prefix: '/api/v1/showcase' });
+  await app.register(referralsRoutes, { prefix: '/api/v1/referrals' });
 
   return app;
 }

@@ -6,6 +6,9 @@ import { ConflictError, UnauthorizedError } from '@/shared/errors/errors.js';
 import { env } from '@/config/env.js';
 import type { RegisterInput, LoginInput } from './auth.schemas.js';
 import type { JwtPayload } from '@/shared/types/index.js';
+import { referralsService } from '@/modules/referrals/referrals.service.js';
+import { prisma } from '@/libs/prisma.js';
+import { logger } from '@/libs/logger.js';
 
 const SALT_ROUNDS = 12;
 
@@ -43,9 +46,23 @@ export function createAuthService(app: FastifyInstance) {
 
       const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
       const user = await authRepo.createUser({
-        ...input,
+        email: input.email,
         password: hashedPassword,
+        firstName: input.firstName,
+        lastName: input.lastName,
       });
+
+      // Generate and save referral code for new user
+      const referralCode = referralsService.generateCode();
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { referralCode },
+      });
+
+      // Apply referral if code provided (fire-and-forget, non-fatal)
+      referralsService
+        .applyReferralOnRegister(user.id, input.referralCode)
+        .catch((err: unknown) => logger.warn({ err }, 'Failed to apply referral on register'));
 
       const accessToken = signAccessToken({ id: user.id, role: user.role });
       const refreshToken = await generateRefreshToken(user.id);
