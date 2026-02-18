@@ -19,6 +19,9 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:3001'),
 
   APP_URL: z.string().url().default('http://localhost:3001'),
+
+  RESEND_API_KEY: z.string().min(1).optional().default(''),
+  EMAIL_FROM: z.string().email().default('noreply@lashme.app'),
 });
 
 const parsed = envSchema.safeParse(process.env);

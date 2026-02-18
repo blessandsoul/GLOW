@@ -1,10 +1,13 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema } from './jobs.schemas.js';
+import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, BatchSettingsSchema } from './jobs.schemas.js';
 import { jobsService } from './jobs.service.js';
 import { BadRequestError } from '../../shared/errors/errors.js';
 import { successResponse } from '../../shared/responses/successResponse.js';
 import { paginatedResponse } from '../../shared/responses/paginatedResponse.js';
 import type { JwtPayload } from '../../shared/types/index.js';
+
+const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 export const jobsController = {
   async download(request: FastifyRequest, reply: FastifyReply): Promise<void> {
@@ -94,14 +97,21 @@ export const jobsController = {
     const parts = request.parts();
     for await (const part of parts) {
       if (part.type === 'file') {
+        if (!ALLOWED_MIMETYPES.includes(part.mimetype)) {
+          throw new BadRequestError(`File type ${part.mimetype} is not allowed`, 'INVALID_FILE_TYPE');
+        }
         const buffer = await part.toBuffer();
+        if (buffer.length > MAX_FILE_BYTES) {
+          throw new BadRequestError('File exceeds 5 MB limit', 'FILE_TOO_LARGE');
+        }
         files.push({ buffer, mimeType: part.mimetype });
       } else if (part.type === 'field' && part.fieldname === 'settings') {
         settingsStr = String(part.value);
       }
     }
 
-    const result = await jobsService.createBatch(files, settingsStr, user.id);
+    const { settings } = BatchSettingsSchema.parse({ settings: settingsStr });
+    const result = await jobsService.createBatch(files, settings, user.id);
     await reply.status(201).send(successResponse('Batch jobs created', result));
   },
 };

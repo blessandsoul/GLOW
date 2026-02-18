@@ -9,6 +9,7 @@ import type { JwtPayload } from '@/shared/types/index.js';
 import { referralsService } from '@/modules/referrals/referrals.service.js';
 import { prisma } from '@/libs/prisma.js';
 import { logger } from '@/libs/logger.js';
+import { scheduleEmailSequence } from '@/libs/queue.js';
 
 const SALT_ROUNDS = 12;
 
@@ -63,6 +64,11 @@ export function createAuthService(app: FastifyInstance) {
       referralsService
         .applyReferralOnRegister(user.id, input.referralCode)
         .catch((err: unknown) => logger.warn({ err }, 'Failed to apply referral on register'));
+
+      // Schedule post-registration email sequence (fire-and-forget, non-fatal)
+      scheduleEmailSequence(user.id).catch((err: unknown) =>
+        logger.warn({ err }, 'Failed to schedule email sequence'),
+      );
 
       const accessToken = signAccessToken({ id: user.id, role: user.role });
       const refreshToken = await generateRefreshToken(user.id);

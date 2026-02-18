@@ -2,6 +2,11 @@ import { NotFoundError, ForbiddenError, BadRequestError } from '../../shared/err
 import { jobsRepo } from './jobs.repo.js';
 import { applyWatermark } from '../../libs/watermark.js';
 import { redis } from '../../libs/redis.js';
+import { prisma } from '../../libs/prisma.js';
+import { schedulePhotoReadyEmail } from '../../libs/queue.js';
+import { logger } from '../../libs/logger.js';
+
+const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export const jobsService = {
   async downloadJobResult(
@@ -81,7 +86,13 @@ export const jobsService = {
         `https://picsum.photos/seed/${job.id}-2/400/600`,
         `https://picsum.photos/seed/${job.id}-3/400/600`,
       ];
-      jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).catch(() => {
+      jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).then(() => {
+        if (userId) {
+          schedulePhotoReadyEmail(userId, job.id).catch((err: unknown) =>
+            logger.warn({ err }, 'Failed to schedule photo ready email'),
+          );
+        }
+      }).catch(() => {
         // Ignore errors in background processing
       });
     }, 4000); // 4 second delay
@@ -139,7 +150,7 @@ export const jobsService = {
     userId: string,
     page: number,
     limit: number,
-  ): Promise<{ items: unknown[]; total: number }> {
+  ): Promise<Awaited<ReturnType<typeof jobsRepo.findByUserId>>> {
     return jobsRepo.findByUserId(userId, page, limit);
   },
 
@@ -148,6 +159,20 @@ export const jobsService = {
     settingsStr: string | undefined,
     userId: string,
   ): Promise<{ batchId: string; jobs: Array<{ id: string; status: string }> }> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscription: { select: { plan: true } } },
+    });
+    if (!user?.subscription || user.subscription.plan === 'FREE') {
+      throw new ForbiddenError('Batch upload requires PRO plan', 'PRO_REQUIRED');
+    }
+
+    for (const file of files) {
+      if (!ALLOWED_MIMETYPES.includes(file.mimeType)) {
+        throw new BadRequestError(`Unsupported file type: ${file.mimeType}`, 'INVALID_FILE_TYPE');
+      }
+    }
+
     if (files.length === 0) {
       throw new BadRequestError('At least one file required', 'NO_FILES');
     }
@@ -187,7 +212,13 @@ export const jobsService = {
             `https://picsum.photos/seed/${job.id}-2/400/600`,
             `https://picsum.photos/seed/${job.id}-3/400/600`,
           ];
-          jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).catch(() => {
+          jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).then(() => {
+            if (userId) {
+              schedulePhotoReadyEmail(userId, job.id).catch((err: unknown) =>
+                logger.warn({ err }, 'Failed to schedule photo ready email for batch job'),
+              );
+            }
+          }).catch(() => {
             // Ignore errors in background processing
           });
         }, delay);
