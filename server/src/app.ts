@@ -12,6 +12,7 @@ import { authRoutes } from '@/modules/auth/auth.routes.js';
 import { jobsRoutes } from '@/modules/jobs/jobs.routes.js';
 import { showcaseRoutes } from '@/modules/showcase/showcase.routes.js';
 import { referralsRoutes } from '@/modules/referrals/referrals.routes.js';
+import { creditsRoutes } from '@/modules/credits/credits.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -107,6 +108,7 @@ export async function buildApp() {
   await app.register(jobsRoutes, { prefix: '/api/v1/jobs' });
   await app.register(showcaseRoutes, { prefix: '/api/v1/showcase' });
   await app.register(referralsRoutes, { prefix: '/api/v1/referrals' });
+  await app.register(creditsRoutes, { prefix: '/api/v1/credits' });
 
   return app;
 }
