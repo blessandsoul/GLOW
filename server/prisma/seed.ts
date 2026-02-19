@@ -38,12 +38,40 @@ async function main(): Promise<void> {
     },
   });
 
+  // Seed credit packages
+  const creditPackages = [
+    { name: 'Starter', credits: 10, price: 300, sortOrder: 0 },
+    { name: 'Popular', credits: 50, price: 1200, sortOrder: 1 },
+    { name: 'Pro', credits: 100, price: 2000, sortOrder: 2 },
+  ];
+
+  for (const pkg of creditPackages) {
+    await prisma.creditPackage.upsert({
+      where: { id: pkg.name.toLowerCase() },
+      update: {
+        name: pkg.name,
+        credits: pkg.credits,
+        price: pkg.price,
+        sortOrder: pkg.sortOrder,
+      },
+      create: {
+        id: pkg.name.toLowerCase(),
+        name: pkg.name,
+        credits: pkg.credits,
+        price: pkg.price,
+        sortOrder: pkg.sortOrder,
+      },
+    });
+  }
+
   // eslint-disable-next-line no-console
   console.log('✅ Seeding complete');
   // eslint-disable-next-line no-console
   console.log('  Admin: admin@lashme.app / Admin123!');
   // eslint-disable-next-line no-console
   console.log('  User:  test@lashme.app / Test1234!');
+  // eslint-disable-next-line no-console
+  console.log('  Credit packages: Starter (10), Popular (50), Pro (100)');
 }
 
 main()
