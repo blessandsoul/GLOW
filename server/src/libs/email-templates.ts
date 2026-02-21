@@ -4,7 +4,7 @@ export function welcomeEmailHtml(firstName: string, appUrl: string): string {
 <body style="margin:0;padding:0;background:#f8fafc;font-family:Arial,sans-serif;">
   <div style="max-width:600px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
     <div style="background:#3b82f6;padding:32px;text-align:center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;">Добро пожаловать в LashMe! 🌟</h1>
+      <h1 style="color:#fff;margin:0;font-size:24px;">Добро пожаловать в Glow.GE! 🌟</h1>
     </div>
     <div style="padding:32px;">
       <p style="font-size:16px;color:#374151;">Привет, ${firstName}!</p>

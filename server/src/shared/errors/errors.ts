@@ -1,16 +1,7 @@
-export class AppError extends Error {
-  constructor(
-    public readonly code: string,
-    public readonly message: string,
-    public readonly statusCode: number,
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
+import { AppError } from './AppError.js';
 
 export class BadRequestError extends AppError {
-  constructor(message: string, code = 'BAD_REQUEST') {
+  constructor(message = 'Bad request', code = 'BAD_REQUEST') {
     super(code, message, 400);
   }
 }
@@ -28,25 +19,27 @@ export class ForbiddenError extends AppError {
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string, code = 'NOT_FOUND') {
+  constructor(message = 'Not found', code = 'NOT_FOUND') {
     super(code, message, 404);
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string, code = 'CONFLICT') {
+  constructor(message = 'Conflict', code = 'CONFLICT') {
     super(code, message, 409);
   }
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string) {
-    super('VALIDATION_FAILED', message, 422);
+  constructor(message = 'Validation failed', code = 'VALIDATION_FAILED') {
+    super(code, message, 422);
   }
 }
 
 export class InternalError extends AppError {
-  constructor(message = 'Internal server error') {
-    super('INTERNAL_ERROR', message, 500);
+  constructor(message = 'Internal server error', code = 'INTERNAL_ERROR') {
+    super(code, message, 500);
   }
 }
+
+export { AppError } from './AppError.js';

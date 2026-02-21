@@ -1,7 +1,7 @@
 {
-  "name": "lashme-server",
+  "name": "glowge-server",
   "version": "1.0.0",
-  "description": "LashMe API server — AI-powered photo enhancement for beauty professionals",
+  "description": "Glow.GE API server — AI-powered photo enhancement for beauty professionals",
   "type": "module",
   "main": "dist/server.js",
   "scripts": {

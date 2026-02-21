@@ -99,14 +99,15 @@ model CreditTransaction {
 }
 
 model CreditPackage {
-  id        String   @id @default(uuid())
-  name      String
-  credits   Int
-  price     Int
-  currency  String   @default("USD")
-  isActive  Boolean  @default(true)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  credits     Int
+  price       Int
+  currency    String   @default("GEL")
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
 
   @@map("credit_packages")
 }

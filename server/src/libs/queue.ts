@@ -43,7 +43,7 @@ export const emailWorker = new Worker<EmailJobData, void, string>(
       case 'WELCOME':
         await sendEmail(
           user.email,
-          'Добро пожаловать в LashMe! 🌟',
+          'Добро пожаловать в Glow.GE! 🌟',
           templates.welcomeEmailHtml(user.firstName, env.APP_URL),
         );
         break;

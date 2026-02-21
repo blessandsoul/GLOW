@@ -46,7 +46,7 @@ export const jobsService = {
 
     return {
       buffer: finalBuffer,
-      filename: `lashme-${jobId}-${variantIndex}.jpg`,
+      filename: `glowge-${jobId}-${variantIndex}.jpg`,
     };
   },
 
