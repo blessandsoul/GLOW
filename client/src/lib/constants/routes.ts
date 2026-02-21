@@ -1,0 +1,14 @@
+export const ROUTES = {
+    HOME: '/',
+    LOGIN: '/login',
+    REGISTER: '/register',
+    DASHBOARD: '/dashboard',
+    DASHBOARD_CREDITS: '/dashboard/credits',
+    DASHBOARD_BRANDING: '/dashboard/branding',
+    DASHBOARD_PROFILE: '/dashboard/profile',
+    DASHBOARD_PORTFOLIO: '/dashboard/portfolio',
+    ONBOARDING: '/onboarding',
+    DASHBOARD_REFERRALS: '/dashboard/referrals',
+    SHOWCASE: (jobId: string) => `/showcase/${jobId}` as const,
+    PORTFOLIO_PUBLIC: (username: string) => `/p/${username}` as const,
+} as const;

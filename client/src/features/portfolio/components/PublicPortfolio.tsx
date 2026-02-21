@@ -1,0 +1,182 @@
+'use client';
+
+import Image from 'next/image';
+import { MapPin, Star, InstagramLogo, ChatCircle, PaperPlaneTilt } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { usePublicPortfolio } from '../hooks/usePortfolio';
+import { useLanguage } from "@/i18n/hooks/useLanguage";
+
+interface PublicPortfolioProps {
+    username: string;
+}
+
+export function PublicPortfolio({ username }: PublicPortfolioProps): React.ReactElement {
+    const { t } = useLanguage();
+    const { portfolio, isLoading, isError } = usePublicPortfolio(username);
+
+    if (isLoading) {
+        return (
+            <div className="mx-auto max-w-3xl space-y-8 px-4 py-10">
+                <div className="flex flex-col items-center gap-3">
+                    <Skeleton className="h-20 w-20 rounded-full" />
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="aspect-3/4 rounded-xl" />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (isError || !portfolio) {
+        return (
+            <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-4">
+                <p className="text-lg font-semibold text-foreground">{t('ui.text_20pmm4')}</p>
+                <p className="text-sm text-muted-foreground">
+                    {t('ui.text_p08e8w')}</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="mx-auto max-w-3xl space-y-10 px-4 py-10">
+            {/* Profile header */}
+            <div className="flex flex-col items-center gap-4 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
+                    {portfolio.displayName.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
+                    {portfolio.city && (
+                        <p className="mt-1 flex items-center justify-center gap-1 text-sm text-muted-foreground">
+                            <MapPin size={14} />
+                            {portfolio.city}
+                        </p>
+                    )}
+                </div>
+
+                {/* Rating */}
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                                key={i}
+                                size={16}
+                                weight={i < Math.round(portfolio.averageRating) ? 'fill' : 'regular'}
+                                className={
+                                    i < Math.round(portfolio.averageRating)
+                                        ? 'text-warning'
+                                        : 'text-muted-foreground/30'
+                                }
+                            />
+                        ))}
+                    </div>
+                    <span className="text-sm font-medium text-foreground">
+                        {portfolio.averageRating}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                        ({portfolio.reviewsCount} {t('ui.text_or88cb')}</span>
+                </div>
+
+                {portfolio.bio && (
+                    <p className="max-w-prose text-sm text-muted-foreground leading-relaxed">
+                        {portfolio.bio}
+                    </p>
+                )}
+
+                {/* Social links */}
+                <div className="flex gap-2">
+                    {portfolio.instagram && (
+                        <Button variant="outline" size="sm" className="gap-1.5" asChild>
+                            <a
+                                href={`https://instagram.com/${portfolio.instagram.replace('@', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <InstagramLogo size={16} />
+                                {portfolio.instagram}
+                            </a>
+                        </Button>
+                    )}
+                    <Button variant="outline" size="sm" className="gap-1.5">
+                        <ChatCircle size={16} />
+                        WhatsApp
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-1.5">
+                        <PaperPlaneTilt size={16} />
+                        Telegram
+                    </Button>
+                </div>
+            </div>
+
+            {/* Services */}
+            {portfolio.services.length > 0 && (
+                <section className="space-y-4">
+                    <h2 className="text-lg font-semibold text-foreground">{t('ui.text_280we2')}</h2>
+                    <div className="grid gap-2">
+                        {portfolio.services.map((service) => (
+                            <div
+                                key={service.name}
+                                className="flex items-center justify-between rounded-lg border border-border/50 bg-card px-4 py-3"
+                            >
+                                <span className="text-sm text-foreground">{service.name}</span>
+                                <span className="text-sm font-semibold text-foreground">
+                                    {service.price} {service.currency}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Gallery */}
+            <section className="space-y-4">
+                <h2 className="text-lg font-semibold text-foreground">{t('ui.text_jow7ra')}</h2>
+                {portfolio.items.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-muted-foreground">
+                        {t('ui.text_kfi678')}</p>
+                ) : (
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        {portfolio.items.map((item) => (
+                            <div
+                                key={item.id}
+                                className="group relative overflow-hidden rounded-xl border border-border/50 transition-all duration-200 hover:shadow-md"
+                            >
+                                <div className="relative aspect-3/4">
+                                    <Image
+                                        src={item.imageUrl}
+                                        alt={item.title ?? t('ui.text_kaosed')}
+                                        fill
+                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                        sizes="(max-width: 640px) 50vw, 33vw"
+                                    />
+                                </div>
+                                {item.title && (
+                                    <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-2.5 pt-6">
+                                        <span className="text-xs font-medium text-white">
+                                            {item.title}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            {/* Footer */}
+            <div className="text-center">
+                <p className="text-xs text-muted-foreground">
+                    {t('ui.text_r4tl4y')}{' '}
+                    <a href="/" className="font-medium text-primary hover:underline">
+                        Glow.GE
+                    </a>
+                </p>
+            </div>
+        </div>
+    );
+}

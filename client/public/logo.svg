@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+  <!-- Background: Ultra-light cream -->
+  <rect width="100%" height="100%" fill="#FAFAF8" rx="16" />
+  
+  <defs>
+    <!-- Base soft glow (like bokeh effect) -->
+    <radialGradient id="bokeh-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#B490F5" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#CAA2DD" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#F0C060" stop-opacity="0"/>
+    </radialGradient>
+    
+    <!-- Gradient for rings and symbol: Electric Lavender to Warm Gold -->
+    <linearGradient id="ring-grad" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#B490F5" />
+      <stop offset="40%" stop-color="#D7A4CC" />
+      <stop offset="100%" stop-color="#F0C060" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(15, 0)">
+    <!-- Base Soft Blur (bokeh underglow) -->
+    <circle cx="60" cy="60" r="48" fill="url(#bokeh-glow)" />
+    
+    <!-- Concentric thin rings creating the crisp vector bloom/glow effect fading out -->
+    <g>
+      <circle cx="60" cy="60" r="10" fill="none" stroke="url(#ring-grad)" stroke-width="1.50" opacity="0.90" />
+      <circle cx="60" cy="60" r="12" fill="none" stroke="url(#ring-grad)" stroke-width="1.43" opacity="0.85" />
+      <circle cx="60" cy="60" r="14" fill="none" stroke="url(#ring-grad)" stroke-width="1.36" opacity="0.80" />
+      <circle cx="60" cy="60" r="16" fill="none" stroke="url(#ring-grad)" stroke-width="1.29" opacity="0.75" />
+      <circle cx="60" cy="60" r="18" fill="none" stroke="url(#ring-grad)" stroke-width="1.22" opacity="0.70" />
+      <circle cx="60" cy="60" r="20" fill="none" stroke="url(#ring-grad)" stroke-width="1.15" opacity="0.65" />
+      <circle cx="60" cy="60" r="22" fill="none" stroke="url(#ring-grad)" stroke-width="1.08" opacity="0.60" />
+      <circle cx="60" cy="60" r="24" fill="none" stroke="url(#ring-grad)" stroke-width="1.01" opacity="0.55" />
+      <circle cx="60" cy="60" r="26" fill="none" stroke="url(#ring-grad)" stroke-width="0.94" opacity="0.50" />
+      <circle cx="60" cy="60" r="28" fill="none" stroke="url(#ring-grad)" stroke-width="0.87" opacity="0.45" />
+      <circle cx="60" cy="60" r="30" fill="none" stroke="url(#ring-grad)" stroke-width="0.80" opacity="0.40" />
+      <circle cx="60" cy="60" r="32" fill="none" stroke="url(#ring-grad)" stroke-width="0.73" opacity="0.35" />
+      <circle cx="60" cy="60" r="34" fill="none" stroke="url(#ring-grad)" stroke-width="0.66" opacity="0.30" />
+      <circle cx="60" cy="60" r="36" fill="none" stroke="url(#ring-grad)" stroke-width="0.59" opacity="0.25" />
+      <circle cx="60" cy="60" r="38" fill="none" stroke="url(#ring-grad)" stroke-width="0.52" opacity="0.20" />
+      <circle cx="60" cy="60" r="40" fill="none" stroke="url(#ring-grad)" stroke-width="0.45" opacity="0.15" />
+      <circle cx="60" cy="60" r="42" fill="none" stroke="url(#ring-grad)" stroke-width="0.38" opacity="0.10" />
+      <circle cx="60" cy="60" r="44" fill="none" stroke="url(#ring-grad)" stroke-width="0.31" opacity="0.05" />
+    </g>
+
+    <!-- Center small filled circle in electric lavender -->
+    <!-- The gradient flows outwards, but center is solid lavender -->
+    <circle cx="60" cy="60" r="5" fill="#B490F5" />
+  </g>
+
+  <!-- Wordmark "GLOW.GE" -->
+  <!-- Set in geometric sans-serif, tight letter-spacing, dark charcoal text -->
+  <text x="135" y="82" font-family="'Inter', 'Helvetica Neue', 'Neue Haas Grotesk', system-ui, sans-serif" font-weight="800" font-size="60" fill="#1C1C1E" letter-spacing="-0.05em">
+    GLOW<tspan dy="-24" dx="2" font-size="24" font-weight="700" fill="#B490F5" letter-spacing="-0.02em">.GE</tspan>
+  </text>
+</svg>
