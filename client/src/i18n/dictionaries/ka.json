@@ -442,7 +442,10 @@
     "mode_batch": "პაკეტი",
     "tab_presets": "პრესეტები",
     "tab_trends": "ტრენდები",
-    "tab_custom": "მორგება"
+    "tab_custom": "მორგება",
+    "coming_soon": "მალე",
+    "photo_uploading": "ფოტო იტვირთება...",
+    "photo_sending": "გადაგზავნა დამუშავებაზე, მოიცადეთ"
   },
   "branding": {
     "style_minimal": "მინიმალური",

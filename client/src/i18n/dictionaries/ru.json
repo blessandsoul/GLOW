@@ -438,7 +438,10 @@
     "mode_batch": "Пакет",
     "tab_presets": "Пресеты",
     "tab_trends": "Тренды",
-    "tab_custom": "Настроить"
+    "tab_custom": "Настроить",
+    "coming_soon": "Скоро",
+    "photo_uploading": "Фото загружается...",
+    "photo_sending": "Отправляем на обработку, подождите"
   },
   "branding": {
     "style_minimal": "Минимальный",

@@ -200,8 +200,8 @@ export function UploadSection(): React.ReactElement {
                     <Sparkle size={36} className="animate-pulse text-primary" />
                 </div>
                 <div className="text-center">
-                    <p className="text-base font-semibold text-foreground">ფოტო იტვირთება...</p>
-                    <p className="mt-1 text-sm text-muted-foreground">გადაგზავნა დამუშავებაზე, მოიცადეთ</p>
+                    <p className="text-base font-semibold text-foreground">{t('upload.photo_uploading')}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{t('upload.photo_sending')}</p>
                 </div>
                 <div className="grid w-full max-w-sm grid-cols-2 gap-3 px-6">
                     {Array.from({ length: 4 }).map((_, i) => (
@@ -368,7 +368,7 @@ export function UploadSection(): React.ReactElement {
                         <div className="absolute inset-0 flex items-center justify-center rounded-xl">
                             <div className="flex items-center gap-1.5 rounded-full border border-border/40 bg-background/80 px-3 py-1.5 backdrop-blur-sm">
                                 <Lock size={11} className="text-muted-foreground" />
-                                <span className="text-[10px] font-medium text-muted-foreground">{t('upload.coming_soon') || 'Скоро'}</span>
+                                <span className="text-[10px] font-medium text-muted-foreground">{t('upload.coming_soon')}</span>
                             </div>
                         </div>
                     </div>
