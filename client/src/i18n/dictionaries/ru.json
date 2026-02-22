@@ -438,8 +438,10 @@
     "mode_batch": "Пакет",
     "tab_presets": "Пресеты",
     "tab_trends": "Тренды",
+    "tab_filters": "Фильтры",
     "tab_custom": "Настроить",
     "coming_soon": "Скоро",
+    "filter_selected_tip": "Фильтр выбран — загружайте фото",
     "photo_uploading": "Фото загружается...",
     "photo_sending": "Отправляем на обработку, подождите"
   },

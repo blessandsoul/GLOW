@@ -442,8 +442,10 @@
     "mode_batch": "პაკეტი",
     "tab_presets": "პრესეტები",
     "tab_trends": "ტრენდები",
+    "tab_filters": "ფილტრები",
     "tab_custom": "მორგება",
     "coming_soon": "მალე",
+    "filter_selected_tip": "ფილტრი არჩეულია — ატვირთეთ ფოტო",
     "photo_uploading": "ფოტო იტვირთება...",
     "photo_sending": "გადაგზავნა დამუშავებაზე, მოიცადეთ"
   },

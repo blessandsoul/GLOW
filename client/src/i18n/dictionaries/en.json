@@ -395,8 +395,10 @@
     "mode_batch": "Batch",
     "tab_presets": "Presets",
     "tab_trends": "Trends",
+    "tab_filters": "Filters",
     "tab_custom": "Custom",
     "coming_soon": "Coming soon",
+    "filter_selected_tip": "Filter selected — upload your photo",
     "photo_uploading": "Photo is uploading...",
     "photo_sending": "Sending for processing, please wait"
   },
