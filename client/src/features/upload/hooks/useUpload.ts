@@ -15,21 +15,26 @@ interface UploadPayload {
 interface UseUploadReturn {
     job: Job | null;
     isUploading: boolean;
+    error: string | null;
     uploadFile: (payload: UploadPayload) => void;
 }
 
 export function useUpload(): UseUploadReturn {
     const [job, setJob] = useState<Job | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const uploadFile = useCallback(
         async ({ file, settings }: UploadPayload) => {
             setIsUploading(true);
+            setError(null);
             try {
                 const data = await jobService.uploadPhoto(file, settings);
                 setJob(data);
             } catch (err) {
-                toast.error(getErrorMessage(err));
+                const message = getErrorMessage(err);
+                setError(message);
+                toast.error(message);
             } finally {
                 setIsUploading(false);
             }
@@ -37,5 +42,5 @@ export function useUpload(): UseUploadReturn {
         []
     );
 
-    return { job, isUploading, uploadFile };
+    return { job, isUploading, error, uploadFile };
 }

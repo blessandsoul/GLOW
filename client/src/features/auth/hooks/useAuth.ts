@@ -3,14 +3,14 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useState } from 'react';
 import { authService } from '../services/auth.service';
-import { setCredentials, logout as logoutAction } from '../store/authSlice';
+import { setUser, logout as logoutAction } from '../store/authSlice';
 import { useRouter } from 'next/navigation';
 import type { ILoginRequest } from '../types/auth.types';
 
 export const useAuth = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
-    const { user, isAuthenticated, tokens } = useAppSelector(
+    const { user, isAuthenticated, isInitializing } = useAppSelector(
         (state) => state.auth
     );
 
@@ -19,13 +19,12 @@ export const useAuth = () => {
     const [loginError, setLoginError] = useState<Error | null>(null);
     const [registerError, setRegisterError] = useState<Error | null>(null);
 
-    const login = async (data: ILoginRequest) => {
+    const login = async (data: ILoginRequest): Promise<void> => {
         setIsLoggingIn(true);
         setLoginError(null);
         try {
             const res = await authService.login(data);
-            dispatch(setCredentials(res));
-            document.cookie = `accessToken=${res.tokens.accessToken}; path=/`;
+            dispatch(setUser(res.user));
             router.push('/dashboard');
         } catch (error) {
             setLoginError(error instanceof Error ? error : new Error('Login failed'));
@@ -34,13 +33,12 @@ export const useAuth = () => {
         }
     };
 
-    const register = async (data: Parameters<typeof authService.register>[0]) => {
+    const register = async (data: Parameters<typeof authService.register>[0]): Promise<void> => {
         setIsRegistering(true);
         setRegisterError(null);
         try {
             const res = await authService.register(data);
-            dispatch(setCredentials(res));
-            document.cookie = `accessToken=${res.tokens.accessToken}; path=/`;
+            dispatch(setUser(res.user));
             const demoJobId = sessionStorage.getItem('glowge_demo_job_id');
             if (demoJobId) sessionStorage.removeItem('glowge_demo_job_id');
             router.push('/onboarding');
@@ -56,11 +54,6 @@ export const useAuth = () => {
             await authService.logout();
         } finally {
             dispatch(logoutAction());
-            if (typeof window !== 'undefined') {
-                document.cookie = 'accessToken=; path=/; max-age=0';
-                localStorage.removeItem('auth');
-                sessionStorage.clear();
-            }
             router.push('/login');
         }
     };
@@ -68,7 +61,7 @@ export const useAuth = () => {
     return {
         user,
         isAuthenticated,
-        tokens,
+        isInitializing,
         login,
         register,
         logout,

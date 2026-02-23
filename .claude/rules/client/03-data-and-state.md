@@ -1,7 +1,3 @@
----
-trigger: glob: client/**
----
-
 > **SCOPE**: These rules apply specifically to the **client** directory (Next.js App Router).
 
 # Data, State & API Integration
@@ -12,7 +8,7 @@ trigger: glob: client/**
 |---|---|---|
 | Server data (initial page load) | Server Components | SEO-critical, page-level data |
 | Server data (client-triggered) | React Query | User actions, real-time updates, mutations |
-| Global client state | Redux | Auth tokens, current user — **nothing else** |
+| Global client state | Redux | Auth user + init/logout state — **nothing else** |
 | Local UI state | `useState` / `useReducer` | Modals, hover, form inputs |
 | URL-shareable state | `useSearchParams` | Filters, pagination, search query |
 
@@ -38,12 +34,12 @@ retry: 1
 ### Query Key Factory Pattern
 
 ```typescript
-export const serviceKeys = {
-  all: ['services'] as const,
-  lists: () => [...serviceKeys.all, 'list'] as const,
-  list: (filters: ServiceFilters) => [...serviceKeys.lists(), filters] as const,
-  details: () => [...serviceKeys.all, 'detail'] as const,
-  detail: (id: string) => [...serviceKeys.details(), id] as const,
+export const itemKeys = {
+  all: ['items'] as const,
+  lists: () => [...itemKeys.all, 'list'] as const,
+  list: (filters: ItemFilters) => [...itemKeys.lists(), filters] as const,
+  details: () => [...itemKeys.all, 'detail'] as const,
+  detail: (id: string) => [...itemKeys.details(), id] as const,
 };
 ```
 
@@ -56,16 +52,16 @@ On error: `toast.error(getErrorMessage(error))`.
 
 ## Redux
 
-**Scope**: Auth only. Single slice: `authSlice` with actions: `setCredentials`, `updateTokens`, `logout`.
+**Scope**: Auth only. Single slice: `authSlice` with actions: `setUser`, `setInitialized`, `setLoggingOut`, `logout`.
 
 Typed hooks in `store/hooks.ts`: `useAppDispatch`, `useAppSelector`.
 
 State shape:
 ```typescript
-{ user: IUser | null; tokens: IAuthTokens | null; isAuthenticated: boolean }
+{ user: IUser | null; isAuthenticated: boolean; isInitializing: boolean; isLoggingOut: boolean }
 ```
 
-Persisted to `localStorage` with SSR guard (`typeof window !== 'undefined'`).
+**Not persisted to localStorage** — auth state is hydrated on page load by `AuthInitializer` calling `getMe()`. Tokens are stored in httpOnly cookies (not accessible from JS).
 
 ---
 
@@ -73,10 +69,11 @@ Persisted to `localStorage` with SSR guard (`typeof window !== 'undefined'`).
 
 `lib/api/axios.config.ts` — singleton `apiClient`:
 
-- **Base URL**: `process.env.NEXT_PUBLIC_API_BASE_URL` (fallback `http://localhost:3000/api/v1`)
+- **Base URL**: `process.env.NEXT_PUBLIC_API_BASE_URL` (fallback `http://localhost:8000/api/v1`)
 - **Timeout**: 30s
-- **Request interceptor**: Attaches `Authorization: Bearer <accessToken>` from Redux store (client-side only).
-- **Response interceptor**: On 401, attempts token refresh via `/auth/refresh`. If refresh fails, dispatches `logout()` and redirects to `/login`.
+- **`withCredentials: true`**: Sends httpOnly cookies automatically with every request.
+- **No request interceptor** — cookies handle auth, no `Authorization` header needed.
+- **Response interceptor**: On 401, attempts token refresh via `/auth/refresh` (cookie sent automatically). Queues concurrent 401s to avoid multiple refresh attempts. If refresh fails, dispatches `logout()` and redirects to `/login`.
 
 ---
 
@@ -85,14 +82,14 @@ Persisted to `localStorage` with SSR guard (`typeof window !== 'undefined'`).
 Services are **classes**, singleton-exported, using `apiClient` and `API_ENDPOINTS`.
 
 ```typescript
-class BeautyServiceApi {
-  async getServices(params?: ServiceFilters & PaginationParams): Promise<PaginatedData<BeautyService>>
-  async getService(id: string): Promise<BeautyService>
-  async createService(data: CreateServiceRequest): Promise<BeautyService>
-  async updateService(id: string, data: UpdateServiceRequest): Promise<BeautyService>
-  async deleteService(id: string): Promise<void>
+class ItemService {
+  async getItems(params?: ItemFilters & PaginationParams): Promise<PaginatedData<Item>>
+  async getItem(id: string): Promise<Item>
+  async createItem(data: CreateItemRequest): Promise<Item>
+  async updateItem(id: string, data: UpdateItemRequest): Promise<Item>
+  async deleteItem(id: string): Promise<void>
 }
-export const beautyServiceApi = new BeautyServiceApi();
+export const itemService = new ItemService();
 ```
 
 Auth service methods: `register`, `login`, `logout`, `refreshToken`, `getMe`, `verifyEmail`, `requestPasswordReset`, `resetPassword`.
@@ -116,9 +113,9 @@ export const getErrorMessage = (error: unknown): string => {
 
 | Data type | Strategy | Example |
 |---|---|---|
-| General content | `next: { revalidate: 60 }` | Services list |
+| General content | `next: { revalidate: 60 }` | Items list |
 | User-specific | `cache: 'no-store'` | User profile |
-| Static lookups | `cache: 'force-cache'` | Locations, categories |
+| Static lookups | `cache: 'force-cache'` | Categories, settings |
 
 Use `revalidatePath()` / `revalidateTag()` in Server Actions after mutations.
 
@@ -155,5 +152,5 @@ z.string()
 
 ## Utility Defaults
 
-- **Default currency**: `GEL` for `formatCurrency`.
+- **Default currency**: `USD` for `formatCurrency`.
 - **Date format**: `Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' })`.

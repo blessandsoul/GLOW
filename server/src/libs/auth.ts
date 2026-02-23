@@ -19,8 +19,9 @@ export async function optionalAuth(
   _reply: FastifyReply,
 ): Promise<void> {
   try {
-    const authHeader = request.headers.authorization;
-    if (authHeader?.startsWith('Bearer ')) {
+    const hasCookie = request.cookies?.accessToken;
+    const hasHeader = request.headers.authorization?.startsWith('Bearer ');
+    if (hasCookie || hasHeader) {
       const decoded = await request.jwtVerify<JwtPayload>();
       request.user = decoded;
     }

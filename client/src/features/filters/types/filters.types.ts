@@ -11,7 +11,10 @@ export interface Filter {
   categoryId: string;
   name_ka: string;
   name_ru: string;
-  prompt: string;
+  previewUrl: string;
+  description_ka: string;
+  description_ru: string;
+  isPopular: boolean;
 }
 
 export interface FiltersData {

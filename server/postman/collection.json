@@ -1,0 +1,814 @@
+{
+  "info": {
+    "name": "GLOW API",
+    "_postman_id": "glow-api-collection",
+    "description": "GLOW.GE API — AI-powered photo enhancement for beauty professionals.\n\nAuthentication is cookie-based (httpOnly). Login or Register first, then Postman will automatically send the accessToken cookie with subsequent requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "userId", "value": "" },
+    { "key": "jobId", "value": "" },
+    { "key": "portfolioId", "value": "" },
+    { "key": "packageId", "value": "" },
+    { "key": "username", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth (Public)",
+      "description": "Public authentication endpoints — no token required.",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Test1234!\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"referralCode\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.user) {",
+                  "    pm.collectionVariables.set('userId', res.data.user.id);",
+                  "    if (res.data.user.username) {",
+                  "      pm.collectionVariables.set('username', res.data.user.username);",
+                  "    }",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@glow.ge\",\n  \"password\": \"Test1234!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.user) {",
+                  "    pm.collectionVariables.set('userId', res.data.user.id);",
+                  "    if (res.data.user.username) {",
+                  "      pm.collectionVariables.set('username', res.data.user.username);",
+                  "    }",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Request Password Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/request-password-reset",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "request-password-reset"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@glow.ge\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"paste-reset-token-here\",\n  \"password\": \"NewPass1234!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth (Protected)",
+      "description": "Authenticated auth endpoints — login first to set the accessToken cookie.",
+      "item": [
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Test1234!\",\n  \"newPassword\": \"NewPass1234!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User profile management — requires authentication.",
+      "item": [
+        {
+          "name": "Update Me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Me",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Avatar image (JPEG, PNG, WebP, max 5MB)"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "description": "Master profile (contact info, services, bio) — requires authentication.",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/profiles/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["profiles", "me"]
+            }
+          }
+        },
+        {
+          "name": "Save My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/profiles/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["profiles", "me"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"city\": \"Tbilisi\",\n  \"niche\": \"Lash Extensions\",\n  \"bio\": \"Professional lash artist with 5 years of experience.\",\n  \"phone\": \"+995555123456\",\n  \"whatsapp\": \"+995555123456\",\n  \"telegram\": \"@lashpro\",\n  \"instagram\": \"@lashpro_tbilisi\",\n  \"services\": [\n    {\n      \"name\": \"Classic Lashes\",\n      \"price\": 80,\n      \"currency\": \"GEL\",\n      \"category\": \"Lashes\"\n    },\n    {\n      \"name\": \"Volume Lashes\",\n      \"price\": 120,\n      \"currency\": \"GEL\",\n      \"category\": \"Lashes\"\n    }\n  ]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Branding",
+      "description": "Branding profile (display name, logo, watermark) — requires authentication.",
+      "item": [
+        {
+          "name": "Get My Branding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/branding/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["branding", "me"]
+            }
+          }
+        },
+        {
+          "name": "Save My Branding",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/branding/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["branding", "me"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "displayName", "value": "Lash Pro Studio", "type": "text" },
+                { "key": "instagramHandle", "value": "@lashpro_tbilisi", "type": "text" },
+                { "key": "primaryColor", "value": "#d4738a", "type": "text" },
+                { "key": "watermarkStyle", "value": "FRAMED", "description": "MINIMAL | FRAMED | STORIES_TEMPLATE | DIAGONAL | BADGE | SPLIT", "type": "text" },
+                { "key": "watermarkOpacity", "value": "0.8", "type": "text" },
+                { "key": "logo", "type": "file", "src": "", "description": "Optional logo image (JPEG/PNG/WebP, max 5MB)" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete My Branding",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/branding/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["branding", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portfolio",
+      "description": "Portfolio items (gallery of work) — most endpoints require authentication.",
+      "item": [
+        {
+          "name": "My Portfolio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "me"]
+            }
+          }
+        },
+        {
+          "name": "Add Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"imageUrl\": \"https://picsum.photos/800/600\",\n  \"title\": \"Classic Lash Set\",\n  \"niche\": \"Lash Extensions\",\n  \"isPublished\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('portfolioId', res.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Item",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/{{portfolioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "{{portfolioId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"isPublished\": true,\n  \"sortOrder\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/{{portfolioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "{{portfolioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Public Portfolio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/public/{{username}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "public", "{{username}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "description": "Photo enhancement jobs — upload photos for AI processing.",
+      "item": [
+        {
+          "name": "Upload Photo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Photo to enhance (JPEG, PNG, WebP)"
+                },
+                {
+                  "key": "settings",
+                  "value": "{\"processingType\":\"ENHANCE\"}",
+                  "type": "text",
+                  "description": "Optional JSON settings string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('jobId', res.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guest Upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/guest",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "guest"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Photo to enhance (JPEG, PNG, WebP)"
+                },
+                {
+                  "key": "settings",
+                  "value": "{\"processingType\":\"ENHANCE\"}",
+                  "type": "text",
+                  "description": "Optional JSON settings string"
+                },
+                {
+                  "key": "sessionId",
+                  "value": "",
+                  "type": "text",
+                  "description": "Optional guest session ID for demo tracking"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('jobId', res.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Batch Upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "batch"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "",
+                  "description": "Multiple photos to enhance"
+                },
+                {
+                  "key": "settings",
+                  "value": "{\"processingType\":\"ENHANCE\"}",
+                  "type": "text",
+                  "description": "Optional JSON settings string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List My Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Job",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}"]
+            }
+          }
+        },
+        {
+          "name": "Download Result",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/download?variant=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "download"],
+              "query": [
+                { "key": "variant", "value": "0", "description": "Variant index (0-based)" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Credits",
+      "description": "Credit balance, packages, purchases, and transaction history.",
+      "item": [
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/credits/balance",
+              "host": ["{{baseUrl}}"],
+              "path": ["credits", "balance"]
+            }
+          }
+        },
+        {
+          "name": "Get Packages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/credits/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["credits", "packages"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.length > 0) {",
+                  "    pm.collectionVariables.set('packageId', res.data[0].id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Purchase Package",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/credits/purchase",
+              "host": ["{{baseUrl}}"],
+              "path": ["credits", "purchase"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": \"{{packageId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/credits/history?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["credits", "history"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Showcase",
+      "description": "Public showcase pages and client reviews.",
+      "item": [
+        {
+          "name": "Get Showcase",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/showcase/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["showcase", "{{jobId}}"]
+            }
+          }
+        },
+        {
+          "name": "Submit Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/showcase/{{jobId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["showcase", "{{jobId}}", "review"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"text\": \"Amazing work! Love the results.\",\n  \"clientName\": \"Maria\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Referrals",
+      "description": "Referral program stats — requires authentication.",
+      "item": [
+        {
+          "name": "My Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/referrals/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["referrals", "my"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trends",
+      "description": "Weekly trend templates — current (public) and archive (authenticated).",
+      "item": [
+        {
+          "name": "Current Trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trends/current",
+              "host": ["{{baseUrl}}"],
+              "path": ["trends", "current"]
+            }
+          }
+        },
+        {
+          "name": "Archive",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trends/archive?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["trends", "archive"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Filters",
+      "description": "Public filter metadata. Prompts are stored server-side only and never exposed.",
+      "item": [
+        {
+          "name": "List Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/filters",
+              "host": ["{{baseUrl}}"],
+              "path": ["filters"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "description": "Server health check.",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

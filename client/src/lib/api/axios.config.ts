@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { store } from '@/store';
-import { updateTokens, logout } from '@/features/auth/store/authSlice';
+import { logout } from '@/features/auth/store/authSlice';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
 
 const apiClient = axios.create({
@@ -9,22 +9,8 @@ const apiClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true,
 });
-
-// Request interceptor: attach Bearer token
-apiClient.interceptors.request.use(
-    (config) => {
-        if (typeof window !== 'undefined') {
-            const state = store.getState();
-            const token = state.auth.tokens?.accessToken;
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
 
 // Response interceptor: handle 401 with token refresh
 let isRefreshing = false;
@@ -33,15 +19,12 @@ let failedQueue: Array<{
     reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (
-    error: unknown,
-    token: string | null = null
-): void => {
+const processQueue = (error: unknown): void => {
     failedQueue.forEach(({ resolve, reject }) => {
         if (error) {
             reject(error);
         } else {
-            resolve(token);
+            resolve(undefined);
         }
     });
     failedQueue = [];
@@ -53,11 +36,15 @@ apiClient.interceptors.response.use(
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
+            const url = originalRequest.url as string;
+            if (url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/refresh') || url.includes('/auth/logout')) {
+                return Promise.reject(error);
+            }
+
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
-                }).then((token) => {
-                    originalRequest.headers.Authorization = `Bearer ${token}`;
+                }).then(() => {
                     return apiClient(originalRequest);
                 });
             }
@@ -66,27 +53,29 @@ apiClient.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const refreshToken = store.getState().auth.tokens?.refreshToken;
-                if (!refreshToken) {
-                    throw new Error('No refresh token');
-                }
-
-                const { data } = await axios.post(
+                await axios.post(
                     `${process.env.NEXT_PUBLIC_API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH}`,
-                    { refreshToken }
+                    {},
+                    { withCredentials: true },
                 );
-
-                const newTokens = data.data;
-                store.dispatch(updateTokens(newTokens));
-                processQueue(null, newTokens.accessToken);
-
-                originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
+                processQueue(null);
                 return apiClient(originalRequest);
             } catch (refreshError) {
-                processQueue(refreshError, null);
+                processQueue(refreshError);
                 store.dispatch(logout());
                 if (typeof window !== 'undefined') {
-                    localStorage.removeItem('auth');
+                    // Clear httpOnly cookies via server before redirecting,
+                    // otherwise middleware sees stale cookie and bounces back.
+                    try {
+                        await axios.post(
+                            `${process.env.NEXT_PUBLIC_API_BASE_URL}${API_ENDPOINTS.AUTH.LOGOUT}`,
+                            {},
+                            { withCredentials: true },
+                        );
+                    } catch {
+                        // Best-effort — clear any non-httpOnly stale cookie as fallback
+                        document.cookie = 'accessToken=; path=/; max-age=0';
+                    }
                     window.location.href = '/login';
                 }
                 return Promise.reject(refreshError);
@@ -96,7 +85,7 @@ apiClient.interceptors.response.use(
         }
 
         return Promise.reject(error);
-    }
+    },
 );
 
 export { apiClient };

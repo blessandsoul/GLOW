@@ -464,6 +464,7 @@ export function BrandingSetup(): React.ReactElement {
     const { profile, isLoading, save, isSaving, remove, isRemoving } = useBranding();
 
     const [form, setForm] = useState<BrandingFormData>(DEFAULT_BRANDING);
+    const [formErrors, setFormErrors] = useState<{ displayName?: string; instagramHandle?: string }>({});
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<PreviewTab>('result');
     const logoInputId = useId();
@@ -498,10 +499,23 @@ export function BrandingSetup(): React.ReactElement {
         setForm((prev) => ({ ...prev, primaryColor: color }));
     }, []);
 
+    const validateForm = useCallback((): boolean => {
+        const errors: { displayName?: string; instagramHandle?: string } = {};
+        if (!form.displayName.trim()) {
+            errors.displayName = t('branding.name_required');
+        }
+        if (!form.instagramHandle.trim()) {
+            errors.instagramHandle = t('branding.instagram_required');
+        }
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    }, [form.displayName, form.instagramHandle, t]);
+
     const handleSubmit = useCallback((e: React.FormEvent) => {
         e.preventDefault();
+        if (!validateForm()) return;
         save(form);
-    }, [form, save]);
+    }, [form, save, validateForm]);
 
     const user = useAppSelector((state) => state.auth.user);
     const previewUsername = user
@@ -584,28 +598,40 @@ export function BrandingSetup(): React.ReactElement {
                             <div className="space-y-1.5">
                                 <Label htmlFor="displayName" className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                     <User size={11} />
-                                    {t('ui.text_6m8ujt')}
+                                    {t('ui.text_6m8ujt')} <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="displayName"
                                     placeholder="Anna Lashes"
                                     value={form.displayName}
-                                    onChange={(e) => setForm((prev) => ({ ...prev, displayName: e.target.value }))}
-                                    className="h-9"
+                                    onChange={(e) => {
+                                        setForm((prev) => ({ ...prev, displayName: e.target.value }));
+                                        if (formErrors.displayName) setFormErrors((prev) => ({ ...prev, displayName: undefined }));
+                                    }}
+                                    className={cn('h-9', formErrors.displayName && 'border-destructive')}
                                 />
+                                {formErrors.displayName && (
+                                    <p className="text-xs text-destructive">{formErrors.displayName}</p>
+                                )}
                             </div>
                             <div className="space-y-1.5">
                                 <Label htmlFor="instagramHandle" className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                     <InstagramLogo size={11} />
-                                    Instagram
+                                    Instagram <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="instagramHandle"
                                     placeholder="@anna_lashes"
                                     value={form.instagramHandle}
-                                    onChange={(e) => setForm((prev) => ({ ...prev, instagramHandle: e.target.value }))}
-                                    className="h-9"
+                                    onChange={(e) => {
+                                        setForm((prev) => ({ ...prev, instagramHandle: e.target.value }));
+                                        if (formErrors.instagramHandle) setFormErrors((prev) => ({ ...prev, instagramHandle: undefined }));
+                                    }}
+                                    className={cn('h-9', formErrors.instagramHandle && 'border-destructive')}
                                 />
+                                {formErrors.instagramHandle && (
+                                    <p className="text-xs text-destructive">{formErrors.instagramHandle}</p>
+                                )}
                             </div>
                         </div>
                     </div>

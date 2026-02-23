@@ -7,11 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 import { useProfile } from '../hooks/useProfile';
 import { CITIES, NICHES, DEFAULT_PROFILE, SERVICE_CATEGORIES } from '../types/profile.types';
 import type { ProfileFormData, ServiceItem } from '../types/profile.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setUser } from '@/features/auth/store/authSlice';
+import { usersService } from '@/features/users/services/users.service';
+import { getErrorMessage } from '@/lib/utils/error';
 import { ServiceRow } from './ServiceRow';
 import { AddServicePanel } from './AddServicePanel';
 
@@ -19,6 +23,7 @@ import { AddServicePanel } from './AddServicePanel';
 
 function PersonalInfoSection(): React.ReactElement {
     const { t } = useLanguage();
+    const dispatch = useAppDispatch();
     const user = useAppSelector((s) => s.auth.user);
     const [firstName, setFirstName] = useState(user?.firstName ?? '');
     const [lastName, setLastName] = useState(user?.lastName ?? '');
@@ -28,12 +33,15 @@ function PersonalInfoSection(): React.ReactElement {
         e.preventDefault();
         setIsSaving(true);
         try {
-            // TODO: wire to usersService.updateMe({ firstName, lastName })
-            await new Promise((r) => setTimeout(r, 500));
+            const updatedUser = await usersService.updateMe({ firstName, lastName });
+            dispatch(setUser(updatedUser));
+            toast.success('Name updated');
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         } finally {
             setIsSaving(false);
         }
-    }, [firstName, lastName]);
+    }, [firstName, lastName, dispatch]);
 
     return (
         <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
@@ -216,7 +224,7 @@ export function ProfileSetup(): React.ReactElement {
                             </SelectTrigger>
                             <SelectContent>
                                 {CITIES.map((c) => (
-                                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

@@ -1,32 +1,22 @@
+import { apiClient } from '@/lib/api/axios.config';
+import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
+import type { ApiResponse } from '@/lib/api/api.types';
 import type { MasterProfile, ProfileFormData } from '../types/profile.types';
-
-const delay = (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms));
-
-let mockProfile: MasterProfile | null = null;
 
 class ProfileService {
     async getProfile(): Promise<MasterProfile | null> {
-        await delay(300);
-        return mockProfile;
+        const { data } = await apiClient.get<ApiResponse<MasterProfile | null>>(
+            API_ENDPOINTS.PROFILES.ME,
+        );
+        return data.data;
     }
 
-    async saveProfile(data: ProfileFormData): Promise<MasterProfile> {
-        await delay(500);
-        mockProfile = {
-            id: mockProfile?.id ?? `profile-${Date.now()}`,
-            userId: 'mock-user-id',
-            city: data.city || null,
-            niche: data.niche || null,
-            services: data.services.length > 0 ? data.services : null,
-            bio: data.bio || null,
-            phone: data.phone || null,
-            whatsapp: data.whatsapp || null,
-            telegram: data.telegram || null,
-            instagram: data.instagram || null,
-            createdAt: mockProfile?.createdAt ?? new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-        return mockProfile;
+    async saveProfile(formData: ProfileFormData): Promise<MasterProfile> {
+        const { data } = await apiClient.put<ApiResponse<MasterProfile>>(
+            API_ENDPOINTS.PROFILES.ME,
+            formData,
+        );
+        return data.data;
     }
 }
 

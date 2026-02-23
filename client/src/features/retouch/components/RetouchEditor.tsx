@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { RETOUCH_TYPE_LABELS } from '../types/retouch.types';
 import type { RetouchPoint, RetouchType } from '../types/retouch.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { getServerImageUrl } from '@/lib/utils/image';
 
 interface RetouchEditorProps {
     imageUrl: string;
@@ -80,7 +81,7 @@ export function RetouchEditor({ imageUrl, onSubmit, isProcessing }: RetouchEdito
                 }}
             >
                 <div className="relative aspect-3/4">
-                    <Image src={imageUrl} alt={t('ui.text_ko6wbc')} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+                    <Image src={getServerImageUrl(imageUrl)} alt={t('ui.text_ko6wbc')} fill unoptimized className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                 </div>
 
                 {/* Point markers */}

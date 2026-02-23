@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { BrandingSetup } from '@/features/branding/components/BrandingSetup';
 
 export const metadata: Metadata = {
-    title: 'Branding — Glow.GE',
+    title: 'Branding',
 };
 
 export default function BrandingPage(): React.ReactElement {

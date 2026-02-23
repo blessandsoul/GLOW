@@ -8,6 +8,20 @@ export const PROCESSING_COSTS: Record<string, number> = {
   PRO_EDIT: 3,
 };
 
+// Client sends quality-size combos like "pro-m", "mid-s", "low-l".
+// Map these to credits and price (in tetri) to match the client pricing.
+const PACKAGE_CONFIG: Record<string, { credits: number; price: number; currency: string }> = {
+  'low-s':  { credits: 10, price: 150,   currency: 'GEL' },
+  'low-m':  { credits: 30, price: 390,   currency: 'GEL' },
+  'low-l':  { credits: 70, price: 790,   currency: 'GEL' },
+  'mid-s':  { credits: 10, price: 550,   currency: 'GEL' },
+  'mid-m':  { credits: 30, price: 1490,  currency: 'GEL' },
+  'mid-l':  { credits: 70, price: 2990,  currency: 'GEL' },
+  'pro-s':  { credits: 10, price: 2190,  currency: 'GEL' },
+  'pro-m':  { credits: 30, price: 5990,  currency: 'GEL' },
+  'pro-l':  { credits: 70, price: 12900, currency: 'GEL' },
+};
+
 interface BalanceInfo {
   credits: number;
   totalEarned: number;
@@ -52,24 +66,35 @@ export const creditsService = {
   },
 
   async purchasePackage(userId: string, packageId: string): Promise<number> {
+    // Try DB lookup first (UUID-based packages)
     const pkg = await creditsRepo.getPackageById(packageId);
 
-    if (!pkg || !pkg.isActive) {
+    if (pkg && pkg.isActive) {
+      return creditsRepo.purchasePackage(
+        userId,
+        pkg.id,
+        pkg.credits,
+        pkg.price,
+        pkg.currency,
+      );
+    }
+
+    // Fallback: quality-size format from client (e.g. "pro-m", "mid-s")
+    const config = PACKAGE_CONFIG[packageId];
+    if (!config) {
       throw new NotFoundError(
         'Credit package not found or inactive',
         'PACKAGE_NOT_FOUND',
       );
     }
 
-    const updatedBalance = await creditsRepo.purchasePackage(
+    return creditsRepo.purchasePackage(
       userId,
-      pkg.id,
-      pkg.credits,
-      pkg.price,
-      pkg.currency,
+      packageId,
+      config.credits,
+      config.price,
+      config.currency,
     );
-
-    return updatedBalance;
   },
 
   async getHistory(

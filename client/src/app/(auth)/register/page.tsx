@@ -3,7 +3,7 @@ import { RegisterForm } from '@/features/auth/components/RegisterForm';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'system.sys_o53sey',
+    title: 'რეგისტრაცია',
 };
 
 export default function RegisterPage(): React.ReactElement {

@@ -24,6 +24,9 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Uploads
+uploads/
+
 # Docker volumes
 mysql-data/
 redis-data/

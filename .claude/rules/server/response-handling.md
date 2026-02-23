@@ -21,12 +21,12 @@ All API responses follow a unified contract. No exceptions.
 
 ```typescript
 // Allowed
-return reply.send(successResponse("Service created successfully", service));
+return reply.send(successResponse("Item created successfully", item));
 
 // Forbidden — never send raw values or custom shapes
-reply.send(service);
-reply.send({ data: service });
-reply.send({ success: true, service });
+reply.send(item);
+reply.send({ data: item });
+reply.send({ success: true, item });
 ```
 
 ---
@@ -43,7 +43,7 @@ reply.send({ success: true, service });
 }
 ```
 
-- `code`: stable machine-readable string (e.g. `SERVICE_NOT_FOUND`, `VALIDATION_FAILED`)
+- `code`: stable machine-readable string (e.g. `RESOURCE_NOT_FOUND`, `VALIDATION_FAILED`)
 - Never expose internal details, stack traces, or SQL errors
 - Controllers MUST NOT manually construct error responses
 
@@ -75,7 +75,7 @@ Controllers MUST use the shared `paginatedResponse()` helper:
 function paginatedResponse<T>(message: string, items: T[], page: number, limit: number, totalItems: number)
 
 // Allowed
-return reply.send(paginatedResponse("Services retrieved successfully", services, page, limit, totalCount));
+return reply.send(paginatedResponse("Items retrieved successfully", items, page, limit, totalCount));
 ```
 
 ### Pagination Input Validation
@@ -95,7 +95,7 @@ Services return `{ items, totalItems }`. Controllers build the pagination metada
 
 ```typescript
 // Service returns:
-return { items: services, totalItems: count };
+return { items, totalItems: count };
 // Offset calculation: (page - 1) * limit
 ```
 
@@ -124,7 +124,7 @@ All errors MUST extend `AppError` (which defines `code`, `message`, `statusCode`
 | `ValidationError` | 422 | `VALIDATION_FAILED` |
 | `UnauthorizedError` | 401 | `UNAUTHORIZED` |
 | `ForbiddenError` | 403 | `FORBIDDEN` |
-| `NotFoundError` | 404 | `SERVICE_NOT_FOUND` |
+| `NotFoundError` | 404 | `RESOURCE_NOT_FOUND` |
 | `ConflictError` | 409 | `EMAIL_ALREADY_EXISTS` |
 | `InternalError` | 500 | `INTERNAL_ERROR` |
 

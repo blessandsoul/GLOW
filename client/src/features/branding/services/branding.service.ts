@@ -1,36 +1,35 @@
+import { apiClient } from '@/lib/api/axios.config';
+import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
+import type { ApiResponse } from '@/lib/api/api.types';
 import type { BrandingProfile, BrandingFormData } from '../types/branding.types';
-
-const delay = (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms));
-
-let mockProfile: BrandingProfile | null = null;
 
 class BrandingService {
     async getProfile(): Promise<BrandingProfile | null> {
-        await delay(300);
-        return mockProfile;
+        const { data } = await apiClient.get<ApiResponse<BrandingProfile | null>>(
+            API_ENDPOINTS.BRANDING.ME,
+        );
+        return data.data;
     }
 
-    async saveProfile(data: BrandingFormData): Promise<BrandingProfile> {
-        await delay(600);
-        const logoUrl = data.logo ? URL.createObjectURL(data.logo) : mockProfile?.logoUrl ?? null;
-        mockProfile = {
-            id: mockProfile?.id ?? `branding-${Date.now()}`,
-            userId: 'mock-user-id',
-            displayName: data.displayName || null,
-            instagramHandle: data.instagramHandle || null,
-            logoUrl,
-            primaryColor: data.primaryColor,
-            watermarkStyle: data.watermarkStyle,
-            isActive: true,
-            createdAt: mockProfile?.createdAt ?? new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-        return mockProfile;
+    async saveProfile(formData: BrandingFormData): Promise<BrandingProfile> {
+        const payload = new FormData();
+        payload.append('displayName', formData.displayName);
+        payload.append('instagramHandle', formData.instagramHandle);
+        payload.append('primaryColor', formData.primaryColor);
+        payload.append('watermarkStyle', formData.watermarkStyle);
+        payload.append('watermarkOpacity', String(formData.watermarkOpacity));
+        if (formData.logo) payload.append('logo', formData.logo);
+
+        const { data } = await apiClient.put<ApiResponse<BrandingProfile>>(
+            API_ENDPOINTS.BRANDING.ME,
+            payload,
+            { headers: { 'Content-Type': undefined } },
+        );
+        return data.data;
     }
 
     async deleteProfile(): Promise<void> {
-        await delay(300);
-        mockProfile = null;
+        await apiClient.delete(API_ENDPOINTS.BRANDING.ME);
     }
 }
 

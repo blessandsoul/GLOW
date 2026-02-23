@@ -10,5 +10,5 @@ export const ROUTES = {
     ONBOARDING: '/onboarding',
     DASHBOARD_REFERRALS: '/dashboard/referrals',
     SHOWCASE: (jobId: string) => `/showcase/${jobId}` as const,
-    PORTFOLIO_PUBLIC: (username: string) => `/p/${username}` as const,
+    PORTFOLIO_PUBLIC: (username: string) => `/specialist/${username}` as const,
 } as const;

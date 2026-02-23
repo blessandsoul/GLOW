@@ -2,7 +2,7 @@ import { LoginForm } from '@/features/auth/components/LoginForm';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'system.sys_4a6zcn',
+    title: 'შესვლა',
 };
 
 export default function LoginPage(): React.ReactElement {

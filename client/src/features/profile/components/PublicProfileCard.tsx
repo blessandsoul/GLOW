@@ -9,11 +9,9 @@ import { ROUTES } from '@/lib/constants/routes';
 export function PublicProfileCard(): React.ReactElement {
     const user = useAppSelector((s) => s.auth.user);
 
-    if (!user) return <></>;
+    if (!user || !user.username) return <></>;
 
-    // Username derived from firstName + lastName, lowercased, joined
-    const username = `${user.firstName}${user.lastName}`.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const publicUrl = ROUTES.PORTFOLIO_PUBLIC(username);
+    const publicUrl = ROUTES.PORTFOLIO_PUBLIC(user.username);
 
     return (
         <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">

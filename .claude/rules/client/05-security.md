@@ -1,16 +1,14 @@
----
-trigger: glob: client/**
----
-
 > **SCOPE**: These rules apply specifically to the **client** directory (Next.js App Router).
 
 # Security
 
 ## Token Storage
 
-- **Preferred**: httpOnly cookies set via Server Actions or API routes.
-- **Current fallback**: Redux + `localStorage` with SSR guard (`typeof window !== 'undefined'`).
-- On logout: clear `localStorage`, `sessionStorage`, dispatch `logout()`, redirect to `/login`.
+- **httpOnly cookies** (`access_token` + `refresh_token`) set by the server via `Set-Cookie` headers.
+- Tokens are **never accessible from JavaScript** — no localStorage, no Redux token state.
+- Axios sends cookies automatically via `withCredentials: true`.
+- `AuthInitializer` hydrates user state on page load by calling `getMe()` (cookie sent automatically).
+- On logout: call logout API endpoint (server clears cookies), dispatch `logout()` action, redirect to `/login`.
 
 ## Environment Variables
 
@@ -24,7 +22,7 @@ trigger: glob: client/**
 - Max size: 5MB
 - Validate both MIME type AND file extension.
 
-## Security Headers (`next.config.js`)
+## Security Headers (`next.config.ts`)
 
 ```
 X-Frame-Options: DENY

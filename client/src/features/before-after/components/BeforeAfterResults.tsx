@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { BeforeAfterJob } from '../types/before-after.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { getServerImageUrl } from '@/lib/utils/image';
 
 interface BeforeAfterResultsProps {
     job: BeforeAfterJob;
@@ -120,8 +121,8 @@ export function BeforeAfterResults({ job, isAuthenticated, onDownload }: BeforeA
                             tab === 'carousel' ? 'aspect-square' : 'aspect-9/16',
                             !isAuthenticated && 'blur-sm',
                         )}>
-                            <Image src={url} alt={`${tab === 'carousel' ? 'Carousel' : 'Stories'} ${i + 1}`}
-                                fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
+                            <Image src={getServerImageUrl(url)} alt={`${tab === 'carousel' ? 'Carousel' : 'Stories'} ${i + 1}`}
+                                fill unoptimized className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
                         </div>
                         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 via-black/30 to-transparent p-2.5 pt-8">
                             <span className="text-xs font-medium text-white/80">

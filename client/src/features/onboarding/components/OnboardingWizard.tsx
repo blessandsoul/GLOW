@@ -9,7 +9,7 @@ import { UploadZone } from '@/features/upload/components/UploadZone';
 import { ResultsGrid } from '@/features/jobs/components/ResultsGrid';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { jobService } from '@/features/jobs/services/job.service';
-import { creditsService } from '@/features/credits/services/credits.service';
+
 import { getErrorMessage } from '@/lib/utils/error';
 import { OnboardingStepIndicator } from './OnboardingStepIndicator';
 import type { Job } from '@/features/jobs/types/job.types';
@@ -167,7 +167,6 @@ export function OnboardingWizard(): React.ReactElement {
 
     const handleDownload = useCallback(async (url: string, jobId: string) => {
         try {
-            await creditsService.useCredit(jobId);
             const a = document.createElement('a');
             a.href = url;
             a.download = `glowge-${Date.now()}.jpg`;

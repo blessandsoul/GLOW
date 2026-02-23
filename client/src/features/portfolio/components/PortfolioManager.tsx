@@ -82,10 +82,7 @@ export function PortfolioManager(): React.ReactElement {
     const { items, isLoading, updateItem, deleteItem } = useMyPortfolio();
     const user = useAppSelector((state) => state.auth.user);
 
-    // Derive username: firstName + lastName slugified, or fallback to user id
-    const username = user
-        ? `${user.firstName}${user.lastName}`.toLowerCase().replace(/[^a-z0-9]/g, '_')
-        : null;
+    const username = user?.username ?? null;
     const portfolioUrl = username
         ? (typeof window !== 'undefined' ? `${window.location.origin}${ROUTES.PORTFOLIO_PUBLIC(username)}` : ROUTES.PORTFOLIO_PUBLIC(username))
         : null;
@@ -94,9 +91,9 @@ export function PortfolioManager(): React.ReactElement {
         if (!portfolioUrl) return;
         try {
             await navigator.clipboard.writeText(portfolioUrl);
-            toast.success('Ссылка скопирована');
+            toast.success(t('ui.text_fta2fm'));
         } catch {
-            toast.error('Не удалось скопировать');
+            toast.error(t('ui.text_v5k3op'));
         }
     };
 
@@ -140,7 +137,7 @@ export function PortfolioManager(): React.ReactElement {
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">{t('ui.text_vewk2z')}</h1>
                         <p className="text-sm text-muted-foreground">
-                            {published} {t('ui.text_qnz')}{items.length} {t('ui.text_x5moen')}</p>
+                            {published} {t('ui.text_qnz')} {items.length} {t('ui.text_x5moen')}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -150,7 +147,7 @@ export function PortfolioManager(): React.ReactElement {
                             size="sm"
                             className="gap-1.5"
                             onClick={handleCopyPortfolioLink}
-                            aria-label="Скопировать ссылку на портфолио"
+                            aria-label={t('ui.text_copy_link')}
                         >
                             <LinkSimple size={14} />
                         </Button>

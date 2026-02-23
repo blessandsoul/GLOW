@@ -158,7 +158,7 @@ function QualityOnboarding({
                                 onClick={() => onSelect(q)}
                                 className={cn(
                                     'group relative flex cursor-pointer rounded-xl border text-left transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50',
-                                    'flex-row items-center gap-3 p-3 sm:flex-col sm:rounded-2xl sm:p-5',
+                                    'flex-row items-center gap-3 p-3 sm:flex-col sm:items-stretch sm:rounded-2xl sm:p-5',
                                     q === 'pro'
                                         ? 'border-warning/40 bg-warning/5 hover:border-warning/70 hover:shadow-md hover:shadow-warning/10'
                                         : q === 'mid'
@@ -216,7 +216,7 @@ function QualityOnboarding({
                                 </div>
 
                                 {/* Desktop layout */}
-                                <div className="hidden sm:flex sm:w-full sm:flex-col">
+                                <div className="hidden sm:flex sm:w-full sm:flex-1 sm:flex-col">
                                     {/* Quality level + bars */}
                                     <div className="mb-2 flex items-center gap-2">
                                         <div className="flex gap-0.5">
@@ -239,7 +239,7 @@ function QualityOnboarding({
                                     <p className="mb-3 text-[9px] uppercase tracking-wider text-muted-foreground/50">/ ფოტო</p>
                                     <p className="mb-4 flex-1 text-xs leading-relaxed text-muted-foreground">{m.quizDescription}</p>
                                     <div className={cn(
-                                        'flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-150',
+                                        'mt-auto flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-150',
                                         q === 'pro'
                                             ? 'bg-warning/15 text-warning group-hover:bg-warning/25'
                                             : q === 'mid'

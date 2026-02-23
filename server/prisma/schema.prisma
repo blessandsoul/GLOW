@@ -18,13 +18,16 @@ model User {
   firstName     String
   lastName      String
   username      String?   @unique
+  avatar        String?   @db.VarChar(1000)
   credits       Int       @default(3)
   role          String    @default("USER")
   isActive      Boolean   @default(true)
-  emailVerified Boolean   @default(false)
-  deletedAt     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  emailVerified        Boolean   @default(false)
+  passwordResetToken   String?   @db.VarChar(255)
+  passwordResetExpiry  DateTime?
+  deletedAt            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   referralCode     String?    @unique
   referredById     String?
@@ -139,8 +142,9 @@ model BrandingProfile {
   instagramHandle String?
   logoUrl         String?  @db.VarChar(1000)
   primaryColor    String   @default("#d4738a")
-  watermarkStyle  String   @default("MINIMAL")
-  isActive        Boolean  @default(true)
+  watermarkStyle   String   @default("MINIMAL")
+  watermarkOpacity Float    @default(1) @db.Float
+  isActive         Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -193,6 +197,7 @@ model Caption {
   id        String   @id @default(uuid())
   jobId     String
   variant   String
+  language  String
   text      String   @db.Text
   hashtags  String   @db.Text
   createdAt DateTime @default(now())

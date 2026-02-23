@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/features/auth/store/authSlice';
+import { usersService } from '@/features/users/services/users.service';
+import { getErrorMessage } from '@/lib/utils/error';
 
 export function DeleteAccount(): React.ReactElement {
     const dispatch = useAppDispatch();
@@ -21,15 +23,13 @@ export function DeleteAccount(): React.ReactElement {
         if (confirm !== CONFIRM_WORD) return;
         setIsDeleting(true);
         try {
-            // TODO: wire to real auth service — authService.deleteAccount()
-            await new Promise((r) => setTimeout(r, 1000));
+            await usersService.deleteMe();
             dispatch(logout());
             if (typeof window !== 'undefined') {
-                localStorage.removeItem('auth');
                 window.location.href = '/';
             }
-        } catch {
-            toast.error('Failed to delete account. Try again later.');
+        } catch (error) {
+            toast.error(getErrorMessage(error));
             setIsDeleting(false);
         }
     }, [confirm, dispatch]);

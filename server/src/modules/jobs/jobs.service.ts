@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { NotFoundError, ForbiddenError, BadRequestError } from '../../shared/errors/errors.js';
 import { jobsRepo } from './jobs.repo.js';
 import { applyWatermark } from '../../libs/watermark.js';
@@ -5,8 +7,11 @@ import { redis } from '../../libs/redis.js';
 import { prisma } from '../../libs/prisma.js';
 import { schedulePhotoReadyEmail } from '../../libs/queue.js';
 import { logger } from '../../libs/logger.js';
-
-const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp'];
+import { uploadFile, validateImage } from '../../libs/storage.js';
+import { processImageWithAI } from '../../libs/ai-image.js';
+import { filtersService } from '../filters/filters.service.js';
+import { buildPromptFromSettings, DEFAULT_PROMPT } from './prompt-builder.js';
+import type { StorageFile } from '../../libs/storage.js';
 
 export const jobsService = {
   async downloadJobResult(
@@ -33,12 +38,24 @@ export const jobsService = {
     const userPlan: string = job.user?.subscription?.plan ?? 'FREE';
     const needsWatermark = !isOwner || userPlan === 'FREE';
 
-    // Fetch image from URL
-    const response = await fetch(results[variantIndex]);
-    if (!response.ok) {
-      throw new NotFoundError('Could not fetch image', 'IMAGE_FETCH_FAILED');
+    // Load image from local storage or external URL (backward compat)
+    const resultUrl = results[variantIndex];
+    let imageBuffer: Buffer;
+
+    if (resultUrl.startsWith('/uploads/')) {
+      const filePath = join(process.cwd(), resultUrl);
+      try {
+        imageBuffer = await readFile(filePath);
+      } catch {
+        throw new NotFoundError('Result image file not found', 'IMAGE_FETCH_FAILED');
+      }
+    } else {
+      const response = await fetch(resultUrl);
+      if (!response.ok) {
+        throw new NotFoundError('Could not fetch image', 'IMAGE_FETCH_FAILED');
+      }
+      imageBuffer = Buffer.from(await response.arrayBuffer());
     }
-    const imageBuffer = Buffer.from(await response.arrayBuffer());
 
     const finalBuffer = needsWatermark
       ? await applyWatermark(imageBuffer)
@@ -51,14 +68,19 @@ export const jobsService = {
   },
 
   async createJobFromFile(
-    _fileBuffer: Buffer,
-    _mimeType: string,
+    fileBuffer: Buffer,
+    mimeType: string,
     settingsStr: string | undefined,
     userId: string | undefined,
   ): Promise<{ id: string; status: string; originalUrl: string }> {
-    // For MVP: store a placeholder URL (no S3 yet)
-    // In production this would upload to S3 and get a real URL
-    const originalUrl = `https://picsum.photos/seed/${Date.now()}/400/600`;
+    // Save original upload to local storage
+    const storageFile: StorageFile = {
+      buffer: fileBuffer,
+      filename: `upload.${mimeType.split('/')[1] || 'jpg'}`,
+      mimetype: mimeType,
+    };
+    validateImage(storageFile, 10 * 1024 * 1024); // 10MB limit for job uploads
+    const originalUrl = await uploadFile(storageFile, 'jobs');
 
     const settings = settingsStr
       ? (() => {
@@ -77,25 +99,37 @@ export const jobsService = {
       status: 'PROCESSING',
     });
 
-    // Simulate AI processing: update to DONE with mock results after a short delay
-    // In production, this would enqueue a BullMQ job for real AI processing
-    setTimeout(() => {
-      const mockResults = [
-        `https://picsum.photos/seed/${job.id}-0/400/600`,
-        `https://picsum.photos/seed/${job.id}-1/400/600`,
-        `https://picsum.photos/seed/${job.id}-2/400/600`,
-        `https://picsum.photos/seed/${job.id}-3/400/600`,
-      ];
-      jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).then(() => {
+    // Resolve prompt: filter ID lookup → settings-based → default
+    let prompt: string | undefined;
+    if (settings && typeof settings === 'object' && 'filterId' in settings) {
+      const filterId = (settings as { filterId?: string }).filterId;
+      if (filterId) {
+        prompt = filtersService.getPromptById(filterId) ?? undefined;
+      }
+    }
+    if (!prompt && settings) {
+      prompt = buildPromptFromSettings(settings as Record<string, unknown>);
+    }
+    if (!prompt) {
+      prompt = DEFAULT_PROMPT;
+    }
+
+    // Process with AI asynchronously (fire-and-forget)
+    processImageWithAI(fileBuffer, prompt)
+      .then(async (result) => {
+        await jobsRepo.updateJob(job.id, { status: 'DONE', results: result.urls });
         if (userId) {
           schedulePhotoReadyEmail(userId, job.id).catch((err: unknown) =>
             logger.warn({ err }, 'Failed to schedule photo ready email'),
           );
         }
-      }).catch(() => {
-        // Ignore errors in background processing
+      })
+      .catch(async (err) => {
+        logger.error({ err, jobId: job.id }, 'AI image processing failed');
+        await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
+          // Ignore DB update errors in background
+        });
       });
-    }, 4000); // 4 second delay
 
     return { id: job.id, status: job.status, originalUrl: job.originalUrl };
   },
@@ -167,17 +201,21 @@ export const jobsService = {
       throw new ForbiddenError('Batch upload requires PRO plan', 'PRO_REQUIRED');
     }
 
-    for (const file of files) {
-      if (!ALLOWED_MIMETYPES.includes(file.mimeType)) {
-        throw new BadRequestError(`Unsupported file type: ${file.mimeType}`, 'INVALID_FILE_TYPE');
-      }
-    }
-
     if (files.length === 0) {
       throw new BadRequestError('At least one file required', 'NO_FILES');
     }
     if (files.length > 10) {
       throw new BadRequestError('Maximum 10 files per batch', 'TOO_MANY_FILES');
+    }
+
+    // Validate all files upfront before saving any
+    for (const file of files) {
+      const storageFile: StorageFile = {
+        buffer: file.buffer,
+        filename: `upload.${file.mimeType.split('/')[1] || 'jpg'}`,
+        mimetype: file.mimeType,
+      };
+      validateImage(storageFile, 10 * 1024 * 1024);
     }
 
     const batchId = crypto.randomUUID();
@@ -193,8 +231,14 @@ export const jobsService = {
 
     const jobs = await Promise.all(
       files.map(async (file) => {
-        const seed = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        const originalUrl = `https://picsum.photos/seed/${seed}/400/600`;
+        // Save original upload to local storage
+        const storageFile: StorageFile = {
+          buffer: file.buffer,
+          filename: `upload.${file.mimeType.split('/')[1] || 'jpg'}`,
+          mimetype: file.mimeType,
+        };
+        const originalUrl = await uploadFile(storageFile, 'jobs');
+
         const job = await jobsRepo.createJob({
           userId,
           originalUrl,
@@ -203,25 +247,37 @@ export const jobsService = {
           status: 'PROCESSING',
         });
 
-        // Simulate AI processing with staggered completion
-        const delay = 4000 + Math.random() * 2000;
-        setTimeout(() => {
-          const mockResults = [
-            `https://picsum.photos/seed/${job.id}-0/400/600`,
-            `https://picsum.photos/seed/${job.id}-1/400/600`,
-            `https://picsum.photos/seed/${job.id}-2/400/600`,
-            `https://picsum.photos/seed/${job.id}-3/400/600`,
-          ];
-          jobsRepo.updateJob(job.id, { status: 'DONE', results: mockResults }).then(() => {
+        // Resolve prompt for batch
+        let batchPrompt: string | undefined;
+        if (settings && typeof settings === 'object' && 'filterId' in settings) {
+          const filterId = (settings as { filterId?: string }).filterId;
+          if (filterId) {
+            batchPrompt = filtersService.getPromptById(filterId) ?? undefined;
+          }
+        }
+        if (!batchPrompt && settings) {
+          batchPrompt = buildPromptFromSettings(settings as Record<string, unknown>);
+        }
+        if (!batchPrompt) {
+          batchPrompt = DEFAULT_PROMPT;
+        }
+
+        // Process with AI asynchronously (fire-and-forget)
+        processImageWithAI(file.buffer, batchPrompt)
+          .then(async (result) => {
+            await jobsRepo.updateJob(job.id, { status: 'DONE', results: result.urls });
             if (userId) {
               schedulePhotoReadyEmail(userId, job.id).catch((err: unknown) =>
                 logger.warn({ err }, 'Failed to schedule photo ready email for batch job'),
               );
             }
-          }).catch(() => {
-            // Ignore errors in background processing
+          })
+          .catch(async (err) => {
+            logger.error({ err, jobId: job.id }, 'AI image processing failed for batch job');
+            await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
+              // Ignore DB update errors in background
+            });
           });
-        }, delay);
 
         return { id: job.id, status: job.status };
       }),

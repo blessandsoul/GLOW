@@ -62,9 +62,9 @@
 
 ## Microcopy
 
-- **Buttons**: Action verbs — "Save changes", "Add service", "Delete account". Never "Submit" or "OK".
+- **Buttons**: Action verbs — "Save changes", "Create item", "Delete account". Never "Submit" or "OK".
 - **Toasts**: Under 10 words. Success: confirm. Error: what happened + what to do.
-- **Empty states**: Explain what this area is for + CTA to fill it. ("No services yet. Add your first service.")
+- **Empty states**: Explain what this area is for + CTA to fill it. ("No items yet. Create your first one.")
 - **Form errors**: Specific to the field. Below the field. Red text + red border.
 
 ## Page Audit Checklist

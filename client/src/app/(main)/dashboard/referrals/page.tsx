@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ReferralDashboard } from '@/features/referrals/components/ReferralDashboard';
 
 export const metadata: Metadata = {
-  title: 'რეფერალური პროგრამა | Glow.GE',
+  title: 'რეფერალური პროგრამა',
 };
 
 export default function ReferralsPage(): React.ReactElement {

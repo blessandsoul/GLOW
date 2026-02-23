@@ -17,6 +17,7 @@ import { GuestResultBanner } from '@/features/upload/components/GuestResultBanne
 import { CaptionGenerator } from '@/features/captions/components/CaptionGenerator';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { getServerImageUrl } from '@/lib/utils/image';
 
 interface ResultsGridProps {
     job: Job;
@@ -155,7 +156,7 @@ function DemoBanner(): React.ReactElement {
                     შედეგების მაგალითი
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-amber-700/80 dark:text-amber-400/80">
-                    ეს დემო-ვარიანტებია. რეგისტრაციის შემდეგ AI დაამუშავებს შენს ფოტოს და მიიღებ 4 პროფესიულ ვარიანტს.
+                    ეს დემო-ვარიანტია. რეგისტრაციის შემდეგ AI დაამუშავებს შენს ფოტოს და მიიღებ პროფესიულ შედეგს.
                 </p>
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                     <Link
@@ -166,7 +167,7 @@ function DemoBanner(): React.ReactElement {
                     </Link>
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 px-2.5 py-1 text-[11px] text-amber-700 dark:border-amber-800 dark:text-amber-400">
                         <Sparkle size={10} weight="fill" />
-                        1 კრედიტი = 4 ფოტო-ვარიანტი
+                        1 კრედიტი = 1 ფოტო
                     </span>
                 </div>
             </div>
@@ -190,10 +191,8 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                         <p className="mt-1 text-sm text-muted-foreground">{t('ui.text_wyqnkc')}</p>
                     </div>
                 </div>
-                <div className="grid w-full max-w-lg grid-cols-2 gap-3">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton key={i} className="aspect-3/4 rounded-xl" />
-                    ))}
+                <div className="flex w-full max-w-sm justify-center">
+                    <Skeleton className="aspect-3/4 w-full rounded-xl" />
                 </div>
             </div>
         );
@@ -252,17 +251,25 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
             </div>
 
             {/* Results grid */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className={cn(
+                results.length === 1
+                    ? 'flex justify-center'
+                    : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
+            )}>
                 {results.map((url, i) => (
                     <div
                         key={i}
-                        className="group relative overflow-hidden rounded-xl border border-border/50 transition-all duration-200 hover:shadow-md"
+                        className={cn(
+                            'group relative overflow-hidden rounded-xl border border-border/50 transition-all duration-200 hover:shadow-md',
+                            results.length === 1 && 'w-full max-w-sm',
+                        )}
                     >
                         <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
                             <Image
-                                src={url}
+                                src={getServerImageUrl(url)}
                                 alt={`Вариант ${i + 1}`}
                                 fill
+                                unoptimized
                                 className="object-cover"
                                 sizes="(max-width: 640px) 50vw, 25vw"
                             />

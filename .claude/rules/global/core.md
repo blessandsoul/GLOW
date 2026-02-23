@@ -17,7 +17,7 @@ When the user asks to create, scaffold, or start a new server or client project,
 1. **Small, focused changes**: Only modify what's necessary. Don't restructure code unless asked.
 2. **Preserve signatures**: Don't change existing function signatures, exports, or imports unless explicitly requested.
 3. **Extend, don't rewrite**: Add to existing modules. Don't gut and rebuild.
-4. **Protect critical flows**: Never break existing auth, core appointment flows, or payment logic.
+4. **Protect critical flows**: Never break existing auth, core business flows, or payment logic.
 5. **No half-done work**: If something is incomplete, add a `// TODO:` with explanation.
 6. **No noisy logs**: No debug logs in production code. Mark temporary ones with `// TODO: remove debug log`.
 7. **Call out breaking changes**: If a breaking change is unavoidable, state it clearly in your explanation.
@@ -40,7 +40,7 @@ When the user asks to create, scaffold, or start a new server or client project,
 - **Branch naming**: `feature/<name>`, `fix/<name>`, `chore/<name>`, `hotfix/<name>`.
 - **Commit messages**: Use conventional commits — `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`.
   - Keep the subject line under 72 characters.
-  - Use imperative mood: "Add service filter" not "Added service filter".
+  - Use imperative mood: "Add search filter" not "Added search filter".
 - **Never commit**: `.env` files, secrets, `node_modules`, build artifacts, OS files (`.DS_Store`, `Thumbs.db`).
 - **One logical change per commit**. Don't mix unrelated changes.
 

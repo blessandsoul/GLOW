@@ -4,6 +4,7 @@ export interface IUser {
     id: string;
     firstName: string;
     lastName: string;
+    username: string | null;
     email: string;
     role: UserRole;
     isEmailVerified: boolean;
@@ -11,11 +12,6 @@ export interface IUser {
     credits: number;
     createdAt: string;
     updatedAt: string;
-}
-
-export interface IAuthTokens {
-    accessToken: string;
-    refreshToken: string;
 }
 
 export interface ILoginRequest {
@@ -33,6 +29,6 @@ export interface IRegisterRequest {
 
 export interface IAuthState {
     user: IUser | null;
-    tokens: IAuthTokens | null;
     isAuthenticated: boolean;
+    isInitializing: boolean;
 }

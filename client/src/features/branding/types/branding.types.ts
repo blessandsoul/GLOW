@@ -8,6 +8,7 @@ export interface BrandingProfile {
     logoUrl: string | null;
     primaryColor: string;
     watermarkStyle: WatermarkStyle;
+    watermarkOpacity: number;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;

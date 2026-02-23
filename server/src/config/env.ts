@@ -18,10 +18,29 @@ const envSchema = z.object({
 
   CORS_ORIGIN: z.string().default('http://localhost:3001'),
 
+  COOKIE_DOMAIN: z.string().optional(),
+  COOKIE_SECURE: z.coerce.boolean().default(false),
+
   APP_URL: z.string().url().default('http://localhost:3001'),
 
   RESEND_API_KEY: z.string().min(1).optional().default(''),
   EMAIL_FROM: z.string().email().default('noreply@glow.ge'),
+
+  UPLOAD_DIR: z.string().optional(),
+
+  // AI Image Generation — provider switch
+  AI_PROVIDER: z.enum(['openai', 'gemini']).default('gemini'),
+
+  // OpenAI config (required when AI_PROVIDER=openai)
+  OPENAI_API_KEY: z.string().default(''),
+  OPENAI_IMAGE_MODEL: z.string().default('gpt-image-1'),
+  OPENAI_IMAGE_SIZE: z.string().default('1024x1024'),
+  OPENAI_IMAGE_QUALITY: z.string().default('low'),
+  OPENAI_IMAGE_COUNT: z.coerce.number().int().min(1).max(4).default(1),
+
+  // Gemini config (required when AI_PROVIDER=gemini)
+  GEMINI_API_KEY: z.string().default(''),
+  GEMINI_IMAGE_MODEL: z.string().default('gemini-2.5-flash-preview-04-17'),
 });
 
 const parsed = envSchema.safeParse(process.env);

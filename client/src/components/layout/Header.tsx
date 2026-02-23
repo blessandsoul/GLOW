@@ -163,7 +163,7 @@ function NavDropdown({ group, pathname, t }: {
 }
 
 export function Header(): React.ReactElement {
-    const { isAuthenticated, user, logout } = useAuth();
+    const { isAuthenticated, isInitializing, user, logout } = useAuth();
     const { t } = useLanguage();
     const { resolvedTheme, setTheme } = useTheme();
     const pathname = usePathname();
@@ -188,7 +188,12 @@ export function Header(): React.ReactElement {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden items-center gap-0.5 md:flex">
-                    {isAuthenticated ? (
+                    {isInitializing ? (
+                        <div className="flex items-center gap-2">
+                            <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+                            <div className="h-4 w-16 animate-pulse rounded bg-muted" />
+                        </div>
+                    ) : isAuthenticated ? (
                         <>
                             {NAV_GROUPS.map((group) => (
                                 <NavDropdown key={group.category} group={group} pathname={pathname} t={t} />
@@ -267,7 +272,12 @@ export function Header(): React.ReactElement {
             >
                 <div className="overflow-hidden">
                     <div className="border-t border-border/50 bg-background px-4 py-3">
-                        {isAuthenticated ? (
+                        {isInitializing ? (
+                            <div className="flex flex-col gap-2 py-2">
+                                <div className="h-5 w-32 animate-pulse rounded bg-muted" />
+                                <div className="h-5 w-24 animate-pulse rounded bg-muted" />
+                            </div>
+                        ) : isAuthenticated ? (
                             <nav className="flex flex-col gap-4">
                                 {NAV_GROUPS.map((group) => (
                                     <div key={group.category}>

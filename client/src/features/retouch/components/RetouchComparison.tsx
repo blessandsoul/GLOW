@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { getServerImageUrl } from '@/lib/utils/image';
 
 interface RetouchComparisonProps {
     originalUrl: string;
@@ -56,9 +57,10 @@ export function RetouchComparison({ originalUrl, retouchedUrl }: RetouchComparis
                 <div className="relative aspect-3/4">
                     {/* Original (full width, bottom layer) */}
                     <Image
-                        src={originalUrl}
+                        src={getServerImageUrl(originalUrl)}
                         alt={t('ui.text_usihek')}
                         fill
+                        unoptimized
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 50vw"
                     />
@@ -69,9 +71,10 @@ export function RetouchComparison({ originalUrl, retouchedUrl }: RetouchComparis
                         style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
                     >
                         <Image
-                            src={retouchedUrl}
+                            src={getServerImageUrl(retouchedUrl)}
                             alt={t('ui.text_89w4ja')}
                             fill
+                            unoptimized
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 50vw"
                         />

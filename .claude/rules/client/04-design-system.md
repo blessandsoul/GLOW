@@ -1,7 +1,3 @@
----
-trigger: glob: client/**
----
-
 > **SCOPE**: These rules apply specifically to the **client** directory (Next.js App Router).
 
 # Design System
@@ -12,80 +8,78 @@ Clean, airy, "expensive" look inspired by Linear, Vercel, Stripe, Arc. Every vis
 
 ---
 
-## CSS Variables (Source of Truth)
+## CSS Architecture (Source of Truth)
+
+This project uses **Tailwind CSS v4** with **OKLCH color space** and the `@theme inline` directive (not the legacy `tailwind.config.ts`).
 
 ```css
 /* app/globals.css */
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-    --brand-primary: 221.2 83.2% 53.3%;
-    --brand-secondary: 142.1 76.2% 36.3%;
-    --brand-accent: 24.6 95% 53.1%;
-    --success: 142.1 76.2% 36.3%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --info: 199 89% 48%;
-    --info-foreground: 0 0% 100%;
-  }
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-  }
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  /* ... maps all semantic tokens to Tailwind */
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.45 0.2 260);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.45 0.2 260);
+  --success: oklch(0.52 0.17 155);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.75 0.18 75);
+  --warning-foreground: oklch(0.2 0 0);
+  --info: oklch(0.55 0.15 240);
+  --info-foreground: oklch(1 0 0);
+  --chart-1 through --chart-5  /* Data visualization colors */
+  --sidebar, --sidebar-foreground, etc.  /* Sidebar-specific tokens */
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  /* ... dark mode overrides for all tokens */
 }
 ```
+
+**Key differences from Tailwind v3:**
+- No `tailwind.config.ts` — all config is CSS-based via `@theme inline`
+- Colors use **OKLCH** (perceptually uniform) not HSL
+- `@custom-variant dark` replaces `darkMode: 'class'`
+- No `@layer base { :root { } }` — variables defined directly on `:root`
 
 ## Color Usage
 
 | Token | Purpose | Example use |
 |---|---|---|
-| `primary` | Main CTAs, links, active states | "Book appointment" button |
+| `primary` | Main CTAs, links, active states | "Get started" button |
 | `secondary` | Secondary actions | Cancel, back |
 | `destructive` | Delete, errors | Delete button, error alert |
-| `success` | Success states | "Appointment confirmed" |
-| `warning` | Warnings | "Payment pending" |
+| `success` | Success states | "Action completed" |
+| `warning` | Warnings | "Pending approval" |
 | `info` | Information | "New feature" badge |
 | `muted` | Disabled, placeholders | Disabled input |
-| `accent` | Highlights | "20% off" badge |
-| `card` | Card backgrounds | Service card |
+| `accent` | Highlights | "Featured" badge |
+| `card` | Card backgrounds | Content card |
 | `border` | Borders, dividers | Card border |
 
 ### Color Rules
@@ -107,14 +101,14 @@ Clean, airy, "expensive" look inspired by Linear, Vercel, Stripe, Arc. Every vis
   - Hovered/elevated: `shadow-md` to `shadow-lg`
   - Modals/popovers: `shadow-xl`
 - **Glassmorphism**: Only on sticky headers, floating toolbars, modal backdrops. Never on content cards.
-  `backdrop-filter: blur(12px) saturate(1.5); background: hsl(var(--background) / 0.8);`
+  `backdrop-filter: blur(12px) saturate(1.5); background: oklch(from var(--background) l c h / 0.8);`
 - **No pure black/white**: Use `--background` and `--foreground` tokens (already off-pure).
 
 ---
 
 ## Typography
 
-- **Font**: Inter v4 (variable) or Geist Sans via `next/font`. Georgian: Noto Sans Georgian.
+- **Font**: Inter v4 (variable) or Geist Sans via `next/font`.
 - **Headings**: `text-wrap: balance`, `leading-tight`. H1: `text-3xl`–`text-4xl`, H2: `text-2xl`.
 - **Body**: `text-base`, `leading-relaxed`. Max reading width: `max-w-prose` (~65ch).
 - **Data/numbers**: Always `tabular-nums` for alignment.

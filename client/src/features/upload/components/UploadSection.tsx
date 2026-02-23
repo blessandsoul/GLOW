@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import {
     MagicWand, Package, ArrowsLeftRight, ArrowLeft, ArrowCounterClockwise,
@@ -9,7 +10,6 @@ import {
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { UploadZone } from './UploadZone';
-import { BeautyPresetsPanel } from './BeautyPresetsPanel';
 import { ProductAdPanel } from './ProductAdPanel';
 import type { ProductAdSettings } from './ProductAdPanel';
 import { GuestResultBanner } from './GuestResultBanner';
@@ -20,22 +20,20 @@ import { BatchUploadZone } from './BatchUploadZone';
 import { useUpload } from '../hooks/useUpload';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
-import { creditsService } from '@/features/credits/services/credits.service';
+
 import { getErrorMessage } from '@/lib/utils/error';
 import type { RootState } from '@/store';
 import type { PhotoSettings, ProcessingType } from '../types/upload.types';
 import { DEFAULT_SETTINGS } from '../types/upload.types';
 import { useCreditsBalance } from '@/features/credits/hooks/useCredits';
-import { TrendTemplatesPanel } from '@/features/trends/components/TrendTemplatesPanel';
+import { useCurrentTrends } from '@/features/trends/hooks/useTrends';
 import { StoriesGenerator } from '@/features/stories/components/StoriesGenerator';
 import { RetouchPanel } from '@/features/retouch/components/RetouchPanel';
-import { FiltersPanel } from '@/features/filters/components/FiltersPanel';
-import type { Filter } from '@/features/filters/types/filters.types';
+import { StylesGallery } from '@/features/filters/components/StylesGallery';
+import type { Style, FilterStyle } from '@/features/filters/types/styles.types';
 import type { AppMode } from '../types/presets.types';
 import type { Job, BatchCreateResult } from '@/features/jobs/types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
-
-type BeautyTab = 'presets' | 'trends' | 'filters';
 
 const MODE_CONFIG: { id: AppMode; icon: typeof MagicWand; labelKey: string; locked?: boolean }[] = [
     { id: 'beauty', icon: MagicWand, labelKey: 'upload.mode_beauty' },
@@ -45,14 +43,12 @@ const MODE_CONFIG: { id: AppMode; icon: typeof MagicWand; labelKey: string; lock
 ];
 
 export function UploadSection(): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     const [mode, setMode] = useState<AppMode>('beauty');
-    const [beautyTab, setBeautyTab] = useState<BeautyTab>('presets');
     const [customSettings] = useState<PhotoSettings>(DEFAULT_SETTINGS);
-    const [presetSettings, setPresetSettings] = useState<PhotoSettings | null>(null);
+    const [selectedStyle, setSelectedStyle] = useState<Style | null>(null);
     const [productSettings, setProductSettings] = useState<ProductAdSettings | null>(null);
-    const [selectedFilter, setSelectedFilter] = useState<Filter | null>(null);
     const [showResults, setShowResults] = useState(false);
     const [showBAResults, setShowBAResults] = useState(false);
     const [showStories, setShowStories] = useState(false);
@@ -61,9 +57,9 @@ export function UploadSection(): React.ReactElement {
     const [batchResult, setBatchResult] = useState<BatchCreateResult | null>(null);
     const [processingType] = useState<ProcessingType>('ENHANCE');
 
-    const { job: uploadedJob, isUploading: isAuthUploading, uploadFile } = useUpload();
-    const pollId = guestJob?.id === 'demo' ? null : (uploadedJob?.id ?? guestJob?.id ?? null);
-    const { job: polledJob } = useJobPolling(pollId);
+    const { job: uploadedJob, isUploading: isAuthUploading, error: uploadError, uploadFile } = useUpload();
+    const pollId = uploadedJob?.id ?? (guestJob?.id === 'demo' ? null : guestJob?.id ?? null);
+    const { job: polledJob, error: pollingError } = useJobPolling(pollId);
     const { job: baJob, isUploading: isBAUploading, upload: uploadBA, reset: resetBA } = useBeforeAfter();
 
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -71,6 +67,22 @@ export function UploadSection(): React.ReactElement {
 
     const { data: creditBalance } = useCreditsBalance();
     const userCredits = creditBalance?.credits ?? 0;
+
+    const { trends: currentTrends, isLoading: isLoadingTrends } = useCurrentTrends();
+    const trendStyles: Style[] = useMemo(() =>
+        (currentTrends ?? []).map((trend): FilterStyle => ({
+            kind: 'filter' as const,
+            id: `trend-${trend.id}`,
+            categoryId: 'trends',
+            name_ka: trend.title,
+            name_ru: trend.title,
+            previewUrl: trend.previewUrl,
+            description_ka: trend.description ?? '',
+            description_ru: trend.description ?? '',
+            isPopular: false,
+        })),
+        [currentTrends],
+    );
 
     const [isDemoJob, setIsDemoJob] = useState(false);
 
@@ -81,22 +93,40 @@ export function UploadSection(): React.ReactElement {
         }
     }, [polledJob, uploadedJob, isDemoJob]);
 
+    // Reset to upload view when the upload request itself fails
+    useEffect(() => {
+        if (uploadError) {
+            setShowResults(false);
+            setGuestJob(null);
+            setIsDemoJob(false);
+        }
+    }, [uploadError]);
+
+    // Show toast when polling gives up after retries
+    useEffect(() => {
+        if (pollingError) {
+            toast.error(pollingError);
+        }
+    }, [pollingError]);
+
     const currentJob = polledJob ?? uploadedJob ?? guestJob;
     const isUploading = isAuthUploading;
 
-    const activeSettings: PhotoSettings =
-        mode === 'beauty'
-            ? (beautyTab === 'presets' && presetSettings ? presetSettings : customSettings)
-            : customSettings;
+    const activeSettings: PhotoSettings = useMemo(() => {
+        if (mode === 'beauty' && selectedStyle?.kind === 'preset') {
+            return selectedStyle.settings;
+        }
+        return customSettings;
+    }, [mode, selectedStyle, customSettings]);
 
     const handleFileSelect = useCallback(
         (file: File) => {
-            const settings = {
-                ...activeSettings,
-                processingType,
-                ...(selectedFilter ? { filterPrompt: selectedFilter.prompt, filterId: selectedFilter.id } : {}),
-            } as PhotoSettings;
-            const previewImages = [1, 2, 3, 4].map((n) => `/presets/beauty/${n}.png`);
+            const settings = selectedStyle?.kind === 'filter'
+                ? { ...customSettings, processingType, filterId: selectedStyle.id }
+                : selectedStyle?.kind === 'preset'
+                    ? { ...selectedStyle.settings, processingType }
+                    : { ...customSettings, processingType } as PhotoSettings;
+            const previewImages = ['/presets/beauty/1.png'];
             const mockJob: Job = {
                 id: 'demo',
                 userId: isAuthenticated ? 'mock-user' : null,
@@ -112,7 +142,7 @@ export function UploadSection(): React.ReactElement {
             }
             setShowResults(true);
         },
-        [uploadFile, activeSettings, processingType, isAuthenticated, selectedFilter],
+        [uploadFile, customSettings, processingType, isAuthenticated, selectedStyle],
     );
 
     const handleBASubmit = useCallback(
@@ -125,7 +155,6 @@ export function UploadSection(): React.ReactElement {
 
     const handleDownload = useCallback(async (url: string, jobId: string, variantIndex: number) => {
         try {
-            await creditsService.useCredit(jobId);
             const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
             const downloadUrl = `${apiBase}/jobs/${jobId}/download?variant=${variantIndex}`;
             const a = document.createElement('a');
@@ -152,7 +181,7 @@ export function UploadSection(): React.ReactElement {
         setGuestJob(null);
         setBatchResult(null);
         setIsDemoJob(false);
-        setSelectedFilter(null);
+        setSelectedStyle(null);
         resetBA();
     }, [resetBA]);
 
@@ -210,10 +239,8 @@ export function UploadSection(): React.ReactElement {
                     <p className="text-sm font-semibold text-foreground">{t('upload.photo_uploading')}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{t('upload.photo_sending')}</p>
                 </div>
-                <div className="grid w-full max-w-xs grid-cols-2 gap-2.5">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="aspect-3/4 animate-pulse rounded-xl bg-muted" />
-                    ))}
+                <div className="flex w-full max-w-xs justify-center">
+                    <div className="aspect-3/4 w-full animate-pulse rounded-xl bg-muted" />
                 </div>
             </div>
         );
@@ -252,8 +279,8 @@ export function UploadSection(): React.ReactElement {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5">
-                        <p className="text-xs font-semibold text-foreground">{t('upload.style_title') || 'Выберите стиль'}</p>
-                        <p className="text-[11px] text-muted-foreground">{t('upload.style_subtitle') || 'AI подберёт параметры автоматически'}</p>
+                        <p className="text-xs font-semibold text-foreground">{t('upload.style_title')}</p>
+                        <p className="text-[11px] text-muted-foreground">{t('upload.style_subtitle')}</p>
                     </div>
 
                     {/* Mode selector — minimal pill */}
@@ -264,7 +291,7 @@ export function UploadSection(): React.ReactElement {
                                 type="button"
                                 onClick={() => !locked && setMode(id)}
                                 disabled={locked}
-                                title={locked ? (t('upload.coming_soon') || 'Скоро') : t(labelKey)}
+                                title={locked ? t('upload.coming_soon') : t(labelKey)}
                                 className={cn(
                                     'relative flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200',
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
@@ -284,44 +311,14 @@ export function UploadSection(): React.ReactElement {
                     </div>
                 </div>
 
-                {/* Beauty mode content */}
+                {/* Beauty mode — unified styles gallery */}
                 {mode === 'beauty' && (
-                    <div className="flex flex-col gap-3">
-                        {/* Sub-tabs */}
-                        <div className="flex gap-1">
-                            {(['presets', 'trends', 'filters'] as BeautyTab[]).map((tab) => (
-                                <button
-                                    key={tab}
-                                    type="button"
-                                    onClick={() => setBeautyTab(tab)}
-                                    className={cn(
-                                        'rounded-full px-3 py-1 text-[11px] font-medium transition-all duration-150',
-                                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-                                        beautyTab === tab
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'text-muted-foreground hover:text-foreground',
-                                    )}
-                                >
-                                    {tab === 'presets'
-                                        ? (t('upload.tab_presets') || 'პრესეტები')
-                                        : tab === 'trends'
-                                            ? (t('upload.tab_trends') || 'ტრენდები')
-                                            : (t('upload.tab_filters') || 'ფილტრები')}
-                                </button>
-                            ))}
-                        </div>
-
-                        {beautyTab === 'presets' && (
-                            <BeautyPresetsPanel onSelect={setPresetSettings} selected={presetSettings} />
-                        )}
-                        {beautyTab === 'trends' && <TrendTemplatesPanel />}
-                        {beautyTab === 'filters' && (
-                            <FiltersPanel
-                                onSelect={setSelectedFilter}
-                                selectedId={selectedFilter?.id ?? null}
-                            />
-                        )}
-                    </div>
+                    <StylesGallery
+                        onSelect={setSelectedStyle}
+                        selectedId={selectedStyle?.id ?? null}
+                        trendStyles={trendStyles}
+                        isLoadingTrends={isLoadingTrends}
+                    />
                 )}
 
                 {mode === 'before-after' && (
@@ -361,16 +358,40 @@ export function UploadSection(): React.ReactElement {
                     </div>
                     <p className="text-[11px] font-semibold text-foreground">
                         {mode === 'beauty'
-                            ? (t('ui.text_7cy30w') || 'Ваше фото')
+                            ? t('ui.text_7cy30w')
                             : mode === 'before-after'
-                                ? (t('ui.text_qq3yy0') || 'До и После')
+                                ? t('ui.text_qq3yy0')
                                 : mode === 'batch'
-                                    ? (t('ui.text_xmvzsa') || 'Пакет фото')
-                                    : (t('ui.text_tewtuu') || 'Фото товара')}
+                                    ? t('ui.text_xmvzsa')
+                                    : t('ui.text_tewtuu')}
                     </p>
                 </div>
 
-                {/* Upload zone with beauty mirror styling */}
+                {/* Selected style preview */}
+                {mode === 'beauty' && selectedStyle && (
+                    <div className="flex flex-col gap-2">
+                        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-border/30">
+                            <Image
+                                src={selectedStyle.previewUrl}
+                                alt={language === 'ka' ? selectedStyle.name_ka : selectedStyle.name_ru}
+                                fill
+                                className="object-cover"
+                                sizes="280px"
+                                unoptimized
+                            />
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                            <p className="text-xs font-semibold text-foreground">
+                                {language === 'ka' ? selectedStyle.name_ka : selectedStyle.name_ru}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                                {language === 'ka' ? selectedStyle.description_ka : selectedStyle.description_ru}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Upload zone */}
                 {mode === 'before-after' ? (
                     <BeforeAfterUpload onSubmit={handleBASubmit} isLoading={isBAUploading} />
                 ) : mode === 'batch' ? (
@@ -384,7 +405,7 @@ export function UploadSection(): React.ReactElement {
                     <div className="flex flex-col gap-2.5 rounded-xl border border-border/30 bg-muted/20 p-3">
                         {/* Credits line */}
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-muted-foreground">{t('ui.text_z9h1he') || 'Кредиты'}</span>
+                            <span className="text-[10px] text-muted-foreground">{t('ui.text_z9h1he')}</span>
                             <div className="flex items-center gap-1">
                                 <Sparkle size={9} weight="fill" className="text-primary" />
                                 <span className="text-[11px] font-semibold tabular-nums text-foreground">{userCredits}</span>
@@ -393,11 +414,9 @@ export function UploadSection(): React.ReactElement {
 
                         {/* Tip */}
                         <p className="text-[10px] leading-relaxed text-muted-foreground">
-                            {selectedFilter
-                                ? (t('upload.filter_selected_tip') || 'ფილტრი არჩეულია — ატვირთეთ ფოტო')
-                                : presetSettings
-                                    ? (t('upload.preset_selected_tip') || 'სტილი არჩეულია — ატვირთეთ ფოტო')
-                                    : (t('upload.no_preset_tip') || 'აირჩიეთ სტილი ან ფილტრი')}
+                            {selectedStyle
+                                ? t('upload.style_selected_tip')
+                                : t('upload.no_style_tip')}
                         </p>
 
                         {/* CTA — if no auth */}
@@ -406,7 +425,7 @@ export function UploadSection(): React.ReactElement {
                                 href="/register"
                                 className="flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-[10px] font-semibold text-primary transition-colors duration-150 hover:bg-primary/15"
                             >
-                                {t('upload.sign_up_for_more') || 'Зарегистрируйтесь для полного доступа'}
+                                {t('upload.sign_up_for_more')}
                                 <ArrowRight size={9} weight="bold" />
                             </a>
                         )}

@@ -1,7 +1,3 @@
----
-trigger: glob: client/**
----
-
 > **SCOPE**: These rules apply specifically to the **client** directory (Next.js App Router).
 
 # Components & Types
@@ -30,8 +26,8 @@ trigger: glob: client/**
 - **Strict mode ON.** No `any` — use `unknown` if the type is truly unknown.
 - **Explicit return types** on all functions.
 - **`interface`** for component props and object shapes. **`type`** for unions, intersections, utilities.
-- **Prefer string unions** over enums: `type UserRole = 'USER' | 'MASTER' | 'ADMIN' | 'SALON'`
-- **Infer form types from Zod**: `type ServiceFormData = z.infer<typeof serviceSchema>`
+- **Prefer string unions** over enums: `type UserRole = 'USER' | 'ADMIN'`
+- **Infer form types from Zod**: `type FormData = z.infer<typeof formSchema>`
 - **Always use `import type`** for type-only imports.
 
 ---
@@ -91,17 +87,12 @@ export interface IUser {
   lastName: string;
   role: UserRole;
   isActive: boolean;
-  emailVerified: boolean;
+  avatarUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export type UserRole = 'USER' | 'MASTER' | 'ADMIN' | 'SALON';
-
-export interface IAuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
+export type UserRole = 'USER' | 'ADMIN';
 
 export interface ILoginRequest {
   email: string;
@@ -115,52 +106,41 @@ export interface IRegisterRequest {
   lastName: string;
 }
 
+// No IAuthTokens — tokens are stored in httpOnly cookies, never exposed to JS.
+
 export interface IAuthState {
   user: IUser | null;
-  tokens: IAuthTokens | null;
   isAuthenticated: boolean;
+  isInitializing: boolean;  // true until first getMe() resolves
+  isLoggingOut: boolean;     // true during logout API call
 }
 ```
 
 ```typescript
-// features/services/types/service.types.ts
+// features/<domain>/types/<domain>.types.ts — example pattern
 
-export interface BeautyService {
+export interface Item {
   id: string;
-  masterId: string;
+  ownerId: string;
   title: string;
   description: string | null;
-  price: number;
-  currency: string;
-  category: string;
-  durationMinutes: number | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface CreateServiceRequest {
+export interface CreateItemRequest {
   title: string;
   description?: string;
-  price: number;
-  currency?: string;
-  category: string;
-  durationMinutes?: number;
 }
 
-export interface UpdateServiceRequest {
+export interface UpdateItemRequest {
   title?: string;
   description?: string;
-  price?: number;
-  category?: string;
-  durationMinutes?: number;
 }
 
-export interface ServiceFilters {
+export interface ItemFilters {
   search?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  sortBy?: 'createdAt' | 'price' | '-price' | 'title';
+  sortBy?: 'createdAt' | 'title';
 }
 ```

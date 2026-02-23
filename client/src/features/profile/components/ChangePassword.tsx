@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeSlash, SpinnerGap, LockKey } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { authService } from '@/features/auth/services/auth.service';
+import { useAppDispatch } from '@/store/hooks';
+import { logout as logoutAction } from '@/features/auth/store/authSlice';
+import { getErrorMessage } from '@/lib/utils/error';
 
 interface PasswordField {
     current: string;
@@ -34,6 +39,8 @@ function validate(fields: PasswordField): FieldErrors {
 }
 
 export function ChangePassword(): React.ReactElement {
+    const router = useRouter();
+    const dispatch = useAppDispatch();
     const [fields, setFields] = useState<PasswordField>({ current: '', next: '', confirm: '' });
     const [errors, setErrors] = useState<FieldErrors>({});
     const [show, setShow] = useState({ current: false, next: false, confirm: false });
@@ -53,16 +60,17 @@ export function ChangePassword(): React.ReactElement {
         }
         setIsSaving(true);
         try {
-            // TODO: wire to real auth service — authService.changePassword(fields.current, fields.next)
-            await new Promise((r) => setTimeout(r, 800));
-            toast.success('Password changed');
-            setFields({ current: '', next: '', confirm: '' });
-        } catch {
-            toast.error('Failed to change password');
-        } finally {
+            await authService.changePassword(fields.current, fields.next);
+            // Server invalidates all sessions and clears cookies on password change.
+            // Gracefully log out and redirect to login with a success message.
+            toast.success('Password changed successfully. Please log in again.');
+            dispatch(logoutAction());
+            router.push('/login');
+        } catch (error) {
+            toast.error(getErrorMessage(error));
             setIsSaving(false);
         }
-    }, [fields]);
+    }, [fields, dispatch, router]);
 
     const toggleShow = useCallback((field: keyof typeof show): void => {
         setShow((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -76,6 +84,8 @@ export function ChangePassword(): React.ReactElement {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Hidden username field for password manager accessibility */}
+                <input type="text" name="username" autoComplete="username" className="sr-only" tabIndex={-1} aria-hidden="true" />
                 {(
                     [
                         { id: 'current', label: 'Current password', field: 'current' },

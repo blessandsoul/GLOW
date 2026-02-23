@@ -197,6 +197,7 @@
     "text_fdfach": "Referral program",
     "text_zahvay": "Failed to load referral data. Please try again later.",
     "text_fta2fm": "Link copied!",
+    "text_copy_link": "Copy portfolio link",
     "text_668ns3": "Before and After comparison",
     "text_89w4ja": "After retouch",
     "text_usihek": "Before retouch",
@@ -393,12 +394,13 @@
     "mode_ba": "Before / After",
     "mode_ad": "Ad",
     "mode_batch": "Batch",
-    "tab_presets": "Presets",
-    "tab_trends": "Trends",
-    "tab_filters": "Filters",
-    "tab_custom": "Custom",
     "coming_soon": "Coming soon",
-    "filter_selected_tip": "Filter selected — upload your photo",
+    "styles_search_placeholder": "Search styles...",
+    "styles_popular": "Popular",
+    "styles_new_this_week": "New This Week",
+    "styles_no_results": "No styles found",
+    "style_selected_tip": "Style selected — upload your photo",
+    "no_style_tip": "Choose a style on the left, or upload directly",
     "photo_uploading": "Photo is uploading...",
     "photo_sending": "Sending for processing, please wait"
   },
@@ -428,7 +430,9 @@
     "preview_photos": "posts",
     "preview_followers": "followers",
     "preview_following": "following",
-    "preview_platform": "Glow.GE · just now"
+    "preview_platform": "Glow.GE · just now",
+    "name_required": "Display name is required",
+    "instagram_required": "Instagram handle is required"
   },
   "system": {
     "sys_4a6zcn": "Login — Glow.GE",

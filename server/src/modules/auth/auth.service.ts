@@ -1,17 +1,31 @@
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { v4 as uuidv4 } from 'uuid';
 import type { FastifyInstance } from 'fastify';
-import { authRepo } from './auth.repo.js';
-import { ConflictError, UnauthorizedError } from '@/shared/errors/errors.js';
+import { authRepo, mapUserToResponse } from './auth.repo.js';
+import { BadRequestError, ConflictError, UnauthorizedError } from '@/shared/errors/errors.js';
 import { env } from '@/config/env.js';
-import type { RegisterInput, LoginInput } from './auth.schemas.js';
+import type {
+  RegisterInput,
+  LoginInput,
+  RequestPasswordResetInput,
+  ResetPasswordInput,
+  ChangePasswordInput,
+} from './auth.schemas.js';
 import type { JwtPayload } from '@/shared/types/index.js';
 import { referralsService } from '@/modules/referrals/referrals.service.js';
 import { prisma } from '@/libs/prisma.js';
 import { logger } from '@/libs/logger.js';
 import { scheduleEmailSequence } from '@/libs/queue.js';
+import { sendEmail } from '@/libs/email.js';
 
 const SALT_ROUNDS = 12;
+const PASSWORD_RESET_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
+
+function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
 
 function parseExpiryToMs(expiry: string): number {
   const match = expiry.match(/^(\d+)(m|h|d)$/);
@@ -73,7 +87,7 @@ export function createAuthService(app: FastifyInstance) {
       const accessToken = signAccessToken({ id: user.id, role: user.role });
       const refreshToken = await generateRefreshToken(user.id);
 
-      return { user, accessToken, refreshToken };
+      return { user: mapUserToResponse(user), accessToken, refreshToken };
     },
 
     async login(input: LoginInput) {
@@ -90,8 +104,15 @@ export function createAuthService(app: FastifyInstance) {
       const accessToken = signAccessToken({ id: user.id, role: user.role });
       const refreshToken = await generateRefreshToken(user.id);
 
-      const { password: _, ...userWithoutPassword } = user;
-      return { user: userWithoutPassword, accessToken, refreshToken };
+      // Re-fetch with select to ensure consistent response shape
+      const safeUser = await authRepo.findUserById(user.id);
+
+      // Backfill username for existing users who don't have one
+      if (safeUser && !safeUser.username) {
+        safeUser.username = await authRepo.backfillUsername(safeUser.id, safeUser.firstName, safeUser.lastName);
+      }
+
+      return { user: mapUserToResponse(safeUser!), accessToken, refreshToken };
     },
 
     async refresh(refreshTokenValue: string) {
@@ -127,7 +148,75 @@ export function createAuthService(app: FastifyInstance) {
       if (!user) {
         throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
       }
-      return user;
+
+      // Backfill username for existing users who don't have one
+      if (!user.username) {
+        user.username = await authRepo.backfillUsername(user.id, user.firstName, user.lastName);
+      }
+
+      return mapUserToResponse(user);
+    },
+
+    async requestPasswordReset(input: RequestPasswordResetInput) {
+      const user = await authRepo.findUserByEmail(input.email);
+
+      // Always return success for security (don't reveal if email exists)
+      if (!user) return;
+
+      const rawToken = randomUUID();
+      const hashedToken = hashToken(rawToken);
+      const expiry = new Date(Date.now() + PASSWORD_RESET_EXPIRY_MS);
+
+      await authRepo.setPasswordResetToken(user.id, hashedToken, expiry);
+
+      const resetUrl = `${env.APP_URL}/reset-password?token=${rawToken}`;
+      await sendEmail(
+        user.email,
+        'Reset your password — GLOW',
+        `<p>Hi ${user.firstName},</p>
+        <p>You requested a password reset. Click the link below to set a new password:</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>`,
+      );
+    },
+
+    async resetPassword(input: ResetPasswordInput) {
+      const hashedToken = hashToken(input.token);
+      const user = await authRepo.findUserByResetToken(hashedToken);
+
+      if (!user) {
+        throw new BadRequestError('Invalid or expired reset token', 'INVALID_RESET_TOKEN');
+      }
+
+      if (!user.passwordResetExpiry || user.passwordResetExpiry < new Date()) {
+        await authRepo.clearPasswordResetToken(user.id);
+        throw new BadRequestError('Reset token has expired', 'RESET_TOKEN_EXPIRED');
+      }
+
+      const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
+      await authRepo.updatePassword(user.id, hashedPassword);
+      await authRepo.clearPasswordResetToken(user.id);
+      await authRepo.deleteUserRefreshTokens(user.id);
+    },
+
+    async changePassword(userId: string, input: ChangePasswordInput) {
+      const user = await authRepo.findUserByEmail(
+        // Need full user with password for comparison
+        (await authRepo.findUserById(userId))?.email ?? '',
+      );
+
+      if (!user) {
+        throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
+      }
+
+      const isValid = await bcrypt.compare(input.currentPassword, user.password);
+      if (!isValid) {
+        throw new BadRequestError('Current password is incorrect', 'INVALID_CURRENT_PASSWORD');
+      }
+
+      const hashedPassword = await bcrypt.hash(input.newPassword, SALT_ROUNDS);
+      await authRepo.updatePassword(userId, hashedPassword);
+      await authRepo.deleteUserRefreshTokens(userId);
     },
   };
 }

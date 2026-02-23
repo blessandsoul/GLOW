@@ -32,16 +32,23 @@ export interface ProfileFormData {
 }
 
 export const CITIES = [
-    'system.sys_ztyawf', 'system.sys_mmxyux', 'system.sys_wpm6qq', 'system.sys_nimqj6', 'system.sys_cdwzfd', 'system.sys_o39fd7', 'system.sys_4kiz9b', 'system.sys_kn35eu',
+    { value: 'tbilisi', label: 'თბილისი' },
+    { value: 'batumi', label: 'ბათუმი' },
+    { value: 'kutaisi', label: 'ქუთაისი' },
+    { value: 'rustavi', label: 'რუსთავი' },
+    { value: 'moscow', label: 'მოსკოვი' },
+    { value: 'saint_petersburg', label: 'სანქტ-პეტერბურგი' },
+    { value: 'kyiv', label: 'კიევი' },
+    { value: 'minsk', label: 'მინსკი' },
 ] as const;
 
 export const NICHES = [
-    { value: 'lashes', label: 'system.sys_mesjqx' },
-    { value: 'nails', label: 'system.sys_mr3nfs' },
-    { value: 'brows', label: 'system.sys_2fxpdj' },
-    { value: 'makeup', label: 'system.sys_n9zycc' },
-    { value: 'hair', label: 'system.sys_fhc890' },
-    { value: 'skincare', label: 'system.sys_xkk87u' },
+    { value: 'lashes', label: 'წამწამები' },
+    { value: 'nails', label: 'ფრჩხილები' },
+    { value: 'brows', label: 'წარბები' },
+    { value: 'makeup', label: 'მაკიაჟი' },
+    { value: 'hair', label: 'თმა' },
+    { value: 'skincare', label: 'კანის მოვლა' },
 ] as const;
 
 // ─── Beauty Industry Service Categories ───────────────────────────────────────

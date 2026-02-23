@@ -240,6 +240,7 @@
     "text_fdfach": "Реферальная программа",
     "text_zahvay": "Не удалось загрузить данные реферальной программы. Попробуйте позже.",
     "text_fta2fm": "Ссылка скопирована!",
+    "text_copy_link": "Скопировать ссылку на портфолио",
     "text_668ns3": "Сравнение до и после",
     "text_89w4ja": "После ретуши",
     "text_usihek": "До ретуши",
@@ -436,12 +437,13 @@
     "mode_ba": "До / После",
     "mode_ad": "Реклама",
     "mode_batch": "Пакет",
-    "tab_presets": "Пресеты",
-    "tab_trends": "Тренды",
-    "tab_filters": "Фильтры",
-    "tab_custom": "Настроить",
     "coming_soon": "Скоро",
-    "filter_selected_tip": "Фильтр выбран — загружайте фото",
+    "styles_search_placeholder": "Поиск стиля...",
+    "styles_popular": "Популярные",
+    "styles_new_this_week": "Новинки недели",
+    "styles_no_results": "Стили не найдены",
+    "style_selected_tip": "Стиль выбран — загружайте фото",
+    "no_style_tip": "Выберите стиль слева или загрузите напрямую",
     "photo_uploading": "Фото загружается...",
     "photo_sending": "Отправляем на обработку, подождите"
   },
@@ -471,7 +473,9 @@
     "preview_photos": "фото",
     "preview_followers": "подп",
     "preview_following": "подписки",
-    "preview_platform": "Glow.GE · только что"
+    "preview_platform": "Glow.GE · только что",
+    "name_required": "Укажите имя",
+    "instagram_required": "Укажите Instagram"
   },
   "system": {
     "sys_4a6zcn": "Вход — Glow.GE",

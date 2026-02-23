@@ -6,11 +6,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { brandingService } from '../services/branding.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import type { BrandingFormData } from '../types/branding.types';
+import type { BrandingFormData, BrandingProfile } from '../types/branding.types';
 
 export function useBranding() {
     const { t } = useLanguage();
-    const [profile, setProfile] = useState<any>(null);
+    const [profile, setProfile] = useState<BrandingProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isRemoving, setIsRemoving] = useState(false);
@@ -20,8 +20,8 @@ export function useBranding() {
         try {
             const data = await brandingService.getProfile();
             setProfile(data);
-        } catch (err) {
-            console.error(err);
+        } catch {
+            // Silent fail — loading state handles UX
         } finally {
             setIsLoading(false);
         }

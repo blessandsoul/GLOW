@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/lib/constants/routes';
 import type { Job, JobStatus } from '../types/job.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { getServerImageUrl } from '@/lib/utils/image';
 
 function StatusBadge({ status }: { status: JobStatus }): React.ReactElement {
     const { t } = useLanguage();
@@ -60,7 +61,7 @@ function SingleJobCard({ job }: { job: Job }): React.ReactElement {
     const cardContent = (
         <div className="flex gap-4 rounded-xl border border-border/50 bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md">
             <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg">
-                <Image src={job.originalUrl} alt="Original" fill className="object-cover" />
+                <Image src={getServerImageUrl(job.originalUrl)} alt="Original" fill unoptimized sizes="48px" className="object-cover" />
             </div>
             <div className="flex flex-1 flex-col justify-between min-w-0">
                 <StatusBadge status={job.status} />
@@ -77,7 +78,7 @@ function SingleJobCard({ job }: { job: Job }): React.ReactElement {
                 <div className="flex gap-1">
                     {job.results.slice(0, 2).map((url, i) => (
                         <div key={url} className="relative h-16 w-12 overflow-hidden rounded-lg">
-                            <Image src={url} alt={`Result ${i + 1}`} fill className="object-cover" />
+                            <Image src={getServerImageUrl(url)} alt={`Result ${i + 1}`} fill unoptimized sizes="48px" className="object-cover" />
                         </div>
                     ))}
                 </div>
@@ -93,16 +94,18 @@ function SingleJobCard({ job }: { job: Job }): React.ReactElement {
                     >
                         <PaperPlaneTilt size={13} weight="fill" />
                     </button>
-                    <Link
-                        href={showcaseUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(showcaseUrl, '_blank', 'noopener,noreferrer');
+                        }}
                         title="Открыть страницу работы"
-                        onClick={(e) => e.stopPropagation()}
                         className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
                     >
                         <ArrowSquareOut size={13} />
-                    </Link>
+                    </button>
                 </div>
             )}
         </div>
@@ -153,7 +156,7 @@ function BatchGroupCard({ group }: { group: BatchGroup }): React.ReactElement {
                 {group.jobs.map((job) => (
                     <div key={job.id} className="shrink-0">
                         <div className="relative h-14 w-10 overflow-hidden rounded-lg border border-border/30">
-                            <Image src={job.originalUrl} alt="Original" fill className="object-cover" />
+                            <Image src={getServerImageUrl(job.originalUrl)} alt="Original" fill unoptimized sizes="40px" className="object-cover" />
                         </div>
                         <div className="mt-1 flex justify-center">
                             {job.status === 'PROCESSING' || job.status === 'PENDING' ? (

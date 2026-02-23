@@ -1,7 +1,7 @@
 import { buildApp } from '@/app.js';
 import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
-import { disconnectPrisma } from '@/libs/prisma.js';
+import { prisma, disconnectPrisma } from '@/libs/prisma.js';
 import { connectRedis, disconnectRedis } from '@/libs/redis.js';
 import { emailWorker } from '@/libs/queue.js';
 
@@ -12,6 +12,15 @@ async function main(): Promise<void> {
   app.addHook('onClose', async () => {
     await emailWorker.close();
   });
+
+  // Connect Database
+  try {
+    await prisma.$connect();
+    logger.info('MySQL connected');
+  } catch (err) {
+    logger.fatal({ err }, 'MySQL connection failed');
+    process.exit(1);
+  }
 
   // Connect Redis
   try {

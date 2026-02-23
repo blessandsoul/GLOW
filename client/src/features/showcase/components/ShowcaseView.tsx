@@ -10,6 +10,7 @@ import { useShowcase } from '../hooks/useShowcase';
 import { ShowcaseShare } from './ShowcaseShare';
 import { ShowcaseReviewForm } from './ShowcaseReviewForm';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { getServerImageUrl } from '@/lib/utils/image';
 
 interface ShowcaseViewProps {
     jobId: string;
@@ -139,9 +140,10 @@ export function ShowcaseView({ jobId }: ShowcaseViewProps): React.ReactElement {
                         >
                             <div className="relative aspect-3/4 w-full max-w-md overflow-hidden rounded-2xl shadow-lg">
                                 <Image
-                                    src={url}
+                                    src={getServerImageUrl(url)}
                                     alt={`Результат ${i + 1}`}
                                     fill
+                                    unoptimized
                                     className="object-cover"
                                     sizes="(max-width: 768px) 100vw, 448px"
                                     priority={i === 0}

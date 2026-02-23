@@ -1,7 +1,3 @@
----
-trigger: glob: client/**
----
-
 > **SCOPE**: These rules apply specifically to the **client** directory (Next.js App Router).
 
 # Project Structure
@@ -21,10 +17,7 @@ src/
 │   │   └── layout.tsx
 │   ├── (main)/             # Main route group
 │   │   ├── layout.tsx      # Header/Footer layout
-│   │   ├── services/
-│   │   ├── masters/
-│   │   ├── portfolio/
-│   │   └── appointments/
+│   │   └── <domain>/       # Domain-specific routes
 │   ├── dashboard/          # Protected routes
 │   └── admin/              # Admin routes
 ├── components/
@@ -53,15 +46,15 @@ src/
 
 | Type | Pattern | Example |
 |---|---|---|
-| Component | `PascalCase.tsx` | `ServiceCard.tsx` |
-| Page | `folder/page.tsx` | `services/page.tsx` |
+| Component | `PascalCase.tsx` | `ProductCard.tsx` |
+| Page | `folder/page.tsx` | `products/page.tsx` |
 | Hook | `use<Name>.ts` | `useAuth.ts` |
-| Service | `<domain>.service.ts` | `service.service.ts` |
-| Types | `<domain>.types.ts` | `service.types.ts` |
+| Service | `<domain>.service.ts` | `product.service.ts` |
+| Types | `<domain>.types.ts` | `product.types.ts` |
 | Redux slice | `<domain>Slice.ts` | `authSlice.ts` |
-| Server Action | `<domain>.actions.ts` | `service.actions.ts` |
+| Server Action | `<domain>.actions.ts` | `product.actions.ts` |
 | Page exports | `default export` | Required by Next.js |
-| Everything else | Named exports | `export const ServiceCard` |
+| Everything else | Named exports | `export const ProductCard` |
 
 ## Import Order
 
@@ -95,14 +88,14 @@ export const API_ENDPOINTS = {
     UPDATE_ME: '/users/me',
     DELETE_ME: '/users/me',
   },
-  SERVICES: {
-    LIST: '/services',
-    MY_SERVICES: '/services/my',
-    CREATE: '/services',
-    GET: (id: string) => `/services/${id}`,
-    UPDATE: (id: string) => `/services/${id}`,
-    DELETE: (id: string) => `/services/${id}`,
-  },
+  // Add domain-specific endpoints following this pattern:
+  // <DOMAIN>: {
+  //   LIST: '/<domain>',
+  //   CREATE: '/<domain>',
+  //   GET: (id: string) => `/<domain>/${id}`,
+  //   UPDATE: (id: string) => `/<domain>/${id}`,
+  //   DELETE: (id: string) => `/<domain>/${id}`,
+  // },
 } as const;
 
 // lib/constants/routes.ts
@@ -114,20 +107,20 @@ export const ROUTES = {
   RESET_PASSWORD: '/reset-password',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
-  SERVICES: {
-    LIST: '/services',
-    DETAILS: (id: string) => `/services/${id}`,
-    MY_SERVICES: '/my-services',
-    CREATE: '/services/create',
-    EDIT: (id: string) => `/services/${id}/edit`,
-  },
+  // Add domain-specific routes following this pattern:
+  // <DOMAIN>: {
+  //   LIST: '/<domain>',
+  //   DETAILS: (id: string) => `/<domain>/${id}`,
+  //   CREATE: '/<domain>/create',
+  //   EDIT: (id: string) => `/<domain>/${id}/edit`,
+  // },
 } as const;
 
 // lib/constants/app.constants.ts
-export const APP_NAME = 'LashMe';
+export const APP_NAME = 'My App';
 export const PAGINATION = { DEFAULT_PAGE: 1, DEFAULT_LIMIT: 10, MAX_LIMIT: 100 } as const;
-export const USER_ROLES = { USER: 'USER', MASTER: 'MASTER', ADMIN: 'ADMIN', SALON: 'SALON' } as const;
-export const CURRENCIES = { GEL: 'GEL', USD: 'USD', EUR: 'EUR' } as const;
+export const USER_ROLES = { USER: 'USER', ADMIN: 'ADMIN' } as const;
+export const CURRENCIES = { USD: 'USD', EUR: 'EUR' } as const;
 ```
 
 ## App Providers
@@ -136,5 +129,5 @@ export const CURRENCIES = { GEL: 'GEL', USD: 'USD', EUR: 'EUR' } as const;
 
 ## Middleware
 
-Protected paths: `/dashboard`, `/profile`, `/my-services`, `/admin` — redirect to `/login` if no token.
+Protected paths: `/dashboard`, `/profile`, `/admin` — redirect to `/login` if no token.
 Auth paths: `/login`, `/register` — redirect to `/dashboard` if already authenticated.

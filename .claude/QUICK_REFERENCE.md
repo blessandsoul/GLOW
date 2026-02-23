@@ -4,7 +4,7 @@
 
 ---
 
-If project is empty start server/client commands
+If project is empty start server/client commands (`/create-server`, `/create-client`)
 
 ## How Rules Are Organized
 
@@ -13,7 +13,7 @@ Rules are scoped by directory:
 | Scope | Path | Applies To |
 |-------|------|------------|
 | **Global** | `.claude/rules/global/` | Entire workspace (server + client) |
-| **Server** | `.claude/rules/server/` | Backend (API server) only |
+| **Server** | `.claude/rules/server/` | Backend (Fastify API server) only |
 | **Client** | `.claude/rules/client/` | Frontend (Next.js App Router) only |
 
 Always check which scope you're working in before writing code.
@@ -32,7 +32,7 @@ Always check which scope you're working in before writing code.
 - Never delete or radically restructure large parts of the codebase
 - Preserve existing behavior for critical flows (auth, payments, core business logic)
 
-See: `global/ai-edit-safety.md`
+See: `global/core.md`
 
 ---
 
@@ -70,20 +70,26 @@ src/modules/<domain>/
 - Throw typed errors only (`AppError` subclasses)
 - Global error handler formats all errors
 
+### Auth Architecture
+- **httpOnly cookies** for token storage (access_token + refresh_token)
+- Account lockout with progressive thresholds
+- Session tracking with device info and IP
+- Transparent password rehash (bcrypt legacy -> argon2id)
+
 ### Database
 - Schema changes via Prisma migrations only
 - Development: `prisma:reset` freely; Production: `prisma:migrate deploy` only
-- Tables: `snake_case` plural; Columns: `snake_case`; FKs: `<table_singular>_id`
-- All main tables need: `id`, `created_at`, `updated_at`
+- Prisma models: `PascalCase`; Fields: `camelCase`
+- All main tables need: `id`, `createdAt`, `updatedAt`
 
 ### Code Style
 - TypeScript strict mode, type all params and returns
 - `async/await` over `.then()`
-- Named exports (exception: `app.ts`)
+- Named exports (exception: `app.ts` default-exports `buildApp`)
 - Use `logger` from `src/libs/`, never `console.log`
 - Detect package manager from lockfile
 
-See: `server/general-rules.md`, `server/project-conventions.md`, `server/response-handling.md`, `server/pagination.md`, `server/db-and-migrations.md`, `server/migrations.md`
+See: `server/core.md`, `server/project-conventions.md`, `server/response-handling.md`, `server/database.md`
 
 ---
 
@@ -93,6 +99,12 @@ See: `server/general-rules.md`, `server/project-conventions.md`, `server/respons
 - Next.js App Router with Server Components by default
 - Client Components only when interactivity is needed (`'use client'`)
 - Feature modules under `src/features/<domain>/`
+
+### Auth Flow
+- **httpOnly cookies** — no tokens stored in Redux or localStorage
+- `AuthInitializer` component hydrates user state on page load via `getMe()` API call
+- Redux auth state: `{ user, isAuthenticated, isInitializing, isLoggingOut }`
+- Axios `withCredentials: true` sends cookies automatically
 
 ### Module Structure
 ```
@@ -110,7 +122,7 @@ src/features/<domain>/
 |------------|------|
 | Server data (SSR) | Server Components |
 | Server data (client) | React Query |
-| Global client state | Redux (auth, user) |
+| Global client state | Redux (auth only) |
 | Local state | useState / useReducer |
 | URL state | useSearchParams |
 
@@ -123,11 +135,11 @@ src/features/<domain>/
 - Follow import order: React/Next -> third-party -> UI -> local -> hooks -> services -> types -> utils
 
 ### Styling
-- Tailwind CSS only, no inline styles
-- Use CSS variable-based color tokens (e.g., `bg-primary`, `text-foreground`)
+- Tailwind CSS v4 only, no inline styles
+- OKLCH color space via CSS custom properties
+- Use semantic color tokens (e.g., `bg-primary`, `text-foreground`)
 - Never hardcode hex/rgb values
 - Pair backgrounds with foregrounds for contrast
-- See color system and design aesthetics rules for full details
 
 ### Forms
 - React Hook Form + Zod for complex forms
@@ -140,7 +152,7 @@ src/features/<domain>/
 - Validate all inputs, sanitize all outputs
 - Secure external links with `rel="noopener noreferrer"`
 
-See: `client/01-project-structure.md` through `client/11-microcopy-and-tone.md`
+See: `client/core.md`, `client/01-project-structure.md` through `client/06-ux-checklist.md`
 
 ---
 
@@ -159,29 +171,23 @@ See: `client/01-project-structure.md` through `client/11-microcopy-and-tone.md`
 ## Full Documentation Index
 
 ### Global
-- `global/ai-edit-safety.md` - Safe editing guidelines
+- `global/core.md` - Safe editing, TypeScript, git, env, testing rules
 
 ### Server
-- `server/general-rules.md` - Architecture and stack
-- `server/project-conventions.md` - File structure and coding style
-- `server/response-handling.md` - Response contract
-- `server/pagination.md` - Pagination contract
-- `server/db-and-migrations.md` - Database standards
-- `server/migrations.md` - Migration quick rules
+- `server/core.md` - Index and non-negotiables
+- `server/project-conventions.md` - Stack, folder structure, coding style, Postman
+- `server/response-handling.md` - Response contract, error classes
+- `server/database.md` - Database standards, migrations, indexing
 
 ### Client
-- `client/01-project-structure.md` - File naming and folder structure
-- `client/02-component-patterns.md` - Server/Client components
-- `client/03-typescript-rules.md` - TypeScript conventions
-- `client/04-state-management.md` - State strategy
-- `client/05-api-integration.md` - API calls and error handling
-- `client/06-forms-validation.md` - Forms and validation
-- `client/07-common-patterns.md` - Hooks, utilities, patterns
-- `client/08-color-system.md` - Color tokens and theming
-- `client/09-security-rules.md` - Frontend security
-- `client/10-design-aesthetics.md` - UI design philosophy
-- `client/11-microcopy-and-tone.md` - UX writing and tone
+- `client/core.md` - Architecture and non-negotiables
+- `client/01-project-structure.md` - Folder structure, naming, imports, constants
+- `client/02-components-and-types.md` - Component rules, TypeScript, API types
+- `client/03-data-and-state.md` - State management, React Query, Redux, Axios, forms
+- `client/04-design-system.md` - Colors, typography, spacing, motion, dark mode
+- `client/05-security.md` - Token storage, env vars, CSP, validation
+- `client/06-ux-checklist.md` - Cognitive load, accessibility, performance
 
 ---
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-20
