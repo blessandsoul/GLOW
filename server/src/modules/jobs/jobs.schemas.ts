@@ -6,6 +6,7 @@ export const JobIdParamSchema = z.object({
 
 export const DownloadQuerySchema = z.object({
   variant: z.coerce.number().int().min(0).default(0),
+  branded: z.coerce.number().int().min(0).max(1).default(0),
 });
 
 export const CreateJobSchema = z.object({

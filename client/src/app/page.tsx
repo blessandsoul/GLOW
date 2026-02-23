@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkle, ArrowRight, Diamond } from '@phosphor-icons/react';
+import { Sparkle, ArrowRight, Diamond, Coins, SquaresFour } from '@phosphor-icons/react';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
 import { UploadSection } from '@/features/upload/components/UploadSection';
@@ -11,13 +11,17 @@ import { BeforeAfterSection } from '@/features/landing/components/BeforeAfterSec
 import Silk from '@/components/Silk';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { HeroEditorial } from '@/features/landing/components/HeroEditorial';
 import { HeroStats } from '@/features/landing/components/HeroStats';
 import { HeroCards } from '@/features/landing/components/HeroCards';
+import { ROUTES } from '@/lib/constants/routes';
+import { cn } from '@/lib/utils';
 
 export default function HomePage(): React.ReactElement {
     const [scrolled, setScrolled] = useState(false);
     const { t, tArray } = useLanguage();
+    const { isAuthenticated, isInitializing, user } = useAuth();
     const rotatingWords = tArray('hero.rotating_words');
     const [wordIndex, setWordIndex] = useState(0);
     useEffect(() => {
@@ -57,24 +61,60 @@ export default function HomePage(): React.ReactElement {
 
                     {/* Actions */}
                     <div className="flex items-center gap-3">
-                        <div className="hidden items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1.5 shadow-sm sm:flex">
-                            <Diamond size={14} weight="fill" className="text-primary" />
-                            <span className="text-xs font-semibold text-primary">{t('header.free_photos')}</span>
-                        </div>
+                        {!isAuthenticated && (
+                            <div className="hidden items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1.5 shadow-sm sm:flex">
+                                <Diamond size={14} weight="fill" className="text-primary" />
+                                <span className="text-xs font-semibold text-primary">{t('header.free_photos')}</span>
+                            </div>
+                        )}
 
                         <ThemeToggle />
 
                         <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
 
-                        <Button variant="ghost" size="sm" className="hidden h-10 px-4 text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white sm:flex rounded-xl" asChild>
-                            <Link href="/login">{t('header.login')}</Link>
-                        </Button>
-                        <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
-                            <Link href="/register">
-                                {t('header.start')}
-                                <ArrowRight size={14} weight="bold" />
-                            </Link>
-                        </Button>
+                        {isInitializing ? (
+                            <div className="h-8 w-20 animate-pulse rounded-xl bg-muted" />
+                        ) : isAuthenticated ? (
+                            <div className="flex items-center gap-3">
+                                {user !== null && user !== undefined && (
+                                    <Link
+                                        href={ROUTES.DASHBOARD_CREDITS}
+                                        className={cn(
+                                            'hidden items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80 sm:inline-flex',
+                                            (user.credits ?? 0) >= 50
+                                                ? 'bg-warning/15 text-warning'
+                                                : (user.credits ?? 0) >= 10
+                                                    ? 'bg-success/15 text-success'
+                                                    : 'bg-destructive/15 text-destructive',
+                                        )}
+                                    >
+                                        <Coins size={11} weight="fill" />
+                                        {user.credits ?? 0}
+                                    </Link>
+                                )}
+                                <span className="hidden text-sm font-medium text-zinc-600 dark:text-zinc-300 sm:inline">
+                                    {user?.firstName}
+                                </span>
+                                <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
+                                    <Link href={ROUTES.DASHBOARD}>
+                                        <SquaresFour size={14} weight="fill" />
+                                        {t('header.dashboard')}
+                                    </Link>
+                                </Button>
+                            </div>
+                        ) : (
+                            <>
+                                <Button variant="ghost" size="sm" className="hidden h-10 px-4 text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white sm:flex rounded-xl" asChild>
+                                    <Link href="/login">{t('header.login')}</Link>
+                                </Button>
+                                <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
+                                    <Link href="/register">
+                                        {t('header.start')}
+                                        <ArrowRight size={14} weight="bold" />
+                                    </Link>
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </header>

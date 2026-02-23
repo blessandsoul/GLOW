@@ -7,6 +7,7 @@ import {
     DownloadSimple, Sparkle, WarningCircle, ShareNetwork, Lock, Eye,
     ChatText, DeviceMobile, Eraser, PaperPlaneTilt, ChatCircle,
     LinkSimple, Clock, CaretDown, CaretUp, InstagramLogo, Flask,
+    EyeSlash, Stamp,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,9 @@ import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/constants/routes';
 import { GuestResultBanner } from '@/features/upload/components/GuestResultBanner';
 import { CaptionGenerator } from '@/features/captions/components/CaptionGenerator';
+import { ImageCompare } from '@/components/ui/ImageCompare';
+import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
+import { useBranding } from '@/features/branding/hooks/useBranding';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -24,7 +28,7 @@ interface ResultsGridProps {
     isAuthenticated: boolean;
     isGuest?: boolean;
     isDemo?: boolean;
-    onDownload: (url: string, jobId: string, variantIndex: number) => void;
+    onDownload: (url: string, jobId: string, variantIndex: number, branded: boolean) => void;
     onGenerateCaption?: () => void;
     onGenerateStories?: () => void;
     onRetouch?: (url: string) => void;
@@ -175,9 +179,59 @@ function DemoBanner(): React.ReactElement {
     );
 }
 
+// ─── Download panel for selected image ───────────────────────────────────────
+interface DownloadPanelProps {
+    jobId: string;
+    variantIndex: number;
+    hasBranding: boolean;
+    onDownload: (url: string, jobId: string, variantIndex: number, branded: boolean) => void;
+    resultUrl: string;
+}
+
+function DownloadPanel({ jobId, variantIndex, hasBranding, onDownload, resultUrl }: DownloadPanelProps): React.ReactElement {
+    return (
+        <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/20 p-3">
+            <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-foreground">
+                    #{variantIndex + 1}
+                </p>
+            </div>
+            <div className="flex items-center gap-1.5">
+                {hasBranding && (
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5 text-[11px]"
+                        onClick={() => onDownload(resultUrl, jobId, variantIndex, true)}
+                    >
+                        <Stamp size={12} weight="fill" />
+                        With branding
+                    </Button>
+                )}
+                <Button
+                    size="sm"
+                    variant={hasBranding ? 'ghost' : 'outline'}
+                    className="gap-1.5 text-[11px]"
+                    onClick={() => onDownload(resultUrl, jobId, variantIndex, false)}
+                >
+                    <DownloadSimple size={12} />
+                    {hasBranding ? 'Clean' : 'Download'}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 // ─── Main ResultsGrid ─────────────────────────────────────────────────────────
 export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload, onGenerateCaption, onGenerateStories, onRetouch }: ResultsGridProps): React.ReactElement {
     const { t } = useLanguage();
+    const { profile: brandingProfile } = useBranding();
+
+    const hasBranding = !!(isAuthenticated && !isDemo && brandingProfile?.isActive &&
+        brandingProfile.displayName && brandingProfile.instagramHandle);
+
+    const [showBranding, setShowBranding] = useState(true);
+    const [selectedAfterIdx, setSelectedAfterIdx] = useState(0);
 
     if (job.status === 'PENDING' || job.status === 'PROCESSING') {
         return (
@@ -213,6 +267,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
     }
 
     const results = job.results ?? [];
+    const brandingVisible = hasBranding && showBranding;
 
     const handleShare = async (url: string): Promise<void> => {
         try {
@@ -228,6 +283,29 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
             {isDemo && <DemoBanner />}
             {isGuest && !isDemo && <GuestResultBanner jobId={job.id} />}
 
+            {/* Before / After comparison — uses same ImageCompare as hero section */}
+            {isAuthenticated && !isDemo && results.length > 0 && job.originalUrl && (
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex w-full max-w-sm items-center justify-between px-1">
+                        <span className="text-xs font-medium text-muted-foreground">{t('ui.text_pt6')}</span>
+                        <span className="text-xs font-medium text-primary">{t('ui.text_gnzjzw')}</span>
+                    </div>
+                    <ImageCompare
+                        beforeSrc={getServerImageUrl(job.originalUrl)}
+                        afterSrc={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
+                        beforeAlt={t('ui.text_pt6')}
+                        afterAlt={t('ui.text_gnzjzw')}
+                        initialPosition={50}
+                        className="aspect-[3/4] w-full max-w-sm rounded-xl"
+                    />
+                    {results.length > 1 && (
+                        <p className="text-[10px] text-muted-foreground">
+                            {t('ui.text_tfd6xc')} #{selectedAfterIdx + 1}
+                        </p>
+                    )}
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -240,14 +318,33 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                             : `${results.length} ${t('ui.text_mhnuxr')}${results.length > 1 ? t('ui.text_ts') : ''} ${t('ui.text_tfd6xc')}`}
                     </p>
                 </div>
-                {!isAuthenticated && !isGuest && (
-                    <Button size="sm" className="gap-1.5 text-xs" asChild>
-                        <Link href="/register">
-                            <Lock size={12} />
-                            {t('ui.text_l7x1oj')}
-                        </Link>
-                    </Button>
-                )}
+                <div className="flex items-center gap-2">
+                    {/* Branding toggle */}
+                    {hasBranding && (
+                        <button
+                            type="button"
+                            onClick={() => setShowBranding((v) => !v)}
+                            className={cn(
+                                'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all duration-200',
+                                showBranding
+                                    ? 'border-primary/30 bg-primary/10 text-primary'
+                                    : 'border-border/50 bg-muted/30 text-muted-foreground',
+                            )}
+                            aria-label={showBranding ? 'Hide branding' : 'Show branding'}
+                        >
+                            {showBranding ? <Stamp size={12} weight="fill" /> : <EyeSlash size={12} />}
+                            {showBranding ? 'Branded' : 'Clean'}
+                        </button>
+                    )}
+                    {!isAuthenticated && !isGuest && (
+                        <Button size="sm" className="gap-1.5 text-xs" asChild>
+                            <Link href="/register">
+                                <Lock size={12} />
+                                {t('ui.text_l7x1oj')}
+                            </Link>
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {/* Results grid */}
@@ -260,9 +357,13 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                     <div
                         key={i}
                         className={cn(
-                            'group relative overflow-hidden rounded-xl border border-border/50 transition-all duration-200 hover:shadow-md',
+                            'group relative overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer',
                             results.length === 1 && 'w-full max-w-sm',
+                            selectedAfterIdx === i && isAuthenticated && !isDemo
+                                ? 'border-primary/50 ring-2 ring-primary/20'
+                                : 'border-border/50',
                         )}
+                        onClick={() => setSelectedAfterIdx(i)}
                     >
                         <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
                             <Image
@@ -273,6 +374,17 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                 className="object-cover"
                                 sizes="(max-width: 640px) 50vw, 25vw"
                             />
+                            {/* Branding overlay */}
+                            {brandingVisible && brandingProfile && (
+                                <WatermarkOverlay
+                                    style={brandingProfile.watermarkStyle}
+                                    color={brandingProfile.primaryColor}
+                                    name={brandingProfile.displayName ?? ''}
+                                    handle={brandingProfile.instagramHandle ?? ''}
+                                    logoUrl={brandingProfile.logoUrl ? getServerImageUrl(brandingProfile.logoUrl) : null}
+                                    opacity={brandingProfile.watermarkOpacity}
+                                />
+                            )}
                         </div>
                         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 via-black/30 to-transparent p-2.5 pt-8">
                             <span className="text-xs font-medium text-white/80">
@@ -283,7 +395,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                     {onRetouch && (
                                         <button
                                             type="button"
-                                            onClick={() => onRetouch(url)}
+                                            onClick={(e) => { e.stopPropagation(); onRetouch(url); }}
                                             className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
                                             aria-label={t('ui.text_jry5cq')}
                                         >
@@ -292,7 +404,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                     )}
                                     <button
                                         type="button"
-                                        onClick={() => handleShare(url)}
+                                        onClick={(e) => { e.stopPropagation(); handleShare(url); }}
                                         className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
                                         aria-label={t('ui.text_nq6g7p')}
                                     >
@@ -300,7 +412,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => onDownload(url, job.id, i)}
+                                        onClick={(e) => { e.stopPropagation(); onDownload(url, job.id, i, brandingVisible); }}
                                         className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
                                         aria-label={t('ui.text_9ftpjq')}
                                     >
@@ -319,6 +431,17 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                     </div>
                 ))}
             </div>
+
+            {/* Download panel — explicit branded/clean options for selected image */}
+            {isAuthenticated && !isDemo && results.length > 0 && (
+                <DownloadPanel
+                    jobId={job.id}
+                    variantIndex={selectedAfterIdx}
+                    hasBranding={hasBranding}
+                    onDownload={onDownload}
+                    resultUrl={results[selectedAfterIdx] ?? results[0]}
+                />
+            )}
 
             {/* Authenticated action panels */}
             {isAuthenticated && !isDemo && results.length > 0 && (

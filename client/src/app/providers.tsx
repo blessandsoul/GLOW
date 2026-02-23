@@ -17,28 +17,53 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
     useEffect(() => {
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-        // Use bare axios (not apiClient) to bypass the 401 interceptor.
-        // This is a silent session check — if it fails, user stays logged out.
-        axios
-            .get<ApiResponse<IUser>>(
-                `${baseUrl}${API_ENDPOINTS.AUTH.ME}`,
-                { withCredentials: true },
-            )
-            .then((res) => {
-                // setUser also sets isInitializing = false
+        // Use bare axios (not apiClient) to avoid racing with the 401 interceptor.
+        const hydrateAuth = async (): Promise<void> => {
+            // Step 1: Try /auth/me with current access token cookie
+            try {
+                const res = await axios.get<ApiResponse<IUser>>(
+                    `${baseUrl}${API_ENDPOINTS.AUTH.ME}`,
+                    { withCredentials: true },
+                );
                 store.dispatch(setUser(res.data.data));
-            })
-            .catch(() => {
-                // No valid session — mark auth as initialized (unauthenticated).
+                return;
+            } catch (meError: unknown) {
+                // Only attempt refresh on 401 (expired token).
+                // Network errors / server down → don't destroy the session.
+                if (!axios.isAxiosError(meError) || meError.response?.status !== 401) {
+                    store.dispatch(setInitialized());
+                    return;
+                }
+            }
+
+            // Step 2: Access token expired (401). Try refreshing.
+            try {
+                await axios.post(
+                    `${baseUrl}${API_ENDPOINTS.AUTH.REFRESH}`,
+                    {},
+                    { withCredentials: true },
+                );
+            } catch {
+                // Refresh failed — session is truly invalid.
+                // Don't call /logout — the refresh token is already invalid/expired.
                 store.dispatch(setInitialized());
-                // Clear any stale cookies so middleware
-                // doesn't keep redirecting to protected pages.
-                axios
-                    .post(`${baseUrl}${API_ENDPOINTS.AUTH.LOGOUT}`, {}, { withCredentials: true })
-                    .catch(() => {
-                        document.cookie = 'accessToken=; path=/; max-age=0';
-                    });
-            });
+                document.cookie = 'accessToken=; path=/; max-age=0';
+                return;
+            }
+
+            // Step 3: Refresh succeeded — retry /auth/me with new access token
+            try {
+                const retryRes = await axios.get<ApiResponse<IUser>>(
+                    `${baseUrl}${API_ENDPOINTS.AUTH.ME}`,
+                    { withCredentials: true },
+                );
+                store.dispatch(setUser(retryRes.data.data));
+            } catch {
+                store.dispatch(setInitialized());
+            }
+        };
+
+        hydrateAuth();
     }, []);
 
     return <>{children}</>;

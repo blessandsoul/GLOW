@@ -5,7 +5,8 @@
     "free_photos": "3 free photos",
     "login": "Login",
     "start": "Get Started",
-    "master": "Master"
+    "master": "Master",
+    "dashboard": "Dashboard"
   },
   "nav": {
     "dashboard": "Photos",

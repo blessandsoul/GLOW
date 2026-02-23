@@ -2,7 +2,8 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { NotFoundError, ForbiddenError, BadRequestError } from '../../shared/errors/errors.js';
 import { jobsRepo } from './jobs.repo.js';
-import { applyWatermark } from '../../libs/watermark.js';
+import { applyWatermark, applyBranding } from '../../libs/watermark.js';
+import { brandingRepo } from '../branding/branding.repo.js';
 import { redis } from '../../libs/redis.js';
 import { prisma } from '../../libs/prisma.js';
 import { schedulePhotoReadyEmail } from '../../libs/queue.js';
@@ -18,6 +19,7 @@ export const jobsService = {
     jobId: string,
     variantIndex: number,
     requestingUserId: string | undefined,
+    branded: boolean,
   ): Promise<{ buffer: Buffer; filename: string }> {
     const job = await jobsRepo.findJobByIdWithUser(jobId);
 
@@ -33,10 +35,10 @@ export const jobsService = {
       throw new NotFoundError('Result variant not found', 'VARIANT_NOT_FOUND');
     }
 
-    // Determine watermark: guests always get it, FREE users get it, PRO+ users don't
+    // Determine Glow.GE watermark: guests always get it, FREE users get it, PRO+ users don't
     const isOwner = job.userId === requestingUserId;
     const userPlan: string = job.user?.subscription?.plan ?? 'FREE';
-    const needsWatermark = !isOwner || userPlan === 'FREE';
+    const needsGlowWatermark = !isOwner || userPlan === 'FREE';
 
     // Load image from local storage or external URL (backward compat)
     const resultUrl = results[variantIndex];
@@ -57,9 +59,27 @@ export const jobsService = {
       imageBuffer = Buffer.from(await response.arrayBuffer());
     }
 
-    const finalBuffer = needsWatermark
-      ? await applyWatermark(imageBuffer)
-      : imageBuffer;
+    let finalBuffer = imageBuffer;
+
+    // Apply custom branding if requested and user has an active branding profile
+    if (branded && job.userId) {
+      const branding = await brandingRepo.findByUserId(job.userId);
+      if (branding?.isActive && branding.displayName && branding.instagramHandle) {
+        finalBuffer = await applyBranding(finalBuffer, {
+          displayName: branding.displayName,
+          instagramHandle: branding.instagramHandle,
+          logoUrl: branding.logoUrl,
+          primaryColor: branding.primaryColor,
+          watermarkStyle: branding.watermarkStyle,
+          watermarkOpacity: branding.watermarkOpacity,
+        });
+      }
+    }
+
+    // Apply Glow.GE watermark for FREE/guest users (separate from custom branding)
+    if (needsGlowWatermark) {
+      finalBuffer = await applyWatermark(finalBuffer);
+    }
 
     return {
       buffer: finalBuffer,
