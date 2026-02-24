@@ -1,10 +1,13 @@
 'use client';
 
+import { memo, useState } from 'react';
 import Image from 'next/image';
-import { Check } from '@phosphor-icons/react';
+import { Check, Sparkle } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import type { Style } from '../types/styles.types';
 import type { SupportedLanguage } from '@/i18n/config';
+
+const PLACEHOLDER_URL = '/filters/placeholder.svg';
 
 interface StyleCardProps {
   style: Style;
@@ -14,8 +17,10 @@ interface StyleCardProps {
   size?: 'sm' | 'md';
 }
 
-export function StyleCard({ style, isSelected, onSelect, language, size = 'md' }: StyleCardProps): React.ReactElement {
+function StyleCardInner({ style, isSelected, onSelect, language, size = 'md' }: StyleCardProps): React.ReactElement {
   const name = language === 'ka' ? style.name_ka : style.name_ru;
+  const isPlaceholder = style.previewUrl === PLACEHOLDER_URL;
+  const [imgError, setImgError] = useState(false);
 
   return (
     <button
@@ -29,14 +34,20 @@ export function StyleCard({ style, isSelected, onSelect, language, size = 'md' }
       )}
     >
       <div className="relative aspect-[3/4] w-full">
-        <Image
-          src={style.previewUrl}
-          alt={name}
-          fill
-          unoptimized
-          sizes={size === 'sm' ? '120px' : '160px'}
-          className="object-cover"
-        />
+        {isPlaceholder || imgError ? (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-primary/5 to-primary/10">
+            <Sparkle size={size === 'sm' ? 16 : 20} className="text-primary/30" weight="fill" />
+          </div>
+        ) : (
+          <Image
+            src={style.previewUrl}
+            alt={name}
+            fill
+            sizes={size === 'sm' ? '120px' : '160px'}
+            className="object-cover"
+            onError={() => setImgError(true)}
+          />
+        )}
 
         {/* Selected checkmark */}
         {isSelected && (
@@ -58,3 +69,11 @@ export function StyleCard({ style, isSelected, onSelect, language, size = 'md' }
     </button>
   );
 }
+
+export const StyleCard = memo(StyleCardInner, (prev, next) =>
+  prev.style.id === next.style.id &&
+  prev.isSelected === next.isSelected &&
+  prev.language === next.language &&
+  prev.size === next.size &&
+  prev.onSelect === next.onSelect,
+);

@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { forwardRef, useRef, useMemo, useLayoutEffect } from 'react';
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect } from 'react';
 import { Color } from 'three';
 
 const hexToNormalizedRGB = hex => {
@@ -77,9 +77,21 @@ const SilkPlane = forwardRef(function SilkPlane({ uniforms }, ref) {
     }
   }, [ref, viewport]);
 
-  useFrame((_, delta) => {
-    ref.current.material.uniforms.uTime.value += 0.1 * delta;
+  useFrame((_state, delta) => {
+    if (ref.current?.material?.uniforms) {
+      ref.current.material.uniforms.uTime.value += 0.1 * delta;
+    }
   });
+
+  // Dispose Three.js resources on unmount
+  useEffect(() => {
+    return () => {
+      if (ref.current) {
+        ref.current.geometry?.dispose();
+        ref.current.material?.dispose();
+      }
+    };
+  }, [ref]);
 
   return (
     <mesh ref={ref}>
@@ -106,7 +118,7 @@ const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, r
   );
 
   return (
-    <Canvas dpr={[1, 2]} frameloop="always">
+    <Canvas dpr={[1, 1.5]} frameloop="always">
       <SilkPlane ref={meshRef} uniforms={uniforms} />
     </Canvas>
   );

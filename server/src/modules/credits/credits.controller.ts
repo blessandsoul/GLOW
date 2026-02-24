@@ -1,9 +1,8 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { PurchasePackageSchema } from './credits.schemas.js';
+import { PurchasePackageSchema, HistoryQuerySchema } from './credits.schemas.js';
 import { creditsService } from './credits.service.js';
 import { successResponse } from '../../shared/responses/successResponse.js';
 import { paginatedResponse } from '../../shared/responses/paginatedResponse.js';
-import { PaginationSchema } from '../../shared/schemas/pagination.schema.js';
 import type { JwtPayload } from '../../shared/types/index.js';
 
 export const creditsController = {
@@ -27,8 +26,8 @@ export const creditsController = {
 
   async getHistory(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     const user = request.user as JwtPayload;
-    const { page, limit } = PaginationSchema.parse(request.query);
-    const { items, totalItems } = await creditsService.getHistory(user.id, page, limit);
+    const { page, limit, type } = HistoryQuerySchema.parse(request.query);
+    const { items, totalItems } = await creditsService.getHistory(user.id, page, limit, type);
     await reply.send(paginatedResponse('Transaction history retrieved', items, page, limit, totalItems));
   },
 };

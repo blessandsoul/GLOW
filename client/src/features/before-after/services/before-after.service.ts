@@ -14,14 +14,35 @@ const SAMPLE_STORIES = [
     'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=540&h=960&fit=crop',
 ];
 
-const jobStore = new Map<string, BeforeAfterJob>();
+const jobStore = new Map<string, BeforeAfterJob & { _createdMs: number }>();
+const MAX_STORE_SIZE = 10;
+const MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
+
+function revokeJobUrls(job: BeforeAfterJob): void {
+    if (job.beforeUrl) URL.revokeObjectURL(job.beforeUrl);
+    if (job.afterUrl) URL.revokeObjectURL(job.afterUrl);
+}
+
+function evictStale(): void {
+    const now = Date.now();
+    for (const [key, job] of jobStore) {
+        if (now - job._createdMs > MAX_AGE_MS || jobStore.size > MAX_STORE_SIZE) {
+            revokeJobUrls(job);
+            jobStore.delete(key);
+        }
+    }
+}
 
 function simulateProcessing(jobId: string): void {
     setTimeout(() => {
         const job = jobStore.get(jobId);
         if (job) {
+            // Revoke blob URLs once processing is done — results use server URLs
+            revokeJobUrls(job);
             jobStore.set(jobId, {
                 ...job,
+                beforeUrl: '',
+                afterUrl: '',
                 status: 'DONE',
                 results: {
                     carousel: SAMPLE_CAROUSEL,
@@ -55,7 +76,8 @@ class BeforeAfterService {
             createdAt: new Date().toISOString(),
         };
 
-        jobStore.set(id, job);
+        evictStale();
+        jobStore.set(id, { ...job, _createdMs: Date.now() });
         simulateProcessing(id);
         return job;
     }

@@ -29,7 +29,7 @@ const EXAMPLES: Example[] = [
   {
     // Nail art before/after
     before: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&h=800&fit=crop',
-    after: 'https://images.unsplash.com/photo-1604655406361-45e4d634d0a7?w=600&h=800&fit=crop',
+    after: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=600&h=800&fit=crop',
     alt: 'nail-art',
   },
 ];

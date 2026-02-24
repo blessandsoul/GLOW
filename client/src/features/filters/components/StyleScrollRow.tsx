@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { ReactNode, ReactElement } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -17,7 +18,7 @@ interface StyleScrollRowProps {
   isLoading?: boolean;
 }
 
-export function StyleScrollRow({
+function StyleScrollRowInner({
   title,
   icon,
   styles,
@@ -71,3 +72,5 @@ export function StyleScrollRow({
     </div>
   );
 }
+
+export const StyleScrollRow = memo(StyleScrollRowInner);

@@ -2,7 +2,18 @@ import type { Caption, CaptionVariant, CaptionLanguage } from '../types/caption.
 
 const delay = (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms));
 
-const captionStore = new Map<string, Caption[]>();
+const captionStore = new Map<string, { data: Caption[]; createdMs: number }>();
+const MAX_STORE_SIZE = 10;
+const MAX_AGE_MS = 5 * 60 * 1000;
+
+function evictStale(): void {
+    const now = Date.now();
+    for (const [key, entry] of captionStore) {
+        if (now - entry.createdMs > MAX_AGE_MS || captionStore.size > MAX_STORE_SIZE) {
+            captionStore.delete(key);
+        }
+    }
+}
 
 const MOCK_CAPTIONS: Record<CaptionLanguage, Record<CaptionVariant, { text: string; hashtags: string }>> = {
     RU: {
@@ -139,13 +150,14 @@ class CaptionService {
             }
         }
 
-        captionStore.set(jobId, captions);
+        evictStale();
+        captionStore.set(jobId, { data: captions, createdMs: Date.now() });
         return captions;
     }
 
     async getCaptions(jobId: string): Promise<Caption[]> {
         await delay(200);
-        return captionStore.get(jobId) ?? [];
+        return captionStore.get(jobId)?.data ?? [];
     }
 }
 

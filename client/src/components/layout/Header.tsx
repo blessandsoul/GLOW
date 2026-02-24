@@ -6,9 +6,9 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
     Moon, Sun, List, X,
-    Palette, User, UserCircle, SquaresFour, Crown,
+    Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
-    CaretDown,
+    CaretDown, Plus,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
@@ -48,12 +48,6 @@ const NAV_GROUPS: NavGroup[] = [
         items: [
             { href: ROUTES.DASHBOARD_PROFILE, label: 'nav.profile', icon: UserCircle },
             { href: ROUTES.DASHBOARD_PORTFOLIO, label: 'nav.portfolio', icon: User },
-        ],
-    },
-    {
-        category: 'nav.cat_plans',
-        items: [
-            { href: ROUTES.DASHBOARD_CREDITS, label: 'nav.pricing', icon: Crown },
         ],
     },
 ];
@@ -188,13 +182,27 @@ export function Header(): React.ReactElement {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden items-center gap-0.5 md:flex">
-                    {isInitializing ? (
+                    {!mounted || isInitializing ? (
                         <div className="flex items-center gap-2">
                             <div className="h-4 w-20 animate-pulse rounded bg-muted" />
                             <div className="h-4 w-16 animate-pulse rounded bg-muted" />
                         </div>
                     ) : isAuthenticated ? (
                         <>
+                            {/* Create CTA — always first, always prominent */}
+                            <Link
+                                href={ROUTES.CREATE}
+                                className={cn(
+                                    'mr-1 flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98]',
+                                    pathname === ROUTES.CREATE
+                                        ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
+                                        : 'bg-primary/10 text-primary hover:bg-primary/15'
+                                )}
+                            >
+                                <Plus size={14} weight="bold" />
+                                {t('nav.create')}
+                            </Link>
+                            <div className="mx-1.5 h-5 w-px bg-border/50" />
                             {NAV_GROUPS.map((group) => (
                                 <NavDropdown key={group.category} group={group} pathname={pathname} t={t} />
                             ))}
@@ -272,13 +280,28 @@ export function Header(): React.ReactElement {
             >
                 <div className="overflow-hidden">
                     <div className="border-t border-border/50 bg-background px-4 py-3">
-                        {isInitializing ? (
+                        {!mounted || isInitializing ? (
                             <div className="flex flex-col gap-2 py-2">
                                 <div className="h-5 w-32 animate-pulse rounded bg-muted" />
                                 <div className="h-5 w-24 animate-pulse rounded bg-muted" />
                             </div>
                         ) : isAuthenticated ? (
                             <nav className="flex flex-col gap-4">
+                                {/* Create CTA — prominent at top */}
+                                <Link
+                                    href={ROUTES.CREATE}
+                                    onClick={closeMobile}
+                                    className={cn(
+                                        'flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200',
+                                        pathname === ROUTES.CREATE
+                                            ? 'bg-primary text-primary-foreground shadow-sm'
+                                            : 'bg-primary/10 text-primary'
+                                    )}
+                                >
+                                    <Plus size={16} weight="bold" />
+                                    {t('nav.create')}
+                                </Link>
+                                <div className="h-px bg-border/50" />
                                 {NAV_GROUPS.map((group) => (
                                     <div key={group.category}>
                                         <span className="mb-1 block px-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">

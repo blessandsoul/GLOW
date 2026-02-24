@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { store } from '@/store';
+import { queryClient } from '@/app/providers';
 import { logout } from '@/features/auth/store/authSlice';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
 
@@ -62,6 +63,7 @@ apiClient.interceptors.response.use(
                 return apiClient(originalRequest);
             } catch (refreshError) {
                 processQueue(refreshError);
+                queryClient.clear();
                 store.dispatch(logout());
                 if (typeof window !== 'undefined') {
                     // Clear httpOnly cookies via server before redirecting,

@@ -22,6 +22,10 @@ export const portfolioRepo = {
     });
   },
 
+  async countByUserId(userId: string): Promise<number> {
+    return prisma.portfolioItem.count({ where: { userId } });
+  },
+
   async findById(id: string) {
     return prisma.portfolioItem.findUnique({
       where: { id },
@@ -64,6 +68,17 @@ export const portfolioRepo = {
     return prisma.portfolioItem.delete({
       where: { id },
     });
+  },
+
+  async batchUpdateSortOrder(items: { id: string; sortOrder: number }[]) {
+    return prisma.$transaction(
+      items.map((item) =>
+        prisma.portfolioItem.update({
+          where: { id: item.id },
+          data: { sortOrder: item.sortOrder },
+        }),
+      ),
+    );
   },
 
   async findPublishedByUserId(userId: string) {
@@ -121,5 +136,20 @@ export const portfolioRepo = {
       count: result._count,
       average: result._avg.rating ?? 0,
     };
+  },
+
+  async findReviewsByUserId(userId: string) {
+    return prisma.review.findMany({
+      where: { masterId: userId },
+      select: {
+        id: true,
+        rating: true,
+        text: true,
+        clientName: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
   },
 };

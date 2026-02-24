@@ -1,11 +1,15 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { MapPin, Star, InstagramLogo, ChatCircle, PaperPlaneTilt } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePublicPortfolio } from '../hooks/usePortfolio';
+import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { ImageLightbox } from './ImageLightbox';
+import { ReviewsSection } from './ReviewsSection';
 
 interface PublicPortfolioProps {
     username: string;
@@ -14,6 +18,15 @@ interface PublicPortfolioProps {
 export function PublicPortfolio({ username }: PublicPortfolioProps): React.ReactElement {
     const { t } = useLanguage();
     const { portfolio, isLoading, isError } = usePublicPortfolio(username);
+    const [lightboxIndex, setLightboxIndex] = useState(-1);
+
+    const handleOpenLightbox = useCallback((index: number): void => {
+        setLightboxIndex(index);
+    }, []);
+
+    const handleCloseLightbox = useCallback((): void => {
+        setLightboxIndex(-1);
+    }, []);
 
     if (isLoading) {
         return (
@@ -41,6 +54,11 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
             </div>
         );
     }
+
+    const lightboxImages = portfolio.items.map((item) => ({
+        imageUrl: item.imageUrl,
+        title: item.title,
+    }));
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 px-4 py-10">
@@ -141,18 +159,21 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                         {t('ui.text_kfi678')}</p>
                 ) : (
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                        {portfolio.items.map((item) => (
-                            <div
+                        {portfolio.items.map((item, index) => (
+                            <button
+                                type="button"
                                 key={item.id}
-                                className="group relative overflow-hidden rounded-xl border border-border/50 transition-all duration-200 hover:shadow-md"
+                                className="group relative overflow-hidden rounded-xl border border-border/50 transition-all duration-200 hover:shadow-md cursor-pointer"
+                                onClick={() => handleOpenLightbox(index)}
                             >
                                 <div className="relative aspect-3/4">
                                     <Image
-                                        src={item.imageUrl}
+                                        src={getServerImageUrl(item.imageUrl)}
                                         alt={item.title ?? t('ui.text_kaosed')}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                                         sizes="(max-width: 640px) 50vw, 33vw"
+                                        unoptimized
                                     />
                                 </div>
                                 {item.title && (
@@ -162,11 +183,18 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                                         </span>
                                     </div>
                                 )}
-                            </div>
+                            </button>
                         ))}
                     </div>
                 )}
             </section>
+
+            {/* Reviews */}
+            <ReviewsSection
+                reviews={portfolio.reviews}
+                averageRating={portfolio.averageRating}
+                reviewsCount={portfolio.reviewsCount}
+            />
 
             {/* Footer */}
             <div className="text-center">
@@ -177,6 +205,14 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     </a>
                 </p>
             </div>
+
+            {/* Lightbox */}
+            <ImageLightbox
+                images={lightboxImages}
+                initialIndex={lightboxIndex}
+                open={lightboxIndex >= 0}
+                onClose={handleCloseLightbox}
+            />
         </div>
     );
 }

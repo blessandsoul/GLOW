@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
     Sparkle, Package, MagicWand, Flower, Images, TShirt, Image, Eye,
     Play, Camera, Heart, HandPalm, PenNib, Hand, Scissors, FirstAid,
@@ -8,6 +8,7 @@ import {
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { useDebounce } from '@/hooks/useDebounce';
 
 import { StyleCard } from './StyleCard';
 import { StyleScrollRow } from './StyleScrollRow';
@@ -21,20 +22,42 @@ const ICON_MAP: Record<string, typeof Sparkle> = {
     PaintBrush, ImageSquare: Image, Orange: Flower, SmileyWink: Heart, Hoodie: TShirt,
 };
 
-const rawData = filtersData as { categories: StyleCategory[]; filters: Array<Record<string, unknown>> };
+const INITIAL_VISIBLE = 8;
+const SEARCH_INITIAL_VISIBLE = 12;
 
-const allStyles: Style[] = rawData.filters.map((f) => {
-    if (f.type === 'preset') {
-        return { ...f, kind: 'preset' as const, settings: f.settings as PhotoSettings } as PresetStyle;
+// Lazy-parsed: only computed once on first access, not at module load
+let _allStyles: Style[] | null = null;
+let _categories: StyleCategory[] | null = null;
+
+function getAllStyles(): Style[] {
+    if (!_allStyles) {
+        const rawData = filtersData as { categories: StyleCategory[]; filters: Array<Record<string, unknown>> };
+        _allStyles = rawData.filters.map((f) => {
+            if (f.type === 'preset') {
+                return { ...f, kind: 'preset' as const, settings: f.settings as PhotoSettings } as PresetStyle;
+            }
+            return { ...f, kind: 'filter' as const } as FilterStyle;
+        });
     }
-    return { ...f, kind: 'filter' as const } as FilterStyle;
-});
+    return _allStyles;
+}
 
-const categories: StyleCategory[] = rawData.categories;
+function getCategories(): StyleCategory[] {
+    if (!_categories) {
+        const rawData = filtersData as { categories: StyleCategory[]; filters: Array<Record<string, unknown>> };
+        _categories = rawData.categories;
+    }
+    return _categories;
+}
 
-const defaultExpanded = new Set(
-    categories.filter((c) => c.id !== 'presets').slice(0, 2).map((c) => c.id),
-);
+function getDefaultExpanded(): Set<string> {
+    const cats = getCategories();
+    return new Set(cats.filter((c) => c.id !== 'presets').slice(0, 2).map((c) => c.id));
+}
+
+function getCategoryIcon(iconName: string): typeof Sparkle {
+    return ICON_MAP[iconName] ?? Sparkle;
+}
 
 interface StylesGalleryProps {
     onSelect: (style: Style) => void;
@@ -52,13 +75,21 @@ export function StylesGallery({
     const { t, language } = useLanguage();
     const isKa = language === 'ka';
     const [search, setSearch] = useState('');
-    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(defaultExpanded);
+    const debouncedSearch = useDebounce(search, 250);
+    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(() => getDefaultExpanded());
+    const [showAllMap, setShowAllMap] = useState<Record<string, boolean>>({});
+    const [showAllSearch, setShowAllSearch] = useState(false);
 
-    const popularStyles = useMemo(() => allStyles.filter((s) => s.isPopular), []);
+    useEffect(() => { setShowAllSearch(false); }, [debouncedSearch]);
+
+    const allStyles = useMemo(() => getAllStyles(), []);
+    const categories = useMemo(() => getCategories(), []);
+
+    const popularStyles = useMemo(() => allStyles.filter((s) => s.isPopular), [allStyles]);
 
     const nonPresetCategories = useMemo(
         () => categories.filter((c) => c.id !== 'presets'),
-        [],
+        [categories],
     );
 
     const stylesByCategory = useMemo(() => {
@@ -69,17 +100,17 @@ export function StylesGallery({
             map.set(style.categoryId, list);
         }
         return map;
-    }, []);
+    }, [allStyles]);
 
     const searchResults = useMemo(() => {
-        const q = search.toLowerCase().trim();
+        const q = debouncedSearch.toLowerCase().trim();
         if (!q) return [];
         return allStyles.filter(
             (s) => s.name_ka.toLowerCase().includes(q) || s.name_ru.toLowerCase().includes(q),
         );
-    }, [search]);
+    }, [debouncedSearch, allStyles]);
 
-    const isSearching = search.trim().length > 0;
+    const isSearching = debouncedSearch.trim().length > 0;
 
     const handleSelect = useCallback((style: Style) => { onSelect(style); }, [onSelect]);
 
@@ -95,9 +126,9 @@ export function StylesGallery({
         });
     }, []);
 
-    const getCategoryIcon = (iconName: string): typeof Sparkle => {
-        return ICON_MAP[iconName] ?? Sparkle;
-    };
+    const toggleShowAll = useCallback((catId: string) => {
+        setShowAllMap((prev) => ({ ...prev, [catId]: !prev[catId] }));
+    }, []);
 
     return (
         <div className="flex flex-col gap-3">
@@ -145,18 +176,29 @@ export function StylesGallery({
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                            {searchResults.map((style) => (
-                                <StyleCard
-                                    key={style.id}
-                                    style={style}
-                                    isSelected={selectedId === style.id}
-                                    onSelect={handleSelect}
-                                    language={language}
-                                    size="md"
-                                />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                {(showAllSearch ? searchResults : searchResults.slice(0, SEARCH_INITIAL_VISIBLE)).map((style) => (
+                                    <StyleCard
+                                        key={style.id}
+                                        style={style}
+                                        isSelected={selectedId === style.id}
+                                        onSelect={handleSelect}
+                                        language={language}
+                                        size="md"
+                                    />
+                                ))}
+                            </div>
+                            {searchResults.length > SEARCH_INITIAL_VISIBLE && !showAllSearch && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAllSearch(true)}
+                                    className="flex items-center justify-center gap-1 w-full py-1.5 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
+                                >
+                                    {t('upload.show_more')} ({searchResults.length - SEARCH_INITIAL_VISIBLE})
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
             )}
@@ -195,6 +237,8 @@ export function StylesGallery({
                             const Icon = getCategoryIcon(cat.icon);
                             const isExpanded = expandedCategories.has(cat.id);
                             const catStyles = stylesByCategory.get(cat.id) ?? [];
+                            const showAll = showAllMap[cat.id] ?? false;
+                            const visibleStyles = showAll ? catStyles : catStyles.slice(0, INITIAL_VISIBLE);
 
                             return (
                                 <div key={cat.id}>
@@ -223,18 +267,29 @@ export function StylesGallery({
                                     </button>
 
                                     {isExpanded && catStyles.length > 0 && (
-                                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2">
-                                            {catStyles.map((style) => (
-                                                <StyleCard
-                                                    key={style.id}
-                                                    style={style}
-                                                    isSelected={selectedId === style.id}
-                                                    onSelect={handleSelect}
-                                                    language={language}
-                                                    size="md"
-                                                />
-                                            ))}
-                                        </div>
+                                        <>
+                                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2">
+                                                {visibleStyles.map((style) => (
+                                                    <StyleCard
+                                                        key={style.id}
+                                                        style={style}
+                                                        isSelected={selectedId === style.id}
+                                                        onSelect={handleSelect}
+                                                        language={language}
+                                                        size="md"
+                                                    />
+                                                ))}
+                                            </div>
+                                            {catStyles.length > INITIAL_VISIBLE && !showAll && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleShowAll(cat.id)}
+                                                    className="flex items-center justify-center gap-1 w-full py-1.5 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
+                                                >
+                                                    {t('upload.show_more')} ({catStyles.length - INITIAL_VISIBLE})
+                                                </button>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             );

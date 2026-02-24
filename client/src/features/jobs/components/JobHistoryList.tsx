@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clock, CheckCircle, SpinnerGap, WarningCircle, Stack, PaperPlaneTilt, InstagramLogo, ArrowSquareOut } from '@phosphor-icons/react';
+import { Clock, CheckCircle, SpinnerGap, WarningCircle, Stack, PaperPlaneTilt, InstagramLogo, ArrowSquareOut, Plus } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { jobService } from '../services/job.service';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -61,7 +61,7 @@ function SingleJobCard({ job }: { job: Job }): React.ReactElement {
     const cardContent = (
         <div className="flex gap-4 rounded-xl border border-border/50 bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md">
             <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg">
-                <Image src={getServerImageUrl(job.originalUrl)} alt="Original" fill unoptimized sizes="48px" className="object-cover" />
+                <Image src={getServerImageUrl(job.originalUrl)} alt="Original" fill sizes="48px" className="object-cover" unoptimized />
             </div>
             <div className="flex flex-1 flex-col justify-between min-w-0">
                 <StatusBadge status={job.status} />
@@ -78,7 +78,7 @@ function SingleJobCard({ job }: { job: Job }): React.ReactElement {
                 <div className="flex gap-1">
                     {job.results.slice(0, 2).map((url, i) => (
                         <div key={url} className="relative h-16 w-12 overflow-hidden rounded-lg">
-                            <Image src={getServerImageUrl(url)} alt={`Result ${i + 1}`} fill unoptimized sizes="48px" className="object-cover" />
+                            <Image src={getServerImageUrl(url)} alt={`Result ${i + 1}`} fill sizes="48px" className="object-cover" unoptimized />
                         </div>
                     ))}
                 </div>
@@ -156,7 +156,7 @@ function BatchGroupCard({ group }: { group: BatchGroup }): React.ReactElement {
                 {group.jobs.map((job) => (
                     <div key={job.id} className="shrink-0">
                         <div className="relative h-14 w-10 overflow-hidden rounded-lg border border-border/30">
-                            <Image src={getServerImageUrl(job.originalUrl)} alt="Original" fill unoptimized sizes="40px" className="object-cover" />
+                            <Image src={getServerImageUrl(job.originalUrl)} alt="Original" fill sizes="40px" className="object-cover" unoptimized />
                         </div>
                         <div className="mt-1 flex justify-center">
                             {job.status === 'PROCESSING' || job.status === 'PENDING' ? (
@@ -240,9 +240,13 @@ export function JobHistoryList(): React.ReactElement {
         return (
             <div className="rounded-xl border border-border/50 bg-muted/30 p-12 text-center">
                 <p className="text-muted-foreground">{t('dashboard.no_jobs')}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <Link
+                    href={ROUTES.CREATE}
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                >
+                    <Plus size={14} />
                     {t('dashboard.upload_first')}
-                </p>
+                </Link>
             </div>
         );
     }

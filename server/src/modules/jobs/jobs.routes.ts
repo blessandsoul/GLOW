@@ -15,6 +15,15 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
   // List user's jobs (authenticated)
   app.get('/', { preHandler: [authenticate] }, jobsController.list);
 
+  // List flat result images for portfolio picker (authenticated)
+  app.get('/results', { preHandler: [authenticate] }, jobsController.listResults);
+
+  // Dashboard stats (authenticated) — MUST be before /:jobId
+  app.get('/stats', { preHandler: [authenticate] }, jobsController.stats);
+
+  // Bulk delete jobs (authenticated) — MUST be before /:jobId
+  app.delete('/bulk', { preHandler: [authenticate] }, jobsController.bulkDelete);
+
   // Get job status (optional auth — guests access by job ID)
   app.get('/:jobId', { preHandler: [optionalAuth] }, jobsController.get);
 
@@ -24,4 +33,7 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
     { preHandler: [optionalAuth] },
     jobsController.download,
   );
+
+  // Delete single job (authenticated)
+  app.delete('/:jobId', { preHandler: [authenticate] }, jobsController.delete);
 }

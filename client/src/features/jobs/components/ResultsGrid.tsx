@@ -19,6 +19,7 @@ import { CaptionGenerator } from '@/features/captions/components/CaptionGenerato
 import { ImageCompare } from '@/components/ui/ImageCompare';
 import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
 import { useBranding } from '@/features/branding/hooks/useBranding';
+import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -370,9 +371,9 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                 src={getServerImageUrl(url)}
                                 alt={`Вариант ${i + 1}`}
                                 fill
-                                unoptimized
                                 className="object-cover"
                                 sizes="(max-width: 640px) 50vw, 25vw"
+                                unoptimized
                             />
                             {/* Branding overlay */}
                             {brandingVisible && brandingProfile && (
@@ -454,6 +455,10 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
 
                     {/* Secondary actions row */}
                     <div className="flex flex-wrap gap-2">
+                        <AddToPortfolioButton
+                            jobId={job.id}
+                            imageUrl={results[selectedAfterIdx] ?? results[0]}
+                        />
                         <Button variant="outline" size="sm" className="gap-1.5" asChild>
                             <Link href={ROUTES.SHOWCASE(job.id)} target="_blank" rel="noopener noreferrer">
                                 <Eye size={14} />

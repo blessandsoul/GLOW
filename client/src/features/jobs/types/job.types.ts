@@ -8,6 +8,7 @@ export interface Job {
   results: string[] | null;
   settings?: Record<string, unknown> | null;
   batchId?: string | null;
+  creditsRemaining?: number;
   createdAt: string;
 }
 
@@ -19,4 +20,18 @@ export interface BatchJobItem {
 export interface BatchCreateResult {
   batchId: string;
   jobs: BatchJobItem[];
+  creditsRemaining?: number;
+}
+
+export interface DashboardStats {
+  totalJobs: number;
+  totalPhotos: number;
+  credits: number;
+  plan: string;
+}
+
+export interface GalleryFilters {
+  status?: JobStatus;
+  page?: number;
+  limit?: number;
 }

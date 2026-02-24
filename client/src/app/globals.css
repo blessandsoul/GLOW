@@ -179,40 +179,29 @@
     @apply bg-background text-foreground;
   }
 
-  /* Smooth theme transition — respects prefers-reduced-motion */
+  /* Smooth theme transition — scoped to interactive elements only */
   @media (prefers-reduced-motion: no-preference) {
-    :root,
     body,
-    header,
-    footer,
-    main,
-    aside,
-    nav,
-    section,
-    div,
-    article,
     button,
     a,
     input,
     textarea,
-    select,
-    label,
-    span:not([class*="motion"]),
-    p,
-    h1, h2, h3, h4, h5, h6,
-    li,
-    ul,
-    ol,
-    table,
-    td,
-    th,
-    svg:not([data-framer]),
-    path:not([data-framer]) {
-      transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
+    select {
+      transition-property: background-color, border-color, color, box-shadow, opacity;
       transition-duration: 200ms;
       transition-timing-function: ease;
     }
   }
+}
+
+/* ── Logo shine border rotation (pure CSS, no React re-renders) ────────────── */
+@keyframes shine-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-shine-rotate {
+  animation: shine-rotate 2.8s linear infinite;
 }
 
 /* ── Price pop animation — triggered via key re-mount ──────────────────────── */

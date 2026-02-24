@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { Plus } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SERVICE_CATEGORIES } from '../types/profile.types';
 import type { ServiceItem } from '../types/profile.types';
@@ -44,7 +44,7 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
                         <button
                             key={cat.id}
                             type="button"
-                            onClick={() => { setSelectedCategory(cat.id); setName(''); }}
+                            onClick={() => { setSelectedCategory(cat.id); setName(''); setOpen(true); }}
                             className={cn(
                                 'flex items-center gap-1.5 rounded-lg border px-3 py-2 text-left text-xs font-medium transition-all duration-150 cursor-pointer',
                                 selectedCategory === cat.id
@@ -64,18 +64,27 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
                     <Label className="text-xs text-muted-foreground">{t('ui.text_svc_sname')}</Label>
                     {category && category.suggestions.length > 0 ? (
                         <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
+                            <PopoverAnchor asChild>
                                 <Input
                                     value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={(e) => { setName(e.target.value); setOpen(true); }}
                                     onFocus={() => setOpen(true)}
                                     placeholder={t('ui.text_svc_placeholder')}
                                     autoFocus
                                 />
-                            </PopoverTrigger>
-                            <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+                            </PopoverAnchor>
+                            <PopoverContent
+                                className="p-0 w-[--radix-popover-anchor-width]"
+                                align="start"
+                                onOpenAutoFocus={(e) => e.preventDefault()}
+                                onInteractOutside={(e) => {
+                                    const target = e.target as HTMLElement;
+                                    if (target.closest('[data-slot="popover-anchor"]')) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                            >
                                 <Command shouldFilter={false}>
-                                    <CommandInput placeholder={t('ui.text_svc_search')} value={name} onValueChange={setName} />
                                     <CommandList>
                                         <CommandEmpty>{t('ui.text_svc_notfound')}</CommandEmpty>
                                         <CommandGroup>

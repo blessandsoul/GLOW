@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { UploadSimple, Sparkle, X, ImageSquare, ArrowsDownUp, Lightning } from '@phosphor-icons/react';
@@ -22,6 +22,12 @@ export function UploadZone({ onFileSelect, isLoading, className }: UploadZonePro
     const [preview, setPreview] = useState<string | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (preview) URL.revokeObjectURL(preview);
+        };
+    }, [preview]);
 
     const handleFile = useCallback(
         (file: File) => {

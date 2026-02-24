@@ -29,10 +29,14 @@ class CreditsService {
     async getHistory(
         page: number = 1,
         limit: number = 10,
+        type?: 'earned' | 'spent',
     ): Promise<{ items: CreditTransaction[]; pagination: PaginationMeta }> {
+        const params: Record<string, string | number> = { page, limit };
+        if (type) params.type = type;
+
         const { data } = await apiClient.get<PaginatedApiResponse<CreditTransaction>>(
             API_ENDPOINTS.CREDITS.HISTORY,
-            { params: { page, limit } },
+            { params },
         );
         return data.data;
     }

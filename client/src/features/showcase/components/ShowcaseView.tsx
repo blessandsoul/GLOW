@@ -143,10 +143,10 @@ export function ShowcaseView({ jobId }: ShowcaseViewProps): React.ReactElement {
                                     src={getServerImageUrl(url)}
                                     alt={`Результат ${i + 1}`}
                                     fill
-                                    unoptimized
                                     className="object-cover"
                                     sizes="(max-width: 768px) 100vw, 448px"
                                     priority={i === 0}
+                                    unoptimized
                                 />
                             </div>
                         </div>

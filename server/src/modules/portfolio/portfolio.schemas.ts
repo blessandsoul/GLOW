@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const CreatePortfolioItemSchema = z.object({
-  imageUrl: z.string().url().max(1000),
+  imageUrl: z.string().min(1).max(1000),
   title: z.string().max(200).optional(),
   niche: z.string().max(100).optional(),
   isPublished: z.boolean().default(true),
@@ -26,3 +26,12 @@ export const PortfolioItemIdSchema = z.object({
 export const PublicPortfolioParamsSchema = z.object({
   username: z.string().min(1).max(100),
 });
+
+export const ReorderPortfolioSchema = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid(),
+    sortOrder: z.number().int().min(0),
+  })).min(1).max(100),
+});
+
+export type ReorderPortfolioInput = z.infer<typeof ReorderPortfolioSchema>;

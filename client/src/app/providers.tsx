@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ThemeProvider } from 'next-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -12,6 +12,17 @@ import { setUser, setInitialized } from '@/features/auth/store/authSlice';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
 import type { ApiResponse } from '@/lib/api/api.types';
 import type { IUser } from '@/features/auth/types/auth.types';
+
+export const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 5 * 60 * 1000,
+            gcTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: false,
+            retry: 1,
+        },
+    },
+});
 
 function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactElement {
     useEffect(() => {
@@ -74,8 +85,6 @@ export function Providers({
 }: {
     children: React.ReactNode;
 }): React.ReactElement {
-    const [queryClient] = useState(() => new QueryClient());
-
     return (
         <ReduxProvider store={store}>
             <QueryClientProvider client={queryClient}>

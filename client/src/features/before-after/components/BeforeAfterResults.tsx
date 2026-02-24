@@ -122,7 +122,7 @@ export function BeforeAfterResults({ job, isAuthenticated, onDownload }: BeforeA
                             !isAuthenticated && 'blur-sm',
                         )}>
                             <Image src={getServerImageUrl(url)} alt={`${tab === 'carousel' ? 'Carousel' : 'Stories'} ${i + 1}`}
-                                fill unoptimized className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
+                                fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" unoptimized />
                         </div>
                         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 via-black/30 to-transparent p-2.5 pt-8">
                             <span className="text-xs font-medium text-white/80">

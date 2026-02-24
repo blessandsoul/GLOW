@@ -1,5 +1,5 @@
 import { creditsRepo } from './credits.repo.js';
-import { NotFoundError } from '../../shared/errors/errors.js';
+import { NotFoundError, BadRequestError } from '../../shared/errors/errors.js';
 
 export const PROCESSING_COSTS: Record<string, number> = {
   ENHANCE: 1,
@@ -101,12 +101,28 @@ export const creditsService = {
     userId: string,
     page: number,
     limit: number,
+    type?: 'earned' | 'spent',
   ): Promise<{ items: CreditTransaction[]; totalItems: number }> {
-    return creditsRepo.getTransactions(userId, page, limit);
+    return creditsRepo.getTransactions(userId, page, limit, type);
   },
 
-  async deductForJob(userId: string, processingType: string): Promise<number> {
-    const cost = PROCESSING_COSTS[processingType] ?? 1;
-    return creditsRepo.deductCredits(userId, cost, 'JOB_PROCESSING');
+  async deductForJob(userId: string, processingType: string, jobId?: string): Promise<number> {
+    const cost = creditsService.getCost(processingType);
+    return creditsRepo.deductCredits(userId, cost, 'JOB_PROCESSING', jobId);
+  },
+
+  async refundForJob(userId: string, creditCost: number, jobId: string): Promise<number> {
+    return creditsRepo.refundCredits(userId, creditCost, 'JOB_REFUND', jobId);
+  },
+
+  getCost(processingType: string): number {
+    const cost = PROCESSING_COSTS[processingType];
+    if (cost === undefined) {
+      throw new BadRequestError(
+        `Invalid processing type: ${processingType}`,
+        'INVALID_PROCESSING_TYPE',
+      );
+    }
+    return cost;
   },
 };

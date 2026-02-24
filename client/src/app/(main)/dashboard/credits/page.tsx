@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useCreditsBalance, useCreditHistory, usePurchasePackage } from '@/features/credits/hooks/useCredits';
+import { useCurrentSubscription, useSubscribe, useCancelSubscription, useReactivateSubscription } from '@/features/subscriptions/hooks/useSubscription';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Coins, ArrowDown, ArrowUp, Check, Star, Lightning, Crown, Sparkle, X } from '@phosphor-icons/react';
+import { Coins, Check, Star, Lightning, Crown, Sparkle, X, ShoppingCart, Flame, Gift, ArrowCounterClockwise, CreditCard, CalendarBlank } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import type { SubscriptionQuality } from '@/features/subscriptions/types/subscription.types';
 
 // ── Quality tier types & metadata ─────────────────────────────────────────────
 type Quality = 'low' | 'mid' | 'pro';
@@ -311,7 +313,7 @@ function QualitySwitcher({
 }
 
 // ── Plan card ─────────────────────────────────────────────────────────────────
-function PlanCard({ plan, quality, onQualityChange }: {
+function PlanCard({ plan, quality, onQualityChange, currentPlan, onSubscribe, isSubscribing }: {
     plan: {
         id: string;
         name: string;
@@ -330,9 +332,13 @@ function PlanCard({ plan, quality, onQualityChange }: {
     };
     quality: Quality;
     onQualityChange: (q: Quality) => void;
+    currentPlan?: string;
+    onSubscribe?: (planId: string, quality: Quality) => void;
+    isSubscribing?: boolean;
 }): React.ReactElement {
     const [animKey, setAnimKey] = useState(0);
     const Icon = plan.icon;
+    const isCurrentPlan = currentPlan?.toLowerCase() === plan.id;
 
     const hasPricing = plan.id === 'pro' || plan.id === 'ultra';
     const prices = hasPricing ? PLAN_PRICES[plan.id as 'pro' | 'ultra'] : null;
@@ -420,14 +426,19 @@ function PlanCard({ plan, quality, onQualityChange }: {
             </ul>
 
             <Button
-                variant={plan.ctaVariant}
+                variant={isCurrentPlan ? 'outline' : plan.ctaVariant}
                 size="sm"
-                disabled={plan.disabled}
-                className={cn('mt-5 w-full', plan.highlight && 'shadow-sm')}
+                disabled={isCurrentPlan || isSubscribing || plan.id === 'free'}
+                onClick={() => onSubscribe?.(plan.id, quality)}
+                className={cn('mt-5 w-full', plan.highlight && !isCurrentPlan && 'shadow-sm')}
             >
-                {plan.disabled
-                    ? 'მიმდინარე გეგმა'
-                    : `${plan.name} შეძენა — ${currentPrice} ₾/თვეში`
+                {isSubscribing && !isCurrentPlan
+                    ? 'მუშავდება...'
+                    : isCurrentPlan
+                        ? 'მიმდინარე გეგმა'
+                        : plan.id === 'free'
+                            ? 'უფასო გეგმა'
+                            : `${plan.name} შეძენა — ${currentPrice} ₾/თვეში`
                 }
             </Button>
         </div>
@@ -602,23 +613,134 @@ function PackageCard({ size, isPopular, quality, onQualityChange, onBuy, isPendi
     );
 }
 
+// ── Transaction reason labels ────────────────────────────────────────────────
+const REASON_LABELS: Record<string, { label: string; icon: React.ElementType }> = {
+    PACKAGE_PURCHASE:    { label: 'პაკეტის შეძენა', icon: ShoppingCart },
+    JOB_PROCESSING:      { label: 'ფოტოს დამუშავება', icon: Flame },
+    JOB_REFUND:          { label: 'თანხის დაბრუნება', icon: ArrowCounterClockwise },
+    WELCOME_BONUS:       { label: 'მისასალმებელი ბონუსი', icon: Gift },
+    SUBSCRIPTION:        { label: 'გამოწერა', icon: CreditCard },
+    SUBSCRIPTION_RENEWAL: { label: 'გამოწერის განახლება', icon: CreditCard },
+};
+
+function getReasonMeta(reason: string): { label: string; icon: React.ElementType } {
+    return REASON_LABELS[reason] ?? { label: reason, icon: Coins };
+}
+
+// ── History tab types ────────────────────────────────────────────────────────
+type HistoryTab = 'all' | 'earned' | 'spent';
+
+const HISTORY_TABS: { id: HistoryTab; label: string }[] = [
+    { id: 'all',    label: 'ყველა' },
+    { id: 'earned', label: 'შეძენილი' },
+    { id: 'spent',  label: 'დახარჯული' },
+];
+
+// ── Transaction list (shared between tabs) ───────────────────────────────────
+function TransactionList({ type }: { type?: 'earned' | 'spent' }): React.ReactElement {
+    const { data: history, isLoading } = useCreditHistory(1, 50, type);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-14 rounded-xl" />
+                ))}
+            </div>
+        );
+    }
+
+    if (!history?.items.length) {
+        const emptyMsg = type === 'earned'
+            ? 'შეძენილი ტრანზაქციები ჯერ არ არის'
+            : type === 'spent'
+                ? 'დახარჯული ტრანზაქციები ჯერ არ არის'
+                : 'ტრანზაქციები ჯერ არ არის';
+
+        return (
+            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border py-10 text-center">
+                <Coins size={28} className="text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">{emptyMsg}</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="divide-y divide-border/50 overflow-hidden rounded-2xl border border-border/50 bg-card">
+            {history.items.map((tx) => {
+                const meta = getReasonMeta(tx.reason);
+                const ReasonIcon = meta.icon;
+
+                return (
+                    <div key={tx.id} className="flex items-center gap-4 px-5 py-3.5">
+                        <div className={cn(
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                            tx.delta > 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive',
+                        )}>
+                            <ReasonIcon size={14} weight="bold" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="truncate text-sm text-foreground">{meta.label}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {new Intl.DateTimeFormat('ka-GE', {
+                                    year: 'numeric', month: 'short', day: 'numeric',
+                                    hour: '2-digit', minute: '2-digit',
+                                }).format(new Date(tx.createdAt))}
+                            </p>
+                        </div>
+                        <span className={cn(
+                            'shrink-0 font-semibold tabular-nums text-sm',
+                            tx.delta > 0 ? 'text-success' : 'text-destructive',
+                        )}>
+                            {tx.delta > 0 ? '+' : ''}{tx.delta}
+                        </span>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function CreditsPage(): React.ReactElement {
     const { data: balance, isLoading: balanceLoading, refetch: refetchBalance } = useCreditsBalance();
-    const { data: history, isLoading: historyLoading, refetch: refetchHistory } = useCreditHistory(1, 20);
     const { mutate: purchasePackage, isPending: isPurchasing } = usePurchasePackage(() => {
         refetchBalance();
-        refetchHistory();
     });
+
+    // Subscription state
+    const { data: subscription, isLoading: subLoading, refetch: refetchSub } = useCurrentSubscription();
+
+    const handleSubSuccess = useCallback(() => {
+        refetchSub();
+        refetchBalance();
+    }, [refetchSub, refetchBalance]);
+
+    const { mutate: subscribeToPlan, isPending: isSubscribing } = useSubscribe(handleSubSuccess);
+    const { mutate: cancelSub, isPending: isCancelling } = useCancelSubscription(handleSubSuccess);
+    const { mutate: reactivateSub, isPending: isReactivating } = useReactivateSubscription(handleSubSuccess);
 
     // Global quality state — shared across all cards
     const [quality, setQuality] = useState<Quality>('pro');
     const [showQuiz, setShowQuiz] = useState(true);
+    const [historyTab, setHistoryTab] = useState<HistoryTab>('all');
 
     function handleQuizSelect(q: Quality): void {
         setQuality(q);
         setShowQuiz(false);
     }
+
+    function handleSubscribe(planId: string, q: Quality): void {
+        if (planId === 'free') return;
+        const plan = planId.toUpperCase() as 'PRO' | 'ULTRA';
+        subscribeToPlan({ plan, quality: q as SubscriptionQuality });
+    }
+
+    const tabTypeMap: Record<HistoryTab, 'earned' | 'spent' | undefined> = {
+        all: undefined,
+        earned: 'earned',
+        spent: 'spent',
+    };
 
     return (
         <>
@@ -661,6 +783,59 @@ export default function CreditsPage(): React.ReactElement {
                 </button>
             </div>
 
+            {/* Subscription Status Banner */}
+            {!subLoading && subscription && subscription.plan !== 'FREE' && (
+                <div className="flex flex-col gap-3 rounded-2xl border border-border/50 bg-card px-6 py-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className={cn(
+                            'inline-flex items-center justify-center rounded-full p-2',
+                            subscription.plan === 'ULTRA' ? 'bg-warning/10 text-warning' : 'bg-primary/10 text-primary',
+                        )}>
+                            {subscription.plan === 'ULTRA'
+                                ? <Crown size={18} weight="fill" />
+                                : <Lightning size={18} weight="fill" />
+                            }
+                        </span>
+                        <div>
+                            <p className="text-sm font-semibold text-foreground">
+                                {subscription.plan} გეგმა
+                                {subscription.status === 'CANCELLED' && (
+                                    <span className="ml-2 text-xs font-normal text-warning">გაუქმებულია</span>
+                                )}
+                            </p>
+                            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <CalendarBlank size={12} />
+                                {subscription.autoRenew
+                                    ? `განახლდება: ${new Intl.DateTimeFormat('ka-GE', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(subscription.currentPeriodEnd))}`
+                                    : `მოქმედებს: ${new Intl.DateTimeFormat('ka-GE', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(subscription.currentPeriodEnd))}-მდე`
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    {subscription.autoRenew ? (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => cancelSub()}
+                            disabled={isCancelling}
+                            className="cursor-pointer"
+                        >
+                            {isCancelling ? 'მუშავდება...' : 'გამოწერის გაუქმება'}
+                        </Button>
+                    ) : subscription.status === 'ACTIVE' ? (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => reactivateSub()}
+                            disabled={isReactivating}
+                            className="cursor-pointer"
+                        >
+                            {isReactivating ? 'მუშავდება...' : 'განახლების ჩართვა'}
+                        </Button>
+                    ) : null}
+                </div>
+            )}
+
             {/* Subscription Plans */}
             <section className="space-y-5">
                 <div>
@@ -676,6 +851,9 @@ export default function CreditsPage(): React.ReactElement {
                             plan={plan}
                             quality={quality}
                             onQualityChange={setQuality}
+                            currentPlan={subscription?.plan}
+                            onSubscribe={handleSubscribe}
+                            isSubscribing={isSubscribing}
                         />
                     ))}
                 </div>
@@ -696,46 +874,33 @@ export default function CreditsPage(): React.ReactElement {
                 </div>
             </section>
 
-            {/* Transaction history */}
+            {/* Transaction history — tabbed */}
             <section className="space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">ტრანზაქციების ისტორია</h2>
-                {historyLoading ? (
-                    <div className="space-y-2">
-                        {Array.from({ length: 4 }).map((_, i) => (
-                            <Skeleton key={i} className="h-14 rounded-xl" />
-                        ))}
-                    </div>
-                ) : !history?.items.length ? (
-                    <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border py-10 text-center">
-                        <Coins size={28} className="text-muted-foreground/40" />
-                        <p className="text-sm text-muted-foreground">ტრანზაქციები ჯერ არ არის</p>
-                    </div>
-                ) : (
-                    <div className="divide-y divide-border/50 overflow-hidden rounded-2xl border border-border/50 bg-card">
-                        {history.items.map((tx) => (
-                            <div key={tx.id} className="flex items-center gap-4 px-5 py-3.5">
-                                <div className={cn(
-                                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-                                    tx.delta > 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                                )}>
-                                    {tx.delta > 0 ? <ArrowDown size={14} weight="bold" /> : <ArrowUp size={14} weight="bold" />}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="truncate text-sm text-foreground">{tx.reason}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {new Intl.DateTimeFormat('ka-GE', {
-                                            year: 'numeric', month: 'short', day: 'numeric',
-                                            hour: '2-digit', minute: '2-digit',
-                                        }).format(new Date(tx.createdAt))}
-                                    </p>
-                                </div>
-                                <span className={cn('shrink-0 font-semibold tabular-nums text-sm', tx.delta > 0 ? 'text-success' : 'text-destructive')}>
-                                    {tx.delta > 0 ? '+' : ''}{tx.delta}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-foreground">ტრანზაქციების ისტორია</h2>
+                </div>
+
+                {/* Tab pills */}
+                <div className="flex gap-1 rounded-lg border border-border/50 bg-muted/30 p-1">
+                    {HISTORY_TABS.map((tab) => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setHistoryTab(tab.id)}
+                            className={cn(
+                                'flex-1 cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150',
+                                historyTab === tab.id
+                                    ? 'bg-card text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            )}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Tab content */}
+                <TransactionList type={tabTypeMap[historyTab]} />
             </section>
         </div>
         </>

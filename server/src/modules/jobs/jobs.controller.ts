@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, BatchSettingsSchema } from './jobs.schemas.js';
+import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, ListResultsQuerySchema, BatchSettingsSchema, BulkDeleteSchema } from './jobs.schemas.js';
 import { jobsService } from './jobs.service.js';
 import { BadRequestError } from '../../shared/errors/errors.js';
 import { successResponse } from '../../shared/responses/successResponse.js';
@@ -43,8 +43,21 @@ export const jobsController = {
         : (fields.settings as string)
       : undefined;
 
+    // Extract processingType from settings if provided
+    let processingType = 'ENHANCE';
+    if (settingsStr) {
+      try {
+        const parsed = JSON.parse(settingsStr) as Record<string, unknown>;
+        if (typeof parsed.processingType === 'string') {
+          processingType = parsed.processingType;
+        }
+      } catch {
+        // Ignore parse errors — service handles them
+      }
+    }
+
     const user = request.user as JwtPayload | undefined;
-    const job = await jobsService.createJobFromFile(fileBuffer, data.mimetype, settingsStr, user?.id);
+    const job = await jobsService.createJobFromFile(fileBuffer, data.mimetype, settingsStr, user?.id, processingType);
     await reply.status(201).send(successResponse('Job created', job));
   },
 
@@ -85,9 +98,36 @@ export const jobsController = {
 
   async list(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     const user = request.user as JwtPayload;
-    const { page, limit } = ListJobsQuerySchema.parse(request.query);
-    const { items, total } = await jobsService.listUserJobs(user.id, page, limit);
+    const { page, limit, status } = ListJobsQuerySchema.parse(request.query);
+    const filters = status ? { status } : undefined;
+    const { items, total } = await jobsService.listUserJobs(user.id, page, limit, filters);
     await reply.send(paginatedResponse('Jobs retrieved', items, page, limit, total));
+  },
+
+  async listResults(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const user = request.user as JwtPayload;
+    const images = await jobsService.getResultImages(user.id);
+    await reply.send(successResponse('Result images retrieved', images));
+  },
+
+  async delete(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { jobId } = JobIdParamSchema.parse(request.params);
+    const user = request.user as JwtPayload;
+    await jobsService.deleteJob(jobId, user.id);
+    await reply.send(successResponse('Job deleted', null));
+  },
+
+  async bulkDelete(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { jobIds } = BulkDeleteSchema.parse(request.body);
+    const user = request.user as JwtPayload;
+    const result = await jobsService.bulkDeleteJobs(jobIds, user.id);
+    await reply.send(successResponse('Jobs deleted', result));
+  },
+
+  async stats(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const user = request.user as JwtPayload;
+    const data = await jobsService.getDashboardStats(user.id);
+    await reply.send(successResponse('Dashboard stats', data));
   },
 
   async createBatch(request: FastifyRequest, reply: FastifyReply): Promise<void> {
@@ -112,7 +152,21 @@ export const jobsController = {
     }
 
     const { settings } = BatchSettingsSchema.parse({ settings: settingsStr });
-    const result = await jobsService.createBatch(files, settings, user.id);
+
+    // Extract processingType from settings if provided
+    let processingType = 'ENHANCE';
+    if (settings) {
+      try {
+        const parsed = JSON.parse(settings) as Record<string, unknown>;
+        if (typeof parsed.processingType === 'string') {
+          processingType = parsed.processingType;
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    const result = await jobsService.createBatch(files, settings, user.id, processingType);
     await reply.status(201).send(successResponse('Batch jobs created', result));
   },
 };

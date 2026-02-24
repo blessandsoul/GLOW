@@ -10,6 +10,7 @@ export async function portfolioRoutes(app: FastifyInstance): Promise<void> {
   // Authenticated routes
   app.get('/me', { preHandler: [authenticate] }, controller.getMe);
   app.post('/', { preHandler: [authenticate] }, controller.create);
+  app.patch('/reorder', { preHandler: [authenticate] }, controller.reorder);
   app.patch('/:id', { preHandler: [authenticate] }, controller.update);
   app.delete('/:id', { preHandler: [authenticate] }, controller.remove);
 
