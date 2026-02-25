@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+build
+.env*
+*.log
+npm-debug.log*
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+next-env.d.ts
