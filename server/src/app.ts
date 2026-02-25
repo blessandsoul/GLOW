@@ -31,8 +31,12 @@ export async function buildApp() {
   });
 
   // ── Plugins ──
+  const corsOrigins = env.CORS_ORIGIN.includes(',')
+    ? env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : env.CORS_ORIGIN;
+
   await app.register(cors, {
-    origin: env.CORS_ORIGIN,
+    origin: corsOrigins,
     credentials: true,
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
