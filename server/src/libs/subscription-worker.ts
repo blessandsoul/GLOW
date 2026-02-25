@@ -3,13 +3,15 @@ import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import { subscriptionsService } from '@/modules/subscriptions/subscriptions.service.js';
 
-// Parse REDIS_URL into host/port for BullMQ (avoids ioredis version mismatch)
-function parseRedisUrl(redisUrl: string): { host: string; port: number } {
+// Parse REDIS_URL into connection options for BullMQ
+function parseRedisUrl(redisUrl: string): { host: string; port: number; password?: string; username?: string } {
   try {
     const url = new URL(redisUrl);
     return {
       host: url.hostname || 'localhost',
       port: url.port ? parseInt(url.port, 10) : 6379,
+      ...(url.password ? { password: decodeURIComponent(url.password) } : {}),
+      ...(url.username && url.username !== 'default' ? { username: url.username } : {}),
     };
   } catch {
     return { host: 'localhost', port: 6379 };
