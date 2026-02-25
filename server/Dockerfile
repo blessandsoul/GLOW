@@ -34,6 +34,9 @@ COPY --from=build /app/dist ./dist
 COPY --from=deps /app/prisma ./prisma
 COPY package.json ./
 
+# Copy non-TS data files that tsc doesn't include in dist/
+COPY --from=build /app/src/modules/filters/data ./dist/modules/filters/data
+
 RUN mkdir -p /app/uploads
 
 EXPOSE 4000
