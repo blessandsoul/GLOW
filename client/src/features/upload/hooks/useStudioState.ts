@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
+import { ROUTES } from '@/lib/constants/routes';
 import { getErrorMessage } from '@/lib/utils/error';
 import type { RootState } from '@/store';
 import { useAppDispatch } from '@/store/hooks';
 import { updateCredits } from '@/features/auth/store/authSlice';
 import { useUpload } from './useUpload';
+import { useGuestJob } from './useGuestJob';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useCreditsBalance } from '@/features/credits/hooks/useCredits';
@@ -31,8 +34,6 @@ export interface StudioState {
     setSelectedStyle: (style: Style | null) => void;
     productSettings: ProductAdSettings | null;
     setProductSettings: (settings: ProductAdSettings | null) => void;
-    showResults: boolean;
-    showBAResults: boolean;
     showStories: boolean;
     setShowStories: (v: boolean) => void;
     retouchUrl: string | null;
@@ -57,13 +58,13 @@ export interface StudioState {
 
 export function useStudioState(): StudioState {
     const { t, language } = useLanguage();
+    const router = useRouter();
+    const { setGuestJob: setContextGuestJob } = useGuestJob();
 
     const [mode, setMode] = useState<AppMode>('beauty');
     const [customSettings] = useState<PhotoSettings>(DEFAULT_SETTINGS);
     const [selectedStyle, setSelectedStyle] = useState<Style | null>(null);
     const [productSettings, setProductSettings] = useState<ProductAdSettings | null>(null);
-    const [showResults, setShowResults] = useState(false);
-    const [showBAResults, setShowBAResults] = useState(false);
     const [showStories, setShowStories] = useState(false);
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
     const [guestJob, setGuestJob] = useState<Job | null>(null);
@@ -71,7 +72,11 @@ export function useStudioState(): StudioState {
     const [processingType] = useState<ProcessingType>('ENHANCE');
     const [isDemoJob, setIsDemoJob] = useState(false);
 
-    const { job: uploadedJob, isUploading: isAuthUploading, error: uploadError, uploadFile } = useUpload();
+    const { job: uploadedJob, isUploading: isAuthUploading, error: uploadError, uploadFile } = useUpload({
+        onJobCreated: (job) => {
+            router.replace(ROUTES.CREATE_RESULT(job.id));
+        },
+    });
     const pollId = uploadedJob?.id ?? (guestJob?.id === 'demo' ? null : guestJob?.id ?? null);
     const { job: polledJob, error: pollingError } = useJobPolling(pollId);
     const { job: baJob, isUploading: isBAUploading, upload: uploadBA, reset: resetBA } = useBeforeAfter();
@@ -107,11 +112,11 @@ export function useStudioState(): StudioState {
 
     useEffect(() => {
         if (uploadError) {
-            setShowResults(false);
             setGuestJob(null);
+            setContextGuestJob(null);
             setIsDemoJob(false);
         }
-    }, [uploadError]);
+    }, [uploadError, setContextGuestJob]);
 
     useEffect(() => {
         if (pollingError) {
@@ -129,31 +134,48 @@ export function useStudioState(): StudioState {
                 : selectedStyle?.kind === 'preset'
                     ? { ...selectedStyle.settings, processingType }
                     : { ...customSettings, processingType } as PhotoSettings;
-            const previewImages = ['/presets/beauty/1.png'];
-            const mockJob: Job = {
-                id: 'demo',
-                userId: isAuthenticated ? 'mock-user' : null,
-                status: 'DONE',
-                originalUrl: '',
-                results: previewImages,
-                createdAt: new Date().toISOString(),
-            };
-            setGuestJob(mockJob);
-            setIsDemoJob(!isAuthenticated);
+
             if (isAuthenticated) {
+                const previewImages = ['/presets/beauty/1.png'];
+                const mockJob: Job = {
+                    id: 'demo',
+                    userId: 'mock-user',
+                    status: 'DONE',
+                    originalUrl: '',
+                    results: previewImages,
+                    createdAt: new Date().toISOString(),
+                };
+                setGuestJob(mockJob);
+                setContextGuestJob(mockJob);
+                setIsDemoJob(true);
                 uploadFile({ file, settings });
+                router.push(ROUTES.CREATE_RESULT('demo'));
+            } else {
+                const previewImages = ['/presets/beauty/1.png'];
+                const mockJob: Job = {
+                    id: 'demo',
+                    userId: null,
+                    status: 'DONE',
+                    originalUrl: '',
+                    results: previewImages,
+                    createdAt: new Date().toISOString(),
+                };
+                setGuestJob(mockJob);
+                setContextGuestJob(mockJob);
+                setIsDemoJob(true);
+                router.push(ROUTES.CREATE_RESULT('demo'));
             }
-            setShowResults(true);
         },
-        [uploadFile, customSettings, processingType, isAuthenticated, selectedStyle],
+        [uploadFile, customSettings, processingType, isAuthenticated, selectedStyle, router, setContextGuestJob],
     );
 
     const handleBASubmit = useCallback(
         (beforeFile: File, afterFile: File) => {
+            const baId = `ba-${Date.now()}`;
             uploadBA({ beforeFile, afterFile });
-            setShowBAResults(true);
+            router.push(ROUTES.CREATE_RESULT(baId));
         },
-        [uploadBA],
+        [uploadBA, router],
     );
 
     const handleDownload = useCallback(async (url: string, jobId: string, variantIndex: number, branded: boolean = false) => {
@@ -180,16 +202,16 @@ export function useStudioState(): StudioState {
     }, [dispatch]);
 
     const handleReset = useCallback(() => {
-        setShowResults(false);
-        setShowBAResults(false);
         setShowStories(false);
         setRetouchUrl(null);
         setGuestJob(null);
+        setContextGuestJob(null);
         setBatchResult(null);
         setIsDemoJob(false);
         setSelectedStyle(null);
         resetBA();
-    }, [resetBA]);
+        router.push(ROUTES.CREATE);
+    }, [resetBA, router, setContextGuestJob]);
 
     return {
         t,
@@ -200,8 +222,6 @@ export function useStudioState(): StudioState {
         setSelectedStyle,
         productSettings,
         setProductSettings,
-        showResults,
-        showBAResults,
         showStories,
         setShowStories,
         retouchUrl,

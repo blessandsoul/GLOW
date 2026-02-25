@@ -1,7 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { ArrowLeft, ArrowCounterClockwise, Sparkle } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { Sparkle, Plus } from '@phosphor-icons/react';
+import { ROUTES } from '@/lib/constants/routes';
 import { GuestResultBanner } from './GuestResultBanner';
 import { ResultsGrid } from '@/features/jobs/components/ResultsGrid';
 import type { Job } from '@/features/jobs/types/job.types';
@@ -17,7 +19,7 @@ interface ResultsViewProps {
     setShowStories: (v: boolean) => void;
     setRetouchUrl: (url: string | null) => void;
     handleDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean) => Promise<void>;
-    handleReset: () => void;
+    handleReset?: () => void;
 }
 
 export function ResultsView({
@@ -48,23 +50,14 @@ export function ResultsView({
                 <StoriesGenerator jobId={currentJob.id} />
             )}
             {(currentJob.status === 'DONE' || currentJob.status === 'FAILED') && (
-                <div className="flex items-center justify-center gap-2 pt-4 pb-2">
-                    <button
-                        type="button"
-                        onClick={handleReset}
-                        className="flex items-center gap-1.5 rounded-full border border-border/50 bg-background px-4 py-1.5 text-xs font-medium text-foreground transition-all duration-150 hover:border-border hover:shadow-sm"
+                <div className="flex items-center justify-center gap-3 pt-4 pb-2">
+                    <Link
+                        href={ROUTES.CREATE}
+                        className="flex items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
                     >
-                        <ArrowLeft size={12} />
-                        {t('ui.text_8kq3qa')}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleReset}
-                        className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs text-muted-foreground transition-colors duration-150 hover:text-foreground"
-                    >
-                        <ArrowCounterClockwise size={12} />
-                        {t('ui.text_84crcz')}
-                    </button>
+                        <Plus size={13} weight="bold" />
+                        {t('dashboard.create_new')}
+                    </Link>
                 </div>
             )}
         </div>

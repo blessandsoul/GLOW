@@ -16,7 +16,6 @@ import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/constants/routes';
 import { GuestResultBanner } from '@/features/upload/components/GuestResultBanner';
 import { CaptionGenerator } from '@/features/captions/components/CaptionGenerator';
-import { ImageCompare } from '@/components/ui/ImageCompare';
 import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
 import { useBranding } from '@/features/branding/hooks/useBranding';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
@@ -231,7 +230,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
     const hasBranding = !!(isAuthenticated && !isDemo && brandingProfile?.isActive &&
         brandingProfile.displayName && brandingProfile.instagramHandle);
 
-    const [showBranding, setShowBranding] = useState(true);
+    const [showBranding, setShowBranding] = useState(false);
     const [selectedAfterIdx, setSelectedAfterIdx] = useState(0);
 
     if (job.status === 'PENDING' || job.status === 'PROCESSING') {
@@ -284,29 +283,6 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
             {isDemo && <DemoBanner />}
             {isGuest && !isDemo && <GuestResultBanner jobId={job.id} />}
 
-            {/* Before / After comparison — uses same ImageCompare as hero section */}
-            {isAuthenticated && !isDemo && results.length > 0 && job.originalUrl && (
-                <div className="flex flex-col items-center gap-2">
-                    <div className="flex w-full max-w-sm items-center justify-between px-1">
-                        <span className="text-xs font-medium text-muted-foreground">{t('ui.text_pt6')}</span>
-                        <span className="text-xs font-medium text-primary">{t('ui.text_gnzjzw')}</span>
-                    </div>
-                    <ImageCompare
-                        beforeSrc={getServerImageUrl(job.originalUrl)}
-                        afterSrc={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
-                        beforeAlt={t('ui.text_pt6')}
-                        afterAlt={t('ui.text_gnzjzw')}
-                        initialPosition={50}
-                        className="aspect-[3/4] w-full max-w-sm rounded-xl"
-                    />
-                    {results.length > 1 && (
-                        <p className="text-[10px] text-muted-foreground">
-                            {t('ui.text_tfd6xc')} #{selectedAfterIdx + 1}
-                        </p>
-                    )}
-                </div>
-            )}
-
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -320,21 +296,21 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    {/* Branding toggle */}
+                    {/* Branding toggle — prominent pill */}
                     {hasBranding && (
                         <button
                             type="button"
                             onClick={() => setShowBranding((v) => !v)}
                             className={cn(
-                                'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all duration-200',
+                                'flex items-center gap-2 rounded-xl border-2 px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97]',
                                 showBranding
-                                    ? 'border-primary/30 bg-primary/10 text-primary'
-                                    : 'border-border/50 bg-muted/30 text-muted-foreground',
+                                    ? 'border-primary bg-primary/10 text-primary shadow-sm shadow-primary/10'
+                                    : 'border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground',
                             )}
                             aria-label={showBranding ? 'Hide branding' : 'Show branding'}
                         >
-                            {showBranding ? <Stamp size={12} weight="fill" /> : <EyeSlash size={12} />}
-                            {showBranding ? 'Branded' : 'Clean'}
+                            <Stamp size={14} weight={showBranding ? 'fill' : 'regular'} />
+                            {showBranding ? 'Branded' : 'Add branding'}
                         </button>
                     )}
                     {!isAuthenticated && !isGuest && (
@@ -348,90 +324,171 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                 </div>
             </div>
 
-            {/* Results grid */}
-            <div className={cn(
-                results.length === 1
-                    ? 'flex justify-center'
-                    : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
-            )}>
-                {results.map((url, i) => (
-                    <div
-                        key={i}
-                        className={cn(
-                            'group relative overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer',
-                            results.length === 1 && 'w-full max-w-sm',
-                            selectedAfterIdx === i && isAuthenticated && !isDemo
-                                ? 'border-primary/50 ring-2 ring-primary/20'
-                                : 'border-border/50',
-                        )}
-                        onClick={() => setSelectedAfterIdx(i)}
-                    >
-                        <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
-                            <Image
-                                src={getServerImageUrl(url)}
-                                alt={`Вариант ${i + 1}`}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 50vw, 25vw"
-                                unoptimized
-                            />
-                            {/* Branding overlay */}
-                            {brandingVisible && brandingProfile && (
-                                <WatermarkOverlay
-                                    style={brandingProfile.watermarkStyle}
-                                    color={brandingProfile.primaryColor}
-                                    name={brandingProfile.displayName ?? ''}
-                                    handle={brandingProfile.instagramHandle ?? ''}
-                                    logoUrl={brandingProfile.logoUrl ? getServerImageUrl(brandingProfile.logoUrl) : null}
-                                    opacity={brandingProfile.watermarkOpacity}
+            {/* Before / After side-by-side comparison */}
+            {results.length > 0 && job.originalUrl && (
+                <div className="flex flex-col gap-3">
+                    <div className="grid grid-cols-2 gap-3">
+                        {/* Before (Original) */}
+                        <div className="relative overflow-hidden rounded-xl border border-border/50">
+                            <div className="relative aspect-3/4">
+                                <Image
+                                    src={getServerImageUrl(job.originalUrl)}
+                                    alt={t('ui.text_pt6')}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 640px) 50vw, 40vw"
+                                    unoptimized
                                 />
-                            )}
+                            </div>
+                            <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-2.5 pt-6">
+                                <span className="text-xs font-semibold text-white/90">{t('ui.text_pt6')}</span>
+                            </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 via-black/30 to-transparent p-2.5 pt-8">
-                            <span className="text-xs font-medium text-white/80">
-                                {isDemo ? 'Demo' : `#${i + 1}`}
-                            </span>
-                            {isAuthenticated && !isDemo && (
-                                <div className="flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                                    {onRetouch && (
+
+                        {/* After (Result) */}
+                        <div className="group relative overflow-hidden rounded-xl border border-primary/30 ring-2 ring-primary/15">
+                            <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
+                                <Image
+                                    src={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
+                                    alt={t('ui.text_gnzjzw')}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 640px) 50vw, 40vw"
+                                    unoptimized
+                                />
+                                {/* Branding overlay */}
+                                {brandingVisible && brandingProfile && (
+                                    <WatermarkOverlay
+                                        style={brandingProfile.watermarkStyle}
+                                        color={brandingProfile.primaryColor}
+                                        name={brandingProfile.displayName ?? ''}
+                                        handle={brandingProfile.instagramHandle ?? ''}
+                                        logoUrl={brandingProfile.logoUrl ? getServerImageUrl(brandingProfile.logoUrl) : null}
+                                        opacity={brandingProfile.watermarkOpacity}
+                                    />
+                                )}
+                            </div>
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/60 to-transparent px-3 pb-2.5 pt-6">
+                                <span className="text-xs font-semibold text-white/90">{t('ui.text_gnzjzw')}</span>
+                                {isAuthenticated && !isDemo && (
+                                    <div className="flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                        {onRetouch && (
+                                            <button
+                                                type="button"
+                                                onClick={() => onRetouch(results[selectedAfterIdx] ?? results[0])}
+                                                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
+                                                aria-label={t('ui.text_jry5cq')}
+                                            >
+                                                <Eraser size={12} className="text-white" />
+                                            </button>
+                                        )}
                                         <button
                                             type="button"
-                                            onClick={(e) => { e.stopPropagation(); onRetouch(url); }}
+                                            onClick={() => handleShare(results[selectedAfterIdx] ?? results[0])}
                                             className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
-                                            aria-label={t('ui.text_jry5cq')}
+                                            aria-label={t('ui.text_nq6g7p')}
                                         >
-                                            <Eraser size={12} className="text-white" />
+                                            <ShareNetwork size={12} className="text-white" />
                                         </button>
-                                    )}
-                                    <button
-                                        type="button"
-                                        onClick={(e) => { e.stopPropagation(); handleShare(url); }}
-                                        className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
-                                        aria-label={t('ui.text_nq6g7p')}
-                                    >
-                                        <ShareNetwork size={12} className="text-white" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => { e.stopPropagation(); onDownload(url, job.id, i, brandingVisible); }}
-                                        className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
-                                        aria-label={t('ui.text_9ftpjq')}
-                                    >
-                                        <DownloadSimple size={12} className="text-white" />
-                                    </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, brandingVisible)}
+                                            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
+                                            aria-label={t('ui.text_9ftpjq')}
+                                        >
+                                            <DownloadSimple size={12} className="text-white" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            {(!isAuthenticated || isDemo) && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="rounded-full bg-background/80 p-2 shadow-sm backdrop-blur-sm">
+                                        <Lock size={16} className="text-muted-foreground" />
+                                    </div>
                                 </div>
                             )}
                         </div>
-                        {(!isAuthenticated || isDemo) && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="rounded-full bg-background/80 p-2 shadow-sm backdrop-blur-sm">
-                                    <Lock size={16} className="text-muted-foreground" />
-                                </div>
-                            </div>
-                        )}
                     </div>
-                ))}
-            </div>
+
+                    {/* Variant thumbnails — only when multiple results */}
+                    {results.length > 1 && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-medium text-muted-foreground shrink-0">{t('ui.text_tfd6xc')}:</span>
+                            <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                {results.map((url, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => setSelectedAfterIdx(i)}
+                                        className={cn(
+                                            'relative h-12 w-9 shrink-0 overflow-hidden rounded-md border transition-all duration-150',
+                                            selectedAfterIdx === i
+                                                ? 'border-primary ring-1 ring-primary/30'
+                                                : 'border-border/40 hover:border-border',
+                                        )}
+                                    >
+                                        <Image
+                                            src={getServerImageUrl(url)}
+                                            alt={`#${i + 1}`}
+                                            fill
+                                            className="object-cover"
+                                            sizes="36px"
+                                            unoptimized
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Fallback grid for demo/guest (no originalUrl) */}
+            {results.length > 0 && !job.originalUrl && (
+                <div className={cn(
+                    results.length === 1
+                        ? 'flex justify-center'
+                        : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
+                )}>
+                    {results.map((url, i) => (
+                        <div
+                            key={i}
+                            className={cn(
+                                'group relative overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer',
+                                results.length === 1 && 'w-full max-w-sm',
+                                selectedAfterIdx === i && isAuthenticated && !isDemo
+                                    ? 'border-primary/50 ring-2 ring-primary/20'
+                                    : 'border-border/50',
+                            )}
+                            onClick={() => setSelectedAfterIdx(i)}
+                        >
+                            <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
+                                <Image
+                                    src={getServerImageUrl(url)}
+                                    alt={`Вариант ${i + 1}`}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 640px) 50vw, 25vw"
+                                    unoptimized
+                                />
+                            </div>
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 via-black/30 to-transparent p-2.5 pt-8">
+                                <span className="text-xs font-medium text-white/80">
+                                    {isDemo ? 'Demo' : `#${i + 1}`}
+                                </span>
+                            </div>
+                            {(!isAuthenticated || isDemo) && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="rounded-full bg-background/80 p-2 shadow-sm backdrop-blur-sm">
+                                        <Lock size={16} className="text-muted-foreground" />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Download panel — explicit branded/clean options for selected image */}
             {isAuthenticated && !isDemo && results.length > 0 && (

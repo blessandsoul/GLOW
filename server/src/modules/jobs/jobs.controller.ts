@@ -36,12 +36,11 @@ export const jobsController = {
       throw new BadRequestError('No file uploaded', 'NO_FILE');
     }
     const fileBuffer = await data.toBuffer();
-    const fields = request.body as Record<string, { value: string } | string> | undefined;
-    const settingsStr = fields?.settings
-      ? typeof fields.settings === 'object'
-        ? (fields.settings as { value: string }).value
-        : (fields.settings as string)
-      : undefined;
+    // Read fields from the multipart file object (not request.body) so fields
+    // that appear after the file part in the form data are captured correctly.
+    const fields = data.fields as Record<string, { value: string } | undefined> | undefined;
+    const settingsField = fields?.settings;
+    const settingsStr = settingsField ? settingsField.value : undefined;
 
     // Extract processingType from settings if provided
     let processingType = 'ENHANCE';
@@ -67,19 +66,10 @@ export const jobsController = {
       throw new BadRequestError('No file uploaded', 'NO_FILE');
     }
     const fileBuffer = await data.toBuffer();
-    const fields = request.body as Record<string, { value: string } | string> | undefined;
+    const fields = data.fields as Record<string, { value: string } | undefined> | undefined;
 
-    const settingsStr = fields?.settings
-      ? typeof fields.settings === 'object'
-        ? (fields.settings as { value: string }).value
-        : (fields.settings as string)
-      : undefined;
-
-    const sessionId = fields?.sessionId
-      ? typeof fields.sessionId === 'object'
-        ? (fields.sessionId as { value: string }).value
-        : (fields.sessionId as string)
-      : undefined;
+    const settingsStr = fields?.settings ? fields.settings.value : undefined;
+    const sessionId = fields?.sessionId ? fields.sessionId.value : undefined;
 
     if (!sessionId) {
       throw new BadRequestError('Session ID required for guest demo', 'NO_SESSION');

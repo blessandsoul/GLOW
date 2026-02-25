@@ -14,6 +14,10 @@ interface UploadPayload {
     settings: PhotoSettings;
 }
 
+interface UseUploadOptions {
+    onJobCreated?: (job: Job) => void;
+}
+
 interface UseUploadReturn {
     job: Job | null;
     isUploading: boolean;
@@ -21,7 +25,7 @@ interface UseUploadReturn {
     uploadFile: (payload: UploadPayload) => void;
 }
 
-export function useUpload(): UseUploadReturn {
+export function useUpload(options?: UseUploadOptions): UseUploadReturn {
     const [job, setJob] = useState<Job | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -34,6 +38,7 @@ export function useUpload(): UseUploadReturn {
             try {
                 const data = await jobService.uploadPhoto(file, settings);
                 setJob(data);
+                options?.onJobCreated?.(data);
                 // Sync credit balance in Redux after successful upload
                 if (data.creditsRemaining !== undefined) {
                     dispatch(updateCredits(data.creditsRemaining));

@@ -3,6 +3,7 @@ export const ROUTES = {
     LOGIN: '/login',
     REGISTER: '/register',
     CREATE: '/create',
+    CREATE_RESULT: (jobId: string) => `/create/${jobId}` as const,
     DASHBOARD: '/dashboard',
     DASHBOARD_CREDITS: '/dashboard/credits',
     DASHBOARD_BRANDING: '/dashboard/branding',

@@ -134,18 +134,26 @@ export const jobsService = {
 
     // Resolve prompt: filter ID lookup → settings-based → default
     let prompt: string | undefined;
+    let promptSource = 'default';
     if (settings && typeof settings === 'object' && 'filterId' in settings) {
       const filterId = (settings as { filterId?: string }).filterId;
       if (filterId) {
         prompt = filtersService.getPromptById(filterId) ?? undefined;
+        if (prompt) {
+          promptSource = `filter:${filterId}`;
+        } else {
+          logger.warn({ filterId }, 'Filter ID provided but no prompt found in promptMap');
+        }
       }
     }
     if (!prompt && settings) {
       prompt = buildPromptFromSettings(settings as Record<string, unknown>);
+      promptSource = 'settings';
     }
     if (!prompt) {
       prompt = DEFAULT_PROMPT;
     }
+    logger.info({ jobId: job.id, promptSource, promptLength: prompt.length }, 'Resolved prompt for AI processing');
 
     // Process with AI asynchronously (fire-and-forget)
     processImageWithAI(fileBuffer, prompt)
@@ -347,18 +355,26 @@ export const jobsService = {
 
     // Resolve prompt once for the batch (all jobs share same settings)
     let batchPrompt: string | undefined;
+    let batchPromptSource = 'default';
     if (settings && typeof settings === 'object' && 'filterId' in settings) {
       const filterId = (settings as { filterId?: string }).filterId;
       if (filterId) {
         batchPrompt = filtersService.getPromptById(filterId) ?? undefined;
+        if (batchPrompt) {
+          batchPromptSource = `filter:${filterId}`;
+        } else {
+          logger.warn({ filterId }, 'Filter ID provided but no prompt found in promptMap (batch)');
+        }
       }
     }
     if (!batchPrompt && settings) {
       batchPrompt = buildPromptFromSettings(settings as Record<string, unknown>);
+      batchPromptSource = 'settings';
     }
     if (!batchPrompt) {
       batchPrompt = DEFAULT_PROMPT;
     }
+    logger.info({ batchId, batchPromptSource, promptLength: batchPrompt.length }, 'Resolved prompt for batch AI processing');
 
     // Process files sequentially to ensure correct credit deduction
     let creditsRemaining = user.credits;

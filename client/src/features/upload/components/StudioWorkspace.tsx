@@ -9,7 +9,11 @@ import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import { UploadSection } from './UploadSection';
 
-export function StudioWorkspace(): React.ReactElement {
+interface StudioWorkspaceProps {
+    children?: React.ReactNode;
+}
+
+export function StudioWorkspace({ children }: StudioWorkspaceProps): React.ReactElement {
     const { user } = useAuth();
     const { t } = useLanguage();
     const [mounted, setMounted] = useState(false);
@@ -56,7 +60,7 @@ export function StudioWorkspace(): React.ReactElement {
             {/* Workspace card */}
             <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
                 {mounted ? (
-                    <UploadSection />
+                    children ?? <UploadSection />
                 ) : (
                     <div className="flex min-h-130 w-full items-center justify-center">
                         <Sparkle size={28} weight="fill" className="animate-pulse text-primary/30" />
