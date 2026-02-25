@@ -4,13 +4,15 @@ import { logger } from '@/libs/logger.js';
 import { prisma, disconnectPrisma } from '@/libs/prisma.js';
 import { connectRedis, disconnectRedis } from '@/libs/redis.js';
 import { emailWorker } from '@/libs/queue.js';
+import { subscriptionWorker, startSubscriptionRenewalSchedule } from '@/libs/subscription-worker.js';
 
 async function main(): Promise<void> {
   const app = await buildApp();
 
-  // Register email worker shutdown hook
+  // Register worker shutdown hooks
   app.addHook('onClose', async () => {
     await emailWorker.close();
+    await subscriptionWorker.close();
   });
 
   // Connect Database
@@ -32,6 +34,11 @@ async function main(): Promise<void> {
   // Start server
   await app.listen({ port: env.PORT, host: env.HOST });
   logger.info(`Server running at http://${env.HOST}:${env.PORT} [${env.NODE_ENV}]`);
+
+  // Start subscription renewal schedule
+  startSubscriptionRenewalSchedule().catch((err) => {
+    logger.warn({ err }, 'Failed to start subscription renewal schedule');
+  });
 
   // Graceful shutdown
   const shutdown = async (signal: string): Promise<void> => {

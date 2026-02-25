@@ -15,11 +15,17 @@ function parseExpiryToSeconds(expiry: string): number {
   }
 }
 
+function getSameSite(): 'lax' | 'none' {
+  // Cross-domain deployments (server and client on different domains) require 'none'.
+  // Once server is on a subdomain of the client (e.g. api.glow.ge), switch back to 'lax'.
+  return env.COOKIE_DOMAIN ? 'lax' : 'none';
+}
+
 function getAccessTokenCookieOptions(): CookieSerializeOptions {
   const options: CookieSerializeOptions = {
     httpOnly: true,
     secure: env.COOKIE_SECURE,
-    sameSite: 'lax',
+    sameSite: getSameSite(),
     path: '/',
     maxAge: parseExpiryToSeconds(env.JWT_ACCESS_EXPIRY),
   };
@@ -33,7 +39,7 @@ function getRefreshTokenCookieOptions(): CookieSerializeOptions {
   const options: CookieSerializeOptions = {
     httpOnly: true,
     secure: env.COOKIE_SECURE,
-    sameSite: 'lax',
+    sameSite: getSameSite(),
     path: '/api/v1/auth',
     maxAge: parseExpiryToSeconds(env.JWT_REFRESH_EXPIRY),
   };

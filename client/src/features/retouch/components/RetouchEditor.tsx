@@ -81,7 +81,7 @@ export function RetouchEditor({ imageUrl, onSubmit, isProcessing }: RetouchEdito
                 }}
             >
                 <div className="relative aspect-3/4">
-                    <Image src={getServerImageUrl(imageUrl)} alt={t('ui.text_ko6wbc')} fill unoptimized className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+                    <Image src={getServerImageUrl(imageUrl)} alt={t('ui.text_ko6wbc')} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" unoptimized />
                 </div>
 
                 {/* Point markers */}

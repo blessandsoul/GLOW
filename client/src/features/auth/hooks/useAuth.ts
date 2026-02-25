@@ -2,6 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../services/auth.service';
 import { setUser, logout as logoutAction } from '../store/authSlice';
 import { useRouter } from 'next/navigation';
@@ -10,6 +11,7 @@ import type { ILoginRequest } from '../types/auth.types';
 export const useAuth = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { user, isAuthenticated, isInitializing } = useAppSelector(
         (state) => state.auth
     );
@@ -25,7 +27,10 @@ export const useAuth = () => {
         try {
             const res = await authService.login(data);
             dispatch(setUser(res.user));
-            router.push('/dashboard');
+            const searchParams = new URLSearchParams(window.location.search);
+            const from = searchParams.get('from');
+            const safeRedirect = from && from.startsWith('/') && !from.startsWith('//') ? from : '/dashboard';
+            router.push(safeRedirect);
         } catch (error) {
             setLoginError(error instanceof Error ? error : new Error('Login failed'));
         } finally {
@@ -53,6 +58,7 @@ export const useAuth = () => {
         try {
             await authService.logout();
         } finally {
+            queryClient.clear();
             dispatch(logoutAction());
             router.push('/login');
         }

@@ -1,10 +1,11 @@
 import React from 'react';
-import { ProfileSetup, PersonalInfoSection } from '@/features/profile/components/ProfileSetup';
+import Link from 'next/link';
+import { ArrowRight, Briefcase } from '@phosphor-icons/react/dist/ssr';
+import { PersonalInfoSection } from '@/features/profile/components/ProfileSetup';
 import { AccountStatus } from '@/features/profile/components/AccountStatus';
 import { ChangePassword } from '@/features/profile/components/ChangePassword';
 import { DeleteAccount } from '@/features/profile/components/DeleteAccount';
-import { PublicProfileCard } from '@/features/profile/components/PublicProfileCard';
-import { PortfolioPreview } from '@/features/profile/components/PortfolioPreview';
+import { ROUTES } from '@/lib/constants/routes';
 
 export default function ProfilePage(): React.ReactElement {
     return (
@@ -13,27 +14,37 @@ export default function ProfilePage(): React.ReactElement {
             <div>
                 <h1 className="text-2xl font-bold text-foreground">Profile</h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                    Manage your personal info, portfolio, and account settings.
+                    Manage your personal info and account settings.
                 </p>
             </div>
 
             {/* 1. Account status — role, email, member since */}
             <AccountStatus />
 
-            {/* 2. Public profile link + portfolio mini-preview */}
-            <PublicProfileCard />
-            <PortfolioPreview />
-
-            {/* 3. Personal info — avatar, name */}
+            {/* 2. Personal info — avatar, name */}
             <PersonalInfoSection />
 
-            {/* 4. Master profile — city, niche, bio, contacts, services */}
-            <ProfileSetup />
+            {/* 3. Portfolio CTA */}
+            <Link
+                href={ROUTES.DASHBOARD_PORTFOLIO}
+                className="flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-5 transition-all duration-200 hover:border-primary/40 hover:bg-primary/10"
+            >
+                <div className="rounded-full bg-primary/10 p-3">
+                    <Briefcase size={22} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground">Build your portfolio</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                        Add services, photos, and share your professional page with clients
+                    </p>
+                </div>
+                <ArrowRight size={18} className="shrink-0 text-primary" />
+            </Link>
 
-            {/* 5. Security */}
+            {/* 4. Security */}
             <ChangePassword />
 
-            {/* 6. Danger zone */}
+            {/* 5. Danger zone */}
             <DeleteAccount />
         </div>
     );

@@ -2,7 +2,8 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { NotFoundError, ForbiddenError, BadRequestError } from '../../shared/errors/errors.js';
 import { jobsRepo } from './jobs.repo.js';
-import { applyWatermark } from '../../libs/watermark.js';
+import { applyWatermark, applyBranding } from '../../libs/watermark.js';
+import { brandingRepo } from '../branding/branding.repo.js';
 import { redis } from '../../libs/redis.js';
 import { prisma } from '../../libs/prisma.js';
 import { schedulePhotoReadyEmail } from '../../libs/queue.js';
@@ -10,7 +11,9 @@ import { logger } from '../../libs/logger.js';
 import { uploadFile, validateImage } from '../../libs/storage.js';
 import { processImageWithAI } from '../../libs/ai-image.js';
 import { filtersService } from '../filters/filters.service.js';
+import { creditsService } from '../credits/credits.service.js';
 import { buildPromptFromSettings, DEFAULT_PROMPT } from './prompt-builder.js';
+import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
 import type { StorageFile } from '../../libs/storage.js';
 
 export const jobsService = {
@@ -18,6 +21,7 @@ export const jobsService = {
     jobId: string,
     variantIndex: number,
     requestingUserId: string | undefined,
+    branded: boolean,
   ): Promise<{ buffer: Buffer; filename: string }> {
     const job = await jobsRepo.findJobByIdWithUser(jobId);
 
@@ -33,10 +37,10 @@ export const jobsService = {
       throw new NotFoundError('Result variant not found', 'VARIANT_NOT_FOUND');
     }
 
-    // Determine watermark: guests always get it, FREE users get it, PRO+ users don't
+    // Determine Glow.GE watermark: guests always get it, FREE users get it, PRO+ users don't
     const isOwner = job.userId === requestingUserId;
     const userPlan: string = job.user?.subscription?.plan ?? 'FREE';
-    const needsWatermark = !isOwner || userPlan === 'FREE';
+    const needsGlowWatermark = !isOwner || userPlan === 'FREE';
 
     // Load image from local storage or external URL (backward compat)
     const resultUrl = results[variantIndex];
@@ -57,9 +61,27 @@ export const jobsService = {
       imageBuffer = Buffer.from(await response.arrayBuffer());
     }
 
-    const finalBuffer = needsWatermark
-      ? await applyWatermark(imageBuffer)
-      : imageBuffer;
+    let finalBuffer = imageBuffer;
+
+    // Apply custom branding if requested and user has an active branding profile
+    if (branded && job.userId) {
+      const branding = await brandingRepo.findByUserId(job.userId);
+      if (branding?.isActive && branding.displayName && branding.instagramHandle) {
+        finalBuffer = await applyBranding(finalBuffer, {
+          displayName: branding.displayName,
+          instagramHandle: branding.instagramHandle,
+          logoUrl: branding.logoUrl,
+          primaryColor: branding.primaryColor,
+          watermarkStyle: branding.watermarkStyle,
+          watermarkOpacity: branding.watermarkOpacity,
+        });
+      }
+    }
+
+    // Apply Glow.GE watermark for FREE/guest users (separate from custom branding)
+    if (needsGlowWatermark) {
+      finalBuffer = await applyWatermark(finalBuffer);
+    }
 
     return {
       buffer: finalBuffer,
@@ -72,7 +94,10 @@ export const jobsService = {
     mimeType: string,
     settingsStr: string | undefined,
     userId: string | undefined,
-  ): Promise<{ id: string; status: string; originalUrl: string }> {
+    processingType: string = 'ENHANCE',
+  ): Promise<{ id: string; status: string; originalUrl: string; creditsRemaining?: number }> {
+    const creditCost = creditsService.getCost(processingType);
+
     // Save original upload to local storage
     const storageFile: StorageFile = {
       buffer: fileBuffer,
@@ -97,7 +122,15 @@ export const jobsService = {
       originalUrl,
       settings,
       status: 'PROCESSING',
+      processingType,
+      creditCost,
     });
+
+    // Deduct credits for authenticated users (after job creation so we can link transaction to jobId)
+    let creditsRemaining: number | undefined;
+    if (userId) {
+      creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+    }
 
     // Resolve prompt: filter ID lookup → settings-based → default
     let prompt: string | undefined;
@@ -129,9 +162,15 @@ export const jobsService = {
         await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
           // Ignore DB update errors in background
         });
+        // Refund credits on AI processing failure
+        if (userId) {
+          creditsService.refundForJob(userId, creditCost, job.id).catch((refundErr) => {
+            logger.error({ err: refundErr, jobId: job.id }, 'Failed to refund credits after job failure');
+          });
+        }
       });
 
-    return { id: job.id, status: job.status, originalUrl: job.originalUrl };
+    return { id: job.id, status: job.status, originalUrl: job.originalUrl, creditsRemaining };
   },
 
   async createGuestJob(
@@ -184,28 +223,105 @@ export const jobsService = {
     userId: string,
     page: number,
     limit: number,
+    filters?: { status?: string },
   ): Promise<Awaited<ReturnType<typeof jobsRepo.findByUserId>>> {
-    return jobsRepo.findByUserId(userId, page, limit);
+    return jobsRepo.findByUserId(userId, page, limit, filters);
+  },
+
+  async deleteJob(jobId: string, userId: string): Promise<void> {
+    const job = await jobsRepo.findById(jobId);
+    if (!job) {
+      throw new NotFoundError('Job not found', 'JOB_NOT_FOUND');
+    }
+    if (job.userId !== userId) {
+      throw new ForbiddenError('Access denied', 'JOB_FORBIDDEN');
+    }
+    await jobsRepo.deleteByIdAndUserId(jobId, userId);
+  },
+
+  async bulkDeleteJobs(jobIds: string[], userId: string): Promise<{ deleted: number }> {
+    const deleted = await jobsRepo.deleteManyByIdsAndUserId(jobIds, userId);
+    return { deleted };
+  },
+
+  async getDashboardStats(userId: string): Promise<{
+    totalJobs: number;
+    totalPhotos: number;
+    credits: number;
+    plan: string;
+  }> {
+    const [stats, user] = await Promise.all([
+      jobsRepo.getStatsByUserId(userId),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { credits: true, subscription: { select: { plan: true } } },
+      }),
+    ]);
+
+    return {
+      totalJobs: stats.totalJobs,
+      totalPhotos: stats.totalResults,
+      credits: user?.credits ?? 0,
+      plan: user?.subscription?.plan ?? 'FREE',
+    };
+  },
+
+  async getResultImages(userId: string): Promise<{ jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[]> {
+    const jobs = await jobsRepo.findDoneResultsByUserId(userId);
+    const images: { jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[] = [];
+
+    for (const job of jobs) {
+      const results = job.results as string[] | null;
+      if (!results) continue;
+      for (let i = 0; i < results.length; i++) {
+        images.push({
+          jobId: job.id,
+          imageUrl: results[i],
+          variantIndex: i,
+          createdAt: job.createdAt,
+        });
+      }
+    }
+
+    return images;
   },
 
   async createBatch(
     files: Array<{ buffer: Buffer; mimeType: string }>,
     settingsStr: string | undefined,
     userId: string,
-  ): Promise<{ batchId: string; jobs: Array<{ id: string; status: string }> }> {
+    processingType: string = 'ENHANCE',
+  ): Promise<{ batchId: string; jobs: Array<{ id: string; status: string }>; creditsRemaining: number }> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { subscription: { select: { plan: true } } },
+      select: { credits: true, subscription: { select: { plan: true } } },
     });
-    if (!user?.subscription || user.subscription.plan === 'FREE') {
-      throw new ForbiddenError('Batch upload requires PRO plan', 'PRO_REQUIRED');
+    if (!user) {
+      throw new NotFoundError('User not found', 'USER_NOT_FOUND');
+    }
+    const planConfig = getPlanConfig(user.subscription?.plan ?? 'FREE');
+    if (!planConfig.batchUploadEnabled) {
+      throw new ForbiddenError('Batch upload requires ULTRA plan', 'ULTRA_REQUIRED');
     }
 
     if (files.length === 0) {
       throw new BadRequestError('At least one file required', 'NO_FILES');
     }
-    if (files.length > 10) {
-      throw new BadRequestError('Maximum 10 files per batch', 'TOO_MANY_FILES');
+    if (files.length > planConfig.maxBatchSize) {
+      throw new BadRequestError(
+        `Maximum ${planConfig.maxBatchSize} files per batch`,
+        'TOO_MANY_FILES',
+      );
+    }
+
+    // Check total credits needed up front
+    const creditCost = creditsService.getCost(processingType);
+    const totalCost = files.length * creditCost;
+    if (user.credits < totalCost) {
+      throw new BadRequestError(
+        `Insufficient credits. Need ${totalCost}, have ${user.credits}.`,
+        'INSUFFICIENT_CREDITS',
+      );
     }
 
     // Validate all files upfront before saving any
@@ -229,60 +345,69 @@ export const jobsService = {
         })()
       : undefined;
 
-    const jobs = await Promise.all(
-      files.map(async (file) => {
-        // Save original upload to local storage
-        const storageFile: StorageFile = {
-          buffer: file.buffer,
-          filename: `upload.${file.mimeType.split('/')[1] || 'jpg'}`,
-          mimetype: file.mimeType,
-        };
-        const originalUrl = await uploadFile(storageFile, 'jobs');
+    // Resolve prompt once for the batch (all jobs share same settings)
+    let batchPrompt: string | undefined;
+    if (settings && typeof settings === 'object' && 'filterId' in settings) {
+      const filterId = (settings as { filterId?: string }).filterId;
+      if (filterId) {
+        batchPrompt = filtersService.getPromptById(filterId) ?? undefined;
+      }
+    }
+    if (!batchPrompt && settings) {
+      batchPrompt = buildPromptFromSettings(settings as Record<string, unknown>);
+    }
+    if (!batchPrompt) {
+      batchPrompt = DEFAULT_PROMPT;
+    }
 
-        const job = await jobsRepo.createJob({
-          userId,
-          originalUrl,
-          settings,
-          batchId,
-          status: 'PROCESSING',
+    // Process files sequentially to ensure correct credit deduction
+    let creditsRemaining = user.credits;
+    const jobs: Array<{ id: string; status: string }> = [];
+
+    for (const file of files) {
+      // Save original upload to local storage
+      const storageFile: StorageFile = {
+        buffer: file.buffer,
+        filename: `upload.${file.mimeType.split('/')[1] || 'jpg'}`,
+        mimetype: file.mimeType,
+      };
+      const originalUrl = await uploadFile(storageFile, 'jobs');
+
+      const job = await jobsRepo.createJob({
+        userId,
+        originalUrl,
+        settings,
+        batchId,
+        status: 'PROCESSING',
+        processingType,
+        creditCost,
+      });
+
+      // Deduct credits after job creation so transaction links to jobId
+      creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+
+      // Process with AI asynchronously (fire-and-forget)
+      processImageWithAI(file.buffer, batchPrompt)
+        .then(async (result) => {
+          await jobsRepo.updateJob(job.id, { status: 'DONE', results: result.urls });
+          schedulePhotoReadyEmail(userId, job.id).catch((err: unknown) =>
+            logger.warn({ err }, 'Failed to schedule photo ready email for batch job'),
+          );
+        })
+        .catch(async (err) => {
+          logger.error({ err, jobId: job.id }, 'AI image processing failed for batch job');
+          await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
+            // Ignore DB update errors in background
+          });
+          // Refund credits on AI processing failure
+          creditsService.refundForJob(userId, creditCost, job.id).catch((refundErr) => {
+            logger.error({ err: refundErr, jobId: job.id }, 'Failed to refund credits after batch job failure');
+          });
         });
 
-        // Resolve prompt for batch
-        let batchPrompt: string | undefined;
-        if (settings && typeof settings === 'object' && 'filterId' in settings) {
-          const filterId = (settings as { filterId?: string }).filterId;
-          if (filterId) {
-            batchPrompt = filtersService.getPromptById(filterId) ?? undefined;
-          }
-        }
-        if (!batchPrompt && settings) {
-          batchPrompt = buildPromptFromSettings(settings as Record<string, unknown>);
-        }
-        if (!batchPrompt) {
-          batchPrompt = DEFAULT_PROMPT;
-        }
+      jobs.push({ id: job.id, status: job.status });
+    }
 
-        // Process with AI asynchronously (fire-and-forget)
-        processImageWithAI(file.buffer, batchPrompt)
-          .then(async (result) => {
-            await jobsRepo.updateJob(job.id, { status: 'DONE', results: result.urls });
-            if (userId) {
-              schedulePhotoReadyEmail(userId, job.id).catch((err: unknown) =>
-                logger.warn({ err }, 'Failed to schedule photo ready email for batch job'),
-              );
-            }
-          })
-          .catch(async (err) => {
-            logger.error({ err, jobId: job.id }, 'AI image processing failed for batch job');
-            await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
-              // Ignore DB update errors in background
-            });
-          });
-
-        return { id: job.id, status: job.status };
-      }),
-    );
-
-    return { batchId, jobs };
+    return { batchId, jobs, creditsRemaining };
   },
 };

@@ -18,6 +18,14 @@ export interface PortfolioItemFormData {
     jobId?: string;
 }
 
+export interface PublicReview {
+    id: string;
+    rating: number;
+    text: string | null;
+    clientName: string | null;
+    createdAt: string;
+}
+
 export interface PublicPortfolioData {
     username: string;
     displayName: string;
@@ -27,6 +35,7 @@ export interface PublicPortfolioData {
     niche: string | null;
     services: { name: string; price: number; currency: string }[];
     items: PortfolioItem[];
+    reviews: PublicReview[];
     reviewsCount: number;
     averageRating: number;
 }

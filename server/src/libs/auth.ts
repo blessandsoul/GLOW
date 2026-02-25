@@ -26,8 +26,7 @@ export async function optionalAuth(
       request.user = decoded;
     }
   } catch {
-    // Token invalid — continue as anonymous
-    request.user = undefined;
+    // Token invalid — continue as anonymous (user property remains unset)
   }
 }
 

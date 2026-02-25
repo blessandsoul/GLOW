@@ -169,7 +169,7 @@
       "categoryId": "face-decor",
       "name_ka": "ჩხატები + ხელთათმანები",
       "name_ru": "ВЕСНУШКИ,  ЧЕРНЫЕ ПЕРЧАТКИ",
-      "previewUrl": "/filters/filter-1.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ჩხატები და შავი ხელთათმანები სახეზე",
       "description_ru": "Веснушки и черные перчатки на лице",
       "isPopular": false
@@ -179,7 +179,7 @@
       "categoryId": "accessories",
       "name_ka": "ტალღოვანი თმა + ბანტები",
       "name_ru": "БЕЛЫЕ БАНТИКИ НА ВОЛОСАХ + ВОЛНИСТЫЕ ВОЛОСЫ",
-      "previewUrl": "/filters/filter-2.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ბანტები ტალღოვან თმაზე",
       "description_ru": "Белые бантики на волнистых волосах",
       "isPopular": false
@@ -189,7 +189,7 @@
       "categoryId": "studio",
       "name_ka": "Clean Girl",
       "name_ru": "clean girl",
-      "previewUrl": "/filters/filter-3.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "სუფთა, მინიმალისტური სტუდიური იერი",
       "description_ru": "Чистый минималистичный студийный образ",
       "isPopular": true
@@ -199,7 +199,7 @@
       "categoryId": "seasonal",
       "name_ka": "ко дню святого Валентина 💔",
       "name_ru": "ко дню святого Валентина 💔",
-      "previewUrl": "/filters/filter-4.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ვალენტინობის დღის თემატიკა",
       "description_ru": "Тематика ко Дню святого Валентина",
       "isPopular": false
@@ -209,7 +209,7 @@
       "categoryId": "seasonal",
       "name_ka": "ко дню святого Валентина 💔",
       "name_ru": "ко дню святого Валентина 💔",
-      "previewUrl": "/filters/filter-5.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ვალენტინობის დღის თემატიკა (ვარიანტი 2)",
       "description_ru": "Тематика ко Дню Валентина (вариант 2)",
       "isPopular": false
@@ -219,7 +219,7 @@
       "categoryId": "face-decor",
       "name_ka": "გულები",
       "name_ru": "сердца на лице ❤️",
-      "previewUrl": "/filters/filter-6.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "გულის ფორმის დეკორი სახეზე",
       "description_ru": "Сердца на лице",
       "isPopular": false
@@ -229,7 +229,7 @@
       "categoryId": "food",
       "name_ka": "თაფლის წვეთები",
       "name_ru": "подтеки меда на лице 🐝",
-      "previewUrl": "/filters/filter-7.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თაფლის წვეთები სახეზე",
       "description_ru": "Подтеки меда на лице",
       "isPopular": false
@@ -239,7 +239,7 @@
       "categoryId": "face-decor",
       "name_ka": "კაფსულა",
       "name_ru": "капсула во рту 💣",
-      "previewUrl": "/filters/filter-8.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კაფსულა პირში - კრეატიული დეკორი",
       "description_ru": "Капсула во рту - креативный декор",
       "isPopular": false
@@ -249,7 +249,7 @@
       "categoryId": "studio",
       "name_ka": "სტუდიური ფოტო",
       "name_ru": "студийная фотография 🖤",
-      "previewUrl": "/filters/filter-9.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროფესიონალური სტუდიური ფოტოგრაფია",
       "description_ru": "Профессиональная студийная фотография",
       "isPopular": true
@@ -259,7 +259,7 @@
       "categoryId": "face-decor",
       "name_ka": "ფოლგა",
       "name_ru": "фольга на лице ✨",
-      "previewUrl": "/filters/filter-10.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მეტალური ფოლგა სახეზე",
       "description_ru": "Металлическая фольга на лице",
       "isPopular": false
@@ -269,7 +269,7 @@
       "categoryId": "face-decor",
       "name_ka": "საკონდიტრო მოყვანილობა",
       "name_ru": "КОНДИТЕРСКАЯ ПОСЫПКА НА ЛИЦЕ 🎀",
-      "previewUrl": "/filters/filter-11.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "საკონდიტრო მოყვანილობა სახეზე",
       "description_ru": "Кондитерская посыпка на лице",
       "isPopular": false
@@ -279,7 +279,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "სწრაფი რეტუში",
       "name_ru": "ленивая ретушь",
-      "previewUrl": "/filters/filter-12.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "სწრაფი და მარტივი კანის რეტუში",
       "description_ru": "Быстрая и простая ретушь кожи",
       "isPopular": true
@@ -289,7 +289,7 @@
       "categoryId": "face-decor",
       "name_ka": "ჩხატები + მარგალიტი",
       "name_ru": "веснушки и жемчуг 🤍",
-      "previewUrl": "/filters/filter-13.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ჩხატები და მარგალიტი სახეზე",
       "description_ru": "Веснушки и жемчуг на лице",
       "isPopular": false
@@ -299,7 +299,7 @@
       "categoryId": "accessories",
       "name_ka": "ბანტები",
       "name_ru": "бордовые банты на фоне 🍷",
-      "previewUrl": "/filters/filter-14.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ბორდოსფერი ბანტები ფონზე",
       "description_ru": "Бордовые банты на фоне",
       "isPopular": false
@@ -309,7 +309,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "после душа 🫦",
       "name_ru": "после душа 🫦",
-      "previewUrl": "/filters/filter-15.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "შხაპის შემდგომი სველი კანის ეფექტი",
       "description_ru": "Эффект влажной кожи после душа",
       "isPopular": false
@@ -319,7 +319,7 @@
       "categoryId": "face-decor",
       "name_ka": "მარგალიტი",
       "name_ru": "жемчуг на шее 🤍",
-      "previewUrl": "/filters/filter-16.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მარგალიტის დეკორი კისერზე",
       "description_ru": "Жемчужный декор на шее",
       "isPopular": false
@@ -329,7 +329,7 @@
       "categoryId": "hair",
       "name_ka": "ხუხული თმა",
       "name_ru": "кудрявые волосы + черный топ 🖤",
-      "previewUrl": "/filters/filter-17.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ხუხული თმა და შავი ტოპი",
       "description_ru": "Кудрявые волосы и черный топ",
       "isPopular": false
@@ -339,7 +339,7 @@
       "categoryId": "food",
       "name_ka": "ნაყინი",
       "name_ru": "рожок 🍦",
-      "previewUrl": "/filters/filter-18.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ნაყინის რქა - საკვები დეკორი",
       "description_ru": "Рожок мороженого - декор с едой",
       "isPopular": false
@@ -349,7 +349,7 @@
       "categoryId": "face-decor",
       "name_ka": "ჩხატები + ხელთათმანები",
       "name_ru": "веснушки + красные перчатки 💔",
-      "previewUrl": "/filters/filter-19.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ჩხატები და წითელი ხელთათმანები",
       "description_ru": "Веснушки и красные перчатки",
       "isPopular": false
@@ -359,7 +359,7 @@
       "categoryId": "flowers",
       "name_ka": "ვარდები",
       "name_ru": "белые розы на фоне",
-      "previewUrl": "/filters/filter-20.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ვარდები ფონზე",
       "description_ru": "Белые розы на фоне",
       "isPopular": false
@@ -369,7 +369,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "предметная съемка (черный ковер) 🖤",
-      "previewUrl": "/filters/filter-21.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტი შავ ხალიჩაზე",
       "description_ru": "Предметная съемка на черном ковре",
       "isPopular": false
@@ -379,7 +379,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო + ჟოლო",
       "name_ru": "предметная съемка (малина) ❤️",
-      "previewUrl": "/filters/filter-22.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტი ჟოლოს გარემოცვაში",
       "description_ru": "Предметная съемка с малиной",
       "isPopular": false
@@ -389,7 +389,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო + ლიმონი",
       "name_ru": "предметная съемка (лимоны) ✨",
-      "previewUrl": "/filters/filter-23.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტი ლიმონის გარემოცვაში",
       "description_ru": "Предметная съемка с лимонами",
       "isPopular": false
@@ -399,7 +399,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო + მარმელადი",
       "name_ru": "предметная съемка (мармеладные мишки)💗",
-      "previewUrl": "/filters/filter-24.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტი მარმელადის გარემოცვაში",
       "description_ru": "Предметная съемка с мармеладными мишками",
       "isPopular": false
@@ -409,7 +409,7 @@
       "categoryId": "flowers",
       "name_ka": "თეთრი ფონი + გვირილები",
       "name_ru": "ромашки на лице + белый фон 💛",
-      "previewUrl": "/filters/filter-25.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "გვირილები სახეზე, თეთრი ფონი",
       "description_ru": "Ромашки на лице и белый фон",
       "isPopular": false
@@ -419,7 +419,7 @@
       "categoryId": "studio",
       "name_ka": "სტუდიური ფოტო",
       "name_ru": "студийное фото с белым фоном 🖇️",
-      "previewUrl": "/filters/filter-26.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "სტუდიური ფოტო თეთრ ფონზე",
       "description_ru": "Студийное фото с белым фоном",
       "isPopular": false
@@ -429,7 +429,7 @@
       "categoryId": "studio",
       "name_ka": "სტუდიური ფოტო",
       "name_ru": "студийное фото с розовым фоном 💗",
-      "previewUrl": "/filters/filter-27.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "სტუდიური ფოტო ვარდისფერ ფონზე",
       "description_ru": "Студийное фото с розовым фоном",
       "isPopular": false
@@ -439,7 +439,7 @@
       "categoryId": "flowers",
       "name_ka": "მზესუმზირა",
       "name_ru": "подсолнух 🌻",
-      "previewUrl": "/filters/filter-28.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მზესუმზირა სახესთან",
       "description_ru": "Подсолнух у лица",
       "isPopular": false
@@ -449,7 +449,7 @@
       "categoryId": "face-decor",
       "name_ka": "მეტალის წვეთები",
       "name_ru": "металлические подтеки 🩶",
-      "previewUrl": "/filters/filter-29.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მეტალის წვეთები სახეზე",
       "description_ru": "Металлические подтеки на лице",
       "isPopular": false
@@ -459,7 +459,7 @@
       "categoryId": "flowers",
       "name_ka": "პეონი",
       "name_ru": "пион 🎀",
-      "previewUrl": "/filters/filter-30.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პეონის ყვავილი სახესთან",
       "description_ru": "Пион у лица",
       "isPopular": false
@@ -469,7 +469,7 @@
       "categoryId": "flowers",
       "name_ka": "ვარდი",
       "name_ru": "роза 🌹",
-      "previewUrl": "/filters/filter-31.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ვარდის ყვავილი სახესთან",
       "description_ru": "Роза у лица",
       "isPopular": false
@@ -479,7 +479,7 @@
       "categoryId": "flowers",
       "name_ka": "გვირილა",
       "name_ru": "ромашка 💛",
-      "previewUrl": "/filters/filter-32.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "გვირილის ყვავილი სახესთან",
       "description_ru": "Ромашка у лица",
       "isPopular": false
@@ -489,7 +489,7 @@
       "categoryId": "flowers",
       "name_ka": "პეონი + ვარდი",
       "name_ru": "Пионовидная белая Роза🤍",
-      "previewUrl": "/filters/filter-33.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პეონისებური თეთრი ვარდი",
       "description_ru": "Пионовидная белая роза",
       "isPopular": false
@@ -499,7 +499,7 @@
       "categoryId": "flowers",
       "name_ka": "ბაბუაწვერა",
       "name_ru": "одуванчик ✨",
-      "previewUrl": "/filters/filter-34.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ბაბუაწვერას ყვავილი სახესთან",
       "description_ru": "Одуванчик у лица",
       "isPopular": false
@@ -507,9 +507,9 @@
     {
       "id": "filter-35",
       "categoryId": "brows-pmu",
-      "name_ka": "патч с надписью \u00ABbrows\u201D \u2601\uFE0F",
-      "name_ru": "патч с надписью \u00ABbrows\u201D \u2601\uFE0F",
-      "previewUrl": "/filters/filter-35.jpg",
+      "name_ka": "патч с надписью «brows” ☁️",
+      "name_ru": "патч с надписью «brows” ☁️",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პატჩი წარწერით brows წარბებთან",
       "description_ru": "Патч с надписью brows у бровей",
       "isPopular": false
@@ -517,9 +517,9 @@
     {
       "id": "filter-36",
       "categoryId": "macro-lashes",
-      "name_ka": "патч с надписью \u00ABlashes\u201D \uD83D\uDCCE",
-      "name_ru": "патч с надписью \u00ABlashes\u201D \uD83D\uDCCE",
-      "previewUrl": "/filters/filter-36.jpg",
+      "name_ka": "патч с надписью «lashes” 📎",
+      "name_ru": "патч с надписью «lashes” 📎",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პატჩი წარწერით lashes წამწამებთან",
       "description_ru": "Патч с надписью lashes у ресниц",
       "isPopular": false
@@ -529,7 +529,7 @@
       "categoryId": "accessories",
       "name_ka": "ხელთათმანები + პეპლები",
       "name_ru": "синие перчатки + бабочки 🦋",
-      "previewUrl": "/filters/filter-37.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ლურჯი ხელთათმანები და პეპლები",
       "description_ru": "Синие перчатки и бабочки",
       "isPopular": false
@@ -539,7 +539,7 @@
       "categoryId": "flowers",
       "name_ka": "зеленые цветы 🍃",
       "name_ru": "зеленые цветы 🍃",
-      "previewUrl": "/filters/filter-38.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მწვანე ყვავილები სახესთან",
       "description_ru": "Зеленые цветы у лица",
       "isPopular": false
@@ -549,7 +549,7 @@
       "categoryId": "flowers",
       "name_ka": "ტალღოვანი თმა + ვარდები",
       "name_ru": "оранжевые розы + волнистые волосы 🧡",
-      "previewUrl": "/filters/filter-39.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ნარინჯისფერი ვარდები, ტალღოვანი თმა",
       "description_ru": "Оранжевые розы и волнистые волосы",
       "isPopular": false
@@ -559,7 +559,7 @@
       "categoryId": "accessories",
       "name_ka": "ტალღოვანი თმა + ხელთათმანები",
       "name_ru": "волнистые волосы + оранжевые перчатки 🧡",
-      "previewUrl": "/filters/filter-40.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ტალღოვანი თმა, ნარინჯისფერი ხელთათმანები",
       "description_ru": "Волнистые волосы и оранжевые перчатки",
       "isPopular": false
@@ -569,7 +569,7 @@
       "categoryId": "face-decor",
       "name_ka": "ლენტები",
       "name_ru": "бархатные черные ленты 🖤",
-      "previewUrl": "/filters/filter-41.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ხავერდოვანი შავი ლენტები სახეზე",
       "description_ru": "Бархатные черные ленты на лице",
       "isPopular": false
@@ -579,7 +579,7 @@
       "categoryId": "hair",
       "name_ka": "ხუხული თმა",
       "name_ru": "кудрявые волосы 🧸",
-      "previewUrl": "/filters/filter-42.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ხუხული თმის სტილი",
       "description_ru": "Кудрявые волосы",
       "isPopular": false
@@ -589,7 +589,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "ტექსტურიანი კანი",
       "name_ru": "блестящая, текстурная кожа🪞",
-      "previewUrl": "/filters/filter-43.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ბრწყინვალე, ტექსტურიანი კანის ეფექტი",
       "description_ru": "Блестящая текстурная кожа",
       "isPopular": true
@@ -599,7 +599,7 @@
       "categoryId": "accessories",
       "name_ka": "белый бант под глаза ☁️",
       "name_ru": "белый бант под глаза ☁️",
-      "previewUrl": "/filters/filter-44.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ბანტი თვალების ქვეშ",
       "description_ru": "Белый бант под глазами",
       "isPopular": false
@@ -609,7 +609,7 @@
       "categoryId": "background",
       "name_ka": "ბზინვარება",
       "name_ru": "кружевная ткань + блик на глазу 🖤",
-      "previewUrl": "/filters/filter-45.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მაქმანის ფონი და თვალის ბზინვარება",
       "description_ru": "Кружевная ткань и блик на глазу",
       "isPopular": false
@@ -619,7 +619,7 @@
       "categoryId": "face-decor",
       "name_ka": "სტრაზები",
       "name_ru": "белый меховой свитер + стразы 🫶🏻",
-      "previewUrl": "/filters/filter-46.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ბეწვის სვიტერი და სტრაზები",
       "description_ru": "Белый меховой свитер и стразы на лице",
       "isPopular": false
@@ -629,7 +629,7 @@
       "categoryId": "food",
       "name_ka": "ლიმონი",
       "name_ru": "лимон 🍋",
-      "previewUrl": "/filters/filter-47.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ლიმონი - საკვები დეკორი სახესთან",
       "description_ru": "Лимон у лица - декор с едой",
       "isPopular": false
@@ -639,7 +639,7 @@
       "categoryId": "accessories",
       "name_ka": "საყურეები",
       "name_ru": "золотые серьги 💛",
-      "previewUrl": "/filters/filter-48.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ოქროს საყურეები",
       "description_ru": "Золотые серьги",
       "isPopular": false
@@ -649,7 +649,7 @@
       "categoryId": "food",
       "name_ka": "ბანტები + გულები",
       "name_ru": "малиновые бантики + сердца 💗",
-      "previewUrl": "/filters/filter-49.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ჟოლოსფერი ბანტები და გულები",
       "description_ru": "Малиновые бантики и сердца",
       "isPopular": false
@@ -659,7 +659,7 @@
       "categoryId": "face-decor",
       "name_ka": "სტრაზები",
       "name_ru": "красные стразы ❤️",
-      "previewUrl": "/filters/filter-50.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წითელი სტრაზები სახეზე",
       "description_ru": "Красные стразы на лице",
       "isPopular": false
@@ -669,7 +669,7 @@
       "categoryId": "face-decor",
       "name_ka": "სტრაზები",
       "name_ru": "черные стразы + топ бандо 🖤",
-      "previewUrl": "/filters/filter-51.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "შავი სტრაზები და ბანდო ტოპი",
       "description_ru": "Черные стразы и топ-бандо",
       "isPopular": false
@@ -679,7 +679,7 @@
       "categoryId": "flowers",
       "name_ka": "ლენტი + ვარდები",
       "name_ru": "голубые розы и лента на шее 🩵",
-      "previewUrl": "/filters/filter-52.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ცისფერი ვარდები და ლენტი კისერზე",
       "description_ru": "Голубые розы и лента на шее",
       "isPopular": false
@@ -689,7 +689,7 @@
       "categoryId": "face-decor",
       "name_ka": "ტალღოვანი თმა + სტრაზები + ლენტი",
       "name_ru": "стразы, волнистые волосы, лента на шее 🤍",
-      "previewUrl": "/filters/filter-53.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "სტრაზები, ტალღოვანი თმა, ლენტი კისერზე",
       "description_ru": "Стразы, волнистые волосы и лента на шее",
       "isPopular": false
@@ -699,7 +699,7 @@
       "categoryId": "food",
       "name_ka": "ტალღოვანი თმა + მარწყვი + ლენტი",
       "name_ru": "клубника, волнистые волосы, лента на шее ❤️‍🩹",
-      "previewUrl": "/filters/filter-54.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მარწყვი, ტალღოვანი თმა, ლენტი კისერზე",
       "description_ru": "Клубника, волнистые волосы и лента на шее",
       "isPopular": false
@@ -709,7 +709,7 @@
       "categoryId": "accessories",
       "name_ka": "ბანტები",
       "name_ru": "бантики на лице 🖤",
-      "previewUrl": "/filters/filter-55.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ბანტები სახეზე",
       "description_ru": "Бантики на лице",
       "isPopular": false
@@ -719,7 +719,7 @@
       "categoryId": "background",
       "name_ka": "საჩუქრის ყუთები",
       "name_ru": "подарочные коробки на фоне 🖤",
-      "previewUrl": "/filters/filter-56.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "საჩუქრის ყუთები ფონზე",
       "description_ru": "Подарочные коробки на фоне",
       "isPopular": false
@@ -729,7 +729,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "კანის რეტუში",
       "name_ru": "ретушь кожи 🫶🏻",
-      "previewUrl": "/filters/filter-57.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კანის გათლილი, პროფესიონალური რეტუში",
       "description_ru": "Профессиональная ретушь кожи",
       "isPopular": true
@@ -739,7 +739,7 @@
       "categoryId": "macro-lashes",
       "name_ka": "წამწამების მასტერი + მაკრო",
       "name_ru": "макро съемка 🩶 (для мастеров по ресницам)",
-      "previewUrl": "/filters/filter-58.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წამწამების მაკრო გადაღება",
       "description_ru": "Макро съемка для мастеров по ресницам",
       "isPopular": false
@@ -749,7 +749,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "კანის რეტუში",
       "name_ru": "🩶 - ретушь кожи (фиксация глаз и бровей)",
-      "previewUrl": "/filters/filter-59.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კანის რეტუში თვალებისა და წარბების ფიქსაციით",
       "description_ru": "Ретушь кожи с фиксацией глаз и бровей",
       "isPopular": false
@@ -759,7 +759,7 @@
       "categoryId": "animation",
       "name_ka": "RUNWAY ПРОМТ",
       "name_ru": "RUNWAY ПРОМТ",
-      "previewUrl": "/filters/filter-60.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ანიმაციის შექმნა Runway-ით",
       "description_ru": "Создание анимации через Runway",
       "isPopular": false
@@ -769,7 +769,7 @@
       "categoryId": "animation",
       "name_ka": "RUNWAY PROMT",
       "name_ru": "RUNWAY PROMT",
-      "previewUrl": "/filters/filter-61.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ანიმაციის შექმნა Runway-ით (ვარიანტი 2)",
       "description_ru": "Создание анимации через Runway (вариант 2)",
       "isPopular": false
@@ -779,7 +779,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "ბრწყინვალე კანი",
       "name_ru": "ДЛЯ ТЕКСТУРНОЙ И СИЯЮЩЕЙ КОЖИ",
-      "previewUrl": "/filters/filter-62.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ტექსტურიანი და მბრწყინავი კანის ეფექტი",
       "description_ru": "Эффект текстурной и сияющей кожи",
       "isPopular": true
@@ -789,7 +789,7 @@
       "categoryId": "product-photo",
       "name_ka": "плюшевые предметы 🧸",
       "name_ru": "плюшевые предметы 🧸",
-      "previewUrl": "/filters/filter-63.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პლუშის ნივთებით პროდუქტის ფოტო",
       "description_ru": "Предметная съемка с плюшевыми предметами",
       "isPopular": false
@@ -799,7 +799,7 @@
       "categoryId": "flowers",
       "name_ka": "ветки сухоцветов 💓",
       "name_ru": "ветки сухоцветов 💓",
-      "previewUrl": "/filters/filter-64.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "გამხმარი ყვავილების ტოტები სახესთან",
       "description_ru": "Ветки сухоцветов у лица",
       "isPopular": false
@@ -809,7 +809,7 @@
       "categoryId": "bg-retouch",
       "name_ka": "Вы просили - я сделала 🖤 (вариант 1)",
       "name_ru": "Вы просили - я сделала 🖤 (вариант 1)",
-      "previewUrl": "/filters/filter-65.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონის შეცვლა + კანის რეტუში (ვარიანტი 1)",
       "description_ru": "Замена фона и ретушь кожи (вариант 1)",
       "isPopular": false
@@ -819,7 +819,7 @@
       "categoryId": "bg-retouch",
       "name_ka": "Вы просили - я сделала 🖤 (вариант 2)",
       "name_ru": "Вы просили - я сделала 🖤 (вариант 2)",
-      "previewUrl": "/filters/filter-66.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონის შეცვლა + კანის რეტუში (ვარიანტი 2)",
       "description_ru": "Замена фона и ретушь кожи (вариант 2)",
       "isPopular": false
@@ -829,7 +829,7 @@
       "categoryId": "bg-retouch",
       "name_ka": "Вы просили - я сделала 🖤 (вариант 3)",
       "name_ru": "Вы просили - я сделала 🖤 (вариант 3)",
-      "previewUrl": "/filters/filter-67.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონის შეცვლა + კანის რეტუში (ვარიანტი 3)",
       "description_ru": "Замена фона и ретушь кожи (вариант 3)",
       "isPopular": false
@@ -839,7 +839,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ СЪЕМКА С ВАШИМ ФОТО 🩶",
-      "previewUrl": "/filters/filter-68.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო თქვენი სურათით",
       "description_ru": "Предметная съемка с вашим фото",
       "isPopular": false
@@ -849,7 +849,7 @@
       "categoryId": "nails",
       "name_ka": "მანიკური",
       "name_ru": "ДЛЯ МАНИКЮРА 🩵",
-      "previewUrl": "/filters/filter-69.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მანიკურის გაუმჯობესებული ფოტო",
       "description_ru": "Улучшенное фото маникюра",
       "isPopular": false
@@ -859,7 +859,7 @@
       "categoryId": "generation",
       "name_ka": "С КОТОМ 🐈‍⬛",
       "name_ru": "С КОТОМ 🐈‍⬛",
-      "previewUrl": "/filters/filter-70.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "გენერაცია კატით - კრეატიული კოლაჟი",
       "description_ru": "Генерация фото с котом",
       "isPopular": false
@@ -869,7 +869,7 @@
       "categoryId": "animation",
       "name_ka": "ГЕНЕРИРУЕМ ФОТО И ОЖИВЛЯЕМ ЕГО 🖤 (вариант 1)",
       "name_ru": "ГЕНЕРИРУЕМ ФОТО И ОЖИВЛЯЕМ ЕГО 🖤 (вариант 1)",
-      "previewUrl": "/filters/filter-71.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფოტოს გენერაცია და ანიმაცია (ვარიანტი 1)",
       "description_ru": "Генерация фото и анимация (вариант 1)",
       "isPopular": false
@@ -879,7 +879,7 @@
       "categoryId": "animation",
       "name_ka": "ГЕНЕРИРУЕМ ФОТО И ОЖИВЛЯЕМ ЕГО 🖤 (вариант 2)",
       "name_ru": "ГЕНЕРИРУЕМ ФОТО И ОЖИВЛЯЕМ ЕГО 🖤 (вариант 2)",
-      "previewUrl": "/filters/filter-72.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფოტოს გენერაცია და ანიმაცია (ვარიანტი 2)",
       "description_ru": "Генерация фото и анимация (вариант 2)",
       "isPopular": false
@@ -889,7 +889,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ С ВАШИМ ФОТО 💔",
-      "previewUrl": "/filters/filter-73.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო თქვენი სურათით",
       "description_ru": "Предметная съемка с вашим фото",
       "isPopular": false
@@ -899,7 +899,7 @@
       "categoryId": "bg-retouch",
       "name_ka": "თაფლი",
       "name_ru": "[медиа]",
-      "previewUrl": "/filters/filter-74.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონის შეცვლა და რეტუში თაფლის ტონში",
       "description_ru": "Замена фона и ретушь в медовых тонах",
       "isPopular": false
@@ -909,7 +909,7 @@
       "categoryId": "face-decor",
       "name_ka": "ბრჭყვიალა",
       "name_ru": "блестки на лице ⭐️",
-      "previewUrl": "/filters/filter-75.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ბრჭყვიალა სახეზე",
       "description_ru": "Блестки на лице",
       "isPopular": false
@@ -919,7 +919,7 @@
       "categoryId": "macro-lashes",
       "name_ka": "ЭТОТ ЖЕ ПРОМТ МОЖНО ИСПОЛЬЗОВАТЬ ДЛЯ РЕСНИЦ, БРОВЕЙ 💛",
       "name_ru": "ЭТОТ ЖЕ ПРОМТ МОЖНО ИСПОЛЬЗОВАТЬ ДЛЯ РЕСНИЦ, БРОВЕЙ 💛",
-      "previewUrl": "/filters/filter-76.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წამწამებისა და წარბების მაკრო ეფექტი",
       "description_ru": "Макро эффект для ресниц и бровей",
       "isPopular": false
@@ -929,7 +929,7 @@
       "categoryId": "lips",
       "name_ka": "ДЛЯ ГУБ 👄",
       "name_ru": "ДЛЯ ГУБ 👄",
-      "previewUrl": "/filters/filter-77.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ტუჩების გაუმჯობესება და რეტუში",
       "description_ru": "Улучшение и ретушь губ",
       "isPopular": false
@@ -939,7 +939,7 @@
       "categoryId": "macro-lashes",
       "name_ka": "წამწამების მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ ПО РЕСНИЦАМ ⭐️",
-      "previewUrl": "/filters/filter-78.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წამწამების მასტერის პროფესიონალური ფოტო",
       "description_ru": "Профессиональное фото для мастеров ресниц",
       "isPopular": false
@@ -949,7 +949,7 @@
       "categoryId": "nails",
       "name_ka": "მანიკური",
       "name_ru": "ДЛЯ МАНИКЮРА 🤎",
-      "previewUrl": "/filters/filter-79.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მანიკურის ფოტოს გაუმჯობესება",
       "description_ru": "Улучшение фото маникюра",
       "isPopular": false
@@ -959,7 +959,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ СЪЕМКА С ВАШИМ ФОТО 🩶",
-      "previewUrl": "/filters/filter-80.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო ნაცრისფერ ტონში",
       "description_ru": "Предметная съемка с вашим фото в серых тонах",
       "isPopular": false
@@ -969,7 +969,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ СЪЕМКА С ВАШИМ ФОТО 🖤",
-      "previewUrl": "/filters/filter-81.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო შავ ტონში",
       "description_ru": "Предметная съемка с вашим фото в темных тонах",
       "isPopular": false
@@ -979,7 +979,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ СЪЕМКА С ВАШИМ ФОТО ⭐️",
-      "previewUrl": "/filters/filter-82.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო ოქროსფერ ტონში",
       "description_ru": "Предметная съемка с вашим фото в золотых тонах",
       "isPopular": false
@@ -989,7 +989,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ СЪЕМКА С ВАШИМ ФОТО 🥥",
-      "previewUrl": "/filters/filter-83.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო ქოქოსის სტილში",
       "description_ru": "Предметная съемка с кокосовой тематикой",
       "isPopular": false
@@ -999,7 +999,7 @@
       "categoryId": "product-photo",
       "name_ka": "ПРЕДМЕНТНАЯ СЪЕМКА С ВАШИМ ФОТО 🤎",
       "name_ru": "ПРЕДМЕНТНАЯ СЪЕМКА С ВАШИМ ФОТО 🤎",
-      "previewUrl": "/filters/filter-84.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო ყავისფერ ტონში",
       "description_ru": "Предметная съемка с вашим фото в коричневых тонах",
       "isPopular": false
@@ -1009,7 +1009,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "კომერციული რეტუში",
       "name_ru": "коммерческая ретушь 💔",
-      "previewUrl": "/filters/filter-85.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კომერციული დონის კანის რეტუში",
       "description_ru": "Коммерческая ретушь кожи",
       "isPopular": true
@@ -1019,7 +1019,7 @@
       "categoryId": "cosmetology",
       "name_ka": "კოსმეტოლოგები",
       "name_ru": "ДЛЯ КОСМЕТОЛОГОВ 👄",
-      "previewUrl": "/filters/filter-86.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კოსმეტოლოგის პროფესიონალური ფოტო",
       "description_ru": "Профессиональное фото для косметологов",
       "isPopular": false
@@ -1029,7 +1029,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "თაფლი",
       "name_ru": "[медиа]",
-      "previewUrl": "/filters/filter-87.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თაფლის ტონის კანის რეტუში",
       "description_ru": "Ретушь кожи в медовых тонах",
       "isPopular": false
@@ -1039,7 +1039,7 @@
       "categoryId": "background",
       "name_ka": "ფონის შეცვლა + ბუმბული",
       "name_ru": "белые перья + замена фона 🤍",
-      "previewUrl": "/filters/filter-88.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ბუმბულები და ფონის შეცვლა",
       "description_ru": "Белые перья и замена фона",
       "isPopular": false
@@ -1049,7 +1049,7 @@
       "categoryId": "face-decor",
       "name_ka": "ფონის შეცვლა + ბრჭყვიალა",
       "name_ru": "замена фона + блестки 🩷",
-      "previewUrl": "/filters/filter-89.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონის შეცვლა და ბრჭყვიალა სახეზე",
       "description_ru": "Замена фона и блестки на лице",
       "isPopular": false
@@ -1059,7 +1059,7 @@
       "categoryId": "face-decor",
       "name_ka": "ფონის შეცვლა + ჩხატები",
       "name_ru": "веснушки + легкий румянец + замена фона 💗",
-      "previewUrl": "/filters/filter-90.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ჩხატები, მსუბუქი რუმიანი და ფონის შეცვლა",
       "description_ru": "Веснушки, легкий румянец и замена фона",
       "isPopular": false
@@ -1069,7 +1069,7 @@
       "categoryId": "accessories",
       "name_ka": "ტანსაცმლის შეცვლა",
       "name_ru": "замена одежды 🤍",
-      "previewUrl": "/filters/filter-91.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ტანსაცმლის შეცვლა სურათზე",
       "description_ru": "Замена одежды на фото",
       "isPopular": false
@@ -1079,7 +1079,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "СТРУКТУРА ПРОМТА",
       "name_ru": "СТРУКТУРА ПРОМТА",
-      "previewUrl": "/filters/filter-92.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პრომპტის სტრუქტურა კანის რეტუშისთვის",
       "description_ru": "Структура промпта для ретуши кожи",
       "isPopular": false
@@ -1089,7 +1089,7 @@
       "categoryId": "lips",
       "name_ka": "შაქრის კრისტალები",
       "name_ru": "крупинки сахара на губах 👄",
-      "previewUrl": "/filters/filter-93.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "შაქრის კრისტალები ტუჩებზე",
       "description_ru": "Крупинки сахара на губах",
       "isPopular": false
@@ -1099,7 +1099,7 @@
       "categoryId": "accessories",
       "name_ka": "ბეწვის ქურთუკი",
       "name_ru": "белая шуба на фоне 🤍",
-      "previewUrl": "/filters/filter-94.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ბეწვის ქურთუკი ფონზე",
       "description_ru": "Белая шуба на фоне",
       "isPopular": false
@@ -1109,7 +1109,7 @@
       "categoryId": "bg-outfit",
       "name_ka": "ტანსაცმლის შეცვლა + ფონის შეცვლა",
       "name_ru": "замена фона + замена одежды + чокер на шею 🤍",
-      "previewUrl": "/filters/filter-95.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონი + ტანსაცმელი + ჩოკერი კისერზე",
       "description_ru": "Замена фона, одежды и чокер на шею",
       "isPopular": false
@@ -1119,7 +1119,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "предметная съемка с вашим фото 💗",
-      "previewUrl": "/filters/filter-96.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ფოტო ვარდისფერ ტონში",
       "description_ru": "Предметная съемка с вашим фото в розовых тонах",
       "isPopular": false
@@ -1129,7 +1129,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "предметная картинка с вашим предметом 🩷",
-      "previewUrl": "/filters/filter-97.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის ილუსტრაცია თქვენი ნივთით",
       "description_ru": "Предметная картинка с вашим предметом",
       "isPopular": false
@@ -1139,7 +1139,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "კანის რეტუში",
       "name_ru": "ретушь кожи 🫶🏻 (вариант 1)",
-      "previewUrl": "/filters/filter-98.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კანის რეტუში (ვარიანტი 1)",
       "description_ru": "Ретушь кожи (вариант 1)",
       "isPopular": false
@@ -1149,7 +1149,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "კანის რეტუში",
       "name_ru": "ретушь кожи 🫶🏻 (вариант 2)",
-      "previewUrl": "/filters/filter-99.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კანის რეტუში (ვარიანტი 2)",
       "description_ru": "Ретушь кожи (вариант 2)",
       "isPopular": false
@@ -1159,7 +1159,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "ნატურალური რეტუში",
       "name_ru": "натуральная ретушь ✨ (вариант 1)",
-      "previewUrl": "/filters/filter-100.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ბუნებრივი, ნატურალური კანის რეტუში",
       "description_ru": "Натуральная ретушь кожи",
       "isPopular": true
@@ -1169,7 +1169,7 @@
       "categoryId": "hand-decor",
       "name_ka": "лепестки на пальцах рук 🤍 (вариант 1)",
       "name_ru": "лепестки на пальцах рук 🤍 (вариант 1)",
-      "previewUrl": "/filters/filter-101.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ყვავილის ფურცლები ხელის თითებზე",
       "description_ru": "Лепестки цветов на пальцах рук (вариант 1)",
       "isPopular": false
@@ -1179,7 +1179,7 @@
       "categoryId": "hand-decor",
       "name_ka": "лепестки на пальцах рук 🤍 (вариант 2)",
       "name_ru": "лепестки на пальцах рук 🤍 (вариант 2)",
-      "previewUrl": "/filters/filter-102.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ყვავილის ფურცლები ხელის თითებზე",
       "description_ru": "Лепестки цветов на пальцах рук (вариант 2)",
       "isPopular": false
@@ -1189,7 +1189,7 @@
       "categoryId": "hand-decor",
       "name_ka": "пена на руках 🫶🏻 (вариант 2)",
       "name_ru": "пена на руках 🫶🏻 (вариант 2)",
-      "previewUrl": "/filters/filter-103.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ქაფი ხელებზე - კოსმეტიკური დეკორი",
       "description_ru": "Пена на руках - косметический декор",
       "isPopular": false
@@ -1199,7 +1199,7 @@
       "categoryId": "seasonal",
       "name_ka": "К 14 ФЕВРАЛЯ 💔 (вариант 1)",
       "name_ru": "К 14 ФЕВРАЛЯ 💔 (вариант 1)",
-      "previewUrl": "/filters/filter-104.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "14 თებერვლის თემატიკა (ვარიანტი 1)",
       "description_ru": "Тематика к 14 февраля (вариант 1)",
       "isPopular": false
@@ -1209,7 +1209,7 @@
       "categoryId": "seasonal",
       "name_ka": "К 14 ФЕВРАЛЯ 💔 (вариант 2)",
       "name_ru": "К 14 ФЕВРАЛЯ 💔 (вариант 2)",
-      "previewUrl": "/filters/filter-105.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "14 თებერვლის თემატიკა (ვარიანტი 2)",
       "description_ru": "Тематика к 14 февраля (вариант 2)",
       "isPopular": false
@@ -1219,7 +1219,7 @@
       "categoryId": "background",
       "name_ka": "Если одежда клиента не вписывается к вам в ленту, то её легко можно заменить на другую 🖤 (вариант 1)",
       "name_ru": "Если одежда клиента не вписывается к вам в ленту, то её легко можно заменить на другую 🖤 (вариант 1)",
-      "previewUrl": "/filters/filter-106.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ტანსაცმლის შეცვლა ფონზე (ვარიანტი 1)",
       "description_ru": "Замена одежды на фоне (вариант 1)",
       "isPopular": false
@@ -1229,7 +1229,7 @@
       "categoryId": "background",
       "name_ka": "Если одежда клиента не вписывается к вам в ленту, то её легко можно заменить на другую 🖤 (вариант 2)",
       "name_ru": "Если одежда клиента не вписывается к вам в ленту, то её легко можно заменить на другую 🖤 (вариант 2)",
-      "previewUrl": "/filters/filter-107.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ტანსაცმლის შეცვლა ფონზე (ვარიანტი 2)",
       "description_ru": "Замена одежды на фоне (вариант 2)",
       "isPopular": false
@@ -1239,7 +1239,7 @@
       "categoryId": "generation",
       "name_ka": "Делаем такую картинку со своей фотографией 🖤 (вариант 1)",
       "name_ru": "Делаем такую картинку со своей фотографией 🖤 (вариант 1)",
-      "previewUrl": "/filters/filter-108.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფოტოდან კრეატიული სურათის გენერაცია",
       "description_ru": "Генерация креативного изображения из фото",
       "isPopular": false
@@ -1249,7 +1249,7 @@
       "categoryId": "generation",
       "name_ka": "Делаем такую картинку со своей фотографией 🖤 (вариант 2)",
       "name_ru": "Делаем такую картинку со своей фотографией 🖤 (вариант 2)",
-      "previewUrl": "/filters/filter-109.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფოტოდან კრეატიული სურათის გენერაცია",
       "description_ru": "Генерация креативного изображения из фото",
       "isPopular": false
@@ -1259,7 +1259,7 @@
       "categoryId": "bg-outfit",
       "name_ka": "ტანსაცმლის შეცვლა + ფონის შეცვლა",
       "name_ru": "замена фона + замена одежды 💕 (вариант 1)",
-      "previewUrl": "/filters/filter-110.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონისა და ტანსაცმლის შეცვლა (ვარიანტი 1)",
       "description_ru": "Замена фона и одежды (вариант 1)",
       "isPopular": false
@@ -1269,7 +1269,7 @@
       "categoryId": "bg-outfit",
       "name_ka": "ტანსაცმლის შეცვლა + ფონის შეცვლა",
       "name_ru": "замена фона + замена одежды 💕 (вариант 2)",
-      "previewUrl": "/filters/filter-111.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონისა და ტანსაცმლის შეცვლა (ვარიანტი 2)",
       "description_ru": "Замена фона и одежды (вариант 2)",
       "isPopular": false
@@ -1279,7 +1279,7 @@
       "categoryId": "nails",
       "name_ka": "მანიკურის მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ МАНИКЮРА 🖤 (вариант 2)",
-      "previewUrl": "/filters/filter-112.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მანიკურის მასტერის პროფესიონალური ფოტო",
       "description_ru": "Профессиональное фото для мастеров маникюра",
       "isPopular": false
@@ -1289,7 +1289,7 @@
       "categoryId": "background",
       "name_ka": "შავი ფონი",
       "name_ru": "черный фон, хайлайтер (вариант 2)",
-      "previewUrl": "/filters/filter-113.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "შავი ფონი ჰაილაითერით",
       "description_ru": "Черный фон с хайлайтером",
       "isPopular": false
@@ -1299,7 +1299,7 @@
       "categoryId": "background",
       "name_ka": "შავი ფონი",
       "name_ru": "белые крылья + черный фон 🤍 (вариант 1)",
-      "previewUrl": "/filters/filter-114.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თეთრი ფრთები შავ ფონზე",
       "description_ru": "Белые крылья на черном фоне",
       "isPopular": false
@@ -1309,7 +1309,7 @@
       "categoryId": "cosmetology",
       "name_ka": "კოსმეტოლოგები + PM მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ ПМ/КОСМЕТОЛОГОВ 🫦",
-      "previewUrl": "/filters/filter-115.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "PM მასტერისა და კოსმეტოლოგის ფოტო",
       "description_ru": "Фото для мастеров ПМ и косметологов",
       "isPopular": false
@@ -1319,7 +1319,7 @@
       "categoryId": "product-photo",
       "name_ka": "პროდუქტის ფოტო",
       "name_ru": "ПРЕДМЕТНАЯ СЪЕМКА: ❤️‍🩹",
-      "previewUrl": "/filters/filter-116.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პროდუქტის სტილიზებული ფოტო",
       "description_ru": "Стилизованная предметная съемка",
       "isPopular": false
@@ -1329,7 +1329,7 @@
       "categoryId": "generation",
       "name_ka": "КАК ДОБАВИТЬ НАДПИСЬ НА ФОН (вариант 1)",
       "name_ru": "КАК ДОБАВИТЬ НАДПИСЬ НА ФОН (вариант 1)",
-      "previewUrl": "/filters/filter-117.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წარწერის დამატება ფონზე (ვარიანტი 1)",
       "description_ru": "Добавление надписи на фон (вариант 1)",
       "isPopular": false
@@ -1339,7 +1339,7 @@
       "categoryId": "generation",
       "name_ka": "КАК ДОБАВИТЬ НАДПИСЬ НА ФОН (вариант 2)",
       "name_ru": "КАК ДОБАВИТЬ НАДПИСЬ НА ФОН (вариант 2)",
-      "previewUrl": "/filters/filter-118.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წარწერის დამატება ფონზე (ვარიანტი 2)",
       "description_ru": "Добавление надписи на фон (вариант 2)",
       "isPopular": false
@@ -1349,7 +1349,7 @@
       "categoryId": "generation",
       "name_ka": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 1)",
       "name_ru": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 1)",
-      "previewUrl": "/filters/filter-119.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კრეატიული წარწერების გენერაცია (ვარიანტი 1)",
       "description_ru": "Генерация креативных надписей (вариант 1)",
       "isPopular": false
@@ -1359,7 +1359,7 @@
       "categoryId": "generation",
       "name_ka": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 2)",
       "name_ru": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 2)",
-      "previewUrl": "/filters/filter-120.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კრეატიული წარწერების გენერაცია (ვარიანტი 2)",
       "description_ru": "Генерация креативных надписей (вариант 2)",
       "isPopular": false
@@ -1369,7 +1369,7 @@
       "categoryId": "generation",
       "name_ka": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 3)",
       "name_ru": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 3)",
-      "previewUrl": "/filters/filter-121.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კრეატიული წარწერების გენერაცია (ვარიანტი 3)",
       "description_ru": "Генерация креативных надписей (вариант 3)",
       "isPopular": false
@@ -1379,7 +1379,7 @@
       "categoryId": "generation",
       "name_ka": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 4)",
       "name_ru": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 4)",
-      "previewUrl": "/filters/filter-122.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კრეატიული წარწერების გენერაცია (ვარიანტი 4)",
       "description_ru": "Генерация креативных надписей (вариант 4)",
       "isPopular": false
@@ -1389,7 +1389,7 @@
       "categoryId": "generation",
       "name_ka": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 5)",
       "name_ru": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 5)",
-      "previewUrl": "/filters/filter-123.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კრეატიული წარწერების გენერაცია (ვარიანტი 5)",
       "description_ru": "Генерация креативных надписей (вариант 5)",
       "isPopular": false
@@ -1399,7 +1399,7 @@
       "categoryId": "generation",
       "name_ka": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 6)",
       "name_ru": "🩷 ДЕЛАЕМ НАДПИСИ 🩷 (вариант 6)",
-      "previewUrl": "/filters/filter-124.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "კრეატიული წარწერების გენერაცია (ვარიანტი 6)",
       "description_ru": "Генерация креативных надписей (вариант 6)",
       "isPopular": false
@@ -1409,7 +1409,7 @@
       "categoryId": "flowers",
       "name_ka": "ვარდები",
       "name_ru": "нежный фон и розы 🎀",
-      "previewUrl": "/filters/filter-125.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ნაზი ფონი ვარდებით",
       "description_ru": "Нежный фон с розами",
       "isPopular": false
@@ -1419,7 +1419,7 @@
       "categoryId": "skin-retouch",
       "name_ka": "ბრწყინვალე კანი",
       "name_ru": "ДЛЯ СИЯЮЩЕЙ КОЖИ  ✨",
-      "previewUrl": "/filters/filter-126.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მბრწყინავი კანის ეფექტი",
       "description_ru": "Эффект сияющей кожи",
       "isPopular": false
@@ -1429,7 +1429,7 @@
       "categoryId": "macro-lashes",
       "name_ka": "წამწამების მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ ПО РЕСНИЦАМ 🧸",
-      "previewUrl": "/filters/filter-127.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "წამწამების მასტერის ფოტო ნაზ ტონში",
       "description_ru": "Фото для мастеров по ресницам в нежных тонах",
       "isPopular": false
@@ -1439,7 +1439,7 @@
       "categoryId": "hair-masters",
       "name_ka": "თმის მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ ПО ВОЛОСАМ 🖤",
-      "previewUrl": "/filters/filter-128.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "თმის მასტერის პროფესიონალური ფოტო",
       "description_ru": "Профессиональное фото для мастеров по волосам",
       "isPopular": false
@@ -1449,7 +1449,7 @@
       "categoryId": "background",
       "name_ka": "1 фотография полный неликвид, в ручную было бы тяжело редактировать",
       "name_ru": "1 фотография полный неликвид, в ручную было бы тяжело редактировать",
-      "previewUrl": "/filters/filter-129.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფონის სრული შეცვლა რთული ფოტოსთვის",
       "description_ru": "Полная замена фона для сложных фото",
       "isPopular": false
@@ -1459,7 +1459,7 @@
       "categoryId": "nails",
       "name_ka": "მანიკურის მასტერი + შავი ფონი",
       "name_ru": "ДЛЯ МАСТЕРОВ МАНИКЮРА (черный фон) 🩷",
-      "previewUrl": "/filters/filter-130.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "მანიკურის ფოტო შავ ფონზე",
       "description_ru": "Фото маникюра на черном фоне",
       "isPopular": false
@@ -1469,7 +1469,7 @@
       "categoryId": "background",
       "name_ka": "ნეონი",
       "name_ru": "неон на фоне 💜",
-      "previewUrl": "/filters/filter-131.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ნეონის განათება ფონზე",
       "description_ru": "Неоновая подсветка на фоне",
       "isPopular": false
@@ -1479,7 +1479,7 @@
       "categoryId": "makeup-artists",
       "name_ka": "ვიზაჟისტები",
       "name_ru": "ДЛЯ ВИЗАЖИСТОВ 🎀",
-      "previewUrl": "/filters/filter-132.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ვიზაჟისტის პროფესიონალური ფოტო",
       "description_ru": "Профессиональное фото для визажистов",
       "isPopular": false
@@ -1489,7 +1489,7 @@
       "categoryId": "brows-pmu",
       "name_ka": "PM მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ ПМ 💔",
-      "previewUrl": "/filters/filter-133.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "პერმანენტული მაკიაჟის მასტერის ფოტო",
       "description_ru": "Фото для мастеров перманентного макияжа",
       "isPopular": false
@@ -1499,7 +1499,7 @@
       "categoryId": "brows-pmu",
       "name_ka": "PM მასტერი",
       "name_ru": "ДЛЯ МАСТЕРОВ ПМ 💔",
-      "previewUrl": "/filters/filter-134.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "PM მასტერის ფოტო (ვარიანტი 2)",
       "description_ru": "Фото для мастеров ПМ (вариант 2)",
       "isPopular": false
@@ -1509,7 +1509,7 @@
       "categoryId": "generation",
       "name_ka": "NanoBanana (платная, но не дорого)",
       "name_ru": "NanoBanana (платная, но не дорого)",
-      "previewUrl": "/filters/filter-135.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "NanoBanana - კრეატიული გენერაცია",
       "description_ru": "NanoBanana - креативная генерация",
       "isPopular": false
@@ -1519,7 +1519,7 @@
       "categoryId": "animation",
       "name_ka": "КАК ОЖИВИТЬ ФОТО?",
       "name_ru": "КАК ОЖИВИТЬ ФОТО?",
-      "previewUrl": "/filters/filter-136.jpg",
+      "previewUrl": "/filters/placeholder.svg",
       "description_ka": "ფოტოს ანიმაციის ეფექტი",
       "description_ru": "Эффект анимации фото",
       "isPopular": false
@@ -1534,7 +1534,14 @@
       "description_ru": "Золотистое сияние",
       "isPopular": true,
       "type": "preset",
-      "settings": { "niche": "lashes", "style": "glamour", "background": "neutral", "angle": "closeup", "lighting": "bright", "sharpness": "sharp" }
+      "settings": {
+        "niche": "lashes",
+        "style": "glamour",
+        "background": "neutral",
+        "angle": "closeup",
+        "lighting": "bright",
+        "sharpness": "sharp"
+      }
     },
     {
       "id": "preset-soft-natural",
@@ -1546,7 +1553,14 @@
       "description_ru": "Нежный натуральный стиль",
       "isPopular": true,
       "type": "preset",
-      "settings": { "niche": "brows", "style": "natural", "background": "white", "angle": "closeup", "lighting": "normal", "sharpness": "soft" }
+      "settings": {
+        "niche": "brows",
+        "style": "natural",
+        "background": "white",
+        "angle": "closeup",
+        "lighting": "normal",
+        "sharpness": "soft"
+      }
     },
     {
       "id": "preset-aesthetic-clean",
@@ -1558,7 +1572,14 @@
       "description_ru": "Чистый эстетичный образ",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "makeup", "style": "minimal", "background": "white", "angle": "portrait", "lighting": "bright", "sharpness": "sharp" }
+      "settings": {
+        "niche": "makeup",
+        "style": "minimal",
+        "background": "white",
+        "angle": "portrait",
+        "lighting": "bright",
+        "sharpness": "sharp"
+      }
     },
     {
       "id": "preset-anti-age-studio",
@@ -1570,7 +1591,14 @@
       "description_ru": "Анти-возрастное студийное фото",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "lashes", "style": "natural", "background": "neutral", "angle": "threequarter", "lighting": "normal", "sharpness": "sharp" }
+      "settings": {
+        "niche": "lashes",
+        "style": "natural",
+        "background": "neutral",
+        "angle": "threequarter",
+        "lighting": "normal",
+        "sharpness": "sharp"
+      }
     },
     {
       "id": "preset-fresh-skin",
@@ -1582,7 +1610,14 @@
       "description_ru": "Свежая, молодая кожа",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "makeup", "style": "natural", "background": "white", "angle": "portrait", "lighting": "bright", "sharpness": "soft" }
+      "settings": {
+        "niche": "makeup",
+        "style": "natural",
+        "background": "white",
+        "angle": "portrait",
+        "lighting": "bright",
+        "sharpness": "soft"
+      }
     },
     {
       "id": "preset-glow-treatment",
@@ -1594,7 +1629,14 @@
       "description_ru": "Сияющий уход",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "makeup", "style": "glamour", "background": "neutral", "angle": "portrait", "lighting": "bright", "sharpness": "sharp" }
+      "settings": {
+        "niche": "makeup",
+        "style": "glamour",
+        "background": "neutral",
+        "angle": "portrait",
+        "lighting": "bright",
+        "sharpness": "sharp"
+      }
     },
     {
       "id": "preset-dark-glam",
@@ -1606,7 +1648,14 @@
       "description_ru": "Темный гламурный стиль",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "makeup", "style": "dramatic", "background": "studio", "angle": "portrait", "lighting": "dark", "sharpness": "hdr" }
+      "settings": {
+        "niche": "makeup",
+        "style": "dramatic",
+        "background": "studio",
+        "angle": "portrait",
+        "lighting": "dark",
+        "sharpness": "hdr"
+      }
     },
     {
       "id": "preset-minimal-tone",
@@ -1618,7 +1667,14 @@
       "description_ru": "Минималистичный тон",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "brows", "style": "minimal", "background": "white", "angle": "closeup", "lighting": "normal", "sharpness": "soft" }
+      "settings": {
+        "niche": "brows",
+        "style": "minimal",
+        "background": "white",
+        "angle": "closeup",
+        "lighting": "normal",
+        "sharpness": "soft"
+      }
     },
     {
       "id": "preset-warm-glow",
@@ -1630,7 +1686,14 @@
       "description_ru": "Теплое сияние",
       "isPopular": false,
       "type": "preset",
-      "settings": { "niche": "makeup", "style": "natural", "background": "neutral", "angle": "threequarter", "lighting": "bright", "sharpness": "sharp" }
+      "settings": {
+        "niche": "makeup",
+        "style": "natural",
+        "background": "neutral",
+        "angle": "threequarter",
+        "lighting": "bright",
+        "sharpness": "sharp"
+      }
     }
   ]
 }

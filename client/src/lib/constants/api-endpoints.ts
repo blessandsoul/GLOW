@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
     PORTFOLIO: {
         ME: '/portfolio/me',
         CREATE: '/portfolio',
+        REORDER: '/portfolio/reorder',
         UPDATE: (id: string) => `/portfolio/${id}`,
         DELETE: (id: string) => `/portfolio/${id}`,
         PUBLIC: (username: string) => `/portfolio/public/${username}`,
@@ -38,15 +39,26 @@ export const API_ENDPOINTS = {
     JOBS: {
         GET: (id: string) => `/jobs/${id}`,
         LIST: '/jobs',
+        RESULTS: '/jobs/results',
         GUEST: '/jobs/guest',
         BATCH: '/jobs/batch',
         DOWNLOAD: (id: string, variant: number) => `/jobs/${id}/download?variant=${variant}`,
+        DELETE: (id: string) => `/jobs/${id}`,
+        BULK_DELETE: '/jobs/bulk',
+        STATS: '/jobs/stats',
     },
     CREDITS: {
         BALANCE: '/credits/balance',
         PACKAGES: '/credits/packages',
         PURCHASE: '/credits/purchase',
         HISTORY: '/credits/history',
+    },
+    SUBSCRIPTIONS: {
+        PLANS: '/subscriptions/plans',
+        CURRENT: '/subscriptions/current',
+        SUBSCRIBE: '/subscriptions/subscribe',
+        CANCEL: '/subscriptions/cancel',
+        REACTIVATE: '/subscriptions/reactivate',
     },
     REFERRALS: {
         STATS: '/referrals/my',

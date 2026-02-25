@@ -62,32 +62,24 @@ function SparkLayer({ active }: { active: boolean }): React.ReactElement | null 
    Shine Border (conic-gradient rotating ring)
 ───────────────────────────────────────────── */
 function ShineBorder(): React.ReactElement {
-    const [angle, setAngle] = useState(0);
-    useEffect(() => {
-        let raf: number;
-        let start: number | null = null;
-        const DUR = 2800;
-        const tick = (ts: number): void => {
-            if (!start) start = ts;
-            setAngle(((ts - start) % DUR) / DUR * 360);
-            raf = requestAnimationFrame(tick);
-        };
-        raf = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(raf);
-    }, []);
-
     return (
         <div
-            className="pointer-events-none absolute -inset-[1.5px] rounded-xl"
+            className="pointer-events-none absolute -inset-[1.5px] rounded-xl overflow-hidden"
             style={{
-                background: `conic-gradient(from ${angle}deg, transparent 50%, oklch(0.58 0.15 340 / 0.9) 62%, oklch(0.85 0.08 340) 67%, oklch(0.58 0.15 340 / 0.9) 72%, transparent 84%)`,
                 WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
                 WebkitMaskComposite: 'xor',
                 maskComposite: 'exclude',
                 padding: '1.5px',
             }}
             aria-hidden="true"
-        />
+        >
+            <div
+                className="absolute inset-[-50%] animate-shine-rotate"
+                style={{
+                    background: `conic-gradient(from 0deg, transparent 50%, oklch(0.58 0.15 340 / 0.9) 62%, oklch(0.85 0.08 340) 67%, oklch(0.58 0.15 340 / 0.9) 72%, transparent 84%)`,
+                }}
+            />
+        </div>
     );
 }
 

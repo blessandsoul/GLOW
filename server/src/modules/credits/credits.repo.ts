@@ -14,6 +14,7 @@ export const creditsRepo = {
     userId: string,
     page: number,
     limit: number,
+    type?: 'earned' | 'spent',
   ): Promise<{ items: Array<{
     id: string;
     delta: number;
@@ -23,14 +24,18 @@ export const creditsRepo = {
   }>; totalItems: number }> {
     const offset = (page - 1) * limit;
 
+    const where: { userId: string; delta?: { gt: number } | { lt: number } } = { userId };
+    if (type === 'earned') where.delta = { gt: 0 };
+    if (type === 'spent') where.delta = { lt: 0 };
+
     const [items, totalItems] = await Promise.all([
       prisma.creditTransaction.findMany({
-        where: { userId },
+        where,
         orderBy: { createdAt: 'desc' },
         skip: offset,
         take: limit,
       }),
-      prisma.creditTransaction.count({ where: { userId } }),
+      prisma.creditTransaction.count({ where }),
     ]);
 
     return { items, totalItems };
@@ -133,6 +138,34 @@ export const creditsRepo = {
         data: {
           userId,
           delta: -amount,
+          reason,
+          jobId,
+        },
+      });
+
+      return updatedUser.credits;
+    });
+
+    return result;
+  },
+
+  async refundCredits(
+    userId: string,
+    amount: number,
+    reason: string,
+    jobId?: string,
+  ): Promise<number> {
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedUser = await tx.user.update({
+        where: { id: userId },
+        data: { credits: { increment: amount } },
+        select: { credits: true },
+      });
+
+      await tx.creditTransaction.create({
+        data: {
+          userId,
+          delta: amount,
           reason,
           jobId,
         },

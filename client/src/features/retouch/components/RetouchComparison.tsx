@@ -60,9 +60,9 @@ export function RetouchComparison({ originalUrl, retouchedUrl }: RetouchComparis
                         src={getServerImageUrl(originalUrl)}
                         alt={t('ui.text_usihek')}
                         fill
-                        unoptimized
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 50vw"
+                        unoptimized
                     />
 
                     {/* Retouched (clipped, top layer) */}
@@ -74,9 +74,9 @@ export function RetouchComparison({ originalUrl, retouchedUrl }: RetouchComparis
                             src={getServerImageUrl(retouchedUrl)}
                             alt={t('ui.text_89w4ja')}
                             fill
-                            unoptimized
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 50vw"
+                            unoptimized
                         />
                     </div>
 

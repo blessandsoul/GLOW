@@ -22,6 +22,7 @@ import { brandingRoutes } from '@/modules/branding/branding.routes.js';
 import { portfolioRoutes } from '@/modules/portfolio/portfolio.routes.js';
 import { trendsRoutes } from '@/modules/trends/trends.routes.js';
 import { filtersRoutes } from '@/modules/filters/filters.routes.js';
+import { subscriptionsRoutes } from '@/modules/subscriptions/subscriptions.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -30,8 +31,12 @@ export async function buildApp() {
   });
 
   // ── Plugins ──
+  const corsOrigins = env.CORS_ORIGIN.includes(',')
+    ? env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : env.CORS_ORIGIN;
+
   await app.register(cors, {
-    origin: env.CORS_ORIGIN,
+    origin: corsOrigins,
     credentials: true,
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
@@ -67,7 +72,7 @@ export async function buildApp() {
   });
 
   // ── Global error handler ──
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: Error, request, reply) => {
     // AppError (our typed errors)
     if (error instanceof AppError) {
       reply.status(error.statusCode).send({
@@ -82,7 +87,8 @@ export async function buildApp() {
 
     // Zod validation errors
     if (error instanceof ZodError) {
-      const messages = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`);
+      const issues = error.issues ?? [];
+      const messages = issues.map((e) => `${e.path.join('.')}: ${e.message}`);
       reply.status(422).send({
         success: false,
         error: {
@@ -94,7 +100,7 @@ export async function buildApp() {
     }
 
     // Fastify validation errors
-    if (error.validation) {
+    if ('validation' in error) {
       reply.status(400).send({
         success: false,
         error: {
@@ -138,6 +144,7 @@ export async function buildApp() {
   await app.register(portfolioRoutes, { prefix: '/api/v1/portfolio' });
   await app.register(trendsRoutes, { prefix: '/api/v1/trends' });
   await app.register(filtersRoutes, { prefix: '/api/v1/filters' });
+  await app.register(subscriptionsRoutes, { prefix: '/api/v1/subscriptions' });
 
   return app;
 }

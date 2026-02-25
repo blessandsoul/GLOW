@@ -1,7 +1,8 @@
 import { apiClient } from '@/lib/api/axios.config';
 import type { ApiResponse, PaginatedApiResponse } from '@/lib/api/api.types';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
-import type { Job, BatchCreateResult } from '../types/job.types';
+import type { Job, JobStatus, BatchCreateResult, DashboardStats } from '../types/job.types';
+import type { JobResultImage } from '@/features/portfolio/types/builder.types';
 
 class JobService {
     async uploadPhoto(file: File, settings?: object): Promise<Job> {
@@ -42,15 +43,24 @@ class JobService {
         return data.data;
     }
 
-    async getUserJobs(page = 1, limit = 10): Promise<{ items: Job[]; total: number }> {
+    async getUserJobs(page = 1, limit = 20, filters?: { status?: JobStatus }): Promise<{ items: Job[]; total: number; hasNextPage: boolean; page: number }> {
         const { data } = await apiClient.get<PaginatedApiResponse<Job>>(
             API_ENDPOINTS.JOBS.LIST,
-            { params: { page, limit } },
+            { params: { page, limit, ...filters } },
         );
         return {
             items: data.data.items,
             total: data.data.pagination.totalItems,
+            hasNextPage: data.data.pagination.hasNextPage,
+            page: data.data.pagination.page,
         };
+    }
+
+    async getResultImages(): Promise<JobResultImage[]> {
+        const { data } = await apiClient.get<ApiResponse<JobResultImage[]>>(
+            API_ENDPOINTS.JOBS.RESULTS,
+        );
+        return data.data;
     }
 
     async uploadBatch(files: File[], settings?: object): Promise<BatchCreateResult> {
@@ -63,6 +73,25 @@ class JobService {
             API_ENDPOINTS.JOBS.BATCH,
             formData,
             { headers: { 'Content-Type': 'multipart/form-data' } },
+        );
+        return data.data;
+    }
+
+    async deleteJob(id: string): Promise<void> {
+        await apiClient.delete(API_ENDPOINTS.JOBS.DELETE(id));
+    }
+
+    async bulkDeleteJobs(jobIds: string[]): Promise<{ deleted: number }> {
+        const { data } = await apiClient.delete<ApiResponse<{ deleted: number }>>(
+            API_ENDPOINTS.JOBS.BULK_DELETE,
+            { data: { jobIds } },
+        );
+        return data.data;
+    }
+
+    async getStats(): Promise<DashboardStats> {
+        const { data } = await apiClient.get<ApiResponse<DashboardStats>>(
+            API_ENDPOINTS.JOBS.STATS,
         );
         return data.data;
     }

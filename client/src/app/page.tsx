@@ -2,24 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkle, ArrowRight, Diamond } from '@phosphor-icons/react';
+import { Sparkle, ArrowRight, Diamond, Coins, SquaresFour, Plus } from '@phosphor-icons/react';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
-import { UploadSection } from '@/features/upload/components/UploadSection';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
 import { BeforeAfterSection } from '@/features/landing/components/BeforeAfterSection';
-import Silk from '@/components/Silk';
+import dynamic from 'next/dynamic';
+
+const Silk = dynamic(() => import('@/components/Silk'), { ssr: false });
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { HeroEditorial } from '@/features/landing/components/HeroEditorial';
 import { HeroStats } from '@/features/landing/components/HeroStats';
 import { HeroCards } from '@/features/landing/components/HeroCards';
+import { ROUTES } from '@/lib/constants/routes';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { cn } from '@/lib/utils';
 
 export default function HomePage(): React.ReactElement {
     const [scrolled, setScrolled] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { t, tArray } = useLanguage();
+    const { isAuthenticated, isInitializing, user } = useAuth();
     const rotatingWords = tArray('hero.rotating_words');
     const [wordIndex, setWordIndex] = useState(0);
+    const isDesktop = useMediaQuery('(min-width: 1024px)');
+
+    useEffect(() => { setMounted(true); }, []);
+
     useEffect(() => {
         const handleScroll = (): void => {
             setScrolled(window.scrollY > 20);
@@ -57,24 +68,63 @@ export default function HomePage(): React.ReactElement {
 
                     {/* Actions */}
                     <div className="flex items-center gap-3">
-                        <div className="hidden items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1.5 shadow-sm sm:flex">
-                            <Diamond size={14} weight="fill" className="text-primary" />
-                            <span className="text-xs font-semibold text-primary">{t('header.free_photos')}</span>
-                        </div>
+                        {(!mounted || !isAuthenticated) && (
+                            <div className="hidden items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1.5 shadow-sm sm:flex">
+                                <Diamond size={14} weight="fill" className="text-primary" />
+                                <span className="text-xs font-semibold text-primary">{t('header.free_photos')}</span>
+                            </div>
+                        )}
 
                         <ThemeToggle />
 
                         <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
 
-                        <Button variant="ghost" size="sm" className="hidden h-10 px-4 text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white sm:flex rounded-xl" asChild>
-                            <Link href="/login">{t('header.login')}</Link>
-                        </Button>
-                        <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
-                            <Link href="/register">
-                                {t('header.start')}
-                                <ArrowRight size={14} weight="bold" />
-                            </Link>
-                        </Button>
+                        {!mounted || isInitializing ? (
+                            <div className="h-8 w-20 animate-pulse rounded-xl bg-muted" />
+                        ) : isAuthenticated ? (
+                            <div className="flex items-center gap-2">
+                                {user !== null && user !== undefined && (
+                                    <Link
+                                        href={ROUTES.DASHBOARD_CREDITS}
+                                        className={cn(
+                                            'hidden items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80 sm:inline-flex',
+                                            (user.credits ?? 0) >= 50
+                                                ? 'bg-warning/15 text-warning'
+                                                : (user.credits ?? 0) >= 10
+                                                    ? 'bg-success/15 text-success'
+                                                    : 'bg-destructive/15 text-destructive',
+                                        )}
+                                    >
+                                        <Coins size={11} weight="fill" />
+                                        {user.credits ?? 0}
+                                    </Link>
+                                )}
+                                <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
+                                    <Link href={ROUTES.CREATE}>
+                                        <Plus size={14} weight="bold" />
+                                        {t('nav.create')}
+                                    </Link>
+                                </Button>
+                                <Button variant="outline" size="sm" className="hidden h-10 gap-2 rounded-xl px-4 text-sm font-medium sm:inline-flex" asChild>
+                                    <Link href={ROUTES.DASHBOARD}>
+                                        <SquaresFour size={14} weight="fill" />
+                                        {t('header.dashboard')}
+                                    </Link>
+                                </Button>
+                            </div>
+                        ) : (
+                            <>
+                                <Button variant="ghost" size="sm" className="hidden h-10 px-4 text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white sm:flex rounded-xl" asChild>
+                                    <Link href="/login">{t('header.login')}</Link>
+                                </Button>
+                                <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
+                                    <Link href="/register">
+                                        {t('header.start')}
+                                        <ArrowRight size={14} weight="bold" />
+                                    </Link>
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </header>
@@ -84,30 +134,23 @@ export default function HomePage(): React.ReactElement {
 
                 {/* ── Mobile Hero (< lg) ── */}
                 <div className="lg:hidden relative px-4 sm:px-6">
-                    {/* Silk Background for mobile */}
-                    <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[150vw] h-[800px] -z-10 opacity-20 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ WebkitMaskImage: 'radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%)', maskImage: 'radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%)' }}>
-                        <Silk
-                            color="#ff29b0"
-                            speed={5.2}
-                            noiseIntensity={0.9}
-                            rotation={2.67}
-                        />
-                    </div>
                     <HeroEditorial wordIndex={wordIndex} rotatingWords={rotatingWords} />
                 </div>
 
                 {/* ── Desktop Hero (lg+) ── */}
                 <div className="hidden lg:block mx-auto w-full max-w-7xl px-10 xl:px-16 pt-8 pb-10 lg:pt-14 lg:pb-16 relative overflow-visible">
 
-                    {/* Elegant Silk Background Effect */}
-                    <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[120vw] h-[1200px] -z-10 opacity-20 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ WebkitMaskImage: 'radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%)', maskImage: 'radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%)' }}>
-                        <Silk
-                            color="#ff29b0"
-                            speed={5.2}
-                            noiseIntensity={0.9}
-                            rotation={2.67}
-                        />
-                    </div>
+                    {/* Elegant Silk Background Effect — only mount when viewport is desktop */}
+                    {isDesktop && (
+                        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[120vw] h-[1200px] -z-10 opacity-20 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ WebkitMaskImage: 'radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%)', maskImage: 'radial-gradient(ellipse at 50% 40%, black 0%, transparent 70%)' }}>
+                            <Silk
+                                color="#ff29b0"
+                                speed={5.2}
+                                noiseIntensity={0.9}
+                                rotation={2.67}
+                            />
+                        </div>
+                    )}
 
                     <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10 w-full overflow-visible">
                         {/* Text Content */}
@@ -227,42 +270,38 @@ export default function HomePage(): React.ReactElement {
                     </div>
                 </div>
 
-                {/* ── Workspace Tool Section ── */}
-                <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 mt-8 mb-20 relative z-20">
-                    {/* Section heading */}
-                    <div className="text-center mb-8 flex flex-col items-center gap-2">
-                        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                            <Sparkle size={10} weight="fill" />
-                            {t('workspace.badge')}
+                {/* ── CTA Section ── */}
+                <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 mt-8 mb-20 relative z-20">
+                    <div className="flex flex-col items-center gap-6 rounded-2xl border border-border/50 bg-card p-10 text-center shadow-sm">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                            <Sparkle size={28} weight="fill" className="text-primary" />
                         </div>
-                        <h2 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">{t('workspace.title')}</h2>
+                        <div>
+                            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                                {t('cta.title')}
+                            </h2>
+                            <p className="mx-auto mt-2 max-w-md text-base text-muted-foreground">
+                                {t('cta.description')}
+                            </p>
+                        </div>
+                        {mounted && isAuthenticated ? (
+                            <Link
+                                href={ROUTES.CREATE}
+                                className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-all duration-200 hover:bg-primary/90 active:scale-[0.98]"
+                            >
+                                <Plus size={16} weight="bold" />
+                                {t('cta.open_studio')}
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/register"
+                                className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-all duration-200 hover:bg-primary/90 active:scale-[0.98]"
+                            >
+                                {t('hero.btn_start')}
+                                <ArrowRight size={14} weight="bold" />
+                            </Link>
+                        )}
                     </div>
-
-                    {/* App card */}
-                    <div className="relative mx-auto flex w-full flex-col overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-white border border-zinc-200/70 shadow-[0_32px_80px_-16px_rgba(0,0,0,0.09),0_0_0_1px_rgba(0,0,0,0.04)] dark:bg-zinc-950 dark:border-zinc-800/70 dark:shadow-[0_32px_80px_-16px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.04)] transition-shadow duration-500 hover:shadow-[0_40px_100px_-16px_rgba(0,0,0,0.13),0_0_0_1px_rgba(0,0,0,0.04)]">
-
-                        {/* Subtle brand glow */}
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-transparent" />
-
-                        {/* Window chrome — clean, minimal */}
-                        <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/80 px-6 py-3.5 dark:border-zinc-800/80 dark:bg-zinc-900/60 relative z-10 backdrop-blur-sm">
-                            <div className="flex items-center gap-1.5">
-                                <div className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                                <div className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                                <div className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <Sparkle size={10} weight="fill" className="text-primary/60" />
-                                <span className="text-[10px] font-semibold tracking-[0.15em] text-zinc-400 uppercase">Glow.GE Studio</span>
-                            </div>
-                            <div className="w-[52px]" />
-                        </div>
-
-                        <div className="flex-1 relative z-10 min-h-[520px]">
-                            <UploadSection />
-                        </div>
-                    </div>
-
                 </div>
             </main>
 

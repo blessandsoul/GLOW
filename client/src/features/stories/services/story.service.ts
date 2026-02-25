@@ -2,7 +2,18 @@ import type { GeneratedStory, StoryLayout } from '../types/story.types';
 
 const delay = (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms));
 
-const storyStore = new Map<string, GeneratedStory[]>();
+const storyStore = new Map<string, { data: GeneratedStory[]; createdMs: number }>();
+const MAX_STORE_SIZE = 10;
+const MAX_AGE_MS = 5 * 60 * 1000;
+
+function evictStale(): void {
+    const now = Date.now();
+    for (const [key, entry] of storyStore) {
+        if (now - entry.createdMs > MAX_AGE_MS || storyStore.size > MAX_STORE_SIZE) {
+            storyStore.delete(key);
+        }
+    }
+}
 
 const STORY_IMAGES: Record<StoryLayout, string> = {
     MINIMAL: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=540&h=960&fit=crop',
@@ -28,13 +39,14 @@ class StoryService {
             overlayText: OVERLAY_TEXTS[layout],
             createdAt: new Date().toISOString(),
         }));
-        storyStore.set(jobId, stories);
+        evictStale();
+        storyStore.set(jobId, { data: stories, createdMs: Date.now() });
         return stories;
     }
 
     async getStories(jobId: string): Promise<GeneratedStory[]> {
         await delay(200);
-        return storyStore.get(jobId) ?? [];
+        return storyStore.get(jobId)?.data ?? [];
     }
 }
 

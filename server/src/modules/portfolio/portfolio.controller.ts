@@ -4,6 +4,7 @@ import {
   UpdatePortfolioItemSchema,
   PortfolioItemIdSchema,
   PublicPortfolioParamsSchema,
+  ReorderPortfolioSchema,
 } from './portfolio.schemas.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
 import type { PortfolioService } from './portfolio.service.js';
@@ -32,6 +33,12 @@ export function createPortfolioController(portfolioService: PortfolioService) {
       const { id } = PortfolioItemIdSchema.parse(request.params);
       await portfolioService.deleteItem(request.user!.id, id);
       reply.send(successResponse('Item deleted', null));
+    },
+
+    async reorder(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const input = ReorderPortfolioSchema.parse(request.body);
+      const items = await portfolioService.reorderItems(request.user!.id, input);
+      reply.send(successResponse('Portfolio reordered', items));
     },
 
     async getPublic(request: FastifyRequest, reply: FastifyReply): Promise<void> {

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { getServerImageUrl } from '@/lib/utils/image';
 import { useMyPortfolio } from '../hooks/usePortfolio';
 import { useAppSelector } from '@/store/hooks';
 import { ROUTES } from '@/lib/constants/routes';
@@ -32,9 +33,10 @@ function PortfolioItemCard({
         )}>
             <div className="relative aspect-3/4">
                 <Image
-                    src={item.imageUrl}
+                    src={getServerImageUrl(item.imageUrl)}
                     alt={item.title ?? 'Portfolio item'}
                     fill
+                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />

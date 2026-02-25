@@ -77,21 +77,21 @@ export function usePurchasePackage(onSuccessCallback?: () => void) {
     return { mutate, isPending };
 }
 
-export function useCreditHistory(page: number = 1, limit: number = 10) {
+export function useCreditHistory(page: number = 1, limit: number = 10, type?: 'earned' | 'spent') {
     const [data, setData] = useState<{ items: CreditTransaction[]; pagination: PaginationMeta } | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchHistory = useCallback(async () => {
         setIsLoading(true);
         try {
-            const res = await creditsService.getHistory(page, limit);
+            const res = await creditsService.getHistory(page, limit, type);
             setData(res);
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
         }
-    }, [page, limit]);
+    }, [page, limit, type]);
 
     useEffect(() => {
         fetchHistory();

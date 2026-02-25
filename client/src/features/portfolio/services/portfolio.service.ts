@@ -2,6 +2,7 @@ import { apiClient } from '@/lib/api/axios.config';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
 import type { ApiResponse } from '@/lib/api/api.types';
 import type { PortfolioItem, PortfolioItemFormData, PublicPortfolioData } from '../types/portfolio.types';
+import type { ReorderPayload } from '../types/builder.types';
 
 class PortfolioService {
     async getMyPortfolio(): Promise<PortfolioItem[]> {
@@ -29,6 +30,14 @@ class PortfolioService {
 
     async deleteItem(id: string): Promise<void> {
         await apiClient.delete(API_ENDPOINTS.PORTFOLIO.DELETE(id));
+    }
+
+    async reorderItems(payload: ReorderPayload): Promise<PortfolioItem[]> {
+        const { data } = await apiClient.patch<ApiResponse<PortfolioItem[]>>(
+            API_ENDPOINTS.PORTFOLIO.REORDER,
+            payload,
+        );
+        return data.data;
     }
 
     async getPublicPortfolio(username: string): Promise<PublicPortfolioData> {
