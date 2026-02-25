@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 312" width="820" height="312">
+  <defs>
+    <!-- Bokeh glow for symbol -->
+    <radialGradient id="bokeh" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#B490F5" stop-opacity="0.20"/>
+      <stop offset="50%" stop-color="#CAA2DD" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#F0C060" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ring gradient -->
+    <linearGradient id="ring-grad" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#B490F5" />
+      <stop offset="40%" stop-color="#D7A4CC" />
+      <stop offset="100%" stop-color="#F0C060" />
+    </linearGradient>
+
+    <!-- Subtle lavender ambient left -->
+    <radialGradient id="glow-left" cx="25%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#B490F5" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#B490F5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- White background -->
+  <rect width="820" height="312" fill="#FFFFFF" />
+
+  <!-- Subtle lavender tint left -->
+  <rect width="820" height="312" fill="url(#glow-left)" />
+
+  <!-- Symbol — centered left area -->
+  <g transform="translate(156, 156)">
+    <circle cx="0" cy="0" r="130" fill="url(#bokeh)" />
+
+    <circle cx="0" cy="0" r="28"  fill="none" stroke="url(#ring-grad)" stroke-width="1.80" opacity="0.90" />
+    <circle cx="0" cy="0" r="34"  fill="none" stroke="url(#ring-grad)" stroke-width="1.71" opacity="0.85" />
+    <circle cx="0" cy="0" r="40"  fill="none" stroke="url(#ring-grad)" stroke-width="1.63" opacity="0.80" />
+    <circle cx="0" cy="0" r="46"  fill="none" stroke="url(#ring-grad)" stroke-width="1.55" opacity="0.75" />
+    <circle cx="0" cy="0" r="52"  fill="none" stroke="url(#ring-grad)" stroke-width="1.46" opacity="0.70" />
+    <circle cx="0" cy="0" r="58"  fill="none" stroke="url(#ring-grad)" stroke-width="1.38" opacity="0.65" />
+    <circle cx="0" cy="0" r="64"  fill="none" stroke="url(#ring-grad)" stroke-width="1.30" opacity="0.60" />
+    <circle cx="0" cy="0" r="70"  fill="none" stroke="url(#ring-grad)" stroke-width="1.21" opacity="0.55" />
+    <circle cx="0" cy="0" r="76"  fill="none" stroke="url(#ring-grad)" stroke-width="1.13" opacity="0.50" />
+    <circle cx="0" cy="0" r="82"  fill="none" stroke="url(#ring-grad)" stroke-width="1.04" opacity="0.45" />
+    <circle cx="0" cy="0" r="88"  fill="none" stroke="url(#ring-grad)" stroke-width="0.96" opacity="0.38" />
+    <circle cx="0" cy="0" r="94"  fill="none" stroke="url(#ring-grad)" stroke-width="0.88" opacity="0.30" />
+    <circle cx="0" cy="0" r="100" fill="none" stroke="url(#ring-grad)" stroke-width="0.79" opacity="0.22" />
+    <circle cx="0" cy="0" r="106" fill="none" stroke="url(#ring-grad)" stroke-width="0.71" opacity="0.15" />
+    <circle cx="0" cy="0" r="112" fill="none" stroke="url(#ring-grad)" stroke-width="0.63" opacity="0.10" />
+    <circle cx="0" cy="0" r="118" fill="none" stroke="url(#ring-grad)" stroke-width="0.54" opacity="0.06" />
+    <circle cx="0" cy="0" r="124" fill="none" stroke="url(#ring-grad)" stroke-width="0.46" opacity="0.03" />
+
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="12" fill="#B490F5" />
+  </g>
+
+  <!-- Wordmark — right side -->
+  <g transform="translate(310, 0)">
+    <!-- GLOW dark charcoal -->
+    <text x="0" y="196"
+      font-family="'Helvetica Neue', 'Arial Black', sans-serif"
+      font-weight="900"
+      font-size="148"
+      fill="#1C1C1E"
+      letter-spacing="-0.05em">GLOW</text>
+
+    <!-- .GE lavender superscript -->
+    <text x="394" y="120"
+      font-family="'Helvetica Neue', 'Arial Black', sans-serif"
+      font-weight="700"
+      font-size="58"
+      fill="#B490F5"
+      letter-spacing="-0.02em">.GE</text>
+  </g>
+</svg>

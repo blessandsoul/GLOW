@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background: cream -->
+  <rect width="1024" height="1024" fill="#FAFAF8" />
+
+  <defs>
+    <radialGradient id="bokeh-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#B490F5" stop-opacity="0.20"/>
+      <stop offset="50%" stop-color="#CAA2DD" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#F0C060" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring-grad" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#B490F5" />
+      <stop offset="40%" stop-color="#D7A4CC" />
+      <stop offset="100%" stop-color="#F0C060" />
+    </linearGradient>
+  </defs>
+
+  <!-- Centered symbol -->
+  <g transform="translate(512, 512)">
+    <!-- Bokeh glow -->
+    <circle cx="0" cy="0" r="400" fill="url(#bokeh-glow)" />
+
+    <!-- Concentric rings scaled up -->
+    <circle cx="0" cy="0" r="80"  fill="none" stroke="url(#ring-grad)" stroke-width="12.0" opacity="0.90" />
+    <circle cx="0" cy="0" r="97"  fill="none" stroke="url(#ring-grad)" stroke-width="11.4" opacity="0.85" />
+    <circle cx="0" cy="0" r="114" fill="none" stroke="url(#ring-grad)" stroke-width="10.9" opacity="0.80" />
+    <circle cx="0" cy="0" r="131" fill="none" stroke="url(#ring-grad)" stroke-width="10.3" opacity="0.75" />
+    <circle cx="0" cy="0" r="148" fill="none" stroke="url(#ring-grad)" stroke-width="9.8"  opacity="0.70" />
+    <circle cx="0" cy="0" r="165" fill="none" stroke="url(#ring-grad)" stroke-width="9.2"  opacity="0.65" />
+    <circle cx="0" cy="0" r="182" fill="none" stroke="url(#ring-grad)" stroke-width="8.6"  opacity="0.60" />
+    <circle cx="0" cy="0" r="199" fill="none" stroke="url(#ring-grad)" stroke-width="8.1"  opacity="0.55" />
+    <circle cx="0" cy="0" r="216" fill="none" stroke="url(#ring-grad)" stroke-width="7.5"  opacity="0.50" />
+    <circle cx="0" cy="0" r="233" fill="none" stroke="url(#ring-grad)" stroke-width="7.0"  opacity="0.45" />
+    <circle cx="0" cy="0" r="250" fill="none" stroke="url(#ring-grad)" stroke-width="6.4"  opacity="0.40" />
+    <circle cx="0" cy="0" r="267" fill="none" stroke="url(#ring-grad)" stroke-width="5.8"  opacity="0.35" />
+    <circle cx="0" cy="0" r="284" fill="none" stroke="url(#ring-grad)" stroke-width="5.3"  opacity="0.30" />
+    <circle cx="0" cy="0" r="301" fill="none" stroke="url(#ring-grad)" stroke-width="4.7"  opacity="0.25" />
+    <circle cx="0" cy="0" r="318" fill="none" stroke="url(#ring-grad)" stroke-width="4.2"  opacity="0.20" />
+    <circle cx="0" cy="0" r="335" fill="none" stroke="url(#ring-grad)" stroke-width="3.6"  opacity="0.15" />
+    <circle cx="0" cy="0" r="352" fill="none" stroke="url(#ring-grad)" stroke-width="3.0"  opacity="0.10" />
+    <circle cx="0" cy="0" r="369" fill="none" stroke="url(#ring-grad)" stroke-width="2.5"  opacity="0.05" />
+
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="40" fill="#B490F5" />
+  </g>
+</svg>
