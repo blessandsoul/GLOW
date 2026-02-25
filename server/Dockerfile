@@ -8,6 +8,9 @@ RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
+# Force development to install devDependencies (typescript, tsc-alias, prisma)
+# Coolify injects NODE_ENV=production as a build ARG which causes npm ci to skip devDeps
+ENV NODE_ENV=development
 RUN npm ci
 RUN npx prisma generate
 
