@@ -68,7 +68,7 @@ export async function buildApp() {
   });
 
   // ── Global error handler ──
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: Error, request, reply) => {
     // AppError (our typed errors)
     if (error instanceof AppError) {
       reply.status(error.statusCode).send({
@@ -96,7 +96,7 @@ export async function buildApp() {
     }
 
     // Fastify validation errors
-    if (error.validation) {
+    if ('validation' in error) {
       reply.status(400).send({
         success: false,
         error: {

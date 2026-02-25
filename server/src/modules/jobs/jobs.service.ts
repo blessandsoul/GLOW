@@ -296,7 +296,10 @@ export const jobsService = {
       where: { id: userId },
       select: { credits: true, subscription: { select: { plan: true } } },
     });
-    const planConfig = getPlanConfig(user?.subscription?.plan ?? 'FREE');
+    if (!user) {
+      throw new NotFoundError('User not found', 'USER_NOT_FOUND');
+    }
+    const planConfig = getPlanConfig(user.subscription?.plan ?? 'FREE');
     if (!planConfig.batchUploadEnabled) {
       throw new ForbiddenError('Batch upload requires ULTRA plan', 'ULTRA_REQUIRED');
     }
