@@ -43,6 +43,20 @@ function getRefreshTokenCookieOptions(): CookieSerializeOptions {
   return options;
 }
 
+function getSessionMarkerCookieOptions(): CookieSerializeOptions {
+  const options: CookieSerializeOptions = {
+    httpOnly: false,
+    secure: env.COOKIE_SECURE,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: parseExpiryToSeconds(env.JWT_REFRESH_EXPIRY),
+  };
+  if (env.COOKIE_DOMAIN) {
+    options.domain = env.COOKIE_DOMAIN;
+  }
+  return options;
+}
+
 export function setAuthCookies(
   reply: FastifyReply,
   accessToken: string,
@@ -50,17 +64,21 @@ export function setAuthCookies(
 ): void {
   reply
     .setCookie('accessToken', accessToken, getAccessTokenCookieOptions())
-    .setCookie('refreshToken', refreshToken, getRefreshTokenCookieOptions());
+    .setCookie('refreshToken', refreshToken, getRefreshTokenCookieOptions())
+    .setCookie('session', '1', getSessionMarkerCookieOptions());
 }
 
 export function clearAuthCookies(reply: FastifyReply): void {
   const clearAccessOptions: CookieSerializeOptions = { path: '/' };
   const clearRefreshOptions: CookieSerializeOptions = { path: '/api/v1/auth' };
+  const clearSessionOptions: CookieSerializeOptions = { path: '/' };
   if (env.COOKIE_DOMAIN) {
     clearAccessOptions.domain = env.COOKIE_DOMAIN;
     clearRefreshOptions.domain = env.COOKIE_DOMAIN;
+    clearSessionOptions.domain = env.COOKIE_DOMAIN;
   }
   reply
     .clearCookie('accessToken', clearAccessOptions)
-    .clearCookie('refreshToken', clearRefreshOptions);
+    .clearCookie('refreshToken', clearRefreshOptions)
+    .clearCookie('session', clearSessionOptions);
 }

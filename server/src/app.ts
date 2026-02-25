@@ -23,6 +23,7 @@ import { portfolioRoutes } from '@/modules/portfolio/portfolio.routes.js';
 import { trendsRoutes } from '@/modules/trends/trends.routes.js';
 import { filtersRoutes } from '@/modules/filters/filters.routes.js';
 import { subscriptionsRoutes } from '@/modules/subscriptions/subscriptions.routes.js';
+import { captionsRoutes } from '@/modules/captions/captions.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -145,6 +146,7 @@ export async function buildApp() {
   await app.register(trendsRoutes, { prefix: '/api/v1/trends' });
   await app.register(filtersRoutes, { prefix: '/api/v1/filters' });
   await app.register(subscriptionsRoutes, { prefix: '/api/v1/subscriptions' });
+  await app.register(captionsRoutes, { prefix: '/api/v1/captions' });
 
   return app;
 }

@@ -59,6 +59,7 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                 // Don't call /logout — the refresh token is already invalid/expired.
                 store.dispatch(setInitialized());
                 document.cookie = 'accessToken=; path=/; max-age=0';
+                document.cookie = 'session=; path=/; max-age=0';
                 return;
             }
 

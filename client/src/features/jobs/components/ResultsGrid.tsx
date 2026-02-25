@@ -4,16 +4,13 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-    DownloadSimple, Sparkle, WarningCircle, ShareNetwork, Lock, Eye,
-    ChatText, DeviceMobile, Eraser, PaperPlaneTilt, ChatCircle,
-    LinkSimple, Clock, CaretDown, CaretUp, InstagramLogo, Flask,
-    EyeSlash, Stamp,
+    DownloadSimple, Sparkle, WarningCircle, ShareNetwork, Lock,
+    Eraser, LinkSimple, Flask, Stamp,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { ROUTES } from '@/lib/constants/routes';
 import { GuestResultBanner } from '@/features/upload/components/GuestResultBanner';
 import { CaptionGenerator } from '@/features/captions/components/CaptionGenerator';
 import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
@@ -29,122 +26,28 @@ interface ResultsGridProps {
     isGuest?: boolean;
     isDemo?: boolean;
     onDownload: (url: string, jobId: string, variantIndex: number, branded: boolean) => void;
-    onGenerateCaption?: () => void;
-    onGenerateStories?: () => void;
     onRetouch?: (url: string) => void;
 }
 
-// ─── "Send to Client" panel ───────────────────────────────────────────────────
-interface SendToClientPanelProps {
-    jobId: string;
-}
-
-function SendToClientPanel({ jobId }: SendToClientPanelProps): React.ReactElement {
-    const showcaseUrl = typeof window !== 'undefined'
-        ? `${window.location.origin}/showcase/${jobId}`
-        : `/showcase/${jobId}`;
-
-    const handleWhatsApp = (): void => {
-        const text = encodeURIComponent(`Посмотрите результат вашей процедуры: ${showcaseUrl}`);
-        window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer');
-    };
-
-    const handleTelegram = (): void => {
-        const url = encodeURIComponent(showcaseUrl);
-        const text = encodeURIComponent('Посмотрите результат вашей процедуры 💅');
-        window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank', 'noopener,noreferrer');
-    };
-
+// ─── Share link helper ────────────────────────────────────────────────────────
+function ShareButton({ jobId }: { jobId: string }): React.ReactElement {
     const handleCopyLink = async (): Promise<void> => {
+        const showcaseUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}/showcase/${jobId}`
+            : `/showcase/${jobId}`;
         try {
             await navigator.clipboard.writeText(showcaseUrl);
-            toast.success('Ссылка скопирована');
+            toast.success('ლინკი დაკოპირდა');
         } catch {
-            toast.error('Не удалось скопировать');
+            toast.error('ვერ მოხერხდა კოპირება');
         }
     };
 
     return (
-        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
-            <div className="mb-3 flex items-start gap-3">
-                <div className="shrink-0 rounded-full bg-primary/10 p-2">
-                    <PaperPlaneTilt size={16} className="text-primary" weight="fill" />
-                </div>
-                <div>
-                    <p className="text-sm font-semibold text-foreground">Отправить клиенту</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                        Красивая страница с работой — не просто картинка в чате
-                    </p>
-                </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-                <Button
-                    size="sm"
-                    onClick={handleWhatsApp}
-                    className="min-w-30 flex-1 gap-1.5 border-0 bg-[#25D366] text-white hover:bg-[#22c55e]"
-                >
-                    <ChatCircle size={14} weight="fill" />
-                    WhatsApp
-                </Button>
-                <Button
-                    size="sm"
-                    onClick={handleTelegram}
-                    className="min-w-30 flex-1 gap-1.5 border-0 bg-[#229ED9] text-white hover:bg-[#0ea5e9]"
-                >
-                    <PaperPlaneTilt size={14} weight="fill" />
-                    Telegram
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCopyLink}
-                    className="gap-1.5"
-                >
-                    <LinkSimple size={14} />
-                    Скопировать
-                </Button>
-            </div>
-        </div>
-    );
-}
-
-// ─── Instagram caption panel ──────────────────────────────────────────────────
-function InstagramPanel({ jobId }: { jobId: string }): React.ReactElement {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="overflow-hidden rounded-xl border border-border/50 bg-card">
-            <button
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                className="flex w-full cursor-pointer items-center justify-between gap-3 p-4 transition-colors hover:bg-muted/30"
-            >
-                <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-linear-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] p-2">
-                        <InstagramLogo size={16} className="text-white" weight="fill" />
-                    </div>
-                    <div className="text-left">
-                        <p className="text-sm font-semibold text-foreground">Пост для Instagram</p>
-                        <p className="text-xs text-muted-foreground">Текст + хэштеги за 10 секунд</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-600 dark:bg-amber-950/30 dark:text-amber-400">
-                        <Clock size={10} />
-                        Пт 19:00 — пик
-                    </div>
-                    {open
-                        ? <CaretUp size={14} className="text-muted-foreground" />
-                        : <CaretDown size={14} className="text-muted-foreground" />
-                    }
-                </div>
-            </button>
-            {open && (
-                <div className="border-t border-border/30 p-4">
-                    <CaptionGenerator jobId={jobId} />
-                </div>
-            )}
-        </div>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={handleCopyLink}>
+            <LinkSimple size={14} />
+            გაზიარება
+        </Button>
     );
 }
 
@@ -179,51 +82,8 @@ function DemoBanner(): React.ReactElement {
     );
 }
 
-// ─── Download panel for selected image ───────────────────────────────────────
-interface DownloadPanelProps {
-    jobId: string;
-    variantIndex: number;
-    hasBranding: boolean;
-    onDownload: (url: string, jobId: string, variantIndex: number, branded: boolean) => void;
-    resultUrl: string;
-}
-
-function DownloadPanel({ jobId, variantIndex, hasBranding, onDownload, resultUrl }: DownloadPanelProps): React.ReactElement {
-    return (
-        <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/20 p-3">
-            <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-foreground">
-                    #{variantIndex + 1}
-                </p>
-            </div>
-            <div className="flex items-center gap-1.5">
-                {hasBranding && (
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5 text-[11px]"
-                        onClick={() => onDownload(resultUrl, jobId, variantIndex, true)}
-                    >
-                        <Stamp size={12} weight="fill" />
-                        With branding
-                    </Button>
-                )}
-                <Button
-                    size="sm"
-                    variant={hasBranding ? 'ghost' : 'outline'}
-                    className="gap-1.5 text-[11px]"
-                    onClick={() => onDownload(resultUrl, jobId, variantIndex, false)}
-                >
-                    <DownloadSimple size={12} />
-                    {hasBranding ? 'Clean' : 'Download'}
-                </Button>
-            </div>
-        </div>
-    );
-}
-
 // ─── Main ResultsGrid ─────────────────────────────────────────────────────────
-export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload, onGenerateCaption, onGenerateStories, onRetouch }: ResultsGridProps): React.ReactElement {
+export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload, onRetouch }: ResultsGridProps): React.ReactElement {
     const { t } = useLanguage();
     const { profile: brandingProfile } = useBranding();
 
@@ -490,50 +350,36 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                 </div>
             )}
 
-            {/* Download panel — explicit branded/clean options for selected image */}
-            {isAuthenticated && !isDemo && results.length > 0 && (
-                <DownloadPanel
-                    jobId={job.id}
-                    variantIndex={selectedAfterIdx}
-                    hasBranding={hasBranding}
-                    onDownload={onDownload}
-                    resultUrl={results[selectedAfterIdx] ?? results[0]}
-                />
-            )}
-
-            {/* Authenticated action panels */}
+            {/* Actions — authenticated users only */}
             {isAuthenticated && !isDemo && results.length > 0 && (
                 <div className="flex flex-col gap-3">
-                    {/* Primary CTA: Send to client */}
-                    <SendToClientPanel jobId={job.id} />
-
-                    {/* Instagram caption */}
-                    <InstagramPanel jobId={job.id} />
-
-                    {/* Secondary actions row */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        {hasBranding && (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-1.5"
+                                onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, true)}
+                            >
+                                <Stamp size={14} weight="fill" />
+                                ბრენდით
+                            </Button>
+                        )}
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5"
+                            onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false)}
+                        >
+                            <DownloadSimple size={14} />
+                            ჩამოტვირთვა
+                        </Button>
+                        <ShareButton jobId={job.id} />
                         <AddToPortfolioButton
                             jobId={job.id}
                             imageUrl={results[selectedAfterIdx] ?? results[0]}
                         />
-                        <Button variant="outline" size="sm" className="gap-1.5" asChild>
-                            <Link href={ROUTES.SHOWCASE(job.id)} target="_blank" rel="noopener noreferrer">
-                                <Eye size={14} />
-                                {t('ui.text_oxzcqg')}
-                            </Link>
-                        </Button>
-                        {onGenerateStories && (
-                            <Button variant="outline" size="sm" className="gap-1.5" onClick={onGenerateStories}>
-                                <DeviceMobile size={14} />
-                                {t('ui.text_votwmr')}
-                            </Button>
-                        )}
-                        {onGenerateCaption && (
-                            <Button variant="outline" size="sm" className="gap-1.5" onClick={onGenerateCaption}>
-                                <ChatText size={14} />
-                                {t('ui.text_2kgc5q')}
-                            </Button>
-                        )}
+                        <CaptionGenerator jobId={job.id} />
                     </div>
                 </div>
             )}

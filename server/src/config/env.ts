@@ -41,6 +41,7 @@ const envSchema = z.object({
   // Gemini config (required when AI_PROVIDER=gemini)
   GEMINI_API_KEY: z.string().default(''),
   GEMINI_IMAGE_MODEL: z.string().default('gemini-2.5-flash-preview-04-17'),
+  GEMINI_TEXT_MODEL: z.string().default('gemini-2.5-flash'),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Plus, Sparkle, WarningCircle } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -30,7 +31,7 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
     const { job: polledJob, error: pollingError } = useJobPolling(isDemo ? null : jobId);
     const { job: baJob } = useBeforeAfter();
 
-    const [showStories, setShowStories] = useState(false);
+    const [showStories] = useState(false);
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
 
     const currentJob: Job | null = isDemo ? guestJob : polledJob;
@@ -109,15 +110,12 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
     return (
         <ResultsPageShell>
             <ResultsView
-                t={t}
                 currentJob={currentJob}
                 isAuthenticated={isAuthenticated}
                 isDemoJob={isDemo}
                 showStories={showStories}
-                setShowStories={setShowStories}
                 setRetouchUrl={setRetouchUrl}
                 handleDownload={handleDownload}
-                handleReset={() => {}}
             />
             {(currentJob.status === 'DONE' || currentJob.status === 'FAILED') && (
                 <CreateNewBar t={t} />
@@ -136,14 +134,13 @@ function ResultsPageShell({ children }: { children: React.ReactNode }): React.Re
 
 function CreateNewBar({ t }: { t: (key: string) => string }): React.ReactElement {
     return (
-        <div className="flex items-center justify-center gap-3 pt-4 pb-6">
-            <Link
-                href={ROUTES.CREATE}
-                className="flex items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
-            >
-                <Plus size={13} weight="bold" />
-                {t('dashboard.create_new')}
-            </Link>
+        <div className="flex items-center justify-center pt-4 pb-6">
+            <Button size="sm" className="gap-1.5" asChild>
+                <Link href={ROUTES.CREATE}>
+                    <Plus size={14} weight="bold" />
+                    {t('dashboard.create_new')}
+                </Link>
+            </Button>
         </div>
     );
 }

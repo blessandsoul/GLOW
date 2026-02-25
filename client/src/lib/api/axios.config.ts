@@ -75,8 +75,9 @@ apiClient.interceptors.response.use(
                             { withCredentials: true },
                         );
                     } catch {
-                        // Best-effort — clear any non-httpOnly stale cookie as fallback
+                        // Best-effort — clear any non-httpOnly stale cookies as fallback
                         document.cookie = 'accessToken=; path=/; max-age=0';
+                        document.cookie = 'session=; path=/; max-age=0';
                     }
                     window.location.href = '/login';
                 }

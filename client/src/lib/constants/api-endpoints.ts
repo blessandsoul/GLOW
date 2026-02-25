@@ -63,6 +63,10 @@ export const API_ENDPOINTS = {
     REFERRALS: {
         STATS: '/referrals/my',
     },
+    CAPTIONS: {
+        GENERATE: (jobId: string) => `/captions/${jobId}`,
+        GET: (jobId: string) => `/captions/${jobId}`,
+    },
     SHOWCASE: {
         GET: (jobId: string) => `/showcase/${jobId}`,
         REVIEW: (jobId: string) => `/showcase/${jobId}/review`,
