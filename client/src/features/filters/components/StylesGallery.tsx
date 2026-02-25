@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import NextImage from 'next/image';
 import {
     Sparkle, Package, MagicWand, Flower, Images, TShirt, Image, Eye,
     Play, Camera, Heart, HandPalm, PenNib, Hand, Scissors, FirstAid,
@@ -22,7 +23,7 @@ const ICON_MAP: Record<string, typeof Sparkle> = {
     PaintBrush, ImageSquare: Image, Orange: Flower, SmileyWink: Heart, Hoodie: TShirt,
 };
 
-const INITIAL_VISIBLE = 8;
+const INITIAL_VISIBLE = 9;
 const SEARCH_INITIAL_VISIBLE = 12;
 
 // Lazy-parsed: only computed once on first access, not at module load
@@ -52,7 +53,7 @@ function getCategories(): StyleCategory[] {
 
 function getDefaultExpanded(): Set<string> {
     const cats = getCategories();
-    return new Set(cats.filter((c) => c.id !== 'presets').slice(0, 2).map((c) => c.id));
+    return new Set(cats.map((c) => c.id));
 }
 
 function getCategoryIcon(iconName: string): typeof Sparkle {
@@ -88,7 +89,7 @@ export function StylesGallery({
     const popularStyles = useMemo(() => allStyles.filter((s) => s.isPopular), [allStyles]);
 
     const nonPresetCategories = useMemo(
-        () => categories.filter((c) => c.id !== 'presets'),
+        () => categories,
         [categories],
     );
 
@@ -232,43 +233,81 @@ export function StylesGallery({
                     )}
 
                     {/* Category accordion sections */}
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-2">
                         {nonPresetCategories.map((cat) => {
                             const Icon = getCategoryIcon(cat.icon);
                             const isExpanded = expandedCategories.has(cat.id);
                             const catStyles = stylesByCategory.get(cat.id) ?? [];
                             const showAll = showAllMap[cat.id] ?? false;
                             const visibleStyles = showAll ? catStyles : catStyles.slice(0, INITIAL_VISIBLE);
+                            const hasCover = !!cat.coverUrl;
 
                             return (
                                 <div key={cat.id}>
+                                    {/* Accordion header — cover variant or plain */}
                                     <button
                                         type="button"
                                         onClick={() => toggleCategory(cat.id)}
                                         className={cn(
-                                            'flex w-full items-center gap-2 py-2 text-left text-[11px] font-medium text-foreground',
-                                            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 rounded',
+                                            'flex w-full items-center text-left transition-all duration-200',
+                                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                            hasCover
+                                                ? 'relative overflow-hidden rounded-xl h-[56px]'
+                                                : 'gap-2 py-2 text-[11px] font-medium text-foreground rounded',
                                         )}
                                     >
-                                        <Icon size={14} weight={isExpanded ? 'fill' : 'regular'} />
-                                        <span className="flex-1 truncate">
-                                            {isKa ? cat.label_ka : cat.label_ru}
-                                        </span>
-                                        <span className="text-[10px] text-muted-foreground tabular-nums">
-                                            {cat.count}
-                                        </span>
-                                        <CaretDown
-                                            size={12}
-                                            className={cn(
-                                                'text-muted-foreground transition-transform duration-200',
-                                                isExpanded && 'rotate-180',
-                                            )}
-                                        />
+                                        {hasCover ? (
+                                            <>
+                                                <NextImage
+                                                    src={cat.coverUrl!}
+                                                    alt={isKa ? cat.label_ka : cat.label_ru}
+                                                    fill
+                                                    sizes="400px"
+                                                    className="object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-black/10" />
+                                                <div className="relative z-10 flex w-full items-center justify-between px-3.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[12px] font-bold tracking-widest text-white/95">
+                                                            {isKa ? cat.label_ka : cat.label_ru}
+                                                        </span>
+                                                        <span className="text-[9px] font-medium text-white/50 tabular-nums">
+                                                            {cat.count} looks
+                                                        </span>
+                                                    </div>
+                                                    <CaretDown
+                                                        size={14}
+                                                        weight="bold"
+                                                        className={cn(
+                                                            'text-white/60 transition-transform duration-200',
+                                                            isExpanded && 'rotate-180',
+                                                        )}
+                                                    />
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Icon size={14} weight={isExpanded ? 'fill' : 'regular'} />
+                                                <span className="flex-1 truncate">
+                                                    {isKa ? cat.label_ka : cat.label_ru}
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground tabular-nums">
+                                                    {cat.count}
+                                                </span>
+                                                <CaretDown
+                                                    size={12}
+                                                    className={cn(
+                                                        'text-muted-foreground transition-transform duration-200',
+                                                        isExpanded && 'rotate-180',
+                                                    )}
+                                                />
+                                            </>
+                                        )}
                                     </button>
 
                                     {isExpanded && catStyles.length > 0 && (
                                         <>
-                                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2">
+                                            <div className={cn('grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2', hasCover && 'mt-2')}>
                                                 {visibleStyles.map((style) => (
                                                     <StyleCard
                                                         key={style.id}

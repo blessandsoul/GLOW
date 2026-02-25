@@ -6,6 +6,7 @@ export interface StyleBase {
   name_ka: string;
   name_ru: string;
   previewUrl: string;
+  beforeUrl?: string;
   description_ka: string;
   description_ru: string;
   isPopular: boolean;
@@ -29,6 +30,7 @@ export interface StyleCategory {
   icon: string;
   count: number;
   sortOrder?: number;
+  coverUrl?: string;
 }
 
 export interface StylesData {

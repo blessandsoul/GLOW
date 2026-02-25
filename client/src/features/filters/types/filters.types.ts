@@ -4,6 +4,7 @@ export interface FilterCategory {
   label_ru: string;
   icon: string;
   count: number;
+  coverUrl?: string;
 }
 
 export interface Filter {
@@ -12,6 +13,7 @@ export interface Filter {
   name_ka: string;
   name_ru: string;
   previewUrl: string;
+  beforeUrl?: string;
   description_ka: string;
   description_ru: string;
   isPopular: boolean;

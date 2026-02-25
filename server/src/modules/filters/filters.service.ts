@@ -10,6 +10,7 @@ interface FilterEntry {
   name_ru: string;
   prompt: string;
   previewUrl: string;
+  beforeUrl?: string;
   description_ka: string;
   description_ru: string;
   isPopular: boolean;
@@ -21,6 +22,7 @@ interface FilterMetadata {
   name_ka: string;
   name_ru: string;
   previewUrl: string;
+  beforeUrl?: string;
   description_ka: string;
   description_ru: string;
   isPopular: boolean;
@@ -55,12 +57,13 @@ for (const filter of promptsData.filters) {
 
 // Pre-build metadata (without prompts) for the public API
 const metadataFilters: FilterMetadata[] = promptsData.filters.map(
-  ({ id, categoryId, name_ka, name_ru, previewUrl, description_ka, description_ru, isPopular }) => ({
+  ({ id, categoryId, name_ka, name_ru, previewUrl, beforeUrl, description_ka, description_ru, isPopular }) => ({
     id,
     categoryId,
     name_ka,
     name_ru,
     previewUrl,
+    ...(beforeUrl && { beforeUrl }),
     description_ka,
     description_ru,
     isPopular,
