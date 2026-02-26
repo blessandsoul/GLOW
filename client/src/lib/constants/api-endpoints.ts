@@ -71,4 +71,8 @@ export const API_ENDPOINTS = {
         GET: (jobId: string) => `/showcase/${jobId}`,
         REVIEW: (jobId: string) => `/showcase/${jobId}/review`,
     },
+    ADMIN: {
+        USERS: '/admin/users',
+        STATS: '/admin/stats',
+    },
 } as const;

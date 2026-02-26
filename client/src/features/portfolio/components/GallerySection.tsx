@@ -69,17 +69,17 @@ export function GallerySection({
                                     />
                                 </div>
 
-                                {/* Overlay with actions */}
-                                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                                    <div className="flex w-full items-center justify-between p-2">
+                                {/* Overlay with actions — always visible on mobile, hover on desktop */}
+                                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 md:opacity-0 transition-opacity duration-200 md:group-hover:opacity-100">
+                                    <div className="flex w-full items-center justify-between p-2.5">
                                         <p className="truncate text-xs font-medium text-white">
                                             {item.title ?? ''}
                                         </p>
-                                        <div className="flex gap-1">
+                                        <div className="flex gap-1.5">
                                             <button
                                                 type="button"
                                                 onClick={() => onUpdate({ id: item.id, data: { isPublished: !item.isPublished } })}
-                                                className="rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                                                className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60 sm:h-7 sm:w-7"
                                                 aria-label={item.isPublished ? t('portfolio.hide_portfolio') : t('portfolio.show_portfolio')}
                                             >
                                                 {item.isPublished ? <Eye size={14} /> : <EyeSlash size={14} />}
@@ -87,7 +87,7 @@ export function GallerySection({
                                             <button
                                                 type="button"
                                                 onClick={() => onDelete(item.id)}
-                                                className="rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-destructive/80"
+                                                className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-destructive/80 sm:h-7 sm:w-7"
                                                 aria-label={t('portfolio.remove_portfolio')}
                                             >
                                                 <Trash size={14} />

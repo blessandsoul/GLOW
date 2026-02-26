@@ -2,6 +2,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, ListResultsQuerySchema, BatchSettingsSchema, BulkDeleteSchema } from './jobs.schemas.js';
 import { jobsService } from './jobs.service.js';
 import { BadRequestError } from '../../shared/errors/errors.js';
+import { isLaunchMode, getDailyUsage } from '../../libs/launch-mode.js';
 import { successResponse } from '../../shared/responses/successResponse.js';
 import { paginatedResponse } from '../../shared/responses/paginatedResponse.js';
 import type { JwtPayload } from '../../shared/types/index.js';
@@ -118,6 +119,16 @@ export const jobsController = {
     const user = request.user as JwtPayload;
     const data = await jobsService.getDashboardStats(user.id);
     await reply.send(successResponse('Dashboard stats', data));
+  },
+
+  async dailyUsage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const user = request.user as JwtPayload;
+    if (!isLaunchMode()) {
+      await reply.send(successResponse('Not in launch mode', null));
+      return;
+    }
+    const usage = await getDailyUsage(user.id);
+    await reply.send(successResponse('Daily usage', usage));
   },
 
   async createBatch(request: FastifyRequest, reply: FastifyReply): Promise<void> {

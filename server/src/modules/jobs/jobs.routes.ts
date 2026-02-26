@@ -21,6 +21,9 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
   // Dashboard stats (authenticated) — MUST be before /:jobId
   app.get('/stats', { preHandler: [authenticate] }, jobsController.stats);
 
+  // Daily usage stats for launch mode (authenticated)
+  app.get('/daily-usage', { preHandler: [authenticate] }, jobsController.dailyUsage);
+
   // Bulk delete jobs (authenticated) — MUST be before /:jobId
   app.delete('/bulk', { preHandler: [authenticate] }, jobsController.bulkDelete);
 

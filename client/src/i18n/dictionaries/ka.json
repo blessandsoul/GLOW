@@ -68,7 +68,14 @@
   "cta": {
     "title": "მზად ხართ სცადოთ?",
     "description": "ატვირთეთ სამუშაო ფოტო და მიიღეთ ჟურნალის ხარისხის შედეგი წამებში",
-    "open_studio": "სტუდიის გახსნა"
+    "open_studio": "სტუდიის გახსნა",
+    "how_it_works": "როგორ მუშაობს",
+    "step1_title": "ფოტოს ატვირთვა",
+    "step1_desc": "გადაიღეთ ან აირჩიეთ სამუშაო ფოტო გალერეიდან",
+    "step2_title": "AI გაუმჯობესება",
+    "step2_desc": "ჩვენი AI ასრულებს განათებას, კანს და დეტალებს",
+    "step3_title": "ჩამოტვირთვა და გაზიარება",
+    "step3_desc": "მიიღეთ ჟურნალის ხარისხის შედეგი მყისიერად"
   },
   "nav": {
     "create": "შექმნა",
@@ -128,6 +135,9 @@
   "visual": {
     "before": "რეტუშამდე",
     "after": "რეტუშის შემდეგ",
+    "show_before": "რეტუშამდე ნახვა",
+    "show_after": "რეტუშის შემდეგ ნახვა",
+    "tap_to_compare": "შეეხეთ შესადარებლად",
     "lux": "ლუქს-რეტუში",
     "completed": "დასრულდა 4.2წმ-ში"
   },
@@ -405,7 +415,31 @@
     "text_svc_added": "სერვისი დამატებულია",
     "text_svc_none": "სერვისები არ არის",
     "text_svc_search": "ძიება...",
-    "text_svc_notfound": "ვერ მოიძებნა"
+    "text_svc_notfound": "ვერ მოიძებნა",
+    "daily_limit_title": "დღის ლიმიტი ამოიწურა",
+    "daily_limit_desc": "თქვენ გამოიყენეთ ყველა უფასო გენერაცია დღეისთვის. სცადეთ ხვალ!",
+    "daily_limit_countdown": "განახლდება:",
+    "daily_remaining": "დარჩენილია დღეს",
+    "share_link_copied": "ლინკი დაკოპირდა",
+    "share_copy_failed": "ვერ მოხერხდა კოპირება",
+    "share_btn": "გაზიარება",
+    "download_btn": "ჩამოტვირთვა",
+    "download_branded": "ბრენდით",
+    "hide_branding": "ბრენდის დამალვა",
+    "show_branding": "ბრენდის ჩვენება",
+    "branded": "ბრენდით",
+    "add_branding": "ბრენდის დამატება",
+    "demo_title": "შედეგების მაგალითი",
+    "demo_desc": "ეს დემო-ვარიანტია. რეგისტრაციის შემდეგ AI დაამუშავებს შენს ფოტოს და მიიღებ პროფესიულ შედეგს.",
+    "demo_register": "რეგისტრაცია",
+    "demo_credit_info": "1 კრედიტი = 1 ფოტო",
+    "demo_better": "ასე გამოიყურება დამუშავებული ფოტო — შენი კიდევ უკეთესი იქნება",
+    "caption_generate": "AI ქეფშენი",
+    "caption_generating": "იქმნება...",
+    "caption_copied": "დაკოპირებულია!",
+    "caption_copy": "ტექსტის კოპირება",
+    "caption_regen": "ხელახლა",
+    "caption_pro": "AI ქეფშენი — PRO"
   },
   "upload": {
     "niche_lashes": "წამწამები",
@@ -491,7 +525,11 @@
     "no_style_tip": "აირჩიეთ სტილი მარცხნივ, ან ატვირთეთ პირდაპირ",
     "sign_up_for_more": "დარეგისტრირდით სრული წვდომისთვის",
     "photo_uploading": "ფოტო იტვირთება...",
-    "photo_sending": "გადაგზავნა დამუშავებაზე, მოიცადეთ"
+    "photo_sending": "გადაგზავნა დამუშავებაზე, მოიცადეთ",
+    "generate_btn": "გენერაცია",
+    "generating_btn": "მუშავდება...",
+    "free_badge": "უფასო",
+    "browse_all_styles": "ყველა სტილის ნახვა"
   },
   "branding": {
     "style_minimal": "მინიმალური",
@@ -663,5 +701,27 @@
     "missing_photos_suffix": "ფოტო",
     "reviews_title": "შეფასებები",
     "anonymous": "ანონიმური"
+  },
+  "admin": {
+    "title": "ადმინ პანელი",
+    "users_title": "მომხმარებლები",
+    "search_placeholder": "ძებნა სახელით ან ელ.ფოსტით...",
+    "col_name": "სახელი",
+    "col_email": "ელ.ფოსტა",
+    "col_plan": "გეგმა",
+    "col_jobs": "სამუშაოები",
+    "col_captions": "წარწერები",
+    "col_credits": "კრედიტები",
+    "col_daily_usage": "დღიური გამოყენება",
+    "col_status": "სტატუსი",
+    "col_joined": "რეგისტრაცია",
+    "status_active": "აქტიური",
+    "status_inactive": "არააქტიური",
+    "no_users": "მომხმარებლები ვერ მოიძებნა",
+    "stat_users": "სულ მომხმარებლები",
+    "stat_jobs": "სულ სამუშაოები",
+    "stat_captions": "სულ წარწერები",
+    "stat_subscriptions": "გამოწერები",
+    "unauthorized": "თქვენ არ გაქვთ ამ გვერდზე წვდომის უფლება."
   }
 }

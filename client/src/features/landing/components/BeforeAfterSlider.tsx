@@ -1,142 +1,112 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowsClockwise } from '@phosphor-icons/react';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 interface BeforeAfterSliderProps {
-  beforeSrc: string;
-  afterSrc: string;
-  alt: string;
-  defaultPosition?: number;
+    beforeSrc: string;
+    afterSrc: string;
+    alt: string;
+    defaultPosition?: number;
+    showHint?: boolean;
 }
 
 export function BeforeAfterSlider({
-  beforeSrc,
-  afterSrc,
-  alt,
-  defaultPosition = 50,
+    beforeSrc,
+    afterSrc,
+    alt,
+    showHint = false,
 }: BeforeAfterSliderProps): React.ReactElement {
-  const { t } = useLanguage();
-  const [position, setPosition] = useState<number>(defaultPosition);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+    const { t } = useLanguage();
+    const [showAfter, setShowAfter] = useState(false);
+    const [hintVisible, setHintVisible] = useState(showHint);
 
-  const updatePosition = useCallback((clientX: number): void => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const clamped = Math.min(Math.max((x / rect.width) * 100, 0), 100);
-    setPosition(clamped);
-  }, []);
-
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>): void => {
-      e.currentTarget.setPointerCapture(e.pointerId);
-      setIsDragging(true);
-      updatePosition(e.clientX);
-    },
-    [updatePosition],
-  );
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>): void => {
-      if (!isDragging) return;
-      updatePosition(e.clientX);
-    },
-    [isDragging, updatePosition],
-  );
-
-  const handlePointerUp = useCallback((): void => {
-    setIsDragging(false);
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative aspect-[3/4] overflow-hidden rounded-xl touch-none select-none cursor-ew-resize"
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-    >
-      {/* Before image (left side) */}
-      <div
-        className="absolute inset-0"
-        style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
-      >
-        <Image
-          src={beforeSrc}
-          alt={`${t('ui.text_pt6')}: ${alt}`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 50vw, 25vw"
-        />
-      </div>
-
-      {/* After image (right side) */}
-      <div
-        className="absolute inset-0"
-        style={{ clipPath: `inset(0 0 0 ${position}%)` }}
-      >
-        <Image
-          src={afterSrc}
-          alt={`${t('ui.text_gnzjzw')}: ${alt}`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 50vw, 25vw"
-        />
-      </div>
-
-      {/* Drag handle line */}
-      <div
-        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg cursor-ew-resize z-10 motion-safe:transition-none"
-        style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
-        onPointerDown={handlePointerDown}
-      >
-        {/* Handle circle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center gap-0.5">
-          {/* Left arrow */}
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M6 2L3 5L6 8"
-              stroke="#374151"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+    return (
+        <div
+            className="relative aspect-[3/4] overflow-hidden rounded-xl select-none cursor-pointer"
+            onClick={(): void => { setShowAfter((prev) => !prev); setHintVisible(false); }}
+            role="button"
+            aria-label={showAfter ? (t('visual.show_before') ?? 'Show before') : (t('visual.show_after') ?? 'Show after')}
+            tabIndex={0}
+            onKeyDown={(e): void => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setShowAfter((prev) => !prev);
+                    setHintVisible(false);
+                }
+            }}
+        >
+            {/* Before image (always mounted) */}
+            <Image
+                src={beforeSrc}
+                alt={`${t('ui.text_pt6') ?? 'Before'}: ${alt}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 72vw, (max-width: 1024px) 55vw, 25vw"
             />
-          </svg>
-          {/* Right arrow */}
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M4 2L7 5L4 8"
-              stroke="#374151"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+
+            {/* After image (crossfade overlay) */}
+            <motion.div
+                className="absolute inset-0"
+                animate={{ opacity: showAfter ? 1 : 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+            >
+                <Image
+                    src={afterSrc}
+                    alt={`${t('ui.text_gnzjzw') ?? 'After'}: ${alt}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 72vw, (max-width: 1024px) 55vw, 25vw"
+                />
+            </motion.div>
+
+            {/* Subtle zoom pulse on toggle */}
+            <motion.div
+                className="absolute inset-0 pointer-events-none"
+                key={showAfter ? 'after' : 'before'}
+                initial={{ scale: 1.03 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
             />
-          </svg>
+
+            {/* Top-left corner label */}
+            <div className="absolute top-3 left-3 z-20 pointer-events-none">
+                <AnimatePresence mode="wait">
+                    <motion.span
+                        key={showAfter ? 'after-label' : 'before-label'}
+                        className="inline-flex text-xs font-medium text-white bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md"
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {showAfter ? (t('ui.text_gnzjzw') ?? 'After') : (t('ui.text_pt6') ?? 'Before')}
+                    </motion.span>
+                </AnimatePresence>
+            </div>
+
+            {/* Bottom-center tap hint — only on first card, fades after first tap */}
+            <AnimatePresence>
+                {hintVisible && (
+                    <motion.div
+                        className="absolute bottom-3 inset-x-0 z-20 flex justify-center pointer-events-none"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 6 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-sm px-3 py-1.5">
+                            <ArrowsClockwise size={12} weight="bold" className="text-white/90" />
+                            <span className="text-[10px] font-semibold text-white/90">
+                                {t('visual.tap_to_compare') ?? 'Tap to compare'}
+                            </span>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
-      </div>
-
-      {/* "До" label */}
-      <span className="absolute top-3 left-3 z-20 text-xs font-medium text-white bg-black/40 px-2 py-1 rounded-md pointer-events-none">
-        {t('ui.text_pt6')}</span>
-
-      {/* "После" label */}
-      <span className="absolute top-3 right-3 z-20 text-xs font-medium text-white bg-black/40 px-2 py-1 rounded-md pointer-events-none">
-        {t('ui.text_gnzjzw')}</span>
-    </div>
-  );
+    );
 }

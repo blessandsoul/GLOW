@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { jobService } from '@/features/jobs/services/job.service';
-import { getErrorMessage } from '@/lib/utils/error';
+import { getErrorMessage, isErrorCode } from '@/lib/utils/error';
 import { useAppDispatch } from '@/store/hooks';
 import { updateCredits } from '@/features/auth/store/authSlice';
 import type { Job } from '@/features/jobs/types/job.types';
@@ -45,8 +45,13 @@ export function useUpload(options?: UseUploadOptions): UseUploadReturn {
                 }
             } catch (err) {
                 const message = getErrorMessage(err);
-                setError(message);
-                toast.error(message);
+                if (isErrorCode(err, 'DAILY_LIMIT_REACHED')) {
+                    setError('დღის ლიმიტი ამოიწურა');
+                    toast.error('დღის ლიმიტი ამოიწურა. სცადეთ ხვალ!');
+                } else {
+                    setError(message);
+                    toast.error(message);
+                }
             } finally {
                 setIsUploading(false);
             }

@@ -134,8 +134,8 @@ function ResultsPageShell({ children }: { children: React.ReactNode }): React.Re
 
 function CreateNewBar({ t }: { t: (key: string) => string }): React.ReactElement {
     return (
-        <div className="flex items-center justify-center pt-4 pb-6">
-            <Button size="sm" className="gap-1.5" asChild>
+        <div className="sticky bottom-0 z-30 bg-background/80 backdrop-blur-sm border-t border-border/30 px-4 py-3 md:static md:bg-transparent md:backdrop-blur-none md:border-0 md:px-0 md:pt-4 md:pb-6">
+            <Button size="sm" className="w-full gap-1.5 md:w-auto" asChild>
                 <Link href={ROUTES.CREATE}>
                     <Plus size={14} weight="bold" />
                     {t('dashboard.create_new')}

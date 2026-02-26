@@ -17,11 +17,17 @@ interface GalleryImagePickerProps {
     onAdd: (data: PortfolioItemFormData) => Promise<void>;
 }
 
+const INITIAL_VISIBLE = 10;
+
 export function GalleryImagePicker({ jobResults, portfolioImageUrls, onAdd }: GalleryImagePickerProps): React.ReactElement {
     const { t } = useLanguage();
     const [selectedImage, setSelectedImage] = useState<JobResultImage | null>(null);
     const [title, setTitle] = useState('');
     const [isAdding, setIsAdding] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+    const visibleResults = jobResults.slice(0, visibleCount);
+    const hasMore = jobResults.length > visibleCount;
 
     const handleSelect = useCallback((img: JobResultImage): void => {
         if (portfolioImageUrls.has(img.imageUrl)) return;
@@ -50,7 +56,7 @@ export function GalleryImagePicker({ jobResults, portfolioImageUrls, onAdd }: Ga
     return (
         <>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {jobResults.map((img) => {
+                {visibleResults.map((img) => {
                     const isInPortfolio = portfolioImageUrls.has(img.imageUrl);
                     return (
                         <button
@@ -98,6 +104,18 @@ export function GalleryImagePicker({ jobResults, portfolioImageUrls, onAdd }: Ga
                     );
                 })}
             </div>
+
+            {hasMore && (
+                <div className="flex justify-center pt-3">
+                    <Button
+                        variant="outline"
+                        onClick={() => setVisibleCount((prev) => prev + INITIAL_VISIBLE)}
+                        className="w-full sm:w-auto min-h-[44px] sm:min-h-0"
+                    >
+                        {t('dashboard.load_more')} ({jobResults.length - visibleCount})
+                    </Button>
+                </div>
+            )}
 
             {/* Add to portfolio drawer */}
             <Drawer open={selectedImage !== null} onOpenChange={(open) => { if (!open) setSelectedImage(null); }}>

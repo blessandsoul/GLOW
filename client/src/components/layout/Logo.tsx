@@ -100,7 +100,6 @@ const sizeMap = {
 
 export function Logo({ href = '/', size = 'md', className = '' }: LogoProps): React.ReactElement {
     const textClass = sizeMap[size];
-    const [hovered, setHovered] = useState(false);
 
     return (
         <>
@@ -120,8 +119,6 @@ export function Logo({ href = '/', size = 'md', className = '' }: LogoProps): Re
                 href={href}
                 className={`group relative inline-flex items-baseline gap-0 rounded-xl p-1 transition-all duration-300 ${className}`}
                 aria-label="Glow.GE"
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
             >
                 {/* ── Shine Border (always on, subtle) ── */}
                 <ShineBorder />
@@ -133,7 +130,7 @@ export function Logo({ href = '/', size = 'md', className = '' }: LogoProps): Re
                         background: 'radial-gradient(ellipse 80% 120% at 30% 50%, oklch(0.58 0.15 340 / 0.18) 0%, transparent 70%)',
                         filter: 'blur(8px)',
                     }}
-                    animate={{ opacity: hovered ? 1 : 0.45, scale: hovered ? 1.08 : 1 }}
+                    animate={{ opacity: 1, scale: 1.08 }}
                     transition={{ duration: 0.4, ease: 'easeOut' }}
                     aria-hidden="true"
                 />
@@ -154,8 +151,8 @@ export function Logo({ href = '/', size = 'md', className = '' }: LogoProps): Re
                     />
                 </span>
 
-                {/* ── Sparkles (on hover) ── */}
-                <SparkLayer active={hovered} />
+                {/* ── Sparkles (always active) ── */}
+                <SparkLayer active={true} />
 
                 {/* ── Wordmark ── */}
                 <span

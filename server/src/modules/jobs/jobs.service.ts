@@ -14,6 +14,7 @@ import { filtersService } from '../filters/filters.service.js';
 import { creditsService } from '../credits/credits.service.js';
 import { buildPromptFromSettings, DEFAULT_PROMPT } from './prompt-builder.js';
 import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
+import { isLaunchMode, checkDailyLimit, incrementDailyUsage, getDailyUsage } from '../../libs/launch-mode.js';
 import type { StorageFile } from '../../libs/storage.js';
 
 export const jobsService = {
@@ -38,9 +39,10 @@ export const jobsService = {
     }
 
     // Determine Glow.GE watermark: guests always get it, FREE users get it, PRO+ users don't
+    // In launch mode: no watermark for anyone
     const isOwner = job.userId === requestingUserId;
     const userPlan: string = job.user?.subscription?.plan ?? 'FREE';
-    const needsGlowWatermark = !isOwner || userPlan === 'FREE';
+    const needsGlowWatermark = isLaunchMode() ? false : (!isOwner || userPlan === 'FREE');
 
     // Load image from local storage or external URL (backward compat)
     const resultUrl = results[variantIndex];
@@ -95,7 +97,7 @@ export const jobsService = {
     settingsStr: string | undefined,
     userId: string | undefined,
     processingType: string = 'ENHANCE',
-  ): Promise<{ id: string; status: string; originalUrl: string; creditsRemaining?: number }> {
+  ): Promise<{ id: string; status: string; originalUrl: string; creditsRemaining?: number; dailyUsage?: { used: number; limit: number; resetsAt: string } }> {
     const creditCost = creditsService.getCost(processingType);
 
     // Save original upload to local storage
@@ -117,6 +119,11 @@ export const jobsService = {
         })()
       : undefined;
 
+    // In launch mode, check daily limit before creating job
+    if (isLaunchMode() && userId) {
+      await checkDailyLimit(userId);
+    }
+
     const job = await jobsRepo.createJob({
       userId: userId ?? undefined,
       originalUrl,
@@ -126,10 +133,15 @@ export const jobsService = {
       creditCost,
     });
 
-    // Deduct credits for authenticated users (after job creation so we can link transaction to jobId)
+    // Deduct credits or track daily usage depending on mode
     let creditsRemaining: number | undefined;
+    let dailyUsage: { used: number; limit: number; resetsAt: string } | undefined;
     if (userId) {
-      creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+      if (isLaunchMode()) {
+        dailyUsage = await incrementDailyUsage(userId);
+      } else {
+        creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+      }
     }
 
     // Resolve prompt: filter ID lookup → settings-based → default
@@ -170,15 +182,15 @@ export const jobsService = {
         await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
           // Ignore DB update errors in background
         });
-        // Refund credits on AI processing failure
-        if (userId) {
+        // Refund credits on AI processing failure (not in launch mode — no credits deducted)
+        if (userId && !isLaunchMode()) {
           creditsService.refundForJob(userId, creditCost, job.id).catch((refundErr) => {
             logger.error({ err: refundErr, jobId: job.id }, 'Failed to refund credits after job failure');
           });
         }
       });
 
-    return { id: job.id, status: job.status, originalUrl: job.originalUrl, creditsRemaining };
+    return { id: job.id, status: job.status, originalUrl: job.originalUrl, creditsRemaining, dailyUsage };
   },
 
   async createGuestJob(
@@ -187,6 +199,10 @@ export const jobsService = {
     settingsStr: string | undefined,
     sessionId: string,
   ): Promise<{ id: string; status: string; originalUrl: string }> {
+    if (isLaunchMode()) {
+      throw new ForbiddenError('Registration required to use GLOW', 'GUEST_DISABLED');
+    }
+
     const redisKey = `guest_demo:${sessionId}`;
     const used = await redis.get(redisKey);
     if (used) {
@@ -257,6 +273,7 @@ export const jobsService = {
     totalPhotos: number;
     credits: number;
     plan: string;
+    dailyUsage?: { used: number; limit: number; resetsAt: string };
   }> {
     const [stats, user] = await Promise.all([
       jobsRepo.getStatsByUserId(userId),
@@ -265,6 +282,17 @@ export const jobsService = {
         select: { credits: true, subscription: { select: { plan: true } } },
       }),
     ]);
+
+    if (isLaunchMode()) {
+      const dailyUsage = await getDailyUsage(userId);
+      return {
+        totalJobs: stats.totalJobs,
+        totalPhotos: stats.totalResults,
+        credits: dailyUsage.limit - dailyUsage.used,
+        plan: 'LAUNCH',
+        dailyUsage,
+      };
+    }
 
     return {
       totalJobs: stats.totalJobs,
@@ -307,29 +335,39 @@ export const jobsService = {
     if (!user) {
       throw new NotFoundError('User not found', 'USER_NOT_FOUND');
     }
-    const planConfig = getPlanConfig(user.subscription?.plan ?? 'FREE');
-    if (!planConfig.batchUploadEnabled) {
-      throw new ForbiddenError('Batch upload requires ULTRA plan', 'ULTRA_REQUIRED');
-    }
 
     if (files.length === 0) {
       throw new BadRequestError('At least one file required', 'NO_FILES');
     }
-    if (files.length > planConfig.maxBatchSize) {
-      throw new BadRequestError(
-        `Maximum ${planConfig.maxBatchSize} files per batch`,
-        'TOO_MANY_FILES',
-      );
-    }
 
-    // Check total credits needed up front
     const creditCost = creditsService.getCost(processingType);
-    const totalCost = files.length * creditCost;
-    if (user.credits < totalCost) {
-      throw new BadRequestError(
-        `Insufficient credits. Need ${totalCost}, have ${user.credits}.`,
-        'INSUFFICIENT_CREDITS',
-      );
+
+    if (isLaunchMode()) {
+      // In launch mode: check daily limit has room for all files
+      const { used, limit } = await getDailyUsage(userId);
+      const remaining = limit - used;
+      if (files.length > remaining) {
+        throw new BadRequestError(
+          `Daily limit: ${remaining} generations remaining today (need ${files.length})`,
+          'DAILY_LIMIT_REACHED',
+        );
+      }
+    } else {
+      // Normal mode: check plan and credits
+      const planConfig = getPlanConfig(user.subscription?.plan ?? 'FREE');
+      if (!planConfig.batchUploadEnabled) {
+        throw new ForbiddenError('Batch upload requires ULTRA plan', 'ULTRA_REQUIRED');
+      }
+      if (files.length > planConfig.maxBatchSize) {
+        throw new BadRequestError(`Maximum ${planConfig.maxBatchSize} files per batch`, 'TOO_MANY_FILES');
+      }
+      const totalCost = files.length * creditCost;
+      if (user.credits < totalCost) {
+        throw new BadRequestError(
+          `Insufficient credits. Need ${totalCost}, have ${user.credits}.`,
+          'INSUFFICIENT_CREDITS',
+        );
+      }
     }
 
     // Validate all files upfront before saving any
@@ -399,8 +437,10 @@ export const jobsService = {
         creditCost,
       });
 
-      // Deduct credits after job creation so transaction links to jobId
-      creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+      // Deduct credits after job creation (skip in launch mode)
+      if (!isLaunchMode()) {
+        creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+      }
 
       // Process with AI asynchronously (fire-and-forget)
       processImageWithAI(file.buffer, batchPrompt)
@@ -415,13 +455,24 @@ export const jobsService = {
           await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {
             // Ignore DB update errors in background
           });
-          // Refund credits on AI processing failure
-          creditsService.refundForJob(userId, creditCost, job.id).catch((refundErr) => {
-            logger.error({ err: refundErr, jobId: job.id }, 'Failed to refund credits after batch job failure');
-          });
+          // Refund credits on AI processing failure (not in launch mode — no credits deducted)
+          if (!isLaunchMode()) {
+            creditsService.refundForJob(userId, creditCost, job.id).catch((refundErr) => {
+              logger.error({ err: refundErr, jobId: job.id }, 'Failed to refund credits after batch job failure');
+            });
+          }
         });
 
       jobs.push({ id: job.id, status: job.status });
+    }
+
+    // In launch mode, increment daily usage counter for all files in batch
+    if (isLaunchMode()) {
+      for (let i = 0; i < files.length; i++) {
+        await incrementDailyUsage(userId);
+      }
+      const usage = await getDailyUsage(userId);
+      creditsRemaining = usage.limit - usage.used;
     }
 
     return { batchId, jobs, creditsRemaining };

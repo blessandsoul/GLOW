@@ -25,7 +25,7 @@ export function ResultsView({
     handleDownload,
 }: ResultsViewProps): React.ReactElement {
     return (
-        <div className="flex w-full flex-col gap-6 overflow-y-auto p-5 md:p-6 [scrollbar-width:thin]">
+        <div className="flex w-full flex-col gap-4 overflow-y-auto px-3 py-3 md:p-6 [scrollbar-width:thin]">
             {!isAuthenticated && currentJob.status === 'DONE' && (
                 <GuestResultBanner jobId={currentJob.id} />
             )}

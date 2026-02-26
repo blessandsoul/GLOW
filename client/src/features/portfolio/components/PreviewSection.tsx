@@ -52,30 +52,29 @@ export function PreviewSection({ form, items, user }: PreviewSectionProps): Reac
             </div>
 
             {/* Share actions */}
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/50 bg-card p-4">
-                <div className="mr-auto min-w-0 flex-1">
-                    <p className="truncate text-xs text-muted-foreground">
-                        {publicUrl}
-                    </p>
+            <div className="space-y-3 rounded-xl border border-border/50 bg-card p-4">
+                <p className="truncate text-xs text-muted-foreground">
+                    {publicUrl}
+                </p>
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+                    <Button type="button" variant="outline" size="sm" className="gap-1.5 min-h-[44px]" onClick={handleCopyLink}>
+                        <Copy size={16} />
+                        {t('portfolio.btn_copy')}
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" className="gap-1.5 min-h-[44px]" onClick={handleShare}>
+                        <ShareNetwork size={16} />
+                        {t('portfolio.btn_share')}
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        className="col-span-2 gap-1.5 min-h-[44px] sm:col-span-1"
+                        onClick={() => window.open(publicUrl, '_blank')}
+                    >
+                        <ArrowSquareOut size={16} />
+                        {t('portfolio.btn_open')}
+                    </Button>
                 </div>
-                <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={handleCopyLink}>
-                    <Copy size={14} />
-                    {t('portfolio.btn_copy')}
-                </Button>
-                <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={handleShare}>
-                    <ShareNetwork size={14} />
-                    {t('portfolio.btn_share')}
-                </Button>
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5"
-                    onClick={() => window.open(publicUrl, '_blank')}
-                >
-                    <ArrowSquareOut size={14} />
-                    {t('portfolio.btn_open')}
-                </Button>
             </div>
 
             {/* Phone frame preview */}

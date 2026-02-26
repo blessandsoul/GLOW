@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkle, ArrowRight, Diamond, Coins, SquaresFour, Plus } from '@phosphor-icons/react';
+import { Sparkle, ArrowRight, Diamond, Coins, SquaresFour, Plus, Camera, Image as ImageIcon, MagicWand } from '@phosphor-icons/react';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
@@ -19,6 +19,7 @@ import { HeroCards } from '@/features/landing/components/HeroCards';
 import { ROUTES } from '@/lib/constants/routes';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 
 export default function HomePage(): React.ReactElement {
     const [scrolled, setScrolled] = useState(false);
@@ -71,7 +72,9 @@ export default function HomePage(): React.ReactElement {
                         {(!mounted || !isAuthenticated) && (
                             <div className="hidden items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1.5 shadow-sm sm:flex">
                                 <Diamond size={14} weight="fill" className="text-primary" />
-                                <span className="text-xs font-semibold text-primary">{t('header.free_photos')}</span>
+                                <span className="text-xs font-semibold text-primary">
+                                    {IS_LAUNCH_MODE ? '5 უფასო / დღეში' : t('header.free_photos')}
+                                </span>
                             </div>
                         )}
 
@@ -83,7 +86,7 @@ export default function HomePage(): React.ReactElement {
                             <div className="h-8 w-20 animate-pulse rounded-xl bg-muted" />
                         ) : isAuthenticated ? (
                             <div className="flex items-center gap-2">
-                                {user !== null && user !== undefined && (
+                                {!IS_LAUNCH_MODE && user !== null && user !== undefined && (
                                     <Link
                                         href={ROUTES.DASHBOARD_CREDITS}
                                         className={cn(
@@ -179,7 +182,9 @@ export default function HomePage(): React.ReactElement {
                                 >
                                     <Diamond size={14} weight="fill" />
                                 </motion.span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{t('header.free_photos')}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                                    {IS_LAUNCH_MODE ? '5 უფასო / დღეში' : t('header.free_photos')}
+                                </span>
                             </motion.div>
 
                             {/* Eyebrow — thin subtitle */}
@@ -270,35 +275,102 @@ export default function HomePage(): React.ReactElement {
                     </div>
                 </div>
 
-                {/* ── CTA Section ── */}
-                <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 mt-8 mb-20 relative z-20">
-                    <div className="flex flex-col items-center gap-6 rounded-2xl border border-border/50 bg-card p-10 text-center shadow-sm">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-                            <Sparkle size={28} weight="fill" className="text-primary" />
+                {/* ── How It Works Section ── */}
+                <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 mt-12 mb-20 relative z-20">
+                    {/* Section title */}
+                    <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground mb-10 lg:mb-12">
+                        {t('cta.how_it_works')}
+                    </h2>
+
+                    {/* Steps */}
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-0">
+                        {/* Step 1 */}
+                        <div className="flex-1 flex items-start gap-4 rounded-2xl bg-muted/40 p-5 lg:flex-col lg:items-center lg:text-center lg:bg-transparent lg:p-6">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary lg:h-14 lg:w-14 lg:rounded-2xl">
+                                <Camera size={20} weight="fill" className="lg:hidden" />
+                                <Camera size={26} weight="fill" className="hidden lg:block" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 lg:justify-center lg:mb-1">
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground lg:h-6 lg:w-6 lg:text-xs">1</span>
+                                    <span className="text-sm font-semibold text-foreground lg:text-base">{t('cta.step1_title')}</span>
+                                </div>
+                                <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed lg:mt-2 lg:text-sm">{t('cta.step1_desc')}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                                {t('cta.title')}
-                            </h2>
-                            <p className="mx-auto mt-2 max-w-md text-base text-muted-foreground">
-                                {t('cta.description')}
-                            </p>
+
+                        {/* Connector */}
+                        <div className="flex items-center justify-center lg:pt-10">
+                            {/* Mobile: vertical dotted line */}
+                            <div className="h-4 w-px border-l border-dashed border-border lg:hidden" />
+                            {/* Desktop: horizontal arrow */}
+                            <div className="hidden lg:flex items-center px-2">
+                                <div className="h-px w-8 bg-border" />
+                                <ArrowRight size={14} weight="bold" className="text-muted-foreground -ml-1" />
+                            </div>
                         </div>
+
+                        {/* Step 2 */}
+                        <div className="flex-1 flex items-start gap-4 rounded-2xl bg-muted/40 p-5 lg:flex-col lg:items-center lg:text-center lg:bg-transparent lg:p-6">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary lg:h-14 lg:w-14 lg:rounded-2xl">
+                                <MagicWand size={20} weight="fill" className="lg:hidden" />
+                                <MagicWand size={26} weight="fill" className="hidden lg:block" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 lg:justify-center lg:mb-1">
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground lg:h-6 lg:w-6 lg:text-xs">2</span>
+                                    <span className="text-sm font-semibold text-foreground lg:text-base">{t('cta.step2_title')}</span>
+                                </div>
+                                <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed lg:mt-2 lg:text-sm">{t('cta.step2_desc')}</p>
+                            </div>
+                        </div>
+
+                        {/* Connector */}
+                        <div className="flex items-center justify-center lg:pt-10">
+                            <div className="h-4 w-px border-l border-dashed border-border lg:hidden" />
+                            <div className="hidden lg:flex items-center px-2">
+                                <div className="h-px w-8 bg-border" />
+                                <ArrowRight size={14} weight="bold" className="text-muted-foreground -ml-1" />
+                            </div>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="flex-1 flex items-start gap-4 rounded-2xl bg-muted/40 p-5 lg:flex-col lg:items-center lg:text-center lg:bg-transparent lg:p-6">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary lg:h-14 lg:w-14 lg:rounded-2xl">
+                                <ImageIcon size={20} weight="fill" className="lg:hidden" />
+                                <ImageIcon size={26} weight="fill" className="hidden lg:block" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 lg:justify-center lg:mb-1">
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground lg:h-6 lg:w-6 lg:text-xs">3</span>
+                                    <span className="text-sm font-semibold text-foreground lg:text-base">{t('cta.step3_title')}</span>
+                                </div>
+                                <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed lg:mt-2 lg:text-sm">{t('cta.step3_desc')}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="mt-10 flex justify-center">
                         {mounted && isAuthenticated ? (
                             <Link
                                 href={ROUTES.CREATE}
-                                className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-all duration-200 hover:bg-primary/90 active:scale-[0.98]"
+                                className="group relative inline-flex h-12 items-center gap-2.5 overflow-hidden rounded-2xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-[0_4px_24px_-4px_color-mix(in_oklch,var(--primary)_55%,transparent)] transition-all duration-300 ease-out hover:-translate-y-[1px] hover:shadow-[0_8px_32px_-4px_color-mix(in_oklch,var(--primary)_70%,transparent)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 lg:h-[50px] lg:px-10 lg:text-[15px]"
                             >
-                                <Plus size={16} weight="bold" />
-                                {t('cta.open_studio')}
+                                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/50 to-transparent" />
+                                <span className="pointer-events-none absolute inset-0 -translate-x-full skew-x-[-18deg] bg-linear-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[200%]" />
+                                <Plus size={16} weight="bold" className="relative z-10" />
+                                <span className="relative z-10">{t('cta.open_studio')}</span>
                             </Link>
                         ) : (
                             <Link
                                 href="/register"
-                                className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-all duration-200 hover:bg-primary/90 active:scale-[0.98]"
+                                className="group relative inline-flex h-12 items-center gap-2.5 overflow-hidden rounded-2xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-[0_4px_24px_-4px_color-mix(in_oklch,var(--primary)_55%,transparent)] transition-all duration-300 ease-out hover:-translate-y-[1px] hover:shadow-[0_8px_32px_-4px_color-mix(in_oklch,var(--primary)_70%,transparent)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 lg:h-[50px] lg:px-10 lg:text-[15px]"
                             >
-                                {t('hero.btn_start')}
-                                <ArrowRight size={14} weight="bold" />
+                                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/50 to-transparent" />
+                                <span className="pointer-events-none absolute inset-0 -translate-x-full skew-x-[-18deg] bg-linear-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[200%]" />
+                                <span className="relative z-10">{t('hero.btn_start')}</span>
+                                <ArrowRight size={14} weight="bold" className="relative z-10 transition-transform duration-200 group-hover:translate-x-0.5" />
                             </Link>
                         )}
                     </div>

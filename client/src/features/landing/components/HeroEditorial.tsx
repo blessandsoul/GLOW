@@ -1,9 +1,9 @@
 'use client';
 
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Diamond, Sparkle, Star, TrendUp } from '@phosphor-icons/react';
-import { ImageCompare } from '@/components/ui/ImageCompare';
+import { ArrowRight, ArrowsClockwise, Diamond, Sparkle, Star, TrendUp } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 
@@ -14,6 +14,36 @@ interface HeroEditorialProps {
 
 export function HeroEditorial({ wordIndex, rotatingWords }: HeroEditorialProps): React.ReactElement {
     const { t } = useLanguage();
+    const [showAfter, setShowAfter] = useState(false);
+    const [hintVisible, setHintVisible] = useState(true);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const resetTimer = useCallback((): void => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+    }, []);
+
+    // Auto-toggle every 3s
+    useEffect(() => {
+        const tick = (): void => {
+            timerRef.current = setTimeout(() => {
+                setShowAfter((prev) => !prev);
+                tick();
+            }, 3000);
+        };
+        tick();
+        return (): void => { if (timerRef.current) clearTimeout(timerRef.current); };
+    }, []);
+
+    const handleToggle = useCallback((): void => {
+        setShowAfter((prev) => !prev);
+        setHintVisible(false);
+        // Reset auto-timer so it waits another 3s after manual tap
+        resetTimer();
+        timerRef.current = setTimeout(function tick() {
+            setShowAfter((prev) => !prev);
+            timerRef.current = setTimeout(tick, 3000);
+        }, 3000);
+    }, [resetTimer]);
 
     return (
         <div className="flex flex-col items-center w-full pt-6 pb-4 px-5">
@@ -86,29 +116,95 @@ export function HeroEditorial({ wordIndex, rotatingWords }: HeroEditorialProps):
                 {t('hero.description')}
             </motion.p>
 
-            {/* Tiny preview card - editorial peek */}
+            {/* Before / After tap-to-toggle card */}
             <motion.div
-                className="relative w-full max-w-[280px] aspect-[4/3] rounded-2xl overflow-hidden mb-8 shadow-lg border border-zinc-100 dark:border-zinc-800"
+                className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden mb-8 shadow-lg border border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, delay: 0.6, type: 'spring', stiffness: 70, damping: 20 }}
+                onClick={handleToggle}
+                role="button"
+                aria-label={showAfter ? (t('visual.show_before') ?? 'Show before') : (t('visual.show_after') ?? 'Show after')}
+                tabIndex={0}
+                onKeyDown={(e): void => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleToggle();
+                    }
+                }}
             >
-                <ImageCompare
-                    beforeSrc="/before.jpg"
-                    afterSrc="/after.jpg"
-                    beforeAlt={t('visual.before')}
-                    afterAlt={t('visual.after')}
-                    initialPosition={50}
-                    className="h-full w-full"
+                {/* Before image (always mounted) */}
+                <Image
+                    src="/before.jpg"
+                    alt={t('visual.before') ?? 'Before'}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 384px"
+                    className="object-cover"
+                    priority
                 />
 
-                {/* Subtle label overlay */}
+                {/* After image (crossfade overlay) */}
+                <motion.div
+                    className="absolute inset-0"
+                    animate={{ opacity: showAfter ? 1 : 0 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                >
+                    <Image
+                        src="/after.jpg"
+                        alt={t('visual.after') ?? 'After'}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 384px"
+                        className="object-cover"
+                    />
+                </motion.div>
+
+                {/* Subtle zoom pulse on toggle */}
+                <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    key={showAfter ? 'after' : 'before'}
+                    initial={{ scale: 1.03 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                />
+
+                {/* Top-left state label */}
                 <div className="absolute top-3 left-3 z-30 pointer-events-none">
-                    <div className="flex items-center gap-1.5 rounded-lg bg-white/80 backdrop-blur-sm px-2.5 py-1 shadow-sm dark:bg-zinc-900/80">
-                        <Sparkle size={11} weight="fill" className="text-primary" />
-                        <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300">{t('visual.lux')}</span>
-                    </div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={showAfter ? 'after-label' : 'before-label'}
+                            className="flex items-center gap-1.5 rounded-lg bg-white/80 backdrop-blur-sm px-2.5 py-1 shadow-sm dark:bg-zinc-900/80"
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 4 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <Sparkle size={11} weight="fill" className="text-primary" />
+                            <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300">
+                                {showAfter ? (t('visual.after') ?? 'After') : (t('visual.before') ?? 'Before')}
+                            </span>
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
+
+                {/* Bottom-center tap hint — fades after first tap */}
+                <AnimatePresence>
+                    {hintVisible && (
+                        <motion.div
+                            className="absolute bottom-4 inset-x-0 z-30 flex justify-center pointer-events-none"
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 6 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <div className="flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-sm px-3 py-1.5 shadow-sm">
+                                <ArrowsClockwise size={12} weight="bold" className="text-white/90" />
+                                <span className="text-[10px] font-semibold text-white/90">
+                                    {t('visual.tap_to_compare') ?? 'Tap to compare'}
+                                </span>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </motion.div>
 
             {/* Full-width CTA */}

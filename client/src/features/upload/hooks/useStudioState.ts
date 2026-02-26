@@ -15,6 +15,8 @@ import { useGuestJob } from './useGuestJob';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useCreditsBalance } from '@/features/credits/hooks/useCredits';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
+import { useDailyUsage } from '@/features/jobs/hooks/useDailyUsage';
 import { useCurrentTrends } from '@/features/trends/hooks/useTrends';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { PhotoSettings, ProcessingType } from '../types/upload.types';
@@ -54,6 +56,9 @@ export interface StudioState {
     handleDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean) => Promise<void>;
     handleBatchComplete: (result: BatchCreateResult) => void;
     handleReset: () => void;
+    isLimitReached: boolean;
+    countdown: string;
+    refetchDailyUsage: () => Promise<void>;
 }
 
 export function useStudioState(): StudioState {
@@ -85,7 +90,8 @@ export function useStudioState(): StudioState {
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
     const { data: creditBalance } = useCreditsBalance();
-    const userCredits = creditBalance?.credits ?? 0;
+    const { remaining: dailyRemaining, isLimitReached, countdown, refetch: refetchDailyUsage } = useDailyUsage();
+    const userCredits = IS_LAUNCH_MODE ? dailyRemaining : (creditBalance?.credits ?? 0);
 
     const { trends: currentTrends, isLoading: isLoadingTrends } = useCurrentTrends();
     const trendStyles: Style[] = useMemo(() =>
@@ -230,7 +236,7 @@ export function useStudioState(): StudioState {
         currentJob,
         isUploading,
         isAuthenticated,
-        isProUser: false,
+        isProUser: IS_LAUNCH_MODE,
         userCredits,
         isDemoJob,
         trendStyles,
@@ -242,5 +248,8 @@ export function useStudioState(): StudioState {
         handleDownload,
         handleBatchComplete,
         handleReset,
+        isLimitReached: IS_LAUNCH_MODE ? isLimitReached : false,
+        countdown,
+        refetchDailyUsage,
     };
 }

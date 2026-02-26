@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { Geist, Geist_Mono, Noto_Sans_Georgian, Playfair_Display } from 'next/font/google';
 import { Agentation } from 'agentation';
@@ -35,6 +35,12 @@ export const metadata: Metadata = {
     template: '%s | Glow.GE',
   },
   description: 'Glow.GE — AI-powered platform for beauty professionals. Lashes, hair, nails, makeup and more.',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

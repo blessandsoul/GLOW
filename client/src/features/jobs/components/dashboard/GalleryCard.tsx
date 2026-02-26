@@ -17,7 +17,6 @@ import type { Job } from '../../types/job.types';
 
 interface GalleryCardProps {
     job: Job;
-    isSelecting: boolean;
     isSelected: boolean;
     isInPortfolio?: boolean;
     onSelect: () => void;
@@ -28,7 +27,6 @@ interface GalleryCardProps {
 
 function GalleryCardInner({
     job,
-    isSelecting,
     isSelected,
     isInPortfolio,
     onSelect,
@@ -53,12 +51,8 @@ function GalleryCardInner({
     });
 
     const handleClick = useCallback((): void => {
-        if (isSelecting) {
-            onSelect();
-        } else {
-            onClick();
-        }
-    }, [isSelecting, onSelect, onClick]);
+        onClick();
+    }, [onClick]);
 
     const stopAndCall = useCallback(
         (handler: () => void) => (e: React.MouseEvent): void => {
@@ -77,27 +71,29 @@ function GalleryCardInner({
                 if (e.key === 'Enter' || e.key === ' ') handleClick();
             }}
             className={cn(
-                'relative aspect-[3/4] overflow-hidden rounded-xl group cursor-pointer',
+                'relative aspect-[3/4] overflow-hidden rounded-xl bg-muted group cursor-pointer',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
                 isSelected && 'ring-2 ring-primary ring-offset-2',
             )}
         >
-            <Image
-                src={imageSrc}
-                alt={`Job ${job.id}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                unoptimized
-            />
+            {imageSrc && (
+                <Image
+                    src={imageSrc}
+                    alt={`Job ${job.id}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    unoptimized
+                />
+            )}
 
             {/* Status overlay for non-DONE jobs */}
             {!isDone && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                     {isProcessing && (
-                        <div className="flex flex-col items-center gap-1.5">
+                        <div className="flex flex-col items-center gap-2">
                             <SpinnerGap
-                                size={28}
+                                size={32}
                                 className="motion-safe:animate-spin text-white"
                             />
                             <span className="text-xs font-medium text-white/80">
@@ -106,8 +102,8 @@ function GalleryCardInner({
                         </div>
                     )}
                     {isFailed && (
-                        <div className="flex flex-col items-center gap-1.5">
-                            <WarningCircle size={28} className="text-destructive" />
+                        <div className="flex flex-col items-center gap-2">
+                            <WarningCircle size={32} className="text-destructive" />
                             <span className="text-xs font-medium text-destructive">
                                 {t('dashboard.failed')}
                             </span>
@@ -117,7 +113,7 @@ function GalleryCardInner({
             )}
 
             {/* Bottom gradient with info */}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2.5 pt-8">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-3 pt-10">
                 <div className="flex items-end justify-between">
                     <span className="text-xs text-white/80">{dateLabel}</span>
                     {resultCount > 0 && (
@@ -151,7 +147,7 @@ function GalleryCardInner({
             )}
 
             {/* Portfolio badge */}
-            {isInPortfolio && isDone && !isSelecting && (
+            {isInPortfolio && isDone && (
                 <div className="absolute right-2.5 top-2.5 z-10">
                     <span className="flex items-center gap-1 rounded-full bg-success/90 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
                         <CheckCircle size={10} weight="fill" />
@@ -160,23 +156,21 @@ function GalleryCardInner({
                 </div>
             )}
 
-            {/* Selection checkbox */}
-            {isSelecting && (
-                <div className="absolute left-2.5 top-2.5 z-10">
-                    <button
-                        type="button"
-                        onClick={stopAndCall(onSelect)}
-                        className={cn(
-                            'flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors duration-150',
-                            isSelected
-                                ? 'border-primary bg-primary'
-                                : 'border-white/60 bg-black/20 backdrop-blur-sm',
-                        )}
-                    >
-                        {isSelected && <Check size={14} weight="bold" className="text-primary-foreground" />}
-                    </button>
-                </div>
-            )}
+            {/* Selection circle — always visible, 44px touch target */}
+            <div className="absolute left-1 top-1 z-10 p-2">
+                <button
+                    type="button"
+                    onClick={stopAndCall(onSelect)}
+                    className={cn(
+                        'flex h-6 w-6 items-center justify-center rounded-full border-[1.5px] transition-all duration-150',
+                        isSelected
+                            ? 'border-primary bg-primary scale-110'
+                            : 'border-white/60 bg-black/25 backdrop-blur-sm',
+                    )}
+                >
+                    {isSelected && <Check size={14} weight="bold" className="text-primary-foreground" />}
+                </button>
+            </div>
         </div>
     );
 }

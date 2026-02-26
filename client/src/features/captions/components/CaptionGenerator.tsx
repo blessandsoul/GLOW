@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
 import { useCaption } from '../hooks/useCaptions';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 const MAX_REGEN = 3;
 
@@ -16,6 +18,7 @@ interface CaptionGeneratorProps {
 
 export function CaptionGenerator({ jobId }: CaptionGeneratorProps): React.ReactElement | null {
     const { caption, isLoading, isGenerating, generate, isGated, regenCount } = useCaption(jobId);
+    const { t } = useLanguage();
     const [copied, setCopied] = useState(false);
 
     const handleCopyAll = useCallback(async (): Promise<void> => {
@@ -23,22 +26,22 @@ export function CaptionGenerator({ jobId }: CaptionGeneratorProps): React.ReactE
         try {
             await navigator.clipboard.writeText(`${caption.text}\n\n${caption.hashtags}`);
             setCopied(true);
-            toast.success('დაკოპირებულია!');
+            toast.success(t('ui.caption_copied'));
             setTimeout(() => setCopied(false), 2000);
         } catch {
-            toast.error('ვერ მოხერხდა კოპირება');
+            toast.error(t('ui.share_copy_failed'));
         }
-    }, [caption]);
+    }, [caption, t]);
 
     if (isLoading) return null;
 
-    // Subscription gate
-    if (isGated) {
+    // Subscription gate (skip in launch mode)
+    if (isGated && !IS_LAUNCH_MODE) {
         return (
             <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground" asChild>
                 <Link href={ROUTES.DASHBOARD_CREDITS}>
                     <Lock size={14} />
-                    AI ქეფშენი — PRO
+                    {t('ui.caption_pro')}
                 </Link>
             </Button>
         );
@@ -56,12 +59,12 @@ export function CaptionGenerator({ jobId }: CaptionGeneratorProps): React.ReactE
                 {isGenerating ? (
                     <>
                         <SpinnerGap size={14} className="animate-spin" />
-                        იქმნება...
+                        {t('ui.caption_generating')}
                     </>
                 ) : (
                     <>
                         <Sparkle size={14} />
-                        AI ქეფშენი
+                        {t('ui.caption_generate')}
                     </>
                 )}
             </Button>
@@ -94,7 +97,7 @@ export function CaptionGenerator({ jobId }: CaptionGeneratorProps): React.ReactE
                     ) : (
                         <Copy size={14} />
                     )}
-                    {copied ? 'დაკოპირებულია!' : 'ტექსტის კოპირება'}
+                    {copied ? t('ui.caption_copied') : t('ui.caption_copy')}
                 </Button>
                 <Button
                     variant="ghost"
@@ -108,7 +111,7 @@ export function CaptionGenerator({ jobId }: CaptionGeneratorProps): React.ReactE
                     ) : (
                         <Sparkle size={14} />
                     )}
-                    ხელახლა
+                    {t('ui.caption_regen')}
                 </Button>
             </div>
         </div>

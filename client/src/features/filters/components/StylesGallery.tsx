@@ -5,7 +5,7 @@ import NextImage from 'next/image';
 import {
     Sparkle, Package, MagicWand, Flower, Images, TShirt, Image, Eye,
     Play, Camera, Heart, HandPalm, PenNib, Hand, Scissors, FirstAid,
-    PaintBrush, MagnifyingGlass, X, Star, TrendUp, CaretDown,
+    PaintBrush, MagnifyingGlass, X, TrendUp, CaretDown,
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
@@ -86,8 +86,6 @@ export function StylesGallery({
     const allStyles = useMemo(() => getAllStyles(), []);
     const categories = useMemo(() => getCategories(), []);
 
-    const popularStyles = useMemo(() => allStyles.filter((s) => s.isPopular), [allStyles]);
-
     const nonPresetCategories = useMemo(
         () => categories,
         [categories],
@@ -167,7 +165,7 @@ export function StylesGallery({
             {isSearching && (
                 <div className="flex flex-col gap-2">
                     <p className="text-[10px] text-muted-foreground">
-                        {searchResults.length} {isKa ? 'შედეგი' : 'results'}
+                        {searchResults.length} {t('dashboard.results_count')}
                     </p>
                     {searchResults.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-1.5 py-8 text-center">
@@ -178,7 +176,7 @@ export function StylesGallery({
                         </div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-1.5">
                                 {(showAllSearch ? searchResults : searchResults.slice(0, SEARCH_INITIAL_VISIBLE)).map((style) => (
                                     <StyleCard
                                         key={style.id}
@@ -186,7 +184,7 @@ export function StylesGallery({
                                         isSelected={selectedId === style.id}
                                         onSelect={handleSelect}
                                         language={language}
-                                        size="md"
+                                        size="sm"
                                     />
                                 ))}
                             </div>
@@ -207,18 +205,6 @@ export function StylesGallery({
             {/* Browse mode (not searching) */}
             {!isSearching && (
                 <>
-                    {/* Popular section */}
-                    {popularStyles.length > 0 && (
-                        <StyleScrollRow
-                            title={t('upload.styles_popular')}
-                            icon={<Star size={13} className="text-warning" weight="fill" />}
-                            styles={popularStyles}
-                            selectedId={selectedId}
-                            onSelect={handleSelect}
-                            language={language}
-                        />
-                    )}
-
                     {/* New This Week section */}
                     {(trendStyles && trendStyles.length > 0 || isLoadingTrends) && (
                         <StyleScrollRow
@@ -305,30 +291,37 @@ export function StylesGallery({
                                         )}
                                     </button>
 
-                                    {isExpanded && catStyles.length > 0 && (
-                                        <>
-                                            <div className={cn('grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2', hasCover && 'mt-2')}>
-                                                {visibleStyles.map((style) => (
-                                                    <StyleCard
-                                                        key={style.id}
-                                                        style={style}
-                                                        isSelected={selectedId === style.id}
-                                                        onSelect={handleSelect}
-                                                        language={language}
-                                                        size="md"
-                                                    />
-                                                ))}
-                                            </div>
-                                            {catStyles.length > INITIAL_VISIBLE && !showAll && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => toggleShowAll(cat.id)}
-                                                    className="flex items-center justify-center gap-1 w-full py-1.5 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
-                                                >
-                                                    {t('upload.show_more')} ({catStyles.length - INITIAL_VISIBLE})
-                                                </button>
+                                    {catStyles.length > 0 && (
+                                        <div
+                                            className={cn(
+                                                'grid transition-[grid-template-rows] duration-300 ease-out',
+                                                isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
                                             )}
-                                        </>
+                                        >
+                                            <div className="overflow-hidden">
+                                                <div className={cn('grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-1.5 pb-2', hasCover && 'mt-2')}>
+                                                    {visibleStyles.map((style) => (
+                                                        <StyleCard
+                                                            key={style.id}
+                                                            style={style}
+                                                            isSelected={selectedId === style.id}
+                                                            onSelect={handleSelect}
+                                                            language={language}
+                                                            size="sm"
+                                                        />
+                                                    ))}
+                                                </div>
+                                                {catStyles.length > INITIAL_VISIBLE && !showAll && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => toggleShowAll(cat.id)}
+                                                        className="flex items-center justify-center gap-1 w-full py-1.5 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
+                                                    >
+                                                        {t('upload.show_more')} ({catStyles.length - INITIAL_VISIBLE})
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             );

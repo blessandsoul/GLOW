@@ -19,7 +19,7 @@ model User {
   lastName      String
   username      String?   @unique
   avatar        String?   @db.VarChar(1000)
-  credits       Int       @default(3)
+  credits       Int       @default(5)
   role          String    @default("USER")
   isActive      Boolean   @default(true)
   emailVerified        Boolean   @default(false)

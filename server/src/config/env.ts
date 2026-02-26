@@ -42,6 +42,10 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().default(''),
   GEMINI_IMAGE_MODEL: z.string().default('gemini-2.5-flash-preview-04-17'),
   GEMINI_TEXT_MODEL: z.string().default('gemini-2.5-flash'),
+
+  // Launch mode — free-for-all with daily generation limits
+  LAUNCH_MODE: z.coerce.boolean().default(false),
+  LAUNCH_DAILY_LIMIT: z.coerce.number().int().min(1).default(5),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -133,35 +133,39 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
                 </button>
             )}
             {/* Main image */}
-            <div className="relative flex h-full w-full items-center justify-center px-4 py-16" onClick={stop} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+            <div className="relative flex h-full w-full items-center justify-center px-4 pb-28 pt-14 sm:pb-24 sm:pt-16" onClick={stop} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
                 <div className={cn('relative h-full w-full max-w-lg', !isDragging.current && 'transition-transform duration-200 ease-out')} style={{ transform: `translateX(${translateX}px)` }}>
                     <Image src={currentImageUrl} alt={`Job result ${safeVariant}`} fill className="object-contain" sizes="100vw" priority unoptimized />
                 </div>
             </div>
-            {/* Actions */}
-            <div className="absolute bottom-20 right-4 z-10 flex flex-col gap-2" onClick={stop}>
-                <button type="button" onClick={handleDownload} className={ACTION_BTN} aria-label="Download">
-                    <DownloadSimple size={20} className="text-white" />
-                </button>
-                <button type="button" onClick={handleShare} className={ACTION_BTN} aria-label="Share">
-                    <ShareNetwork size={20} className="text-white" />
-                </button>
-                <AddToPortfolioButton jobId={job.id} imageUrl={variantUrls[safeVariant]} />
-                <button type="button" onClick={handleDelete} className="flex items-center justify-center rounded-full bg-destructive/20 p-2.5 transition-colors hover:bg-destructive/30" aria-label={t('dashboard.delete_btn')}>
-                    <Trash size={20} className="text-destructive" />
-                </button>
-            </div>
-            {/* Variant thumbnails */}
-            {results.length > 0 && (
-                <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center gap-2 px-4 py-3" onClick={stop}>
-                    {variantUrls.map((url, i) => (
-                        <button key={i} type="button" onClick={() => setSelectedVariant(i)} className={cn('relative h-16 w-12 overflow-hidden rounded-lg transition-all duration-150', i === safeVariant ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-90')}>
-                            <Image src={getServerImageUrl(url)} alt={i === 0 ? t('dashboard.original') : `${t('dashboard.variant')} ${i}`} fill className="object-cover" sizes="48px" unoptimized />
-                            {i === 0 && <span className="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 text-center text-[9px] font-medium text-white">{t('dashboard.original')}</span>}
-                        </button>
-                    ))}
+            {/* Bottom panel: actions + thumbnails */}
+            <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2" onClick={stop}>
+                {/* Action buttons — horizontal row on mobile, vertical column on desktop side */}
+                <div className="flex items-center gap-2 md:absolute md:bottom-20 md:right-4 md:flex-col">
+                    <button type="button" onClick={handleDownload} className={ACTION_BTN} aria-label="Download">
+                        <DownloadSimple size={20} className="text-white" />
+                    </button>
+                    <button type="button" onClick={handleShare} className={ACTION_BTN} aria-label="Share">
+                        <ShareNetwork size={20} className="text-white" />
+                    </button>
+                    <AddToPortfolioButton jobId={job.id} imageUrl={variantUrls[safeVariant]} />
+                    <button type="button" onClick={handleDelete} className="flex items-center justify-center rounded-full bg-destructive/20 p-2.5 transition-colors hover:bg-destructive/30" aria-label={t('dashboard.delete_btn')}>
+                        <Trash size={20} className="text-destructive" />
+                    </button>
                 </div>
-            )}
+
+                {/* Variant thumbnails */}
+                {results.length > 0 && (
+                    <div className="flex justify-center gap-2">
+                        {variantUrls.map((url, i) => (
+                            <button key={i} type="button" onClick={() => setSelectedVariant(i)} className={cn('relative h-14 w-10 overflow-hidden rounded-lg transition-all duration-150 sm:h-16 sm:w-12', i === safeVariant ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-90')}>
+                                <Image src={getServerImageUrl(url)} alt={i === 0 ? t('dashboard.original') : `${t('dashboard.variant')} ${i}`} fill className="object-cover" sizes="48px" unoptimized />
+                                {i === 0 && <span className="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 text-center text-[9px] font-medium text-white">{t('dashboard.original')}</span>}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

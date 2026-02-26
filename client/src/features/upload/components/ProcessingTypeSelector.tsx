@@ -5,13 +5,14 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/constants/routes';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import type { ProcessingType } from '../types/upload.types';
 import { PROCESSING_COSTS, useUploadLabels } from '../types/upload.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 const PROCESSING_TYPE_ICONS: Record<
     ProcessingType,
-    React.ComponentType<{ size?: number; weight?: any; className?: string }>
+    React.ComponentType<{ size?: number; weight?: 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone'; className?: string }>
 > = {
     ENHANCE: MagicWand,
     RETOUCH: Eraser,
@@ -21,7 +22,7 @@ const PROCESSING_TYPE_ICONS: Record<
 
 const PROCESSING_TYPES: ProcessingType[] = ['ENHANCE', 'RETOUCH', 'BACKGROUND', 'PRO_EDIT'];
 
-function getCreditLabel(cost: number, t: any): string {
+function getCreditLabel(cost: number, t: (key: string) => string): string {
     if (cost === 1) return t('system.sys_buh6jq');
     return `${cost} ${t('ui.text_credits') || 'credits'}`;
 }
@@ -48,7 +49,7 @@ export function ProcessingTypeSelector({
                 const description = PROCESSING_TYPE_DESCRIPTIONS[type];
                 const cost = PROCESSING_COSTS[type];
                 const isSelected = selected === type;
-                const canAfford = userCredits >= cost;
+                const canAfford = IS_LAUNCH_MODE ? true : userCredits >= cost;
 
                 return (
                     <button
@@ -86,7 +87,7 @@ export function ProcessingTypeSelector({
                                         : 'bg-muted/60 text-muted-foreground',
                                 )}
                             >
-                                {getCreditLabel(cost, t)}
+                                {IS_LAUNCH_MODE ? t('upload.free_badge') : getCreditLabel(cost, t)}
                             </span>
                         </div>
 

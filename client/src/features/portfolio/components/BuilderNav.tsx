@@ -28,24 +28,27 @@ export function BuilderNav({ activeSection, onSectionClick, criteria }: BuilderN
 
     return (
         <>
-            {/* Mobile: Sticky horizontal pill tabs */}
+            {/* Mobile: Sticky 2x2 segmented tabs — full text visible */}
             <nav className="sticky top-16 z-30 -mx-4 border-b border-border/30 bg-background/95 px-4 py-2.5 backdrop-blur-sm md:hidden">
-                <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+                <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted/50 p-1">
                     {SECTIONS.map((s) => (
                         <button
                             key={s.id}
                             type="button"
                             onClick={() => onSectionClick(s.id)}
                             className={cn(
-                                'flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                                'flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium transition-all duration-200',
                                 activeSection === s.id
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'bg-muted/60 text-muted-foreground hover:bg-muted'
+                                    ? 'bg-background text-foreground shadow-sm'
+                                    : 'text-muted-foreground'
                             )}
                         >
                             {s.label}
                             {isComplete(s.criteriaKey) && (
-                                <CheckCircle size={14} weight="fill" className="opacity-80" />
+                                <CheckCircle size={12} weight="fill" className={cn(
+                                    'shrink-0',
+                                    activeSection === s.id ? 'text-success' : 'text-success/60'
+                                )} />
                             )}
                         </button>
                     ))}

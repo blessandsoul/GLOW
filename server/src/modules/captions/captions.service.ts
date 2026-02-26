@@ -5,6 +5,7 @@ import { captionsRepo } from './captions.repo.js';
 import { jobsRepo } from '../jobs/jobs.repo.js';
 import { generateCaptionFromImage } from '../../libs/ai-caption.js';
 import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
+import { isLaunchMode } from '../../libs/launch-mode.js';
 import { logger } from '../../libs/logger.js';
 
 const MAX_REGENERATIONS = 3;
@@ -35,14 +36,16 @@ export const captionsService = {
       }
     }
 
-    // 3. Check subscription: captionsEnabled
-    const userPlan = job.user?.subscription?.plan ?? 'FREE';
-    const planConfig = getPlanConfig(userPlan);
-    if (!planConfig.captionsEnabled) {
-      throw new ForbiddenError(
-        'Caption generation requires PRO or ULTRA plan',
-        'CAPTIONS_NOT_ENABLED',
-      );
+    // 3. Check subscription: captionsEnabled (skip in launch mode — captions available to all)
+    if (!isLaunchMode()) {
+      const userPlan = job.user?.subscription?.plan ?? 'FREE';
+      const planConfig = getPlanConfig(userPlan);
+      if (!planConfig.captionsEnabled) {
+        throw new ForbiddenError(
+          'Caption generation requires PRO or ULTRA plan',
+          'CAPTIONS_NOT_ENABLED',
+        );
+      }
     }
 
     // 4. If forcing, check regeneration limit

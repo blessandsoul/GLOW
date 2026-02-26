@@ -12,6 +12,7 @@ export function useDashboardStats(): { data: DashboardStats | undefined; isLoadi
     const { data, isLoading } = useQuery<DashboardStats>({
         queryKey: ['jobs', 'stats'],
         queryFn: () => jobService.getStats(),
+        staleTime: 0,
     });
 
     return { data, isLoading };
@@ -26,6 +27,7 @@ export function useDashboardGallery(filters: { status?: JobStatus; limit?: numbe
     fetchNextPage: () => void;
 } {
     const { limit = 20, status } = filters;
+    const queryClient = useQueryClient();
 
     const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
         queryKey: ['jobs', 'gallery', { limit, status }],
@@ -35,6 +37,7 @@ export function useDashboardGallery(filters: { status?: JobStatus; limit?: numbe
         getNextPageParam: (lastPage) =>
             lastPage.hasNextPage ? lastPage.page + 1 : undefined,
         maxPages: 5,
+        staleTime: 0,
         gcTime: 3 * 60 * 1000,
     });
 
@@ -42,6 +45,20 @@ export function useDashboardGallery(filters: { status?: JobStatus; limit?: numbe
         () => data?.pages.flatMap((p) => p.items) ?? [],
         [data],
     );
+
+    // Auto-refresh while any job is still processing
+    const hasProcessing = jobs.some((j) => j.status === 'PROCESSING' || j.status === 'PENDING');
+    useQuery({
+        queryKey: ['jobs', 'gallery', 'poll-trigger', { limit, status }],
+        queryFn: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['jobs', 'gallery', { limit, status }] });
+            await queryClient.invalidateQueries({ queryKey: ['jobs', 'stats'] });
+            return null;
+        },
+        enabled: hasProcessing,
+        refetchInterval: 3000,
+        staleTime: 0,
+    });
     const total = data?.pages[0]?.total ?? 0;
 
     return { jobs, total, isLoading, hasNextPage: hasNextPage ?? false, isFetchingNextPage, fetchNextPage };

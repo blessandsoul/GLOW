@@ -1,4 +1,5 @@
 import type { PlanConfig, SubscriptionPlan } from './subscriptions.types.js';
+import { env } from '../../config/env.js';
 
 export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
   FREE: {
@@ -42,5 +43,8 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
 export const SUBSCRIPTION_PERIOD_DAYS = 30;
 
 export function getPlanConfig(plan: string): PlanConfig {
+  if (env.LAUNCH_MODE) {
+    return PLAN_CONFIGS.ULTRA;
+  }
   return PLAN_CONFIGS[plan as SubscriptionPlan] ?? PLAN_CONFIGS.FREE;
 }

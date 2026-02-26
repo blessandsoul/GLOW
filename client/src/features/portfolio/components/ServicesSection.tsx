@@ -105,7 +105,7 @@ export function ServicesSection({ form, updateField }: ServicesSectionProps): Re
             </Drawer>
 
             {/* Services list */}
-            <div className="rounded-xl border border-border/50 bg-card p-5">
+            <div className="rounded-xl border border-border/50 bg-card p-3.5 sm:p-5">
                 {form.services.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
                         <div className="mb-3 rounded-full bg-muted p-3">

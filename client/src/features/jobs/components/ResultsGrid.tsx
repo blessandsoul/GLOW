@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-    DownloadSimple, Sparkle, WarningCircle, ShareNetwork, Lock,
-    Eraser, LinkSimple, Flask, Stamp,
+    DownloadSimple, Sparkle, WarningCircle, Lock,
+    LinkSimple, Flask, Stamp, MagnifyingGlassPlus,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { CaptionGenerator } from '@/features/captions/components/CaptionGenerato
 import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
 import { useBranding } from '@/features/branding/hooks/useBranding';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
+import { ImageLightbox } from '@/features/portfolio/components/ImageLightbox';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -31,28 +32,32 @@ interface ResultsGridProps {
 
 // ─── Share link helper ────────────────────────────────────────────────────────
 function ShareButton({ jobId }: { jobId: string }): React.ReactElement {
+    const { t } = useLanguage();
+
     const handleCopyLink = async (): Promise<void> => {
         const showcaseUrl = typeof window !== 'undefined'
             ? `${window.location.origin}/showcase/${jobId}`
             : `/showcase/${jobId}`;
         try {
             await navigator.clipboard.writeText(showcaseUrl);
-            toast.success('ლინკი დაკოპირდა');
+            toast.success(t('ui.share_link_copied'));
         } catch {
-            toast.error('ვერ მოხერხდა კოპირება');
+            toast.error(t('ui.share_copy_failed'));
         }
     };
 
     return (
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={handleCopyLink}>
+        <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs h-9" onClick={handleCopyLink}>
             <LinkSimple size={14} />
-            გაზიარება
+            {t('ui.share_btn')}
         </Button>
     );
 }
 
 // ─── Demo banner ──────────────────────────────────────────────────────────────
 function DemoBanner(): React.ReactElement {
+    const { t } = useLanguage();
+
     return (
         <div className="flex items-start gap-3 rounded-xl border border-amber-200/60 bg-amber-50/80 p-3.5 dark:border-amber-800/40 dark:bg-amber-950/30">
             <div className="mt-0.5 shrink-0 rounded-full bg-amber-100 p-1.5 dark:bg-amber-900/40">
@@ -60,21 +65,21 @@ function DemoBanner(): React.ReactElement {
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                    შედეგების მაგალითი
+                    {t('ui.demo_title')}
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-amber-700/80 dark:text-amber-400/80">
-                    ეს დემო-ვარიანტია. რეგისტრაციის შემდეგ AI დაამუშავებს შენს ფოტოს და მიიღებ პროფესიულ შედეგს.
+                    {t('ui.demo_desc')}
                 </p>
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                     <Link
                         href="/register"
                         className="inline-flex items-center gap-1 rounded-full bg-amber-600 px-2.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-amber-700"
                     >
-                        რეგისტრაცია
+                        {t('ui.demo_register')}
                     </Link>
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 px-2.5 py-1 text-[11px] text-amber-700 dark:border-amber-800 dark:text-amber-400">
                         <Sparkle size={10} weight="fill" />
-                        1 კრედიტი = 1 ფოტო
+                        {t('ui.demo_credit_info')}
                     </span>
                 </div>
             </div>
@@ -92,6 +97,13 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
 
     const [showBranding, setShowBranding] = useState(false);
     const [selectedAfterIdx, setSelectedAfterIdx] = useState(0);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
+
+    const openLightbox = useCallback((index: number) => {
+        setLightboxInitialIndex(index);
+        setLightboxOpen(true);
+    }, []);
 
     if (job.status === 'PENDING' || job.status === 'PROCESSING') {
         return (
@@ -129,48 +141,40 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
     const results = job.results ?? [];
     const brandingVisible = hasBranding && showBranding;
 
-    const handleShare = async (url: string): Promise<void> => {
-        try {
-            await navigator.clipboard.writeText(url);
-            toast.success(t('ui.text_fj1r2r'));
-        } catch {
-            toast.error(t('ui.text_h1ne34'));
-        }
-    };
+    // Build lightbox images array: [Before, After]
+    const lightboxImages = React.useMemo(() => {
+        if (!job.originalUrl || results.length === 0) return [];
+        return [
+            { imageUrl: job.originalUrl, title: t('ui.text_pt6') },
+            { imageUrl: results[selectedAfterIdx] ?? results[0], title: t('ui.text_gnzjzw') },
+        ];
+    }, [job.originalUrl, results, selectedAfterIdx, t]);
 
     return (
-        <div className="flex w-full flex-col gap-5 py-4">
+        <div className="flex w-full flex-col gap-3 py-2">
             {isDemo && <DemoBanner />}
             {isGuest && !isDemo && <GuestResultBanner jobId={job.id} />}
 
-            {/* Header */}
+            {/* Compact header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-base font-semibold text-foreground">
-                        {isDemo ? 'შედეგების მაგალითი' : t('ui.text_k25oyf')}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                        {isDemo
-                            ? 'ასე გამოიყურება დამუშავებული ფოტო — შენი კიდევ უკეთესი იქნება'
-                            : `${results.length} ${t('ui.text_mhnuxr')}${results.length > 1 ? t('ui.text_ts') : ''} ${t('ui.text_tfd6xc')}`}
-                    </p>
-                </div>
+                <p className="text-sm font-semibold text-foreground">
+                    {isDemo ? t('ui.demo_title') : t('ui.text_k25oyf')}
+                </p>
                 <div className="flex items-center gap-2">
-                    {/* Branding toggle — prominent pill */}
                     {hasBranding && (
                         <button
                             type="button"
                             onClick={() => setShowBranding((v) => !v)}
                             className={cn(
-                                'flex items-center gap-2 rounded-xl border-2 px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97]',
+                                'flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all duration-200 active:scale-[0.97]',
                                 showBranding
-                                    ? 'border-primary bg-primary/10 text-primary shadow-sm shadow-primary/10'
-                                    : 'border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                                    ? 'border-primary/40 bg-primary/10 text-primary'
+                                    : 'border-border bg-background text-muted-foreground hover:text-foreground',
                             )}
-                            aria-label={showBranding ? 'Hide branding' : 'Show branding'}
+                            aria-label={showBranding ? t('ui.hide_branding') : t('ui.show_branding')}
                         >
-                            <Stamp size={14} weight={showBranding ? 'fill' : 'regular'} />
-                            {showBranding ? 'Branded' : 'Add branding'}
+                            <Stamp size={12} weight={showBranding ? 'fill' : 'regular'} />
+                            {showBranding ? t('ui.branded') : t('ui.add_branding')}
                         </button>
                     )}
                     {!isAuthenticated && !isGuest && (
@@ -184,39 +188,51 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                 </div>
             </div>
 
-            {/* Before / After side-by-side comparison */}
+            {/* Before / After comparison — prominent, full-width on mobile */}
             {results.length > 0 && job.originalUrl && (
-                <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2">
+                    <div className="grid grid-cols-2 gap-1.5">
                         {/* Before (Original) */}
-                        <div className="relative overflow-hidden rounded-xl border border-border/50">
+                        <button
+                            type="button"
+                            onClick={() => openLightbox(0)}
+                            className="group relative overflow-hidden rounded-xl border border-border/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                        >
                             <div className="relative aspect-3/4">
                                 <Image
                                     src={getServerImageUrl(job.originalUrl)}
                                     alt={t('ui.text_pt6')}
                                     fill
-                                    className="object-cover"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                                     sizes="(max-width: 640px) 50vw, 40vw"
                                     unoptimized
                                 />
                             </div>
-                            <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-2.5 pt-6">
-                                <span className="text-xs font-semibold text-white/90">{t('ui.text_pt6')}</span>
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
+                                <span className="text-[11px] font-semibold text-white/90">{t('ui.text_pt6')}</span>
+                                <MagnifyingGlassPlus size={14} className="text-white/60" />
                             </div>
-                        </div>
+                        </button>
 
                         {/* After (Result) */}
-                        <div className="group relative overflow-hidden rounded-xl border border-primary/30 ring-2 ring-primary/15">
+                        <button
+                            type="button"
+                            onClick={() => isAuthenticated && !isDemo ? openLightbox(1) : undefined}
+                            className={cn(
+                                'group relative overflow-hidden rounded-xl border border-primary/30 ring-1 ring-primary/20',
+                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                (!isAuthenticated || isDemo) && 'cursor-default',
+                            )}
+                        >
                             <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
                                 <Image
                                     src={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
                                     alt={t('ui.text_gnzjzw')}
                                     fill
-                                    className="object-cover"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                                     sizes="(max-width: 640px) 50vw, 40vw"
                                     unoptimized
                                 />
-                                {/* Branding overlay */}
                                 {brandingVisible && brandingProfile && (
                                     <WatermarkOverlay
                                         style={brandingProfile.watermarkStyle}
@@ -228,37 +244,10 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                     />
                                 )}
                             </div>
-                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/60 to-transparent px-3 pb-2.5 pt-6">
-                                <span className="text-xs font-semibold text-white/90">{t('ui.text_gnzjzw')}</span>
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
+                                <span className="text-[11px] font-semibold text-white/90">{t('ui.text_gnzjzw')}</span>
                                 {isAuthenticated && !isDemo && (
-                                    <div className="flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                                        {onRetouch && (
-                                            <button
-                                                type="button"
-                                                onClick={() => onRetouch(results[selectedAfterIdx] ?? results[0])}
-                                                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
-                                                aria-label={t('ui.text_jry5cq')}
-                                            >
-                                                <Eraser size={12} className="text-white" />
-                                            </button>
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleShare(results[selectedAfterIdx] ?? results[0])}
-                                            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
-                                            aria-label={t('ui.text_nq6g7p')}
-                                        >
-                                            <ShareNetwork size={12} className="text-white" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, brandingVisible)}
-                                            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/40"
-                                            aria-label={t('ui.text_9ftpjq')}
-                                        >
-                                            <DownloadSimple size={12} className="text-white" />
-                                        </button>
-                                    </div>
+                                    <MagnifyingGlassPlus size={14} className="text-white/60" />
                                 )}
                             </div>
                             {(!isAuthenticated || isDemo) && (
@@ -268,7 +257,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </button>
                     </div>
 
                     {/* Variant thumbnails — only when multiple results */}
@@ -309,7 +298,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                 <div className={cn(
                     results.length === 1
                         ? 'flex justify-center'
-                        : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
+                        : 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4',
                 )}>
                     {results.map((url, i) => (
                         <div
@@ -326,7 +315,7 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                             <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
                                 <Image
                                     src={getServerImageUrl(url)}
-                                    alt={`Вариант ${i + 1}`}
+                                    alt={`#${i + 1}`}
                                     fill
                                     className="object-cover"
                                     sizes="(max-width: 640px) 50vw, 25vw"
@@ -350,38 +339,46 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                 </div>
             )}
 
-            {/* Actions — authenticated users only */}
+            {/* Quick action row — always visible on mobile */}
             {isAuthenticated && !isDemo && results.length > 0 && (
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                        {hasBranding && (
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="gap-1.5"
-                                onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, true)}
-                            >
-                                <Stamp size={14} weight="fill" />
-                                ბრენდით
-                            </Button>
-                        )}
+                <div className="flex flex-col gap-1.5">
+                    {hasBranding && (
                         <Button
                             size="sm"
                             variant="outline"
-                            className="gap-1.5"
-                            onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false)}
+                            className="w-full gap-1.5 text-xs h-9"
+                            onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, true)}
                         >
-                            <DownloadSimple size={14} />
-                            ჩამოტვირთვა
+                            <Stamp size={13} weight="fill" />
+                            {t('ui.download_branded')}
                         </Button>
-                        <ShareButton jobId={job.id} />
-                        <AddToPortfolioButton
-                            jobId={job.id}
-                            imageUrl={results[selectedAfterIdx] ?? results[0]}
-                        />
-                        <CaptionGenerator jobId={job.id} />
-                    </div>
+                    )}
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full gap-1.5 text-xs h-9"
+                        onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false)}
+                    >
+                        <DownloadSimple size={13} />
+                        {t('ui.download_btn')}
+                    </Button>
+                    <ShareButton jobId={job.id} />
+                    <AddToPortfolioButton
+                        jobId={job.id}
+                        imageUrl={results[selectedAfterIdx] ?? results[0]}
+                    />
+                    <CaptionGenerator jobId={job.id} />
                 </div>
+            )}
+
+            {/* Fullscreen before/after lightbox */}
+            {lightboxImages.length > 0 && (
+                <ImageLightbox
+                    images={lightboxImages}
+                    initialIndex={lightboxInitialIndex}
+                    open={lightboxOpen}
+                    onClose={() => setLightboxOpen(false)}
+                />
             )}
         </div>
     );

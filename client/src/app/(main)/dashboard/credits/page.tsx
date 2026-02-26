@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { useCreditsBalance, useCreditHistory, usePurchasePackage } from '@/features/credits/hooks/useCredits';
 import { useCurrentSubscription, useSubscribe, useCancelSubscription, useReactivateSubscription } from '@/features/subscriptions/hooks/useSubscription';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -703,6 +705,7 @@ function TransactionList({ type }: { type?: 'earned' | 'spent' }): React.ReactEl
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function CreditsPage(): React.ReactElement {
+    const router = useRouter();
     const { data: balance, isLoading: balanceLoading, refetch: refetchBalance } = useCreditsBalance();
     const { mutate: purchasePackage, isPending: isPurchasing } = usePurchasePackage(() => {
         refetchBalance();
@@ -724,6 +727,17 @@ export default function CreditsPage(): React.ReactElement {
     const [quality, setQuality] = useState<Quality>('pro');
     const [showQuiz, setShowQuiz] = useState(true);
     const [historyTab, setHistoryTab] = useState<HistoryTab>('all');
+
+    // Redirect to dashboard in launch mode
+    useEffect(() => {
+        if (IS_LAUNCH_MODE) {
+            router.replace('/dashboard');
+        }
+    }, [router]);
+
+    if (IS_LAUNCH_MODE) {
+        return <></>;
+    }
 
     function handleQuizSelect(q: Quality): void {
         setQuality(q);

@@ -28,6 +28,7 @@ export interface DashboardStats {
   totalPhotos: number;
   credits: number;
   plan: string;
+  dailyUsage?: { used: number; limit: number; resetsAt: string };
 }
 
 export interface GalleryFilters {

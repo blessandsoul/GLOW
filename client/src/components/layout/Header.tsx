@@ -8,7 +8,7 @@ import {
     Moon, Sun, List, X,
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
-    CaretDown, Plus,
+    CaretDown, Plus, ShieldCheck,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
@@ -16,6 +16,8 @@ import { ROUTES } from '@/lib/constants/routes';
 import { Logo } from './Logo';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
+import { useDailyUsage } from '@/features/jobs/hooks/useDailyUsage';
 
 type NavItem = {
     href: string;
@@ -51,6 +53,11 @@ const NAV_GROUPS: NavGroup[] = [
         ],
     },
 ];
+
+// Filter out referrals/business nav group in launch mode
+const ACTIVE_NAV_GROUPS = IS_LAUNCH_MODE
+    ? NAV_GROUPS.filter((g) => g.category !== 'nav.cat_business')
+    : NAV_GROUPS;
 
 const isItemActive = (item: NavItem, pathname: string): boolean =>
     item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(item.href + '/');
@@ -163,6 +170,8 @@ export function Header(): React.ReactElement {
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const { remaining: dailyRemaining, data: dailyData } = useDailyUsage();
+    const dailyLimit = dailyData?.limit ?? 5;
 
     useEffect(() => {
         setMounted(true);
@@ -203,28 +212,57 @@ export function Header(): React.ReactElement {
                                 {t('nav.create')}
                             </Link>
                             <div className="mx-1.5 h-5 w-px bg-border/50" />
-                            {NAV_GROUPS.map((group) => (
+                            {ACTIVE_NAV_GROUPS.map((group) => (
                                 <NavDropdown key={group.category} group={group} pathname={pathname} t={t} />
                             ))}
+                            {user?.role === 'ADMIN' && (
+                                <Link
+                                    href={ROUTES.ADMIN}
+                                    className={cn(
+                                        'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                                        pathname.startsWith(ROUTES.ADMIN)
+                                            ? 'bg-primary/10 text-primary font-medium'
+                                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                                    )}
+                                >
+                                    <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                                    Admin
+                                </Link>
+                            )}
                             <div className="mx-2 h-5 w-px bg-border/50" />
                             <span className="text-sm text-muted-foreground">
                                 {user?.firstName}
                             </span>
                             {user !== null && user !== undefined && (
-                                <Link
-                                    href={ROUTES.DASHBOARD_CREDITS}
-                                    className={cn(
-                                        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80',
-                                        (user.credits ?? 0) >= 50
-                                            ? 'bg-warning/15 text-warning'
-                                            : (user.credits ?? 0) >= 10
+                                IS_LAUNCH_MODE ? (
+                                    <span
+                                        className={cn(
+                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
+                                            dailyRemaining > 2
                                                 ? 'bg-success/15 text-success'
-                                                : 'bg-destructive/15 text-destructive',
-                                    )}
-                                >
-                                    <Coins size={11} weight="fill" />
-                                    {user.credits ?? 0}
-                                </Link>
+                                                : dailyRemaining > 0
+                                                    ? 'bg-warning/15 text-warning'
+                                                    : 'bg-destructive/15 text-destructive',
+                                        )}
+                                    >
+                                        {dailyRemaining}/{dailyLimit}
+                                    </span>
+                                ) : (
+                                    <Link
+                                        href={ROUTES.DASHBOARD_CREDITS}
+                                        className={cn(
+                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80',
+                                            (user.credits ?? 0) >= 50
+                                                ? 'bg-warning/15 text-warning'
+                                                : (user.credits ?? 0) >= 10
+                                                    ? 'bg-success/15 text-success'
+                                                    : 'bg-destructive/15 text-destructive',
+                                        )}
+                                    >
+                                        <Coins size={11} weight="fill" />
+                                        {user.credits ?? 0}
+                                    </Link>
+                                )
                             )}
                             <Button variant="ghost" size="sm" className="text-xs" onClick={logout}>
                                 {t('auth.logout')}
@@ -302,7 +340,7 @@ export function Header(): React.ReactElement {
                                     {t('nav.create')}
                                 </Link>
                                 <div className="h-px bg-border/50" />
-                                {NAV_GROUPS.map((group) => (
+                                {ACTIVE_NAV_GROUPS.map((group) => (
                                     <div key={group.category}>
                                         <span className="mb-1 block px-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
                                             {t(group.category)}
@@ -331,6 +369,24 @@ export function Header(): React.ReactElement {
                                         </div>
                                     </div>
                                 ))}
+                                {user?.role === 'ADMIN' && (
+                                    <>
+                                        <div className="h-px bg-border/50" />
+                                        <Link
+                                            href={ROUTES.ADMIN}
+                                            onClick={closeMobile}
+                                            className={cn(
+                                                'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                                                pathname.startsWith(ROUTES.ADMIN)
+                                                    ? 'bg-primary/10 text-primary font-medium'
+                                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                                            )}
+                                        >
+                                            <ShieldCheck size={16} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                                            Admin
+                                        </Link>
+                                    </>
+                                )}
                                 <div className="h-px bg-border/50" />
                                 <Button
                                     variant="outline"

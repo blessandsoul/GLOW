@@ -11,12 +11,14 @@ interface UploadZoneProps {
     onFileSelect: (file: File) => void;
     isLoading: boolean;
     className?: string;
+    hideGenerateButton?: boolean;
+    onPendingFileChange?: (file: File | null) => void;
 }
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE = 10 * 1024 * 1024;
 
-export function UploadZone({ onFileSelect, isLoading, className }: UploadZoneProps): React.ReactElement {
+export function UploadZone({ onFileSelect, isLoading, className, hideGenerateButton, onPendingFileChange }: UploadZoneProps): React.ReactElement {
     const { t } = useLanguage();
     const [isDragging, setIsDragging] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
@@ -43,9 +45,10 @@ export function UploadZone({ onFileSelect, isLoading, className }: UploadZonePro
             setPreview(url);
             setFileName(file.name);
             setPendingFile(file);
+            onPendingFileChange?.(file);
             // Do NOT call onFileSelect here — wait for Generate button
         },
-        [],
+        [onPendingFileChange, t],
     );
 
     const handleGenerate = useCallback(() => {
@@ -78,8 +81,9 @@ export function UploadZone({ onFileSelect, isLoading, className }: UploadZonePro
             setPreview(null);
             setFileName(null);
             setPendingFile(null);
+            onPendingFileChange?.(null);
         },
-        [preview],
+        [preview, onPendingFileChange],
     );
 
     const truncatedName = useMemo(() => {
@@ -140,31 +144,33 @@ export function UploadZone({ onFileSelect, isLoading, className }: UploadZonePro
                 )}
 
                 {/* Generate button */}
-                <button
-                    type="button"
-                    onClick={handleGenerate}
-                    disabled={isLoading || !pendingFile}
-                    className={cn(
-                        'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3',
-                        'bg-primary text-primary-foreground text-sm font-semibold',
-                        'transition-all duration-200 active:scale-[0.98]',
-                        'hover:brightness-110 shadow-sm',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-                        'disabled:opacity-60 disabled:pointer-events-none',
-                    )}
-                >
-                    {isLoading ? (
-                        <>
-                            <Sparkle size={16} weight="fill" className="animate-pulse" />
-                            მუშავდება...
-                        </>
-                    ) : (
-                        <>
-                            <Lightning size={16} weight="fill" />
-                            გენერაცია
-                        </>
-                    )}
-                </button>
+                {!hideGenerateButton && (
+                    <button
+                        type="button"
+                        onClick={handleGenerate}
+                        disabled={isLoading || !pendingFile}
+                        className={cn(
+                            'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3',
+                            'bg-primary text-primary-foreground text-sm font-semibold',
+                            'transition-all duration-200 active:scale-[0.98]',
+                            'hover:brightness-110 shadow-sm',
+                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                            'disabled:opacity-60 disabled:pointer-events-none',
+                        )}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Sparkle size={16} weight="fill" className="animate-pulse" />
+                                {t('upload.generating_btn')}
+                            </>
+                        ) : (
+                            <>
+                                <Lightning size={16} weight="fill" />
+                                {t('upload.generate_btn')}
+                            </>
+                        )}
+                    </button>
+                )}
             </div>
         );
     }
@@ -174,7 +180,7 @@ export function UploadZone({ onFileSelect, isLoading, className }: UploadZonePro
         <label
             className={cn(
                 'group relative flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed',
-                'w-full cursor-pointer transition-all duration-300 py-8 px-6',
+                'w-full cursor-pointer transition-all duration-300 py-10 px-6 md:py-8',
                 isDragging
                     ? 'border-primary bg-primary/5 shadow-inner scale-[1.01]'
                     : 'border-border/40 bg-transparent hover:border-primary/40 hover:bg-muted/30',
@@ -195,7 +201,7 @@ export function UploadZone({ onFileSelect, isLoading, className }: UploadZonePro
 
             {/* Icon container */}
             <div className={cn(
-                'flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300',
+                'flex h-14 w-14 md:h-12 md:w-12 items-center justify-center rounded-xl transition-all duration-300',
                 isDragging
                     ? 'bg-primary/15 scale-105'
                     : 'bg-muted/60 group-hover:bg-primary/10',

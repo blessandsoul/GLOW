@@ -46,8 +46,8 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                 </div>
             )}
 
-            <div className="flex items-center gap-2">
-                <div className="flex-1">
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:gap-2">
+                <div className="sm:flex-1">
                     {hasSuggestions ? (
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
@@ -87,29 +87,31 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                         />
                     )}
                 </div>
-                <div className="w-24">
-                    <Input
-                        type="number"
-                        value={service.price || ''}
-                        onChange={(e) => onChange(index, 'price', Number(e.target.value))}
-                        placeholder="80"
-                    />
-                </div>
-                <div className="w-20">
-                    <Select
-                        value={service.currency}
-                        onValueChange={(v) => onChange(index, 'currency', v)}
-                    >
-                        <SelectTrigger className="w-full">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="GEL">GEL</SelectItem>
-                            <SelectItem value="USD">USD</SelectItem>
-                            <SelectItem value="EUR">EUR</SelectItem>
-                            <SelectItem value="RUB">RUB</SelectItem>
-                        </SelectContent>
-                    </Select>
+                <div className="flex items-center gap-2">
+                    <div className="flex-1 sm:flex-none sm:w-24">
+                        <Input
+                            type="number"
+                            value={service.price || ''}
+                            onChange={(e) => onChange(index, 'price', Number(e.target.value))}
+                            placeholder="80"
+                        />
+                    </div>
+                    <div className="w-24 sm:w-20">
+                        <Select
+                            value={service.currency}
+                            onValueChange={(v) => onChange(index, 'currency', v)}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="GEL">GEL</SelectItem>
+                                <SelectItem value="USD">USD</SelectItem>
+                                <SelectItem value="EUR">EUR</SelectItem>
+                                <SelectItem value="RUB">RUB</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
             </div>
         </div>

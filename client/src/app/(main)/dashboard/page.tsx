@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, ImageSquare } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -18,20 +19,20 @@ import {
 import { DashboardStatsBar } from '@/features/jobs/components/dashboard/DashboardStatsBar';
 import { GalleryToolbar } from '@/features/jobs/components/dashboard/GalleryToolbar';
 import { GalleryCard } from '@/features/jobs/components/dashboard/GalleryCard';
-import { JobLightbox } from '@/features/jobs/components/dashboard/JobLightbox';
 import { BulkActionBar } from '@/features/jobs/components/dashboard/BulkActionBar';
 import { useDashboardGallery, useDeleteJob, useBulkDeleteJobs } from '@/features/jobs/hooks/useDashboard';
 import { useGallerySelection } from '@/features/jobs/hooks/useGallerySelection';
 import { useMyPortfolio } from '@/features/portfolio/hooks/usePortfolio';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
+import { cn } from '@/lib/utils';
 import type { JobStatus } from '@/features/jobs/types/job.types';
 
 export default function DashboardPage(): React.ReactElement {
     const { t } = useLanguage();
+    const router = useRouter();
 
     const [statusFilter, setStatusFilter] = useState<JobStatus | undefined>(undefined);
-    const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const [bulkDeletePending, setBulkDeletePending] = useState(false);
 
@@ -46,10 +47,8 @@ export default function DashboardPage(): React.ReactElement {
     const { mutate: deleteJob } = useDeleteJob();
     const { mutate: bulkDelete, isPending: isDeletingBulk } = useBulkDeleteJobs();
     const {
-        isSelecting,
         selectedIds,
         toggle,
-        toggleSelectionMode,
         selectAll,
         clearSelection,
     } = useGallerySelection();
@@ -88,22 +87,20 @@ export default function DashboardPage(): React.ReactElement {
     }, [bulkDelete, selectedIds, clearSelection]);
 
     return (
-        <div className="container mx-auto max-w-6xl px-4 py-6 space-y-6">
+        <div className={cn(
+            'container mx-auto max-w-6xl px-4 py-5 space-y-5 sm:py-6 sm:space-y-6',
+            selectedIds.size > 0 && 'pb-28 sm:pb-24',
+        )}>
             <DashboardStatsBar />
 
             <GalleryToolbar
                 activeStatus={statusFilter}
                 onStatusChange={handleStatusChange}
-                isSelecting={isSelecting}
-                selectedCount={selectedIds.size}
-                onToggleSelect={toggleSelectionMode}
-                onBulkDelete={handleRequestBulkDelete}
-                isBulkDeleting={isDeletingBulk}
             />
 
             {/* Loading state */}
             {isLoading && (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
                     {Array.from({ length: 8 }).map((_, i) => (
                         <Skeleton key={i} className="aspect-[3/4] rounded-xl" />
                     ))}
@@ -112,13 +109,13 @@ export default function DashboardPage(): React.ReactElement {
 
             {/* Empty state */}
             {!isLoading && jobs.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-                        <ImageSquare size={32} className="text-muted-foreground" />
+                <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center px-4">
+                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-muted sm:h-16 sm:w-16">
+                        <ImageSquare size={36} className="text-muted-foreground sm:size-8" />
                     </div>
-                    <p className="text-lg font-medium text-foreground">{t('dashboard.no_results')}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{t('dashboard.upload_first')}</p>
-                    <Button asChild className="mt-6 gap-1.5">
+                    <p className="text-xl font-medium text-foreground sm:text-lg">{t('dashboard.no_results')}</p>
+                    <p className="mt-1.5 text-sm text-muted-foreground max-w-[260px]">{t('dashboard.upload_first')}</p>
+                    <Button asChild className="mt-7 gap-1.5 w-full sm:w-auto min-h-[44px]">
                         <Link href={ROUTES.CREATE}>
                             <Plus size={16} />
                             {t('dashboard.new_photo')}
@@ -130,16 +127,15 @@ export default function DashboardPage(): React.ReactElement {
             {/* Image grid */}
             {!isLoading && jobs.length > 0 && (
                 <>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
                         {jobs.map((job, index) => (
                             <GalleryCard
                                 key={job.id}
                                 job={job}
-                                isSelecting={isSelecting}
                                 isSelected={selectedIds.has(job.id)}
                                 isInPortfolio={portfolioJobIds.has(job.id)}
                                 onSelect={() => toggle(job.id)}
-                                onClick={() => setLightboxIndex(index)}
+                                onClick={() => router.push(ROUTES.CREATE_RESULT(job.id))}
                                 onDelete={() => setDeleteTarget(job.id)}
                                 onDownload={() => handleDownload(job.id)}
                             />
@@ -148,12 +144,12 @@ export default function DashboardPage(): React.ReactElement {
 
                     {/* Load more */}
                     {hasNextPage && (
-                        <div className="flex justify-center pt-2">
+                        <div className="flex justify-center pt-3 sm:pt-2">
                             <Button
                                 variant="outline"
-                                size="sm"
                                 disabled={isFetchingNextPage}
                                 onClick={() => fetchNextPage()}
+                                className="w-full sm:w-auto min-h-[44px] sm:min-h-0 sm:h-9"
                             >
                                 {isFetchingNextPage ? '...' : t('dashboard.load_more')}
                             </Button>
@@ -163,7 +159,7 @@ export default function DashboardPage(): React.ReactElement {
             )}
 
             {/* Selection bar */}
-            {isSelecting && (
+            {selectedIds.size > 0 && (
                 <BulkActionBar
                     selectedCount={selectedIds.size}
                     totalCount={total}
@@ -173,15 +169,6 @@ export default function DashboardPage(): React.ReactElement {
                     isDeleting={isDeletingBulk}
                 />
             )}
-
-            {/* Lightbox */}
-            <JobLightbox
-                jobs={jobs}
-                initialJobIndex={lightboxIndex ?? 0}
-                open={lightboxIndex !== null}
-                onClose={() => setLightboxIndex(null)}
-                onDelete={(jobId) => setDeleteTarget(jobId)}
-            />
 
             {/* Single delete confirmation dialog */}
             <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>

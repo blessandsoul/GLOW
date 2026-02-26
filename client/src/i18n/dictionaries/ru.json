@@ -68,7 +68,14 @@
   "cta": {
     "title": "Готовы попробовать?",
     "description": "Загрузите рабочее фото и получите результат журнального качества за секунды",
-    "open_studio": "Открыть студию"
+    "open_studio": "Открыть студию",
+    "how_it_works": "Как это работает",
+    "step1_title": "Загрузите фото",
+    "step1_desc": "Сделайте или выберите рабочее фото из галереи",
+    "step2_title": "AI улучшение",
+    "step2_desc": "Наш AI улучшает освещение, кожу и детали",
+    "step3_title": "Скачайте и поделитесь",
+    "step3_desc": "Получите результат журнального качества мгновенно"
   },
   "nav": {
     "create": "Создать",
@@ -124,6 +131,9 @@
   "visual": {
     "before": "До ретуши",
     "after": "После ретуши",
+    "show_before": "Показать до",
+    "show_after": "Показать после",
+    "tap_to_compare": "Нажмите для сравнения",
     "lux": "Люкс-ретушь",
     "completed": "Завершено за 4.2с"
   },
@@ -401,7 +411,31 @@
     "text_svc_added": "Услуг добавлено",
     "text_svc_none": "Нет услуг",
     "text_svc_search": "Поиск...",
-    "text_svc_notfound": "Ничего не найдено"
+    "text_svc_notfound": "Ничего не найдено",
+    "daily_limit_title": "Дневной лимит исчерпан",
+    "daily_limit_desc": "Вы использовали все бесплатные генерации. Попробуйте завтра!",
+    "daily_limit_countdown": "Обновится:",
+    "daily_remaining": "осталось сегодня",
+    "share_link_copied": "Ссылка скопирована",
+    "share_copy_failed": "Не удалось скопировать",
+    "share_btn": "Поделиться",
+    "download_btn": "Скачать",
+    "download_branded": "С брендом",
+    "hide_branding": "Скрыть брендинг",
+    "show_branding": "Показать брендинг",
+    "branded": "С брендом",
+    "add_branding": "Добавить брендинг",
+    "demo_title": "Пример результатов",
+    "demo_desc": "Это демо. После регистрации AI обработает ваше фото.",
+    "demo_register": "Регистрация",
+    "demo_credit_info": "1 кредит = 1 фото",
+    "demo_better": "Так выглядит обработка — ваше фото будет ещё лучше",
+    "caption_generate": "AI подпись",
+    "caption_generating": "Создаётся...",
+    "caption_copied": "Скопировано!",
+    "caption_copy": "Копировать текст",
+    "caption_regen": "Заново",
+    "caption_pro": "AI подпись — PRO"
   },
   "upload": {
     "niche_lashes": "Ресницы",
@@ -484,7 +518,14 @@
     "show_more": "Показать ещё",
     "no_style_tip": "Выберите стиль слева или загрузите напрямую",
     "photo_uploading": "Фото загружается...",
-    "photo_sending": "Отправляем на обработку, подождите"
+    "photo_sending": "Отправляем на обработку, подождите",
+    "generate_btn": "Генерация",
+    "generating_btn": "Обработка...",
+    "free_badge": "Бесплатно",
+    "browse_all_styles": "Все стили",
+    "sign_up_for_more": "Зарегистрируйтесь",
+    "style_title": "Выберите стиль",
+    "style_subtitle": "AI автоматически подберёт лучшие параметры"
   },
   "branding": {
     "style_minimal": "Минимальный",
@@ -656,5 +697,27 @@
     "missing_photos_suffix": "фото",
     "reviews_title": "Отзывы",
     "anonymous": "Аноним"
+  },
+  "admin": {
+    "title": "Панель администратора",
+    "users_title": "Пользователи",
+    "search_placeholder": "Поиск по имени или email...",
+    "col_name": "Имя",
+    "col_email": "Email",
+    "col_plan": "План",
+    "col_jobs": "Работы",
+    "col_captions": "Подписи",
+    "col_credits": "Кредиты",
+    "col_daily_usage": "Дневное использование",
+    "col_status": "Статус",
+    "col_joined": "Регистрация",
+    "status_active": "Активен",
+    "status_inactive": "Неактивен",
+    "no_users": "Пользователи не найдены",
+    "stat_users": "Всего пользователей",
+    "stat_jobs": "Всего работ",
+    "stat_captions": "Всего подписей",
+    "stat_subscriptions": "Подписки",
+    "unauthorized": "У вас нет доступа к этой странице."
   }
 }

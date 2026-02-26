@@ -24,6 +24,7 @@ import { trendsRoutes } from '@/modules/trends/trends.routes.js';
 import { filtersRoutes } from '@/modules/filters/filters.routes.js';
 import { subscriptionsRoutes } from '@/modules/subscriptions/subscriptions.routes.js';
 import { captionsRoutes } from '@/modules/captions/captions.routes.js';
+import { adminRoutes } from '@/modules/admin/admin.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -147,6 +148,7 @@ export async function buildApp() {
   await app.register(filtersRoutes, { prefix: '/api/v1/filters' });
   await app.register(subscriptionsRoutes, { prefix: '/api/v1/subscriptions' });
   await app.register(captionsRoutes, { prefix: '/api/v1/captions' });
+  await app.register(adminRoutes, { prefix: '/api/v1/admin' });
 
   return app;
 }

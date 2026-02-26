@@ -68,7 +68,14 @@
   "cta": {
     "title": "Ready to try the magic?",
     "description": "Upload your work photo and get magazine-quality results in seconds",
-    "open_studio": "Open Studio"
+    "open_studio": "Open Studio",
+    "how_it_works": "How It Works",
+    "step1_title": "Upload Photo",
+    "step1_desc": "Take or choose a work photo from your gallery",
+    "step2_title": "AI Enhancement",
+    "step2_desc": "Our AI perfects lighting, skin & details",
+    "step3_title": "Download & Share",
+    "step3_desc": "Get your magazine-quality result instantly"
   },
   "hero": {
     "badge": "Glow.GE AI Studio",
@@ -93,6 +100,9 @@
   "visual": {
     "before": "Before retouch",
     "after": "After retouch",
+    "show_before": "Show before",
+    "show_after": "Show after",
+    "tap_to_compare": "Tap to compare",
     "lux": "Lux-retouch",
     "completed": "Completed in 4.2s"
   },
@@ -370,7 +380,31 @@
     "text_svc_added": "services added",
     "text_svc_none": "No services",
     "text_svc_search": "Search...",
-    "text_svc_notfound": "Nothing found"
+    "text_svc_notfound": "Nothing found",
+    "daily_limit_title": "Daily limit reached",
+    "daily_limit_desc": "You've used all free generations today. Try again tomorrow!",
+    "daily_limit_countdown": "Resets in:",
+    "daily_remaining": "remaining today",
+    "share_link_copied": "Link copied",
+    "share_copy_failed": "Could not copy",
+    "share_btn": "Share",
+    "download_btn": "Download",
+    "download_branded": "With brand",
+    "hide_branding": "Hide branding",
+    "show_branding": "Show branding",
+    "branded": "Branded",
+    "add_branding": "Add branding",
+    "demo_title": "Example results",
+    "demo_desc": "This is a demo. After registration, AI will process your photo for professional results.",
+    "demo_register": "Register",
+    "demo_credit_info": "1 credit = 1 photo",
+    "demo_better": "This is what processed photos look like — yours will be even better",
+    "caption_generate": "AI Caption",
+    "caption_generating": "Creating...",
+    "caption_copied": "Copied!",
+    "caption_copy": "Copy text",
+    "caption_regen": "Regenerate",
+    "caption_pro": "AI Caption — PRO"
   },
   "upload": {
     "niche_lashes": "Lashes",
@@ -453,7 +487,14 @@
     "show_more": "Show more",
     "no_style_tip": "Choose a style on the left, or upload directly",
     "photo_uploading": "Photo is uploading...",
-    "photo_sending": "Sending for processing, please wait"
+    "photo_sending": "Sending for processing, please wait",
+    "generate_btn": "Generate",
+    "generating_btn": "Processing...",
+    "free_badge": "Free",
+    "browse_all_styles": "Browse all styles",
+    "sign_up_for_more": "Sign up for more",
+    "style_title": "Choose a style",
+    "style_subtitle": "AI will automatically select the best parameters"
   },
   "branding": {
     "style_minimal": "Minimal",
@@ -625,5 +666,27 @@
     "missing_photos_suffix": "more photos",
     "reviews_title": "Reviews",
     "anonymous": "Anonymous"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "users_title": "Users",
+    "search_placeholder": "Search by name or email...",
+    "col_name": "Name",
+    "col_email": "Email",
+    "col_plan": "Plan",
+    "col_jobs": "Jobs",
+    "col_captions": "Captions",
+    "col_credits": "Credits",
+    "col_daily_usage": "Daily Usage",
+    "col_status": "Status",
+    "col_joined": "Joined",
+    "status_active": "Active",
+    "status_inactive": "Inactive",
+    "no_users": "No users found",
+    "stat_users": "Total Users",
+    "stat_jobs": "Total Jobs",
+    "stat_captions": "Total Captions",
+    "stat_subscriptions": "Subscriptions",
+    "unauthorized": "You don't have permission to access this page."
   }
 }
