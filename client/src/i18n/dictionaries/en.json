@@ -493,9 +493,14 @@
     "browse_all_styles": "Browse all styles",
     "sign_up_for_more": "Sign up for more",
     "style_title": "Choose a style",
+    "style_label": "Style",
     "style_subtitle": "AI will automatically select the best parameters",
     "no_credits": "No credits remaining. Purchase more to continue.",
-    "daily_limit_reached": "Daily limit reached. Try again tomorrow!"
+    "daily_limit_reached": "Daily limit reached. Try again tomorrow!",
+    "quick_retouch": "Quick Retouch",
+    "or_customize": "or customize",
+    "custom_cost_label": "Custom settings",
+    "filter_all": "Back"
   },
   "branding": {
     "style_minimal": "Minimal",

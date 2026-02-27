@@ -1,0 +1,57 @@
+{
+  "id": "amber-master-skin",
+  "categoryId": "amber",
+  "name_en": "Skin Master",
+  "name_ru": "Мастер кожи",
+  "name_ka": "კანის მასტერი",
+  "description_en": "Professional retouch for cosmetologists",
+  "description_ru": "Профессиональная ретушь для косметолога",
+  "description_ka": "პროფესიული რეტუში კოსმეტოლოგისთვის",
+  "previewUrl": "/filters/amber/master-skin.jpg",
+  "prompt": "Edit the uploaded photo — professional editorial skin retouch at magazine cover level for cosmetologist portfolio. PRESERVE: Face identity 100% identical — one-to-one likeness. No changes to facial features, proportions, age, expression. Original camera angle, crop, framing preserved. EYELASHES: Pixel-identical — no change to color, curl, density, volume, thickness, length, direction, separation. No mascara effect, no enhancement. Absolutely protected from any processing with ZERO interaction. EYEBROWS: Pixel-identical — no change to color, density, shape, tone, texture. No grooming, no filling, no makeup. Absolutely protected. LIPS: Pixel-identical — no change to color, shape, texture. No lip makeup added. HAIR: Pixel-identical — preserve all texture, position, natural shine. Unchanged. MAKEUP: Unchanged — preserve all existing makeup application. SKIN: This is the master's work — [SKIN_FINISH]. STRICT: Do not change skin color, tone, temperature, or undertone. No color grading applied to skin. No white balance shifts. Skin hue, saturation, luminance must remain identical to original. Sharp high-frequency detail preserved. [EXTRAS]. BACKGROUND: [BACKGROUND]. QUALITY: Preserve original color correction, temperature, tone. No filters added. Professional Vogue-level editorial finish. Ultra-photorealistic. Sharp focus. 8K quality. Original dimensions — do not crop or resize.",
+  "variables": [
+    {
+      "id": "BACKGROUND",
+      "type": "select",
+      "label_en": "Background",
+      "label_ru": "Фон",
+      "label_ka": "ფონი",
+      "required": true,
+      "default": "pearl-white",
+      "options": [
+        { "id": "pearl-white", "value": "Soft luminous pearl-white gradient with subtle warm undertone — clean, glowing, airy. Faint dewy mist effect in the background creating depth. Premium skincare campaign feel — pure, fresh, radiant", "label_en": "Pearl White", "label_ru": "Жемчужный", "label_ka": "მარგალიტისფერი" },
+        { "id": "black", "value": "Solid deep black background — dramatic high-contrast editorial", "label_en": "Black", "label_ru": "Чёрный", "label_ka": "შავი" },
+        { "id": "white-studio", "value": "Clean solid white studio background — bright, airy, professional", "label_en": "White Studio", "label_ru": "Белая студия", "label_ka": "თეთრი სტუდია" },
+        { "id": "rose-gold", "value": "Soft gradient from deep rose-gold to warm nude — luxury cosmetic brand aesthetic. Subtle bokeh light particles", "label_en": "Rose Gold", "label_ru": "Розовое золото", "label_ka": "ვარდისფერი ოქრო" }
+      ]
+    },
+    {
+      "id": "SKIN_FINISH",
+      "type": "select",
+      "label_en": "Skin Finish",
+      "label_ru": "Финиш кожи",
+      "label_ka": "კანის ფინიში",
+      "required": true,
+      "default": "editorial-dewy",
+      "options": [
+        { "id": "editorial-dewy", "value": "Full professional editorial retouch. Remove only minor temporary blemishes (acne, redness, spots, minor discoloration). Preserve natural texture — visible pores, micro-details, vellus hair, natural freckles and moles. Even skin tone, natural luminosity, healthy glow — not oily or artificial. Hydrated editorial glow with subtle highlights on high points. Micro-contrast enhanced for realistic depth and dimension. Skin looks fresh, hydrated, radiant from within — dewy editorial finish. No plastic look, no blur, no airbrush, no waxy surface, no frequency separation artifacts, no noise reduction, no smoothing", "label_en": "Dewy Editorial", "label_ru": "Сияющий журнальный", "label_ka": "ნამიანი ედიტორიალი" },
+        { "id": "natural-clean", "value": "Light professional retouch. Remove only temporary blemishes. Preserve all natural texture — pores, micro-details, vellus hair. Even skin tone, natural luminosity. No glow effects, no shine enhancement. Clean natural look. No blur, no smoothing", "label_en": "Natural Clean", "label_ru": "Натуральный чистый", "label_ka": "ბუნებრივი სუფთა" },
+        { "id": "wet-glass", "value": "Professional retouch with realistic wet/dewy glass-skin effect. Fine water droplets and micro-moisture visible on skin surface. Bright highlights with realistic reflections. Wet sheen follows natural facial contours. Effect looks editorial, cinematic, luxurious. No blur, no smoothing. Preserve natural pores and texture underneath the wet layer", "label_en": "Wet Glass Skin", "label_ru": "Мокрая стеклянная кожа", "label_ka": "სველი მინის კანი" }
+      ]
+    },
+    {
+      "id": "EXTRAS",
+      "type": "multi-select",
+      "label_en": "Extra Effects",
+      "label_ru": "Доп. эффекты",
+      "label_ka": "დამატებითი ეფექტები",
+      "required": false,
+      "default": [],
+      "options": [
+        { "id": "freckles", "value": "Add soft natural freckles across nose and cheeks — delicate, barely noticeable, photorealistic", "label_en": "Freckles", "label_ru": "Веснушки", "label_ka": "ჭორფლები" },
+        { "id": "rim-light", "value": "Add rim light from behind — golden separation light on hair and shoulders for depth", "label_en": "Rim Light", "label_ru": "Контровой свет", "label_ka": "კონტრშუქი" },
+        { "id": "highlighter", "value": "Add subtle highlighter effect on cheekbone tops, nose tip, and cupid's bow — editorial luminous finish", "label_en": "Highlighter", "label_ru": "Хайлайтер", "label_ka": "ჰაილაითერი" }
+      ]
+    }
+  ]
+}

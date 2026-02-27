@@ -1,0 +1,7 @@
+{
+  "name_en": "Metallic Drops on Face",
+  "name_ru": "Металлические капли на лице",
+  "name_ka": "მეტალის წვეთები სახეზე",
+  "category": "Face decor",
+  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical — all features unchanged. Eyelashes and eyebrows exactly as original. SKIN: Remove minor blemishes, natural texture, slightly shiny. Add soft freckles. ADD: Large metallic [METAL_COLOR] streaks on the face — appearing to drip and run down naturally. Metallic liquid should have realistic reflections, viscosity, and light interaction. BACKGROUND: Solid beautiful black. QUALITY: Preserve original color correction, no filters. Sharp focus. Original dimensions."
+}

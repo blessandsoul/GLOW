@@ -1,0 +1,7 @@
+{
+  "name_en": "Cosmetologist Retouch — Lips Protected",
+  "name_ru": "Ретушь для косметолога — Губы защищены",
+  "name_ka": "კოსმეტოლოგის რეტუში — ტუჩები დაცულია",
+  "category": "Cosmetology",
+  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical. LIPS: Absolutely protected — pixel-identical to original. No change to color, tone, temperature, shape, volume, texture. No lip makeup added. SKIN: Professional retouch — natural texture visible, pores preserved. Hydrated glow, natural light transitions. Remove only minor blemishes (acne, redness, spots). No smoothing, no blurring. [EXTRAS]. EYELASHES AND EYEBROWS: pixel-identical, no modification. HAIR: unchanged. BACKGROUND: [BG_COLOR]. QUALITY: No filters. Professional studio quality, ultra-photorealistic. Original dimensions."
+}

@@ -14,6 +14,7 @@ import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
 import { ROUTES } from '@/lib/constants/routes';
 import { Logo } from './Logo';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
@@ -280,6 +281,7 @@ export function Header(): React.ReactElement {
                             </Button>
                         </>
                     )}
+                    <LanguageSwitcher />
                     <Button
                         variant="ghost"
                         size="icon"
@@ -298,6 +300,7 @@ export function Header(): React.ReactElement {
                             Free
                         </span>
                     )}
+                    <LanguageSwitcher />
                     <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('ui.text_jehhj')} className="h-8 w-8 transition-colors duration-200">
                         {mounted && (resolvedTheme === 'dark' ? <Moon size={16} weight="fill" /> : <Sun size={16} weight="fill" />)}
                     </Button>

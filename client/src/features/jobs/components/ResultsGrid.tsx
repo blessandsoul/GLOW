@@ -117,30 +117,25 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
 
     return (
         <div className="flex w-full flex-col gap-3 py-2">
-            {/* Compact header */}
-            <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-foreground">
-                    {t('ui.text_k25oyf')}
-                </p>
-                <div className="flex items-center gap-2">
-                    {hasBranding && (
-                        <button
-                            type="button"
-                            onClick={() => setShowBranding((v) => !v)}
-                            className={cn(
-                                'flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all duration-200 active:scale-[0.97]',
-                                showBranding
-                                    ? 'border-primary/40 bg-primary/10 text-primary'
-                                    : 'border-border bg-background text-muted-foreground hover:text-foreground',
-                            )}
-                            aria-label={showBranding ? t('ui.hide_branding') : t('ui.show_branding')}
-                        >
-                            <Stamp size={12} weight={showBranding ? 'fill' : 'regular'} />
-                            {showBranding ? t('ui.branded') : t('ui.add_branding')}
-                        </button>
-                    )}
+            {/* Branding toggle */}
+            {hasBranding && (
+                <div className="flex items-center justify-end">
+                    <button
+                        type="button"
+                        onClick={() => setShowBranding((v) => !v)}
+                        className={cn(
+                            'flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all duration-200 active:scale-[0.97]',
+                            showBranding
+                                ? 'border-primary/40 bg-primary/10 text-primary'
+                                : 'border-border bg-background text-muted-foreground hover:text-foreground',
+                        )}
+                        aria-label={showBranding ? t('ui.hide_branding') : t('ui.show_branding')}
+                    >
+                        <Stamp size={12} weight={showBranding ? 'fill' : 'regular'} />
+                        {showBranding ? t('ui.branded') : t('ui.add_branding')}
+                    </button>
                 </div>
-            </div>
+            )}
 
             {/* Before / After comparison — prominent, full-width on mobile */}
             {results.length > 0 && job.originalUrl && (

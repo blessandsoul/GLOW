@@ -5,34 +5,38 @@ import NextImage from 'next/image';
 import {
     Sparkle, Package, MagicWand, Flower, Images, TShirt, Image, Eye,
     Play, Camera, Heart, HandPalm, PenNib, Hand, Scissors, FirstAid,
-    PaintBrush, MagnifyingGlass, X, TrendUp, CaretDown,
+    PaintBrush, MagnifyingGlass, X, TrendUp, CaretDown, MagicWand as Wand2,
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { localized } from '@/i18n/config';
 import { useDebounce } from '@/hooks/useDebounce';
 
 import { StyleCard } from './StyleCard';
 import { StyleScrollRow } from './StyleScrollRow';
 import filtersData from '../data/filters.json';
-import type { Style, FilterStyle, PresetStyle, StyleCategory } from '../types/styles.types';
+import type { Style, FilterStyle, PresetStyle, StyleCategory, StyleSubcategory, MasterPrompt } from '../types/styles.types';
 import type { PhotoSettings } from '@/features/upload/types/upload.types';
 
 const ICON_MAP: Record<string, typeof Sparkle> = {
     Sparkle, Package, MagicWand, Flower, Images, TShirt, Image, Eye,
     Play, Camera, Heart, HandPalm, PenNib, Hand, Scissors, FirstAid,
-    PaintBrush, ImageSquare: Image, Orange: Flower, SmileyWink: Heart, Hoodie: TShirt,
+    PaintBrush, Wand2, ImageSquare: Image, Orange: Flower, SmileyWink: Heart, Hoodie: TShirt,
 };
 
 const INITIAL_VISIBLE = 9;
 const SEARCH_INITIAL_VISIBLE = 12;
+const SUB_INITIAL_VISIBLE = 6;
 
 // Lazy-parsed: only computed once on first access, not at module load
 let _allStyles: Style[] | null = null;
 let _categories: StyleCategory[] | null = null;
+let _subcategories: StyleSubcategory[] | null = null;
+let _masterPrompts: MasterPrompt[] | null = null;
 
 function getAllStyles(): Style[] {
     if (!_allStyles) {
-        const rawData = filtersData as { categories: StyleCategory[]; filters: Array<Record<string, unknown>> };
+        const rawData = filtersData as { categories: StyleCategory[]; subcategories: StyleSubcategory[]; filters: Array<Record<string, unknown>> };
         _allStyles = rawData.filters.map((f) => {
             if (f.type === 'preset') {
                 return { ...f, kind: 'preset' as const, settings: f.settings as PhotoSettings } as PresetStyle;
@@ -45,10 +49,26 @@ function getAllStyles(): Style[] {
 
 function getCategories(): StyleCategory[] {
     if (!_categories) {
-        const rawData = filtersData as { categories: StyleCategory[]; filters: Array<Record<string, unknown>> };
+        const rawData = filtersData as { categories: StyleCategory[]; subcategories: StyleSubcategory[]; filters: Array<Record<string, unknown>> };
         _categories = rawData.categories;
     }
     return _categories;
+}
+
+function getSubcategories(): StyleSubcategory[] {
+    if (!_subcategories) {
+        const rawData = filtersData as { categories: StyleCategory[]; subcategories: StyleSubcategory[]; filters: Array<Record<string, unknown>> };
+        _subcategories = rawData.subcategories ?? [];
+    }
+    return _subcategories;
+}
+
+function getMasterPrompts(): MasterPrompt[] {
+    if (!_masterPrompts) {
+        const rawData = filtersData as { masterPrompts?: MasterPrompt[] };
+        _masterPrompts = rawData.masterPrompts ?? [];
+    }
+    return _masterPrompts;
 }
 
 function getDefaultExpanded(): Set<string> {
@@ -62,6 +82,7 @@ function getCategoryIcon(iconName: string): typeof Sparkle {
 
 interface StylesGalleryProps {
     onSelect: (style: Style) => void;
+    onMasterPromptSelect?: (mp: MasterPrompt) => void;
     selectedId: string | null;
     trendStyles?: Style[];
     isLoadingTrends?: boolean;
@@ -69,12 +90,12 @@ interface StylesGalleryProps {
 
 export function StylesGallery({
     onSelect,
+    onMasterPromptSelect,
     selectedId,
     trendStyles,
     isLoadingTrends = false,
 }: StylesGalleryProps): React.ReactElement {
     const { t, language } = useLanguage();
-    const isKa = language === 'ka';
     const [search, setSearch] = useState('');
     const debouncedSearch = useDebounce(search, 250);
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(() => getDefaultExpanded());
@@ -85,12 +106,40 @@ export function StylesGallery({
 
     const allStyles = useMemo(() => getAllStyles(), []);
     const categories = useMemo(() => getCategories(), []);
+    const subcategories = useMemo(() => getSubcategories(), []);
+    const masterPrompts = useMemo(() => getMasterPrompts(), []);
+
+    const masterPromptsByCategory = useMemo(() => {
+        const map = new Map<string, MasterPrompt[]>();
+        for (const mp of masterPrompts) {
+            const list = map.get(mp.categoryId) ?? [];
+            list.push(mp);
+            map.set(mp.categoryId, list);
+        }
+        return map;
+    }, [masterPrompts]);
 
     const nonPresetCategories = useMemo(
         () => categories,
         [categories],
     );
 
+    // Subcategories grouped by parent category
+    const subcategoriesByCategory = useMemo(() => {
+        const map = new Map<string, StyleSubcategory[]>();
+        for (const sub of subcategories) {
+            const list = map.get(sub.categoryId) ?? [];
+            list.push(sub);
+            map.set(sub.categoryId, list);
+        }
+        // Sort by sortOrder within each category
+        for (const [key, subs] of map) {
+            map.set(key, subs.sort((a, b) => a.sortOrder - b.sortOrder));
+        }
+        return map;
+    }, [subcategories]);
+
+    // Styles grouped by category (for categories without subcategories)
     const stylesByCategory = useMemo(() => {
         const map = new Map<string, Style[]>();
         for (const style of allStyles) {
@@ -101,11 +150,23 @@ export function StylesGallery({
         return map;
     }, [allStyles]);
 
+    // Styles grouped by subcategory
+    const stylesBySubcategory = useMemo(() => {
+        const map = new Map<string, Style[]>();
+        for (const style of allStyles) {
+            if (!style.subcategoryId) continue;
+            const list = map.get(style.subcategoryId) ?? [];
+            list.push(style);
+            map.set(style.subcategoryId, list);
+        }
+        return map;
+    }, [allStyles]);
+
     const searchResults = useMemo(() => {
         const q = debouncedSearch.toLowerCase().trim();
         if (!q) return [];
         return allStyles.filter(
-            (s) => s.name_ka.toLowerCase().includes(q) || s.name_ru.toLowerCase().includes(q),
+            (s) => s.name_ka.toLowerCase().includes(q) || s.name_ru.toLowerCase().includes(q) || s.name_en.toLowerCase().includes(q),
         );
     }, [debouncedSearch, allStyles]);
 
@@ -125,8 +186,8 @@ export function StylesGallery({
         });
     }, []);
 
-    const toggleShowAll = useCallback((catId: string) => {
-        setShowAllMap((prev) => ({ ...prev, [catId]: !prev[catId] }));
+    const toggleShowAll = useCallback((key: string) => {
+        setShowAllMap((prev) => ({ ...prev, [key]: !prev[key] }));
     }, []);
 
     return (
@@ -224,8 +285,9 @@ export function StylesGallery({
                             const Icon = getCategoryIcon(cat.icon);
                             const isExpanded = expandedCategories.has(cat.id);
                             const catStyles = stylesByCategory.get(cat.id) ?? [];
-                            const showAll = showAllMap[cat.id] ?? false;
-                            const visibleStyles = showAll ? catStyles : catStyles.slice(0, INITIAL_VISIBLE);
+                            const catMasterPrompts = masterPromptsByCategory.get(cat.id) ?? [];
+                            const catSubcategories = subcategoriesByCategory.get(cat.id);
+                            const hasSubcategories = catSubcategories && catSubcategories.length > 0;
                             const hasCover = !!cat.coverUrl;
 
                             return (
@@ -246,7 +308,7 @@ export function StylesGallery({
                                             <>
                                                 <NextImage
                                                     src={cat.coverUrl!}
-                                                    alt={isKa ? cat.label_ka : cat.label_ru}
+                                                    alt={localized(cat, 'label', language)}
                                                     fill
                                                     sizes="400px"
                                                     className="object-cover"
@@ -255,7 +317,7 @@ export function StylesGallery({
                                                 <div className="relative z-10 flex w-full items-center justify-between px-3.5">
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[12px] font-bold tracking-widest text-white/95">
-                                                            {isKa ? cat.label_ka : cat.label_ru}
+                                                            {localized(cat, 'label', language)}
                                                         </span>
                                                         <span className="text-[9px] font-medium text-white/50 tabular-nums">
                                                             {cat.count} looks
@@ -275,7 +337,7 @@ export function StylesGallery({
                                             <>
                                                 <Icon size={14} weight={isExpanded ? 'fill' : 'regular'} />
                                                 <span className="flex-1 truncate">
-                                                    {isKa ? cat.label_ka : cat.label_ru}
+                                                    {localized(cat, 'label', language)}
                                                 </span>
                                                 <span className="text-[10px] text-muted-foreground tabular-nums">
                                                     {cat.count}
@@ -291,7 +353,8 @@ export function StylesGallery({
                                         )}
                                     </button>
 
-                                    {catStyles.length > 0 && (
+                                    {/* Expanded content */}
+                                    {(catStyles.length > 0 || catMasterPrompts.length > 0) && (
                                         <div
                                             className={cn(
                                                 'grid transition-[grid-template-rows] duration-300 ease-out',
@@ -299,26 +362,123 @@ export function StylesGallery({
                                             )}
                                         >
                                             <div className="overflow-hidden">
-                                                <div className={cn('grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-1.5 pb-2', hasCover && 'mt-2')}>
-                                                    {visibleStyles.map((style) => (
-                                                        <StyleCard
-                                                            key={style.id}
-                                                            style={style}
-                                                            isSelected={selectedId === style.id}
-                                                            onSelect={handleSelect}
-                                                            language={language}
-                                                            size="sm"
-                                                        />
-                                                    ))}
-                                                </div>
-                                                {catStyles.length > INITIAL_VISIBLE && !showAll && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => toggleShowAll(cat.id)}
-                                                        className="flex items-center justify-center gap-1 w-full py-1.5 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
-                                                    >
-                                                        {t('upload.show_more')} ({catStyles.length - INITIAL_VISIBLE})
-                                                    </button>
+                                                {catMasterPrompts.length > 0 ? (
+                                                    /* Master prompt cards (e.g., Retouch category) */
+                                                    <div className={cn('grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-1.5 pb-2', hasCover && 'mt-2')}>
+                                                        {catMasterPrompts.map((mp) => {
+                                                            const mpName = localized(mp, 'name', language);
+                                                            const mpDesc = localized(mp, 'description', language);
+                                                            const isSelected = selectedId === mp.id;
+                                                            return (
+                                                                <div
+                                                                    key={mp.id}
+                                                                    role="button"
+                                                                    tabIndex={0}
+                                                                    onClick={() => onMasterPromptSelect?.(mp)}
+                                                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onMasterPromptSelect?.(mp); } }}
+                                                                    className={cn(
+                                                                        'group relative w-full overflow-hidden rounded-lg transition-all duration-200',
+                                                                        'hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]',
+                                                                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                                                        isSelected ? 'border-2 border-primary' : 'border border-border/40',
+                                                                    )}
+                                                                >
+                                                                    <div className="relative aspect-[3/4] w-full">
+                                                                        {mp.previewUrl ? (
+                                                                            <NextImage
+                                                                                src={mp.previewUrl}
+                                                                                alt={mpName}
+                                                                                fill
+                                                                                sizes="(max-width: 640px) 30vw, 20vw"
+                                                                                className="object-cover"
+                                                                            />
+                                                                        ) : (
+                                                                            <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-primary/5 to-primary/10">
+                                                                                <Sparkle size={16} className="text-primary/30" weight="fill" />
+                                                                            </div>
+                                                                        )}
+                                                                        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/60 to-transparent px-1.5 pb-1.5 pt-5">
+                                                                            <p className="truncate text-[9px] font-semibold text-white">{mpName}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                ) : hasSubcategories ? (
+                                                    /* Subcategory sections within this pack */
+                                                    <div className={cn('flex flex-col gap-3', hasCover && 'mt-2', 'pb-2')}>
+                                                        {catSubcategories.map((sub) => {
+                                                            const SubIcon = getCategoryIcon(sub.icon);
+                                                            const subStyles = stylesBySubcategory.get(sub.id) ?? [];
+                                                            const showAllSub = showAllMap[sub.id] ?? false;
+                                                            const visibleSubStyles = showAllSub ? subStyles : subStyles.slice(0, SUB_INITIAL_VISIBLE);
+
+                                                            if (subStyles.length === 0) return null;
+
+                                                            return (
+                                                                <div key={sub.id} className="flex flex-col gap-1.5">
+                                                                    {/* Subcategory header */}
+                                                                    <div className="flex items-center gap-1.5 px-0.5">
+                                                                        <SubIcon size={12} className="text-muted-foreground" />
+                                                                        <span className="text-[10px] font-semibold text-foreground/80">
+                                                                            {localized(sub, 'label', language)}
+                                                                        </span>
+                                                                        <span className="text-[9px] text-muted-foreground/60 tabular-nums">
+                                                                            {sub.count}
+                                                                        </span>
+                                                                    </div>
+                                                                    {/* Subcategory grid */}
+                                                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-1.5">
+                                                                        {visibleSubStyles.map((style) => (
+                                                                            <StyleCard
+                                                                                key={style.id}
+                                                                                style={style}
+                                                                                isSelected={selectedId === style.id}
+                                                                                onSelect={handleSelect}
+                                                                                language={language}
+                                                                                size="sm"
+                                                                            />
+                                                                        ))}
+                                                                    </div>
+                                                                    {subStyles.length > SUB_INITIAL_VISIBLE && !showAllSub && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => toggleShowAll(sub.id)}
+                                                                            className="flex items-center justify-center gap-1 w-full py-1 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
+                                                                        >
+                                                                            {t('upload.show_more')} ({subStyles.length - SUB_INITIAL_VISIBLE})
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                ) : (
+                                                    /* Flat grid — no subcategories (e.g., Obsidian) */
+                                                    <>
+                                                        <div className={cn('grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-1.5 pb-2', hasCover && 'mt-2')}>
+                                                            {(showAllMap[cat.id] ? catStyles : catStyles.slice(0, INITIAL_VISIBLE)).map((style) => (
+                                                                <StyleCard
+                                                                    key={style.id}
+                                                                    style={style}
+                                                                    isSelected={selectedId === style.id}
+                                                                    onSelect={handleSelect}
+                                                                    language={language}
+                                                                    size="sm"
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                        {catStyles.length > INITIAL_VISIBLE && !showAllMap[cat.id] && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => toggleShowAll(cat.id)}
+                                                                className="flex items-center justify-center gap-1 w-full py-1.5 text-[10px] font-medium text-primary transition-colors duration-150 hover:text-primary/80"
+                                                            >
+                                                                {t('upload.show_more')} ({catStyles.length - INITIAL_VISIBLE})
+                                                            </button>
+                                                        )}
+                                                    </>
                                                 )}
                                             </div>
                                         </div>

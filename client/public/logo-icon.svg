@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <!-- Background: cream -->
-  <rect width="1024" height="1024" fill="#FAFAF8" />
+  <!-- Background: transparent -->
 
   <defs>
     <radialGradient id="bokeh-glow" cx="50%" cy="50%" r="50%">

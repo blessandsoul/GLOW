@@ -514,6 +514,7 @@
     "mode_batch": "პაკეტი",
     "coming_soon": "მალე",
     "style_title": "აირჩიეთ სტილი",
+    "style_label": "სტილი",
     "style_subtitle": "AI ავტომატურად შეარჩევს პარამეტრებს",
     "styles_search_placeholder": "სტილის ძებნა...",
     "styles_popular": "პოპულარული",
@@ -530,7 +531,11 @@
     "free_badge": "უფასო",
     "browse_all_styles": "ყველა სტილის ნახვა",
     "no_credits": "კრედიტები ამოიწურა. შეიძინეთ მეტი გასაგრძელებლად.",
-    "daily_limit_reached": "დღის ლიმიტი ამოიწურა. სცადეთ ხვალ!"
+    "daily_limit_reached": "დღის ლიმიტი ამოიწურა. სცადეთ ხვალ!",
+    "quick_retouch": "სწრაფი რეტუში",
+    "or_customize": "ან მოარგე თავად",
+    "custom_cost_label": "ინდივიდუალური პარამეტრები",
+    "filter_all": "უკან"
   },
   "branding": {
     "style_minimal": "მინიმალური",

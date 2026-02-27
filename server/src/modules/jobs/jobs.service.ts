@@ -186,8 +186,9 @@ export const jobsService = {
     let promptSource = 'default';
     if (settings && typeof settings === 'object' && 'filterId' in settings) {
       const filterId = (settings as { filterId?: string }).filterId;
+      const promptVariables = (settings as { promptVariables?: Record<string, string | string[]> }).promptVariables ?? {};
       if (filterId) {
-        prompt = filtersService.getPromptById(filterId) ?? undefined;
+        prompt = filtersService.resolvePrompt(filterId, promptVariables) ?? undefined;
         if (prompt) {
           promptSource = `filter:${filterId}`;
         } else {
@@ -433,8 +434,9 @@ export const jobsService = {
     let batchPromptSource = 'default';
     if (settings && typeof settings === 'object' && 'filterId' in settings) {
       const filterId = (settings as { filterId?: string }).filterId;
+      const promptVariables = (settings as { promptVariables?: Record<string, string | string[]> }).promptVariables ?? {};
       if (filterId) {
-        batchPrompt = filtersService.getPromptById(filterId) ?? undefined;
+        batchPrompt = filtersService.resolvePrompt(filterId, promptVariables) ?? undefined;
         if (batchPrompt) {
           batchPromptSource = `filter:${filterId}`;
         } else {

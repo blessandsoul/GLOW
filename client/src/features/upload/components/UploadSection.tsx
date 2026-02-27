@@ -23,6 +23,10 @@ export function UploadSection(): React.ReactElement {
             setMode={state.setMode}
             selectedStyle={state.selectedStyle}
             setSelectedStyle={state.setSelectedStyle}
+            selectedMasterPrompt={state.selectedMasterPrompt}
+            setSelectedMasterPrompt={state.setSelectedMasterPrompt}
+            promptVariables={state.promptVariables}
+            setPromptVariables={state.setPromptVariables}
             productSettings={state.productSettings}
             setProductSettings={state.setProductSettings}
             trendStyles={state.trendStyles}
@@ -36,6 +40,8 @@ export function UploadSection(): React.ReactElement {
             handleBASubmit={state.handleBASubmit}
             handleBatchComplete={state.handleBatchComplete}
             isBAUploading={state.isBAUploading}
+            isCustomized={state.isCustomized}
+            masterPromptCost={state.masterPromptCost}
             isLimitReached={state.isLimitReached || noCredits}
         />
     );

@@ -71,20 +71,41 @@ export function MobileBottomNav(): React.ReactElement | null {
                     <NavTab key={item.href} item={item} pathname={pathname} t={t} />
                 ))}
 
-                {/* Create — raised circle */}
+                {/* Create — raised circle with shimmer */}
                 <Link
                     href={ROUTES.CREATE}
                     className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2"
                 >
-                    <span
-                        className={cn(
-                            'flex h-12 w-12 -translate-y-3 items-center justify-center rounded-full shadow-lg transition-all duration-200 active:scale-95',
-                            createActive
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-primary/90 text-primary-foreground'
-                        )}
-                    >
-                        <Plus size={24} weight="bold" />
+                    <span className="relative -translate-y-3">
+                        {/* Rotating shine border ring */}
+                        <span
+                            className="pointer-events-none absolute -inset-0.5 rounded-full overflow-hidden"
+                            style={{
+                                WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+                                WebkitMaskComposite: 'xor',
+                                maskComposite: 'exclude',
+                                padding: '2px',
+                            }}
+                            aria-hidden="true"
+                        >
+                            <span
+                                className="absolute inset-[-50%] animate-create-shine-rotate"
+                                style={{
+                                    background: 'conic-gradient(from 0deg, transparent 40%, oklch(0.85 0.08 340) 50%, oklch(1 0.02 340) 55%, oklch(0.85 0.08 340) 60%, transparent 70%)',
+                                }}
+                            />
+                        </span>
+
+                        <span
+                            className={cn(
+                                'flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all duration-200 active:scale-95 animate-create-shimmer',
+                                createActive
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-primary/90 text-primary-foreground'
+                            )}
+                        >
+                            <Plus size={24} weight="bold" />
+                        </span>
                     </span>
                 </Link>
 

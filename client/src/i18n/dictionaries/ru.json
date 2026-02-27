@@ -524,9 +524,14 @@
     "browse_all_styles": "Все стили",
     "sign_up_for_more": "Зарегистрируйтесь",
     "style_title": "Выберите стиль",
+    "style_label": "Стиль",
     "style_subtitle": "AI автоматически подберёт лучшие параметры",
     "no_credits": "Кредиты закончились. Купите ещё, чтобы продолжить.",
-    "daily_limit_reached": "Дневной лимит исчерпан. Попробуйте завтра!"
+    "daily_limit_reached": "Дневной лимит исчерпан. Попробуйте завтра!",
+    "quick_retouch": "Быстрая ретушь",
+    "or_customize": "или настрой сам",
+    "custom_cost_label": "Свои настройки",
+    "filter_all": "Назад"
   },
   "branding": {
     "style_minimal": "Минимальный",

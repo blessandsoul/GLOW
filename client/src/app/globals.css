@@ -211,9 +211,43 @@
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes scale-in {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-price-pop {
     animation: price-pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+
+/* ── Create button shimmer (matches Logo shine effect) ────────────────────── */
+@keyframes create-btn-shimmer {
+  0%, 100% {
+    box-shadow:
+      0 0 8px oklch(0.58 0.15 340 / 0.3),
+      0 0 20px oklch(0.58 0.15 340 / 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 14px oklch(0.58 0.15 340 / 0.55),
+      0 0 32px oklch(0.58 0.15 340 / 0.25);
+  }
+}
+
+@keyframes create-btn-shine-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-create-shimmer {
+    animation: create-btn-shimmer 2.4s ease-in-out infinite;
+  }
+
+  .animate-create-shine-rotate {
+    animation: create-btn-shine-rotate 3s linear infinite;
   }
 }
 

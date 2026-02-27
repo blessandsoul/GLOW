@@ -1,0 +1,7 @@
+{
+  "name_en": "Portrait with Cat Cheek-to-Cheek",
+  "name_ru": "Портрет с котом щека к щеке",
+  "name_ka": "პორტრეტი კატასთან ერთად",
+  "category": "Generation / Collage",
+  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical. Eyelashes: pixel-identical. Eyebrows: pixel-identical — no smudging of brow hairs. Hair: unchanged. Lips and makeup: unchanged. SKIN: Professional retouch — natural texture, pores preserved, hydrated glow. Catchlight on iris. ADD: [CAT_DESC] positioned on the [CAT_POSITION] of the face, touching cheek-to-cheek with the model. Cat must look maximally realistic — as if it were a real photo. Proper fur texture, natural eye reflection, realistic lighting matching the scene. QUALITY: No filters, no smoothing. Professional studio quality. Original dimensions."
+}

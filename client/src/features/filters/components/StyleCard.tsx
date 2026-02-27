@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Check, Sparkle } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import type { Style } from '../types/styles.types';
+import { localized } from '@/i18n/config';
 import type { SupportedLanguage } from '@/i18n/config';
 
 const PLACEHOLDER_URL = '/filters/placeholder.svg';
@@ -18,7 +19,7 @@ interface StyleCardProps {
 }
 
 function StyleCardInner({ style, isSelected, onSelect, language, size = 'md' }: StyleCardProps): React.ReactElement {
-  const name = language === 'ka' ? style.name_ka : style.name_ru;
+  const name = localized(style, 'name', language);
   const isPlaceholder = style.previewUrl === PLACEHOLDER_URL;
   const [imgError, setImgError] = useState(false);
   const [beforeImgError, setBeforeImgError] = useState(false);

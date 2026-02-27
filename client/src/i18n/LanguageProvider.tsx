@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { dictionaries, SupportedLanguage, defaultLanguage } from './config';
 
 interface LanguageContextType {
@@ -12,8 +12,11 @@ interface LanguageContextType {
 
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
+export function LanguageProvider({ children }: { children: React.ReactNode }): React.ReactElement {
     const [language, setLanguageState] = useState<SupportedLanguage>(defaultLanguage);
+    const [transitioning, setTransitioning] = useState(false);
+    const pendingLang = useRef<SupportedLanguage | null>(null);
+    const isInitialized = useRef(false);
 
     useEffect(() => {
         const stored = localStorage.getItem('site_language') as SupportedLanguage | null;
@@ -23,16 +26,39 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         } else {
             document.documentElement.lang = defaultLanguage;
         }
+        isInitialized.current = true;
     }, []);
 
     const setLanguage = useCallback((lang: SupportedLanguage) => {
-        setLanguageState(lang);
-        localStorage.setItem('site_language', lang);
-        document.documentElement.lang = lang;
-    }, []);
+        if (lang === language || transitioning) return;
+
+        // Skip animation on first load
+        if (!isInitialized.current) {
+            setLanguageState(lang);
+            localStorage.setItem('site_language', lang);
+            document.documentElement.lang = lang;
+            return;
+        }
+
+        // Phase 1: fade out
+        pendingLang.current = lang;
+        setTransitioning(true);
+
+        // Phase 2: after fade-out, swap language and fade back in
+        const timer = setTimeout(() => {
+            setLanguageState(lang);
+            localStorage.setItem('site_language', lang);
+            document.documentElement.lang = lang;
+            pendingLang.current = null;
+            setTransitioning(false);
+        }, 150);
+
+        return () => clearTimeout(timer);
+    }, [language, transitioning]);
 
     const t = useCallback((key: string): string => {
         const keys = key.split('.');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let value: any = dictionaries[language];
         for (const k of keys) {
             value = value?.[k];
@@ -40,6 +66,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (value === undefined && language !== defaultLanguage) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let defValue: any = dictionaries[defaultLanguage];
             for (const k of keys) {
                 defValue = defValue?.[k];
@@ -73,7 +100,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <LanguageContext.Provider value={{ language, setLanguage, t, tArray }}>
-            {children}
+            <div
+                className="motion-safe:transition-[opacity,transform] motion-safe:duration-200 motion-safe:ease-out"
+                style={{
+                    opacity: transitioning ? 0 : 1,
+                    transform: transitioning ? 'translateY(4px)' : 'translateY(0)',
+                }}
+            >
+                {children}
+            </div>
         </LanguageContext.Provider>
     );
 }

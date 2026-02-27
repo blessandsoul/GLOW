@@ -6,6 +6,7 @@ export type Background = 'white' | 'neutral' | 'studio' | 'bokeh';
 export type Angle = 'closeup' | 'portrait' | 'threequarter';
 export type Lighting = 'normal' | 'bright' | 'dark';
 export type Sharpness = 'soft' | 'sharp' | 'hdr';
+export type ProcessingType = 'ENHANCE' | 'RETOUCH' | 'BACKGROUND' | 'PRO_EDIT';
 
 export interface PhotoSettings {
     niche: Niche;
@@ -14,6 +15,9 @@ export interface PhotoSettings {
     angle: Angle;
     lighting: Lighting;
     sharpness: Sharpness;
+    processingType?: ProcessingType;
+    filterId?: string;
+    promptVariables?: Record<string, string | string[]>;
 }
 
 export const DEFAULT_SETTINGS: PhotoSettings = {
@@ -24,8 +28,6 @@ export const DEFAULT_SETTINGS: PhotoSettings = {
     lighting: 'normal',
     sharpness: 'sharp',
 };
-
-export type ProcessingType = 'ENHANCE' | 'RETOUCH' | 'BACKGROUND' | 'PRO_EDIT';
 
 export const PROCESSING_COSTS: Record<ProcessingType, number> = {
     ENHANCE: 1,

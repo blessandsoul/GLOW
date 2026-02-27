@@ -27,27 +27,22 @@ export function StudioWorkspace({ children }: StudioWorkspaceProps): React.React
     return (
         <div className="container mx-auto max-w-6xl px-3 py-4 pb-24 md:px-6 md:py-8 md:pb-8 lg:px-8">
             {/* Page header */}
-            <div className="mb-3 md:mb-6 flex flex-wrap gap-2 items-center justify-between">
+            <div className="relative mb-3 md:mb-6">
                 <div className="flex items-center gap-3">
                     <div className="hidden md:flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
                         <Sparkle size={18} weight="fill" className="text-primary" />
                     </div>
-                    <div>
-                        <h1 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-                            {t('nav.create')}
-                        </h1>
-                        <p className="text-sm text-muted-foreground">
-                            {t('create.subtitle')}
-                        </p>
-                    </div>
+                    <h1 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                        {t('nav.create')}
+                    </h1>
                 </div>
 
-                {/* Credits pill */}
+                {/* Credits pill — top-right */}
                 {mounted && user !== null && user !== undefined && (
                     IS_LAUNCH_MODE ? (
                         <span
                             className={cn(
-                                'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums',
+                                'absolute right-0 top-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums',
                                 dailyRemaining > 2
                                     ? 'bg-success/15 text-success'
                                     : dailyRemaining > 0
@@ -61,7 +56,7 @@ export function StudioWorkspace({ children }: StudioWorkspaceProps): React.React
                         <Link
                             href={ROUTES.DASHBOARD_CREDITS}
                             className={cn(
-                                'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80',
+                                'absolute right-0 top-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80',
                                 (user.credits ?? 0) >= 50
                                     ? 'bg-warning/15 text-warning'
                                     : (user.credits ?? 0) >= 10

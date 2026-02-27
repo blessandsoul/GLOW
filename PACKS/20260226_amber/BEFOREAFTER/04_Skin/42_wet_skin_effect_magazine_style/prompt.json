@@ -1,0 +1,7 @@
+{
+  "name_en": "Wet Skin Effect — Magazine Style",
+  "name_ru": "Эффект влажной кожи — Журнальный стиль",
+  "name_ka": "სველი კანის ეფექტი — ჟურნალის სტილი",
+  "category": "Background + Retouch",
+  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical. Eyelashes: pixel-identical. Eyebrows: pixel-identical. Hair: unchanged. Lips and makeup: unchanged. SKIN: Professional retouch with realistic wet/dewy layer on skin surface only. Characteristics: skin looks fresh and hydrated, fine water droplets and micro-moisture visible, bright highlights with realistic reflections, wet sheen follows natural facial contours. Application: evenly distributed across face. Wet reflections must match existing light direction — no additional light sources. Effect must look editorial, cinematic, and luxurious. BACKGROUND: [BG_COLOR]. QUALITY: No filters, no smoothing. Professional studio quality. Original dimensions."
+}

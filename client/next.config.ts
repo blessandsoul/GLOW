@@ -25,6 +25,8 @@ const apiPattern = getApiImagePattern();
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  turbopack: {},
+  serverExternalPackages: ["esbuild-wasm"],
   async headers() {
     return [
       {

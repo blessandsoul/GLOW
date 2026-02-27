@@ -11,15 +11,17 @@ import { UploadZone } from './UploadZone';
 import { StylesGallery } from '@/features/filters/components/StylesGallery';
 import { StyleStrip } from '@/features/filters/components/StyleStrip';
 import { StyleDrawer } from '@/features/filters/components/StyleDrawer';
+import { PromptConfigurator } from '@/features/filters/components/PromptConfigurator';
 import { GenerateBar } from './GenerateBar';
 import { ProductAdPanel } from './ProductAdPanel';
 import { BeforeAfterUpload } from '@/features/before-after/components/BeforeAfterUpload';
 import { BatchUploadZone } from './BatchUploadZone';
 import filtersData from '@/features/filters/data/filters.json';
-import type { Style, FilterStyle, StyleCategory } from '@/features/filters/types/styles.types';
+import type { Style, FilterStyle, StyleCategory, StyleSubcategory, MasterPrompt, PromptVariableValues } from '@/features/filters/types/styles.types';
 import type { AppMode } from '../types/presets.types';
 import type { ProductAdSettings } from './ProductAdPanel';
 import type { BatchCreateResult } from '@/features/jobs/types/job.types';
+import { localized } from '@/i18n/config';
 import type { SupportedLanguage } from '@/i18n/config';
 
 const MODE_CONFIG: { id: AppMode; icon: typeof MagicWand; labelKey: string; locked?: boolean }[] = [
@@ -36,6 +38,10 @@ interface EditorViewProps {
     setMode: (mode: AppMode) => void;
     selectedStyle: Style | null;
     setSelectedStyle: (style: Style | null) => void;
+    selectedMasterPrompt: MasterPrompt | null;
+    setSelectedMasterPrompt: (mp: MasterPrompt | null) => void;
+    promptVariables: PromptVariableValues;
+    setPromptVariables: (vars: PromptVariableValues) => void;
     productSettings: ProductAdSettings | null;
     setProductSettings: (settings: ProductAdSettings | null) => void;
     trendStyles: Style[];
@@ -49,6 +55,8 @@ interface EditorViewProps {
     handleBASubmit: (beforeFile: File, afterFile: File) => void;
     handleBatchComplete: (result: BatchCreateResult) => void;
     isBAUploading: boolean;
+    isCustomized: boolean;
+    masterPromptCost: number;
     isLimitReached: boolean;
 }
 
@@ -59,6 +67,10 @@ export function EditorView({
     setMode,
     selectedStyle,
     setSelectedStyle,
+    selectedMasterPrompt,
+    setSelectedMasterPrompt,
+    promptVariables,
+    setPromptVariables,
     productSettings,
     setProductSettings,
     trendStyles,
@@ -72,6 +84,8 @@ export function EditorView({
     handleBASubmit,
     handleBatchComplete,
     isBAUploading,
+    isCustomized,
+    masterPromptCost,
     isLimitReached,
 }: EditorViewProps): React.ReactElement {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -79,8 +93,12 @@ export function EditorView({
 
     // Static styles from filters.json — always available, unlike trends API
     const staticCategories = useMemo(() => {
-        const raw = filtersData as { categories: StyleCategory[]; filters: Array<Record<string, unknown>> };
+        const raw = filtersData as { categories: StyleCategory[]; subcategories: StyleSubcategory[]; filters: Array<Record<string, unknown>> };
         return raw.categories;
+    }, []);
+    const staticSubcategories = useMemo(() => {
+        const raw = filtersData as { subcategories: StyleSubcategory[] };
+        return raw.subcategories ?? [];
     }, []);
     const staticStylesByCategory = useMemo(() => {
         const raw = filtersData as { filters: Array<Record<string, unknown>> };
@@ -91,6 +109,50 @@ export function EditorView({
         }
         return map;
     }, []);
+    const staticStylesBySubcategory = useMemo(() => {
+        const raw = filtersData as { filters: Array<Record<string, unknown>> };
+        const styles = raw.filters.map((f) => ({ ...f, kind: 'filter' as const } as FilterStyle));
+        const map: Record<string, Style[]> = {};
+        for (const s of styles) {
+            if (s.subcategoryId) {
+                (map[s.subcategoryId] ??= []).push(s);
+            }
+        }
+        return map;
+    }, []);
+    const staticMasterPrompts = useMemo(() => {
+        const raw = filtersData as { masterPrompts?: MasterPrompt[] };
+        return raw.masterPrompts ?? [];
+    }, []);
+    const masterPromptsByCategory = useMemo(() => {
+        const map: Record<string, MasterPrompt[]> = {};
+        for (const mp of staticMasterPrompts) {
+            (map[mp.categoryId] ??= []).push(mp);
+        }
+        return map;
+    }, [staticMasterPrompts]);
+
+    const handleMasterPromptSelect = useCallback((mp: MasterPrompt) => {
+        setSelectedMasterPrompt(mp);
+        setSelectedStyle(null);
+        // Initialize with defaults
+        const defaults: PromptVariableValues = {};
+        for (const v of mp.variables) {
+            defaults[v.id] = v.default;
+        }
+        setPromptVariables(defaults);
+    }, [setSelectedMasterPrompt, setSelectedStyle, setPromptVariables]);
+
+    const handleMasterPromptBack = useCallback(() => {
+        setSelectedMasterPrompt(null);
+        setPromptVariables({});
+    }, [setSelectedMasterPrompt, setPromptVariables]);
+
+    const handleStyleSelect = useCallback((style: Style) => {
+        setSelectedStyle(style);
+        setSelectedMasterPrompt(null);
+        setPromptVariables({});
+    }, [setSelectedStyle, setSelectedMasterPrompt, setPromptVariables]);
 
     const handlePendingFileChange = useCallback((file: File | null) => {
         setPendingFile(file);
@@ -108,20 +170,24 @@ export function EditorView({
                 <div className="order-1 pt-3 pb-1 md:hidden">
                     <StyleStrip
                         categories={staticCategories}
+                        subcategories={staticSubcategories}
                         stylesByCategory={staticStylesByCategory}
-                        selectedId={selectedStyle?.id ?? null}
-                        onSelect={setSelectedStyle}
+                        stylesBySubcategory={staticStylesBySubcategory}
+                        masterPromptsByCategory={masterPromptsByCategory}
+                        selectedId={selectedStyle?.id ?? selectedMasterPrompt?.id ?? null}
+                        onSelect={handleStyleSelect}
+                        onMasterPromptSelect={handleMasterPromptSelect}
                         onBrowseAll={() => setDrawerOpen(true)}
                         language={language as SupportedLanguage}
                     />
                 </div>
             )}
 
-            {/* ──── Selected style badge: mobile only, order-2 ──── */}
-            {mode === 'beauty' && selectedStyle && (
+            {/* ──── Selected style badge: mobile only, order-2 (regular styles only) ──── */}
+            {mode === 'beauty' && selectedStyle && !selectedMasterPrompt && (
                 <div className="order-2 flex items-center gap-2.5 px-4 py-2 md:hidden">
                     <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded-md border border-primary/30">
-                        {selectedStyle.previewUrl !== '/filters/placeholder.svg' ? (
+                        {selectedStyle.previewUrl !== '/filters/placeholder.svg' && selectedStyle.previewUrl ? (
                             <Image src={selectedStyle.previewUrl} alt="" fill className="object-cover" sizes="32px" />
                         ) : (
                             <div className="flex h-full w-full items-center justify-center bg-primary/5">
@@ -129,12 +195,12 @@ export function EditorView({
                             </div>
                         )}
                     </div>
-                    <span className="text-xs font-medium text-foreground truncate">
-                        {language === 'ka' ? selectedStyle.name_ka : selectedStyle.name_ru}
+                    <span className="text-xs font-medium text-foreground">
+                        {localized(selectedStyle, 'name', language as SupportedLanguage)}
                     </span>
                     <button
                         type="button"
-                        onClick={() => setSelectedStyle(null)}
+                        onClick={() => { setSelectedStyle(null); }}
                         className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/50 text-muted-foreground transition-colors hover:bg-muted"
                     >
                         <X size={10} weight="bold" />
@@ -142,8 +208,24 @@ export function EditorView({
                 </div>
             )}
 
+            {/* ──── Prompt Configurator: mobile only, order-2 (master prompts only) ──── */}
+            {mode === 'beauty' && selectedMasterPrompt && (
+                <div className="order-2 px-4 py-2 md:hidden">
+                    <PromptConfigurator
+                        masterPrompt={selectedMasterPrompt}
+                        variables={promptVariables}
+                        onVariablesChange={setPromptVariables}
+                        onBack={handleMasterPromptBack}
+                        language={language as SupportedLanguage}
+                        t={t}
+                        isCustomized={isCustomized}
+                        cost={masterPromptCost}
+                    />
+                </div>
+            )}
+
             {/* ──── Upload zone: order-3 on mobile, right side on desktop (md:order-2) ──── */}
-            <div className="order-3 px-4 pt-3 md:order-2 md:w-72 md:shrink-0 md:p-6 lg:w-80">
+            <div className="order-3 px-4 pt-3 pb-5 md:order-2 md:w-72 md:shrink-0 md:p-6 lg:w-80">
                 {/* Mirror frame header — desktop only */}
                 <div className="hidden md:flex items-center gap-2 mb-4">
                     <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10">
@@ -165,7 +247,7 @@ export function EditorView({
                             ) : (
                                 <Image
                                     src={selectedStyle.previewUrl}
-                                    alt={language === 'ka' ? selectedStyle.name_ka : selectedStyle.name_ru}
+                                    alt={localized(selectedStyle, 'name', language as SupportedLanguage)}
                                     fill
                                     className="object-cover"
                                     sizes="280px"
@@ -174,10 +256,10 @@ export function EditorView({
                         </div>
                         <div className="flex flex-col gap-0.5">
                             <p className="text-xs font-semibold text-foreground">
-                                {language === 'ka' ? selectedStyle.name_ka : selectedStyle.name_ru}
+                                {localized(selectedStyle, 'name', language as SupportedLanguage)}
                             </p>
                             <p className="text-[10px] text-muted-foreground">
-                                {language === 'ka' ? selectedStyle.description_ka : selectedStyle.description_ru}
+                                {localized(selectedStyle, 'description', language as SupportedLanguage)}
                             </p>
                         </div>
                     </div>
@@ -198,13 +280,13 @@ export function EditorView({
                 )}
 
                 {/* Generate button — desktop only */}
-                {mode === 'beauty' && pendingFile && selectedStyle && (
+                {mode === 'beauty' && pendingFile && (selectedStyle || selectedMasterPrompt) && (
                     <div className="hidden md:block mt-3">
                         <GenerateBar
                             variant="inline"
                             onGenerate={handleMobileGenerate}
                             isLoading={isUploading}
-                            disabled={!pendingFile || !selectedStyle || isLimitReached}
+                            disabled={!pendingFile || (!selectedStyle && !selectedMasterPrompt) || isLimitReached}
                             isAuthenticated={isAuthenticated}
                         />
                     </div>
@@ -221,7 +303,7 @@ export function EditorView({
                             </div>
                         </div>
                         <p className="text-[10px] leading-relaxed text-muted-foreground">
-                            {selectedStyle ? t('upload.style_selected_tip') : t('upload.no_style_tip')}
+                            {(selectedStyle || selectedMasterPrompt) ? t('upload.style_selected_tip') : t('upload.no_style_tip')}
                         </p>
                         {!isAuthenticated && (
                             <a href="/register" className="flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-[10px] font-semibold text-primary transition-colors duration-150 hover:bg-primary/15">
@@ -270,7 +352,26 @@ export function EditorView({
 
                 {/* Mode content */}
                 {mode === 'beauty' && (
-                    <StylesGallery onSelect={setSelectedStyle} selectedId={selectedStyle?.id ?? null} trendStyles={trendStyles} isLoadingTrends={isLoadingTrends} />
+                    selectedMasterPrompt ? (
+                        <PromptConfigurator
+                            masterPrompt={selectedMasterPrompt}
+                            variables={promptVariables}
+                            onVariablesChange={setPromptVariables}
+                            onBack={handleMasterPromptBack}
+                            language={language as SupportedLanguage}
+                            t={t}
+                            isCustomized={isCustomized}
+                            cost={masterPromptCost}
+                        />
+                    ) : (
+                        <StylesGallery
+                            onSelect={handleStyleSelect}
+                            onMasterPromptSelect={handleMasterPromptSelect}
+                            selectedId={selectedStyle?.id ?? null}
+                            trendStyles={trendStyles}
+                            isLoadingTrends={isLoadingTrends}
+                        />
+                    )
                 )}
                 {mode === 'before-after' && (
                     <div className="flex flex-1 flex-col gap-2">
@@ -296,13 +397,13 @@ export function EditorView({
             </div>
 
             {/* ──── Sticky generate bar: mobile only, order-4 ──── */}
-            {mode === 'beauty' && pendingFile && selectedStyle && (
+            {mode === 'beauty' && pendingFile && (selectedStyle || selectedMasterPrompt) && (
                 <div className="order-4 md:hidden">
                     <GenerateBar
                         variant="sticky"
                         onGenerate={handleMobileGenerate}
                         isLoading={isUploading}
-                        disabled={!pendingFile || !selectedStyle || isLimitReached}
+                        disabled={!pendingFile || (!selectedStyle && !selectedMasterPrompt) || isLimitReached}
                         isAuthenticated={isAuthenticated}
                     />
                 </div>

@@ -1,0 +1,7 @@
+{
+  "name_en": "3D Text — Various Materials",
+  "name_ru": "3D текст — Разные материалы",
+  "name_ka": "3D ტექსტი — სხვადასხვა მასალა",
+  "category": "Generation / Collage",
+  "prompt": "Create a 3D rendering of the text \"[TEXT]\" made of [MATERIAL]. Letters have volumetric rounded shape with detailed texture. If fur: surface is slightly fleecy, resembling teddy bear fabric quality. If yarn: visible knitting loops, thread details, natural crosses and weaves. If gold: smooth convex surface with realistic reflections and subtle imperfections, luxury premium look. If chocolate: rounded letters floating in air, drops of liquid chocolate dripping from letters, glossy smooth chocolate texture, mouthwatering realism. Background: [BG_COLOR] — clean minimalistic contrast. Soft diffused lighting enhancing depth and realism, gentle shadows for natural effect. Ultra HD, hyper-realistic rendering with high detail. 3:4 format."
+}

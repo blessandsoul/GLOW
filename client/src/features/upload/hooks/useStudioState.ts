@@ -20,7 +20,7 @@ import { useCurrentTrends } from '@/features/trends/hooks/useTrends';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { PhotoSettings, ProcessingType } from '../types/upload.types';
 import { DEFAULT_SETTINGS } from '../types/upload.types';
-import type { Style, FilterStyle } from '@/features/filters/types/styles.types';
+import type { Style, FilterStyle, MasterPrompt, PromptVariableValues } from '@/features/filters/types/styles.types';
 import type { AppMode } from '../types/presets.types';
 import type { ProductAdSettings } from '../components/ProductAdPanel';
 import type { BatchCreateResult } from '@/features/jobs/types/job.types';
@@ -33,6 +33,10 @@ export interface StudioState {
     setMode: (mode: AppMode) => void;
     selectedStyle: Style | null;
     setSelectedStyle: (style: Style | null) => void;
+    selectedMasterPrompt: MasterPrompt | null;
+    setSelectedMasterPrompt: (mp: MasterPrompt | null) => void;
+    promptVariables: PromptVariableValues;
+    setPromptVariables: (vars: PromptVariableValues) => void;
     productSettings: ProductAdSettings | null;
     setProductSettings: (settings: ProductAdSettings | null) => void;
     showStories: boolean;
@@ -54,6 +58,8 @@ export interface StudioState {
     handleDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean) => Promise<void>;
     handleBatchComplete: (result: BatchCreateResult) => void;
     handleReset: () => void;
+    isCustomized: boolean;
+    masterPromptCost: number;
     isLimitReached: boolean;
     countdown: string;
     refetchDailyUsage: () => Promise<void>;
@@ -66,11 +72,23 @@ export function useStudioState(): StudioState {
     const [mode, setMode] = useState<AppMode>('beauty');
     const [customSettings] = useState<PhotoSettings>(DEFAULT_SETTINGS);
     const [selectedStyle, setSelectedStyle] = useState<Style | null>(null);
+    const [selectedMasterPrompt, setSelectedMasterPrompt] = useState<MasterPrompt | null>(null);
+    const [promptVariables, setPromptVariables] = useState<PromptVariableValues>({});
     const [productSettings, setProductSettings] = useState<ProductAdSettings | null>(null);
     const [showStories, setShowStories] = useState(false);
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
     const [batchResult, setBatchResult] = useState<BatchCreateResult | null>(null);
     const [processingType] = useState<ProcessingType>('ENHANCE');
+
+    // 2 credits only when ALL extras are selected; everything else = 1 credit
+    const isCustomized = useMemo(() => {
+        if (!selectedMasterPrompt) return false;
+        const extrasVar = selectedMasterPrompt.variables.find(v => v.id === 'EXTRAS');
+        if (!extrasVar) return false;
+        const selected = Array.isArray(promptVariables.EXTRAS) ? promptVariables.EXTRAS : [];
+        return selected.length === extrasVar.options.length && extrasVar.options.length > 0;
+    }, [selectedMasterPrompt, promptVariables]);
+    const masterPromptCost = isCustomized ? 2 : 1;
 
     const { isUploading, error: uploadError, uploadFile } = useUpload({
         onJobCreated: (job) => {
@@ -94,9 +112,11 @@ export function useStudioState(): StudioState {
             categoryId: 'trends',
             name_ka: trend.title,
             name_ru: trend.title,
+            name_en: trend.title,
             previewUrl: trend.previewUrl,
             description_ka: trend.description ?? '',
             description_ru: trend.description ?? '',
+            description_en: trend.description ?? '',
             isPopular: false,
         })),
         [currentTrends],
@@ -111,11 +131,19 @@ export function useStudioState(): StudioState {
 
     const handleFileSelect = useCallback(
         (file: File) => {
-            const settings = selectedStyle?.kind === 'filter'
-                ? { ...customSettings, processingType, filterId: selectedStyle.id }
-                : selectedStyle?.kind === 'preset'
-                    ? { ...selectedStyle.settings, processingType }
-                    : { ...customSettings, processingType } as PhotoSettings;
+            let settings: PhotoSettings;
+
+            if (selectedMasterPrompt) {
+                // Master prompt: customized = RETOUCH (2 credits), defaults = ENHANCE (1 credit)
+                const mpProcessingType: ProcessingType = isCustomized ? 'RETOUCH' : 'ENHANCE';
+                settings = { ...customSettings, processingType: mpProcessingType, filterId: selectedMasterPrompt.id, promptVariables };
+            } else if (selectedStyle?.kind === 'filter') {
+                settings = { ...customSettings, processingType, filterId: selectedStyle.id };
+            } else if (selectedStyle?.kind === 'preset') {
+                settings = { ...selectedStyle.settings, processingType };
+            } else {
+                settings = { ...customSettings, processingType };
+            }
 
             // Pre-check: block generation if credits are exhausted
             if (IS_LAUNCH_MODE) {
@@ -132,7 +160,7 @@ export function useStudioState(): StudioState {
 
             uploadFile({ file, settings });
         },
-        [uploadFile, customSettings, processingType, selectedStyle, isLimitReached, userCredits, t],
+        [uploadFile, customSettings, processingType, selectedStyle, selectedMasterPrompt, promptVariables, isCustomized, isLimitReached, userCredits, t],
     );
 
     const handleBASubmit = useCallback(
@@ -172,6 +200,8 @@ export function useStudioState(): StudioState {
         setRetouchUrl(null);
         setBatchResult(null);
         setSelectedStyle(null);
+        setSelectedMasterPrompt(null);
+        setPromptVariables({});
         resetBA();
         router.push(ROUTES.CREATE);
     }, [resetBA, router]);
@@ -183,6 +213,10 @@ export function useStudioState(): StudioState {
         setMode,
         selectedStyle,
         setSelectedStyle,
+        selectedMasterPrompt,
+        setSelectedMasterPrompt,
+        promptVariables,
+        setPromptVariables,
         productSettings,
         setProductSettings,
         showStories,
@@ -204,6 +238,8 @@ export function useStudioState(): StudioState {
         handleDownload,
         handleBatchComplete,
         handleReset,
+        isCustomized,
+        masterPromptCost,
         isLimitReached: IS_LAUNCH_MODE ? isLimitReached : false,
         countdown,
         refetchDailyUsage,

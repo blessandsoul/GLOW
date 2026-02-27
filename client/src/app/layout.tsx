@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { Geist, Geist_Mono, Noto_Sans_Georgian, Playfair_Display } from 'next/font/google';
 import { Agentation } from 'agentation';
 import { Providers } from './providers';
+import { RegisterPWA } from '@/components/common/RegisterPWA';
 import { LanguageDetector } from '@/features/i18n/components/LanguageDetector';
 import './globals.css';
 
@@ -35,12 +36,22 @@ export const metadata: Metadata = {
     template: '%s | Glow.GE',
   },
   description: 'Glow.GE — AI-powered platform for beauty professionals. Lashes, hair, nails, makeup and more.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Glow.GE',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  themeColor: '#B490F5',
 };
 
 export default function RootLayout({
@@ -51,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script
@@ -74,6 +86,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <LanguageDetector />
+          <RegisterPWA />
         </Providers>
         {process.env.NODE_ENV === 'development' && <Agentation />}
       </body>
