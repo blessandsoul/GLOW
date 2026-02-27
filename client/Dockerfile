@@ -1,5 +1,5 @@
 # ─── Stage 1: Install dependencies ───
-FROM node:20-slim AS deps
+FROM node:22-slim AS deps
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # ─── Stage 2: Build Next.js ───
-FROM node:20-slim AS build
+FROM node:22-slim AS build
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 RUN npm run build
 
 # ─── Stage 3: Production runner ───
-FROM node:20-slim AS runner
+FROM node:22-slim AS runner
 
 WORKDIR /app
 
