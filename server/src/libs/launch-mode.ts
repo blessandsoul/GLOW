@@ -21,6 +21,12 @@ export async function getDailyUsage(
 
   const used = value ? parseInt(value, 10) : 0;
   const limit = env.LAUNCH_DAILY_LIMIT;
+
+  // Heal orphaned keys: if key exists without TTL, set one
+  if (value && ttl === -1) {
+    await redis.expire(key, TTL_SECONDS);
+  }
+
   const remainingTtl = ttl > 0 ? ttl : TTL_SECONDS;
   const resetsAt = new Date(Date.now() + remainingTtl * 1000).toISOString();
 
@@ -33,12 +39,12 @@ export async function incrementDailyUsage(
   const key = redisKey(userId);
   const used = await redis.incr(key);
 
-  // Set TTL on first increment (when value becomes 1)
-  if (used === 1) {
+  // Ensure TTL always exists — set on first increment or heal if missing
+  const ttl = await redis.ttl(key);
+  if (ttl <= 0) {
     await redis.expire(key, TTL_SECONDS);
   }
 
-  const ttl = await redis.ttl(key);
   const remainingTtl = ttl > 0 ? ttl : TTL_SECONDS;
   const resetsAt = new Date(Date.now() + remainingTtl * 1000).toISOString();
   const limit = env.LAUNCH_DAILY_LIMIT;

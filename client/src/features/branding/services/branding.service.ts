@@ -15,6 +15,8 @@ class BrandingService {
         const payload = new FormData();
         payload.append('displayName', formData.displayName);
         payload.append('instagramHandle', formData.instagramHandle);
+        payload.append('facebookHandle', formData.facebookHandle);
+        payload.append('tiktokHandle', formData.tiktokHandle);
         payload.append('primaryColor', formData.primaryColor);
         payload.append('watermarkStyle', formData.watermarkStyle);
         payload.append('watermarkOpacity', String(formData.watermarkOpacity));

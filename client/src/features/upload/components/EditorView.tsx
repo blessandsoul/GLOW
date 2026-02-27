@@ -49,6 +49,7 @@ interface EditorViewProps {
     handleBASubmit: (beforeFile: File, afterFile: File) => void;
     handleBatchComplete: (result: BatchCreateResult) => void;
     isBAUploading: boolean;
+    isLimitReached: boolean;
 }
 
 export function EditorView({
@@ -71,6 +72,7 @@ export function EditorView({
     handleBASubmit,
     handleBatchComplete,
     isBAUploading,
+    isLimitReached,
 }: EditorViewProps): React.ReactElement {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -195,6 +197,19 @@ export function EditorView({
                     />
                 )}
 
+                {/* Generate button — desktop only */}
+                {mode === 'beauty' && pendingFile && selectedStyle && (
+                    <div className="hidden md:block mt-3">
+                        <GenerateBar
+                            variant="inline"
+                            onGenerate={handleMobileGenerate}
+                            isLoading={isUploading}
+                            disabled={!pendingFile || !selectedStyle || isLimitReached}
+                            isAuthenticated={isAuthenticated}
+                        />
+                    </div>
+                )}
+
                 {/* Credits + tip — desktop only */}
                 {mode !== 'before-after' && mode !== 'batch' && (
                     <div className="hidden md:flex flex-col gap-2.5 rounded-xl border border-border/30 bg-muted/20 p-3 mt-4">
@@ -281,14 +296,13 @@ export function EditorView({
             </div>
 
             {/* ──── Sticky generate bar: mobile only, order-4 ──── */}
-            {mode === 'beauty' && (
+            {mode === 'beauty' && pendingFile && selectedStyle && (
                 <div className="order-4 md:hidden">
                     <GenerateBar
                         variant="sticky"
                         onGenerate={handleMobileGenerate}
                         isLoading={isUploading}
-                        disabled={!pendingFile}
-                        userCredits={userCredits}
+                        disabled={!pendingFile || !selectedStyle || isLimitReached}
                         isAuthenticated={isAuthenticated}
                     />
                 </div>

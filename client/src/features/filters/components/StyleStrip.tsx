@@ -57,7 +57,7 @@ function StyleStripInner({
     return (
         <div className="flex flex-col gap-2">
             {/* Header row */}
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-5">
                 <div className="flex items-center gap-1.5">
                     <Sparkle size={14} weight="fill" className="text-primary" />
                     <span className="text-sm font-semibold text-foreground">
@@ -75,7 +75,7 @@ function StyleStripInner({
             {categories.length > 0 && (
                 <div
                     className={cn(
-                        'flex gap-2 overflow-x-auto px-4',
+                        'flex gap-2 overflow-x-auto px-5',
                         '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
                     )}
                 >
@@ -126,49 +126,16 @@ function StyleStripInner({
                 <div
                     ref={scrollRef}
                     className={cn(
-                        'flex gap-2.5 overflow-x-auto snap-x snap-mandatory',
-                        'px-4 pb-3 pt-0.5',
+                        'flex gap-2.5 overflow-x-auto snap-x snap-mandatory scroll-pl-5',
+                        'px-5 pb-3 pt-0.5',
                         '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
                     )}
                 >
                     {/* Browse All button */}
-                    <button
-                        type="button"
-                        onClick={onBrowseAll}
-                        aria-label={t('ui.text_m7k2')}
-                        className={cn(
-                            'w-[72px] shrink-0 snap-start flex flex-col items-center gap-1',
-                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-xl',
-                        )}
-                    >
-                        <div
-                            className={cn(
-                                'flex h-[96px] w-full items-center justify-center rounded-xl',
-                                'bg-primary/10 border border-primary/20',
-                                'transition-all duration-200 hover:bg-primary/15 active:scale-[0.96]',
-                            )}
-                        >
-                            <DotsNine size={24} className="text-primary" weight="fill" />
-                        </div>
-                        <span className="text-[10px] font-medium text-center text-primary leading-tight">
-                            {t('ui.text_m7k2')}
-                        </span>
-                    </button>
-
-                    {/* Style cards for selected pack */}
-                    {activeStyles.map((style) => {
-                        const isSelected = selectedId === style.id;
-                        const name = isKa ? style.name_ka : style.name_ru;
-                        const isPlaceholder = style.previewUrl === PLACEHOLDER_URL;
-
-                        return (
                             <button
-                                key={style.id}
                                 type="button"
-                                data-style-id={style.id}
-                                onClick={() => onSelect(style)}
-                                aria-label={name}
-                                aria-pressed={isSelected}
+                                onClick={onBrowseAll}
+                                aria-label={t('ui.text_m7k2')}
                                 className={cn(
                                     'w-[72px] shrink-0 snap-start flex flex-col items-center gap-1',
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-xl',
@@ -176,47 +143,80 @@ function StyleStripInner({
                             >
                                 <div
                                     className={cn(
-                                        'h-[96px] w-full rounded-xl overflow-hidden relative',
-                                        'transition-all duration-200 active:scale-[0.96]',
-                                        isSelected
-                                            ? 'ring-2 ring-primary ring-offset-2 shadow-md shadow-primary/20'
-                                            : 'ring-1 ring-border/50',
+                                        'flex h-[96px] w-full items-center justify-center rounded-xl',
+                                        'bg-primary/10 border border-primary/20',
+                                        'transition-all duration-200 hover:bg-primary/15 active:scale-[0.96]',
                                     )}
                                 >
-                                    {isPlaceholder ? (
-                                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-                                            <Sparkle size={18} className="text-primary/30" weight="fill" />
-                                        </div>
-                                    ) : (
-                                        <Image
-                                            src={style.previewUrl}
-                                            alt={name}
-                                            fill
-                                            sizes="72px"
-                                            className="object-cover"
-                                        />
-                                    )}
-                                    {isSelected && (
-                                        <div className="absolute inset-x-0 bottom-0 bg-primary/90 py-0.5">
-                                            <span className="block text-[8px] font-bold text-center text-primary-foreground">
-                                                ✓
-                                            </span>
-                                        </div>
-                                    )}
+                                    <DotsNine size={24} className="text-primary" weight="fill" />
                                 </div>
-                                <span
-                                    className={cn(
-                                        'text-[10px] text-center truncate w-full leading-tight px-0.5',
-                                        isSelected
-                                            ? 'font-semibold text-primary'
-                                            : 'font-medium text-muted-foreground',
-                                    )}
-                                >
-                                    {name}
+                                <span className="text-[10px] font-medium text-center text-primary leading-tight">
+                                    {t('ui.text_m7k2')}
                                 </span>
                             </button>
-                        );
-                    })}
+
+                            {/* Style cards for selected pack */}
+                            {activeStyles.map((style) => {
+                                const isSelected = selectedId === style.id;
+                                const name = isKa ? style.name_ka : style.name_ru;
+                                const isPlaceholder = style.previewUrl === PLACEHOLDER_URL;
+
+                                return (
+                                    <button
+                                        key={style.id}
+                                        type="button"
+                                        data-style-id={style.id}
+                                        onClick={() => onSelect(style)}
+                                        aria-label={name}
+                                        aria-pressed={isSelected}
+                                        className={cn(
+                                            'w-[72px] shrink-0 snap-start flex flex-col items-center gap-1',
+                                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-xl',
+                                        )}
+                                    >
+                                        <div
+                                            className={cn(
+                                                'h-[96px] w-full rounded-xl overflow-hidden relative',
+                                                'transition-all duration-200 active:scale-[0.96]',
+                                                isSelected
+                                                    ? 'ring-2 ring-primary ring-offset-2 shadow-md shadow-primary/20'
+                                                    : 'ring-1 ring-border/50',
+                                            )}
+                                        >
+                                            {isPlaceholder ? (
+                                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
+                                                    <Sparkle size={18} className="text-primary/30" weight="fill" />
+                                                </div>
+                                            ) : (
+                                                <Image
+                                                    src={style.previewUrl}
+                                                    alt={name}
+                                                    fill
+                                                    sizes="72px"
+                                                    className="object-cover"
+                                                />
+                                            )}
+                                            {isSelected && (
+                                                <div className="absolute inset-x-0 bottom-0 bg-primary/90 py-0.5">
+                                                    <span className="block text-[8px] font-bold text-center text-primary-foreground">
+                                                        ✓
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span
+                                            className={cn(
+                                                'text-[10px] text-center truncate w-full leading-tight px-0.5',
+                                                isSelected
+                                                    ? 'font-semibold text-primary'
+                                                    : 'font-medium text-muted-foreground',
+                                            )}
+                                        >
+                                            {name}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                 </div>
 
                 {/* Right fade gradient */}

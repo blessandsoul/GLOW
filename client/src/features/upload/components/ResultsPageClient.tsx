@@ -9,9 +9,7 @@ import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import { useGuestJob } from '@/features/upload/hooks/useGuestJob';
 import { ROUTES } from '@/lib/constants/routes';
-import type { Job } from '@/features/jobs/types/job.types';
 
 const ResultsView = dynamic(() => import('./ResultsView').then((m) => m.ResultsView), { ssr: false });
 const BeforeAfterResults = dynamic(() => import('@/features/before-after/components/BeforeAfterResults').then((m) => m.BeforeAfterResults), { ssr: false });
@@ -24,24 +22,19 @@ interface ResultsPageClientProps {
 export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.ReactElement {
     const { t } = useLanguage();
     const { isAuthenticated } = useAuth();
-    const isDemo = jobId === 'demo';
     const isBA = jobId.startsWith('ba-');
 
-    const { guestJob } = useGuestJob();
-    const { job: polledJob, error: pollingError } = useJobPolling(isDemo ? null : jobId);
+    const { job: polledJob, error: pollingError } = useJobPolling(jobId);
     const { job: baJob } = useBeforeAfter();
 
-    const [showStories] = useState(false);
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
-
-    const currentJob: Job | null = isDemo ? guestJob : polledJob;
 
     const handleDownload = async (url: string, id: string, variantIndex: number, branded: boolean = false): Promise<void> => {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
         const downloadUrl = `${apiBase}/jobs/${id}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}`;
         const a = document.createElement('a');
         a.href = downloadUrl;
-        a.download = `glowge-${Date.now()}.jpg`;
+        a.download = `glowge-${Date.now()}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -60,10 +53,10 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
     }
 
     // Retouch panel
-    if (currentJob && retouchUrl) {
+    if (polledJob && retouchUrl) {
         return (
             <ResultsPageShell>
-                <RetouchPanel jobId={currentJob.id} imageUrl={retouchUrl} onClose={() => setRetouchUrl(null)} />
+                <RetouchPanel jobId={polledJob.id} imageUrl={retouchUrl} onClose={() => setRetouchUrl(null)} />
             </ResultsPageShell>
         );
     }
@@ -84,7 +77,7 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
     }
 
     // Loading state
-    if (!currentJob) {
+    if (!polledJob) {
         return (
             <ResultsPageShell>
                 <div className="flex w-full flex-col items-center justify-center gap-6 py-16 px-6">
@@ -110,14 +103,12 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
     return (
         <ResultsPageShell>
             <ResultsView
-                currentJob={currentJob}
+                currentJob={polledJob}
                 isAuthenticated={isAuthenticated}
-                isDemoJob={isDemo}
-                showStories={showStories}
                 setRetouchUrl={setRetouchUrl}
                 handleDownload={handleDownload}
             />
-            {(currentJob.status === 'DONE' || currentJob.status === 'FAILED') && (
+            {(polledJob.status === 'DONE' || polledJob.status === 'FAILED') && (
                 <CreateNewBar t={t} />
             )}
         </ResultsPageShell>

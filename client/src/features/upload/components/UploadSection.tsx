@@ -3,6 +3,7 @@
 import { useStudioState } from '../hooks/useStudioState';
 import { EditorView } from './EditorView';
 import { DailyLimitReached } from './DailyLimitReached';
+import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 
 export function UploadSection(): React.ReactElement {
     const state = useStudioState();
@@ -11,6 +12,8 @@ export function UploadSection(): React.ReactElement {
     if (state.isLimitReached) {
         return <DailyLimitReached countdown={state.countdown} />;
     }
+
+    const noCredits = !IS_LAUNCH_MODE && state.isAuthenticated && state.userCredits <= 0;
 
     return (
         <EditorView
@@ -33,6 +36,7 @@ export function UploadSection(): React.ReactElement {
             handleBASubmit={state.handleBASubmit}
             handleBatchComplete={state.handleBatchComplete}
             isBAUploading={state.isBAUploading}
+            isLimitReached={state.isLimitReached || noCredits}
         />
     );
 }

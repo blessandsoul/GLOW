@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const protectedPaths = ['/dashboard', '/profile', '/my-services', '/admin', '/onboarding', '/create'];
+const protectedPaths = ['/dashboard', '/profile', '/my-services', '/admin', '/create'];
 const authPaths = ['/login', '/register'];
 
 export function middleware(request: NextRequest): NextResponse {
@@ -37,7 +37,6 @@ export const config = {
         '/profile/:path*',
         '/my-services/:path*',
         '/admin/:path*',
-        '/onboarding/:path*',
         '/create',
         '/login',
         '/register',

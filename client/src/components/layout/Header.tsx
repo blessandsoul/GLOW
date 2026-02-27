@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
-    Moon, Sun, List, X,
+    Moon, Sun,
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
-    CaretDown, Plus, ShieldCheck,
+    CaretDown, Plus, ShieldCheck, SignOut,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
@@ -168,7 +168,6 @@ export function Header(): React.ReactElement {
     const { t } = useLanguage();
     const { resolvedTheme, setTheme } = useTheme();
     const pathname = usePathname();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { remaining: dailyRemaining, data: dailyData } = useDailyUsage();
     const dailyLimit = dailyData?.limit ?? 5;
@@ -180,8 +179,6 @@ export function Header(): React.ReactElement {
     const toggleTheme = (): void => {
         setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
     };
-
-    const closeMobile = (): void => setIsMobileMenuOpen(false);
 
     return (
         <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl backdrop-saturate-150">
@@ -233,6 +230,11 @@ export function Header(): React.ReactElement {
                             <span className="text-sm text-muted-foreground">
                                 {user?.firstName}
                             </span>
+                            {IS_LAUNCH_MODE && (
+                                <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                    Free
+                                </span>
+                            )}
                             {user !== null && user !== undefined && (
                                 IS_LAUNCH_MODE ? (
                                     <span
@@ -289,126 +291,24 @@ export function Header(): React.ReactElement {
                     </Button>
                 </nav>
 
-                {/* Mobile Menu Toggle */}
-                <div className="flex items-center gap-1 md:hidden">
+                {/* Mobile Header Actions */}
+                <div className="flex items-center gap-1.5 md:hidden">
+                    {IS_LAUNCH_MODE && isAuthenticated && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            Free
+                        </span>
+                    )}
                     <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('ui.text_jehhj')} className="h-8 w-8 transition-colors duration-200">
                         {mounted && (resolvedTheme === 'dark' ? <Moon size={16} weight="fill" /> : <Sun size={16} weight="fill" />)}
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        aria-label={t('ui.text_janm2')}
-                        className="h-8 w-8"
-                    >
-                        <span className={`transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : 'rotate-0'}`}>
-                            {isMobileMenuOpen ? <X size={20} /> : <List size={20} />}
-                        </span>
-                    </Button>
+                    {isAuthenticated && (
+                        <Button variant="ghost" size="icon" onClick={logout} aria-label={t('auth.logout')} className="h-8 w-8 text-muted-foreground transition-colors duration-200">
+                            <SignOut size={16} weight="bold" />
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            <div
-                className={cn(
-                    'grid md:hidden transition-[grid-template-rows,opacity] duration-300 ease-out',
-                    isMobileMenuOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-                )}
-                aria-hidden={!isMobileMenuOpen}
-            >
-                <div className="overflow-hidden">
-                    <div className="border-t border-border/50 bg-background px-4 py-3">
-                        {!mounted || isInitializing ? (
-                            <div className="flex flex-col gap-2 py-2">
-                                <div className="h-5 w-32 animate-pulse rounded bg-muted" />
-                                <div className="h-5 w-24 animate-pulse rounded bg-muted" />
-                            </div>
-                        ) : isAuthenticated ? (
-                            <nav className="flex flex-col gap-4">
-                                {/* Create CTA — prominent at top */}
-                                <Link
-                                    href={ROUTES.CREATE}
-                                    onClick={closeMobile}
-                                    className={cn(
-                                        'flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200',
-                                        pathname === ROUTES.CREATE
-                                            ? 'bg-primary text-primary-foreground shadow-sm'
-                                            : 'bg-primary/10 text-primary'
-                                    )}
-                                >
-                                    <Plus size={16} weight="bold" />
-                                    {t('nav.create')}
-                                </Link>
-                                <div className="h-px bg-border/50" />
-                                {ACTIVE_NAV_GROUPS.map((group) => (
-                                    <div key={group.category}>
-                                        <span className="mb-1 block px-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                                            {t(group.category)}
-                                        </span>
-                                        <div className="flex flex-col gap-px">
-                                            {group.items.map((item) => {
-                                                const { href, label, icon: Icon } = item;
-                                                const isActive = isItemActive(item, pathname);
-                                                return (
-                                                    <Link
-                                                        key={href}
-                                                        href={href}
-                                                        onClick={closeMobile}
-                                                        className={cn(
-                                                            'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                                                            isActive
-                                                                ? 'bg-primary/10 text-primary font-medium'
-                                                                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                                                        )}
-                                                    >
-                                                        <Icon size={16} weight={isActive ? 'fill' : 'regular'} />
-                                                        {t(label)}
-                                                    </Link>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ))}
-                                {user?.role === 'ADMIN' && (
-                                    <>
-                                        <div className="h-px bg-border/50" />
-                                        <Link
-                                            href={ROUTES.ADMIN}
-                                            onClick={closeMobile}
-                                            className={cn(
-                                                'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                                                pathname.startsWith(ROUTES.ADMIN)
-                                                    ? 'bg-primary/10 text-primary font-medium'
-                                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                                            )}
-                                        >
-                                            <ShieldCheck size={16} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
-                                            Admin
-                                        </Link>
-                                    </>
-                                )}
-                                <div className="h-px bg-border/50" />
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => { closeMobile(); logout(); }}
-                                >
-                                    {t('auth.logout')}
-                                </Button>
-                            </nav>
-                        ) : (
-                            <nav className="flex flex-col gap-1">
-                                <Button variant="ghost" size="sm" asChild>
-                                    <Link href="/login" onClick={closeMobile}>{t('auth.login')}</Link>
-                                </Button>
-                                <Button size="sm" asChild>
-                                    <Link href="/register" onClick={closeMobile}>{t('auth.register')}</Link>
-                                </Button>
-                            </nav>
-                        )}
-                    </div>
-                </div>
-            </div>
         </header>
     );
 }

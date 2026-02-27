@@ -25,62 +25,40 @@ export function DashboardStatsBar(): React.ReactElement {
               ? 'text-warning'
               : 'text-foreground';
 
-    const planUpper = data.plan.toUpperCase();
-
-    const planClasses =
-        planUpper === 'PRO'
-            ? 'bg-primary/10 text-primary'
-            : planUpper === 'ULTRA'
-              ? 'bg-gradient-to-r from-primary/10 to-accent/10 text-primary'
-              : 'bg-muted text-muted-foreground';
-
     return (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border/50 bg-card px-4 py-3 shadow-sm min-h-[44px]">
+        <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-card px-4 py-3 shadow-sm">
             {IS_LAUNCH_MODE ? (
-                <div className="flex items-center gap-1.5">
-                    <Diamond size={16} weight="fill" className="text-primary" />
-                    <span className={cn('text-sm font-medium', creditColor)}>
-                        {data.credits}/{data.dailyUsage?.limit ?? 5} დღეს
+                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                    <Diamond size={16} weight="fill" className="text-primary shrink-0" />
+                    <span className={cn('text-sm font-medium tabular-nums', creditColor)}>
+                        {data.credits}/{data.dailyUsage?.limit ?? 5} {t('dashboard.stats_today')}
                     </span>
                 </div>
             ) : (
                 <Link
                     href={ROUTES.DASHBOARD_CREDITS}
-                    className="flex items-center gap-1.5 transition-colors duration-150 hover:text-primary"
+                    className="flex items-center gap-1.5 whitespace-nowrap transition-colors duration-150 hover:text-primary"
                 >
-                    <Diamond size={16} weight="fill" className="text-primary" />
+                    <Diamond size={16} weight="fill" className="text-primary shrink-0" />
                     <span className={cn('text-sm font-medium', creditColor)}>
                         {data.credits}
                     </span>
                 </Link>
             )}
 
-            <div className="h-4 w-px bg-border" />
+            <div className="h-4 w-px shrink-0 bg-border" />
 
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Camera size={16} />
+            <div className="flex items-center gap-1.5 whitespace-nowrap text-sm text-muted-foreground">
+                <Camera size={16} className="shrink-0" />
                 <span>{data.totalPhotos} {t('dashboard.stats_photos')}</span>
             </div>
 
-            <div className="h-4 w-px bg-border" />
-
-            <span
-                className={cn(
-                    'rounded-full px-2.5 py-0.5 text-xs font-medium',
-                    planUpper === 'LAUNCH'
-                        ? 'bg-primary/10 text-primary'
-                        : planClasses,
-                )}
-            >
-                {planUpper === 'LAUNCH' ? 'FREE' : data.plan}
-            </span>
-
             <div className="flex-1 min-w-0" />
 
-            <Button size="sm" className="min-h-[36px]" asChild>
+            <Button size="sm" className="min-h-[36px] shrink-0" asChild>
                 <Link href={ROUTES.CREATE} className="gap-1.5">
                     <Plus size={16} weight="bold" />
-                    <span>{t('dashboard.new_photo')}</span>
+                    <span className="hidden sm:inline">{t('dashboard.new_photo')}</span>
                 </Link>
             </Button>
         </div>

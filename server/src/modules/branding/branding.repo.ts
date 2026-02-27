@@ -6,6 +6,8 @@ const BRANDING_SELECT = {
   userId: true,
   displayName: true,
   instagramHandle: true,
+  facebookHandle: true,
+  tiktokHandle: true,
   logoUrl: true,
   primaryColor: true,
   watermarkStyle: true,

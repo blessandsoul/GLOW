@@ -37,6 +37,7 @@
     "create_new_desc": "Open AI studio and enhance your next photo",
     "stats_credits": "Credits",
     "stats_photos": "photos",
+    "stats_today": "today",
     "new_photo": "New Photo",
     "no_results": "No photos yet",
     "load_more": "Load more",
@@ -89,7 +90,6 @@
     ],
     "description": "Forget hours spent in editors. Upload your work photo, and our neural network will create a magazine-quality retouch in 5 seconds, preserving natural skin texture.",
     "btn_start": "Start for free",
-    "btn_examples": "Portfolio examples",
     "stats_title": "Professionals' choice",
     "stats_desc": "Over 50,000 processed photos",
     "stats_label_photos": "photos",
@@ -109,9 +109,6 @@
   "workspace": {
     "badge": "Virtual Studio",
     "title": "Try the magic in action"
-  },
-  "footer": {
-    "scroll": "Portfolio examples"
   },
   "ui": {
     "text_j1lett": "To Main",
@@ -384,6 +381,8 @@
     "daily_limit_title": "Daily limit reached",
     "daily_limit_desc": "You've used all free generations today. Try again tomorrow!",
     "daily_limit_countdown": "Resets in:",
+    "daily_limit_hours": "h",
+    "daily_limit_minutes": "min",
     "daily_remaining": "remaining today",
     "share_link_copied": "Link copied",
     "share_copy_failed": "Could not copy",
@@ -494,7 +493,9 @@
     "browse_all_styles": "Browse all styles",
     "sign_up_for_more": "Sign up for more",
     "style_title": "Choose a style",
-    "style_subtitle": "AI will automatically select the best parameters"
+    "style_subtitle": "AI will automatically select the best parameters",
+    "no_credits": "No credits remaining. Purchase more to continue.",
+    "daily_limit_reached": "Daily limit reached. Try again tomorrow!"
   },
   "branding": {
     "style_minimal": "Minimal",

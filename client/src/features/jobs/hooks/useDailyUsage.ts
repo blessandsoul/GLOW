@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { dailyUsageService } from '../services/dailyUsage.service';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { DailyUsage } from '../services/dailyUsage.service';
 
 interface UseDailyUsageReturn {
@@ -15,6 +16,7 @@ interface UseDailyUsageReturn {
 }
 
 export function useDailyUsage(): UseDailyUsageReturn {
+    const { t } = useLanguage();
     const [data, setData] = useState<DailyUsage | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [countdown, setCountdown] = useState('');
@@ -56,18 +58,20 @@ export function useDailyUsage(): UseDailyUsageReturn {
 
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const h = t('ui.daily_limit_hours');
+            const m = t('ui.daily_limit_minutes');
 
             if (hours > 0) {
-                setCountdown(`${hours}სთ ${minutes}წთ`);
+                setCountdown(`${hours}${h} ${minutes}${m}`);
             } else {
-                setCountdown(`${minutes}წთ`);
+                setCountdown(`${minutes}${m}`);
             }
         };
 
         updateCountdown();
         const interval = setInterval(updateCountdown, 60000); // Update every minute
         return () => clearInterval(interval);
-    }, [data?.resetsAt, fetchUsage]);
+    }, [data?.resetsAt, fetchUsage, t]);
 
     const remaining = data ? data.limit - data.used : 0;
     const isLimitReached = data ? data.used >= data.limit : false;

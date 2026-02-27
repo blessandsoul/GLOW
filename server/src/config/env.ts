@@ -46,6 +46,15 @@ const envSchema = z.object({
   // Launch mode — free-for-all with daily generation limits
   LAUNCH_MODE: z.coerce.boolean().default(false),
   LAUNCH_DAILY_LIMIT: z.coerce.number().int().min(1).default(5),
+
+  // Watermark & Download Quality
+  // Master switch for ALL watermarks (Glow.GE + custom branding). Set false to disable completely.
+  WATERMARK_ENABLED: z.coerce.boolean().default(false),
+  // JPEG quality when watermarks are applied (1-100). 100 = lossless-like, 95 = high, 90 = good.
+  IMAGE_DOWNLOAD_QUALITY: z.coerce.number().int().min(1).max(100).default(100),
+  // Output format for downloads: "png" (lossless, larger) or "jpeg" (lossy, smaller).
+  // When watermark is disabled, original format is preserved regardless of this setting.
+  IMAGE_DOWNLOAD_FORMAT: z.enum(['png', 'jpeg']).default('png'),
 });
 
 const parsed = envSchema.safeParse(process.env);

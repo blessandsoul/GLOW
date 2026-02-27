@@ -118,7 +118,7 @@ export function HeroEditorial({ wordIndex, rotatingWords }: HeroEditorialProps):
 
             {/* Before / After tap-to-toggle card */}
             <motion.div
-                className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden mb-8 shadow-lg border border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
+                className="relative w-full max-w-sm h-[300px] md:h-auto md:aspect-square rounded-2xl overflow-hidden mb-8 shadow-lg border border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, delay: 0.6, type: 'spring', stiffness: 70, damping: 20 }}
@@ -229,18 +229,6 @@ export function HeroEditorial({ wordIndex, rotatingWords }: HeroEditorialProps):
                     </span>
                 </Link>
 
-                {/* ── Secondary CTA ── opaque, visible in light mode */}
-                <Link
-                    href="/examples"
-                    className="group relative inline-flex w-full h-12 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-2xl border border-zinc-300 bg-white text-[14px] font-medium text-zinc-700 shadow-sm transition-all duration-300 hover:border-primary/40 hover:text-zinc-900 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:border-primary/40 dark:hover:bg-zinc-800 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
-                >
-                    {/* glass gloss */}
-                    <span className="pointer-events-none absolute inset-x-0 top-0 h-[45%] rounded-t-2xl bg-linear-to-b from-white/80 to-transparent dark:from-white/5" />
-                    <span className="relative z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-zinc-100 ring-1 ring-zinc-300 transition-all duration-300 group-hover:bg-primary/10 group-hover:ring-primary/35 dark:bg-zinc-700 dark:ring-zinc-600 dark:group-hover:bg-primary/20 dark:group-hover:ring-primary/40">
-                        <ArrowRight size={10} weight="bold" className="text-zinc-500 transition-all duration-200 group-hover:text-primary group-hover:translate-x-px" />
-                    </span>
-                    <span className="relative z-10">{t('hero.btn_examples')}</span>
-                </Link>
             </motion.div>
 
             {/* Stats row — mobile */}

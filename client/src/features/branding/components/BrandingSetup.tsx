@@ -4,16 +4,17 @@ import { useState, useCallback, useEffect, useId } from 'react';
 import Image from 'next/image';
 import {
     Palette,
-    UploadSimple,
-    Trash,
     Check,
     InstagramLogo,
+    FacebookLogo,
+    TiktokLogo,
     User,
     ArrowRight,
     SpinnerGap,
     DeviceMobile,
     Images,
     Star,
+    Trash,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,19 +67,22 @@ function PhoneMockup({ tab, onTabChange, color, name, handle, username, logoUrl,
             {/* Tab switcher */}
             <div className="flex items-center rounded-full border border-border/50 bg-muted/40 p-1 gap-0.5">
                 {([
-                    { id: 'result', icon: Images, label: t('branding.preview_tab_result') },
-                    { id: 'stories', icon: DeviceMobile, label: t('branding.preview_tab_stories') },
-                    { id: 'profile', icon: Star, label: t('branding.preview_tab_profile') },
-                ] as { id: PreviewTab; icon: typeof Images; label: string }[]).map(({ id, icon: Icon, label }) => (
+                    { id: 'result', icon: Images, label: t('branding.preview_tab_result'), disabled: false },
+                    { id: 'stories', icon: DeviceMobile, label: t('branding.preview_tab_stories'), disabled: true },
+                    { id: 'profile', icon: Star, label: t('branding.preview_tab_profile'), disabled: true },
+                ] as { id: PreviewTab; icon: typeof Images; label: string; disabled: boolean }[]).map(({ id, icon: Icon, label, disabled }) => (
                     <button
                         key={id}
                         type="button"
-                        onClick={() => onTabChange(id)}
+                        onClick={() => !disabled && onTabChange(id)}
+                        disabled={disabled}
                         className={cn(
                             'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200',
-                            tab === id
-                                ? 'bg-background text-foreground shadow-sm'
-                                : 'text-muted-foreground hover:text-foreground',
+                            disabled
+                                ? 'cursor-not-allowed text-muted-foreground/40'
+                                : tab === id
+                                    ? 'bg-background text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground',
                         )}
                     >
                         <Icon size={12} />
@@ -430,10 +434,6 @@ function PhoneMockup({ tab, onTabChange, color, name, handle, username, logoUrl,
                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 h-8 w-40 rounded-full bg-black/20 blur-xl" />
             </div>
 
-            {/* Caption under phone */}
-            <p className="text-xs text-muted-foreground text-center">
-                {t('branding.preview_caption')}
-            </p>
         </div>
     );
 }
@@ -464,10 +464,8 @@ export function BrandingSetup(): React.ReactElement {
     const { profile, isLoading, save, isSaving, remove, isRemoving } = useBranding();
 
     const [form, setForm] = useState<BrandingFormData>(DEFAULT_BRANDING);
-    const [formErrors, setFormErrors] = useState<{ displayName?: string; instagramHandle?: string }>({});
-    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const [formErrors, setFormErrors] = useState<{ displayName?: string }>({});
     const [activeTab, setActiveTab] = useState<PreviewTab>('result');
-    const logoInputId = useId();
     const colorInputId = useId();
 
     useEffect(() => {
@@ -475,21 +473,14 @@ export function BrandingSetup(): React.ReactElement {
             setForm({
                 displayName: profile.displayName ?? '',
                 instagramHandle: profile.instagramHandle ?? '',
+                facebookHandle: profile.facebookHandle ?? '',
+                tiktokHandle: profile.tiktokHandle ?? '',
                 primaryColor: profile.primaryColor,
                 watermarkStyle: profile.watermarkStyle,
                 watermarkOpacity: profile.watermarkOpacity ?? 1,
             });
-            setLogoPreview(profile.logoUrl);
         }
     }, [profile]);
-
-    const handleLogoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (logoPreview && !profile?.logoUrl) URL.revokeObjectURL(logoPreview);
-        setLogoPreview(URL.createObjectURL(file));
-        setForm((prev) => ({ ...prev, logo: file }));
-    }, [logoPreview, profile?.logoUrl]);
 
     const handleStyleSelect = useCallback((value: WatermarkStyle) => {
         setForm((prev) => ({ ...prev, watermarkStyle: value }));
@@ -500,16 +491,13 @@ export function BrandingSetup(): React.ReactElement {
     }, []);
 
     const validateForm = useCallback((): boolean => {
-        const errors: { displayName?: string; instagramHandle?: string } = {};
+        const errors: { displayName?: string } = {};
         if (!form.displayName.trim()) {
             errors.displayName = t('branding.name_required');
         }
-        if (!form.instagramHandle.trim()) {
-            errors.instagramHandle = t('branding.instagram_required');
-        }
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
-    }, [form.displayName, form.instagramHandle, t]);
+    }, [form.displayName, t]);
 
     const handleSubmit = useCallback((e: React.FormEvent) => {
         e.preventDefault();
@@ -525,7 +513,7 @@ export function BrandingSetup(): React.ReactElement {
     if (isLoading) return <BrandingLoadingSkeleton />;
 
     const previewName = form.displayName || t('ui.text_8z0fqz');
-    const previewHandle = form.instagramHandle || '@instagram';
+    const previewHandle = form.instagramHandle || form.tiktokHandle || form.facebookHandle || '@handle';
 
     return (
         <div className="grid gap-8 lg:grid-cols-[1fr_280px] lg:items-start">
@@ -534,106 +522,67 @@ export function BrandingSetup(): React.ReactElement {
             <form onSubmit={handleSubmit} className="space-y-5">
 
                 {/* Header */}
-                <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
-                        <Palette size={18} className="text-primary" />
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-semibold text-foreground">{t('ui.text_o8dusv')}</h1>
-                        <p className="text-sm text-muted-foreground">{t('ui.text_7g0c23')}</p>
-                    </div>
-                </div>
+                <h1 className="text-lg font-semibold text-foreground">{t('ui.text_o8dusv')}</h1>
 
                 {/* Section 1: Identity */}
-                <section className="space-y-4 rounded-xl border border-border/50 bg-card p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('ui.text_6m8ujt')}</p>
-
-                    <div className="flex items-start gap-4">
-                        {/* Logo upload */}
-                        <div className="shrink-0 space-y-1.5">
-                            <label htmlFor={logoInputId} className="group cursor-pointer block">
-                                <input
-                                    id={logoInputId}
-                                    type="file"
-                                    className="sr-only"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    onChange={handleLogoChange}
-                                />
-                                <div className={cn(
-                                    'relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border-2 transition-all duration-200',
-                                    logoPreview
-                                        ? 'border-border/50 group-hover:border-primary/50'
-                                        : 'border-dashed border-border/60 bg-muted/30 group-hover:border-primary/50 group-hover:bg-primary/5',
-                                )}>
-                                    {logoPreview ? (
-                                        <>
-                                            <Image src={logoPreview} alt="" fill className="object-cover" />
-                                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                                                <UploadSimple size={16} className="text-white" />
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <UploadSimple size={16} className="text-muted-foreground transition-colors group-hover:text-primary" />
-                                    )}
-                                </div>
-                            </label>
-                            {logoPreview && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (!profile?.logoUrl) URL.revokeObjectURL(logoPreview);
-                                        setLogoPreview(null);
-                                        setForm((prev) => ({ ...prev, logo: undefined }));
-                                    }}
-                                    className="flex w-full items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-destructive transition-colors"
-                                >
-                                    <Trash size={9} />
-                                    {t('ui.text_bwsqzt')}
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Name + handle */}
-                        <div className="min-w-0 flex-1 space-y-3">
-                            <div className="space-y-1.5">
-                                <Label htmlFor="displayName" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                    <User size={11} />
-                                    {t('ui.text_6m8ujt')} <span className="text-destructive">*</span>
-                                </Label>
-                                <Input
-                                    id="displayName"
-                                    placeholder="Anna Lashes"
-                                    value={form.displayName}
-                                    onChange={(e) => {
-                                        setForm((prev) => ({ ...prev, displayName: e.target.value }));
-                                        if (formErrors.displayName) setFormErrors((prev) => ({ ...prev, displayName: undefined }));
-                                    }}
-                                    className={cn('h-9', formErrors.displayName && 'border-destructive')}
-                                />
-                                {formErrors.displayName && (
-                                    <p className="text-xs text-destructive">{formErrors.displayName}</p>
-                                )}
-                            </div>
-                            <div className="space-y-1.5">
-                                <Label htmlFor="instagramHandle" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                    <InstagramLogo size={11} />
-                                    Instagram <span className="text-destructive">*</span>
-                                </Label>
-                                <Input
-                                    id="instagramHandle"
-                                    placeholder="@anna_lashes"
-                                    value={form.instagramHandle}
-                                    onChange={(e) => {
-                                        setForm((prev) => ({ ...prev, instagramHandle: e.target.value }));
-                                        if (formErrors.instagramHandle) setFormErrors((prev) => ({ ...prev, instagramHandle: undefined }));
-                                    }}
-                                    className={cn('h-9', formErrors.instagramHandle && 'border-destructive')}
-                                />
-                                {formErrors.instagramHandle && (
-                                    <p className="text-xs text-destructive">{formErrors.instagramHandle}</p>
-                                )}
-                            </div>
-                        </div>
+                <section className="space-y-3 rounded-xl border border-border/50 bg-card p-5">
+                    <div className="space-y-1.5">
+                        <Label htmlFor="displayName" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <User size={11} />
+                            {t('ui.text_6m8ujt')} <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="displayName"
+                            placeholder="Anna Lashes"
+                            value={form.displayName}
+                            onChange={(e) => {
+                                setForm((prev) => ({ ...prev, displayName: e.target.value }));
+                                if (formErrors.displayName) setFormErrors((prev) => ({ ...prev, displayName: undefined }));
+                            }}
+                            className={cn('h-9', formErrors.displayName && 'border-destructive')}
+                        />
+                        {formErrors.displayName && (
+                            <p className="text-xs text-destructive">{formErrors.displayName}</p>
+                        )}
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="instagramHandle" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <InstagramLogo size={11} />
+                            Instagram
+                        </Label>
+                        <Input
+                            id="instagramHandle"
+                            placeholder="@anna_lashes"
+                            value={form.instagramHandle}
+                            onChange={(e) => setForm((prev) => ({ ...prev, instagramHandle: e.target.value }))}
+                            className="h-9"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="facebookHandle" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <FacebookLogo size={11} />
+                            Facebook
+                        </Label>
+                        <Input
+                            id="facebookHandle"
+                            placeholder="Anna Lashes"
+                            value={form.facebookHandle}
+                            onChange={(e) => setForm((prev) => ({ ...prev, facebookHandle: e.target.value }))}
+                            className="h-9"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="tiktokHandle" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <TiktokLogo size={11} />
+                            TikTok
+                        </Label>
+                        <Input
+                            id="tiktokHandle"
+                            placeholder="@anna_lashes"
+                            value={form.tiktokHandle}
+                            onChange={(e) => setForm((prev) => ({ ...prev, tiktokHandle: e.target.value }))}
+                            className="h-9"
+                        />
                     </div>
                 </section>
 
@@ -844,7 +793,7 @@ export function BrandingSetup(): React.ReactElement {
                     name={previewName}
                     handle={previewHandle}
                     username={previewUsername}
-                    logoUrl={logoPreview}
+                    logoUrl={profile?.logoUrl ?? null}
                     watermarkStyle={form.watermarkStyle}
                     watermarkOpacity={form.watermarkOpacity}
                 />
@@ -859,7 +808,7 @@ export function BrandingSetup(): React.ReactElement {
                     name={previewName}
                     handle={previewHandle}
                     username={previewUsername}
-                    logoUrl={logoPreview}
+                    logoUrl={profile?.logoUrl ?? null}
                     watermarkStyle={form.watermarkStyle}
                     watermarkOpacity={form.watermarkOpacity}
                 />

@@ -6,7 +6,7 @@ import { Sparkle, ArrowRight, Diamond, Coins, SquaresFour, Plus, Camera, Image a
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
-import { BeforeAfterSection } from '@/features/landing/components/BeforeAfterSection';
+
 import dynamic from 'next/dynamic';
 
 const Silk = dynamic(() => import('@/components/Silk'), { ssr: false });
@@ -250,14 +250,6 @@ export default function HomePage(): React.ReactElement {
                                     </span>
                                 </Link>
 
-                                {/* ── Secondary CTA ── */}
-                                <Link
-                                    href="/examples"
-                                    className="group relative inline-flex h-[50px] cursor-pointer items-center gap-2.5 overflow-hidden rounded-2xl border border-zinc-200 bg-white px-6 text-[14px] font-medium text-zinc-600 shadow-sm transition-all duration-300 ease-out hover:-translate-y-[1px] hover:border-primary/30 hover:text-zinc-900 hover:shadow-md active:scale-[0.98] active:translate-y-0 dark:border-zinc-700/80 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-primary/40 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
-                                >
-                                    <span className="relative z-10">{t('hero.btn_examples')}</span>
-                                    <ArrowRight size={13} weight="bold" className="text-zinc-400 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5" />
-                                </Link>
                             </motion.div>
 
                             <HeroStats />
@@ -301,13 +293,7 @@ export default function HomePage(): React.ReactElement {
 
                         {/* Connector */}
                         <div className="flex items-center justify-center lg:pt-10">
-                            {/* Mobile: vertical dotted line */}
-                            <div className="h-4 w-px border-l border-dashed border-border lg:hidden" />
-                            {/* Desktop: horizontal arrow */}
-                            <div className="hidden lg:flex items-center px-2">
-                                <div className="h-px w-8 bg-border" />
-                                <ArrowRight size={14} weight="bold" className="text-muted-foreground -ml-1" />
-                            </div>
+                            <div className="h-1.5 w-1.5 rounded-full bg-border" />
                         </div>
 
                         {/* Step 2 */}
@@ -327,11 +313,7 @@ export default function HomePage(): React.ReactElement {
 
                         {/* Connector */}
                         <div className="flex items-center justify-center lg:pt-10">
-                            <div className="h-4 w-px border-l border-dashed border-border lg:hidden" />
-                            <div className="hidden lg:flex items-center px-2">
-                                <div className="h-px w-8 bg-border" />
-                                <ArrowRight size={14} weight="bold" className="text-muted-foreground -ml-1" />
-                            </div>
+                            <div className="h-1.5 w-1.5 rounded-full bg-border" />
                         </div>
 
                         {/* Step 3 */}
@@ -376,10 +358,6 @@ export default function HomePage(): React.ReactElement {
                     </div>
                 </div>
             </main>
-
-            <div className="bg-white dark:bg-zinc-950 pt-8">
-                <BeforeAfterSection />
-            </div>
 
         </div>
     );

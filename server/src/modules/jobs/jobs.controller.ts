@@ -17,7 +17,7 @@ export const jobsController = {
 
     const user = request.user as JwtPayload | undefined;
 
-    const { buffer, filename } = await jobsService.downloadJobResult(
+    const { buffer, filename, contentType } = await jobsService.downloadJobResult(
       jobId,
       variant,
       user?.id,
@@ -25,7 +25,7 @@ export const jobsController = {
     );
 
     await reply
-      .header('Content-Type', 'image/jpeg')
+      .header('Content-Type', contentType)
       .header('Content-Disposition', `attachment; filename="${filename}"`)
       .header('Cache-Control', 'no-store')
       .send(buffer);

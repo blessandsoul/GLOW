@@ -2,16 +2,14 @@
 
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import {
-    DownloadSimple, Sparkle, WarningCircle, Lock,
-    LinkSimple, Flask, Stamp, MagnifyingGlassPlus,
+    DownloadSimple, Sparkle, WarningCircle,
+    LinkSimple, Stamp, MagnifyingGlassPlus,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { GuestResultBanner } from '@/features/upload/components/GuestResultBanner';
 import { CaptionGenerator } from '@/features/captions/components/CaptionGenerator';
 import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
 import { useBranding } from '@/features/branding/hooks/useBranding';
@@ -24,8 +22,6 @@ import { getServerImageUrl } from '@/lib/utils/image';
 interface ResultsGridProps {
     job: Job;
     isAuthenticated: boolean;
-    isGuest?: boolean;
-    isDemo?: boolean;
     onDownload: (url: string, jobId: string, variantIndex: number, branded: boolean) => void;
     onRetouch?: (url: string) => void;
 }
@@ -54,45 +50,12 @@ function ShareButton({ jobId }: { jobId: string }): React.ReactElement {
     );
 }
 
-// ─── Demo banner ──────────────────────────────────────────────────────────────
-function DemoBanner(): React.ReactElement {
-    const { t } = useLanguage();
-
-    return (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200/60 bg-amber-50/80 p-3.5 dark:border-amber-800/40 dark:bg-amber-950/30">
-            <div className="mt-0.5 shrink-0 rounded-full bg-amber-100 p-1.5 dark:bg-amber-900/40">
-                <Flask size={14} className="text-amber-600 dark:text-amber-400" weight="fill" />
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                    {t('ui.demo_title')}
-                </p>
-                <p className="mt-0.5 text-xs leading-relaxed text-amber-700/80 dark:text-amber-400/80">
-                    {t('ui.demo_desc')}
-                </p>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                    <Link
-                        href="/register"
-                        className="inline-flex items-center gap-1 rounded-full bg-amber-600 px-2.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-amber-700"
-                    >
-                        {t('ui.demo_register')}
-                    </Link>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 px-2.5 py-1 text-[11px] text-amber-700 dark:border-amber-800 dark:text-amber-400">
-                        <Sparkle size={10} weight="fill" />
-                        {t('ui.demo_credit_info')}
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 // ─── Main ResultsGrid ─────────────────────────────────────────────────────────
-export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload, onRetouch }: ResultsGridProps): React.ReactElement {
+export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: ResultsGridProps): React.ReactElement {
     const { t } = useLanguage();
     const { profile: brandingProfile } = useBranding();
 
-    const hasBranding = !!(isAuthenticated && !isDemo && brandingProfile?.isActive &&
+    const hasBranding = !!(isAuthenticated && brandingProfile?.isActive &&
         brandingProfile.displayName && brandingProfile.instagramHandle);
 
     const [showBranding, setShowBranding] = useState(false);
@@ -104,6 +67,18 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
         setLightboxInitialIndex(index);
         setLightboxOpen(true);
     }, []);
+
+    const results = job.results ?? [];
+
+    // Build lightbox images array: [Before, After]
+    // NOTE: This useMemo MUST be before any early returns to maintain consistent hook ordering
+    const lightboxImages = React.useMemo(() => {
+        if (!job.originalUrl || results.length === 0) return [];
+        return [
+            { imageUrl: job.originalUrl, title: t('ui.text_pt6') },
+            { imageUrl: results[selectedAfterIdx] ?? results[0], title: t('ui.text_gnzjzw') },
+        ];
+    }, [job.originalUrl, results, selectedAfterIdx, t]);
 
     if (job.status === 'PENDING' || job.status === 'PROCESSING') {
         return (
@@ -138,27 +113,14 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
         );
     }
 
-    const results = job.results ?? [];
     const brandingVisible = hasBranding && showBranding;
-
-    // Build lightbox images array: [Before, After]
-    const lightboxImages = React.useMemo(() => {
-        if (!job.originalUrl || results.length === 0) return [];
-        return [
-            { imageUrl: job.originalUrl, title: t('ui.text_pt6') },
-            { imageUrl: results[selectedAfterIdx] ?? results[0], title: t('ui.text_gnzjzw') },
-        ];
-    }, [job.originalUrl, results, selectedAfterIdx, t]);
 
     return (
         <div className="flex w-full flex-col gap-3 py-2">
-            {isDemo && <DemoBanner />}
-            {isGuest && !isDemo && <GuestResultBanner jobId={job.id} />}
-
             {/* Compact header */}
             <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-foreground">
-                    {isDemo ? t('ui.demo_title') : t('ui.text_k25oyf')}
+                    {t('ui.text_k25oyf')}
                 </p>
                 <div className="flex items-center gap-2">
                     {hasBranding && (
@@ -176,14 +138,6 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                             <Stamp size={12} weight={showBranding ? 'fill' : 'regular'} />
                             {showBranding ? t('ui.branded') : t('ui.add_branding')}
                         </button>
-                    )}
-                    {!isAuthenticated && !isGuest && (
-                        <Button size="sm" className="gap-1.5 text-xs" asChild>
-                            <Link href="/register">
-                                <Lock size={12} />
-                                {t('ui.text_l7x1oj')}
-                            </Link>
-                        </Button>
                     )}
                 </div>
             </div>
@@ -217,14 +171,13 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                         {/* After (Result) */}
                         <button
                             type="button"
-                            onClick={() => isAuthenticated && !isDemo ? openLightbox(1) : undefined}
+                            onClick={() => openLightbox(1)}
                             className={cn(
                                 'group relative overflow-hidden rounded-xl border border-primary/30 ring-1 ring-primary/20',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-                                (!isAuthenticated || isDemo) && 'cursor-default',
                             )}
                         >
-                            <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
+                            <div className="relative aspect-3/4">
                                 <Image
                                     src={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
                                     alt={t('ui.text_gnzjzw')}
@@ -246,17 +199,8 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                             </div>
                             <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
                                 <span className="text-[11px] font-semibold text-white/90">{t('ui.text_gnzjzw')}</span>
-                                {isAuthenticated && !isDemo && (
-                                    <MagnifyingGlassPlus size={14} className="text-white/60" />
-                                )}
+                                <MagnifyingGlassPlus size={14} className="text-white/60" />
                             </div>
-                            {(!isAuthenticated || isDemo) && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="rounded-full bg-background/80 p-2 shadow-sm backdrop-blur-sm">
-                                        <Lock size={16} className="text-muted-foreground" />
-                                    </div>
-                                </div>
-                            )}
                         </button>
                     </div>
 
@@ -293,54 +237,8 @@ export function ResultsGrid({ job, isAuthenticated, isGuest, isDemo, onDownload,
                 </div>
             )}
 
-            {/* Fallback grid for demo/guest (no originalUrl) */}
-            {results.length > 0 && !job.originalUrl && (
-                <div className={cn(
-                    results.length === 1
-                        ? 'flex justify-center'
-                        : 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4',
-                )}>
-                    {results.map((url, i) => (
-                        <div
-                            key={i}
-                            className={cn(
-                                'group relative overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer',
-                                results.length === 1 && 'w-full max-w-sm',
-                                selectedAfterIdx === i && isAuthenticated && !isDemo
-                                    ? 'border-primary/50 ring-2 ring-primary/20'
-                                    : 'border-border/50',
-                            )}
-                            onClick={() => setSelectedAfterIdx(i)}
-                        >
-                            <div className={cn('relative aspect-3/4', (!isAuthenticated || isDemo) && 'blur-sm')}>
-                                <Image
-                                    src={getServerImageUrl(url)}
-                                    alt={`#${i + 1}`}
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 640px) 50vw, 25vw"
-                                    unoptimized
-                                />
-                            </div>
-                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 via-black/30 to-transparent p-2.5 pt-8">
-                                <span className="text-xs font-medium text-white/80">
-                                    {isDemo ? 'Demo' : `#${i + 1}`}
-                                </span>
-                            </div>
-                            {(!isAuthenticated || isDemo) && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="rounded-full bg-background/80 p-2 shadow-sm backdrop-blur-sm">
-                                        <Lock size={16} className="text-muted-foreground" />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Quick action row — always visible on mobile */}
-            {isAuthenticated && !isDemo && results.length > 0 && (
+            {/* Quick action row */}
+            {results.length > 0 && (
                 <div className="flex flex-col gap-1.5">
                     {hasBranding && (
                         <Button

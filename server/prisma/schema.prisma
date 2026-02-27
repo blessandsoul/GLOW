@@ -140,6 +140,8 @@ model BrandingProfile {
   userId          String   @unique
   displayName     String?
   instagramHandle String?
+  facebookHandle  String?
+  tiktokHandle    String?
   logoUrl         String?  @db.VarChar(1000)
   primaryColor    String   @default("#d4738a")
   watermarkStyle   String   @default("MINIMAL")

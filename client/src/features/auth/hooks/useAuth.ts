@@ -46,7 +46,7 @@ export const useAuth = () => {
             dispatch(setUser(res.user));
             const demoJobId = sessionStorage.getItem('glowge_demo_job_id');
             if (demoJobId) sessionStorage.removeItem('glowge_demo_job_id');
-            router.push('/onboarding');
+            router.push('/dashboard');
         } catch (error) {
             setRegisterError(error instanceof Error ? error : new Error('Registration failed'));
         } finally {

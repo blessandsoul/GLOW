@@ -12,9 +12,11 @@ import { uploadFile, validateImage } from '../../libs/storage.js';
 import { processImageWithAI } from '../../libs/ai-image.js';
 import { filtersService } from '../filters/filters.service.js';
 import { creditsService } from '../credits/credits.service.js';
+import { creditsRepo } from '../credits/credits.repo.js';
 import { buildPromptFromSettings, DEFAULT_PROMPT } from './prompt-builder.js';
 import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
 import { isLaunchMode, checkDailyLimit, incrementDailyUsage, getDailyUsage } from '../../libs/launch-mode.js';
+import { env } from '../../config/env.js';
 import type { StorageFile } from '../../libs/storage.js';
 
 export const jobsService = {
@@ -23,7 +25,7 @@ export const jobsService = {
     variantIndex: number,
     requestingUserId: string | undefined,
     branded: boolean,
-  ): Promise<{ buffer: Buffer; filename: string }> {
+  ): Promise<{ buffer: Buffer; filename: string; contentType: string }> {
     const job = await jobsRepo.findJobByIdWithUser(jobId);
 
     if (!job) {
@@ -38,11 +40,14 @@ export const jobsService = {
       throw new NotFoundError('Result variant not found', 'VARIANT_NOT_FOUND');
     }
 
+    // Master watermark switch — when disabled, skip ALL watermarks
+    const watermarkEnabled = env.WATERMARK_ENABLED;
+
     // Determine Glow.GE watermark: guests always get it, FREE users get it, PRO+ users don't
     // In launch mode: no watermark for anyone
     const isOwner = job.userId === requestingUserId;
     const userPlan: string = job.user?.subscription?.plan ?? 'FREE';
-    const needsGlowWatermark = isLaunchMode() ? false : (!isOwner || userPlan === 'FREE');
+    const needsGlowWatermark = watermarkEnabled && !isLaunchMode() && (!isOwner || userPlan === 'FREE');
 
     // Load image from local storage or external URL (backward compat)
     const resultUrl = results[variantIndex];
@@ -64,9 +69,10 @@ export const jobsService = {
     }
 
     let finalBuffer = imageBuffer;
+    let wasProcessed = false;
 
-    // Apply custom branding if requested and user has an active branding profile
-    if (branded && job.userId) {
+    // Apply custom branding if requested, watermarks enabled, and user has an active branding profile
+    if (watermarkEnabled && branded && job.userId) {
       const branding = await brandingRepo.findByUserId(job.userId);
       if (branding?.isActive && branding.displayName && branding.instagramHandle) {
         finalBuffer = await applyBranding(finalBuffer, {
@@ -77,17 +83,30 @@ export const jobsService = {
           watermarkStyle: branding.watermarkStyle,
           watermarkOpacity: branding.watermarkOpacity,
         });
+        wasProcessed = true;
       }
     }
 
     // Apply Glow.GE watermark for FREE/guest users (separate from custom branding)
     if (needsGlowWatermark) {
       finalBuffer = await applyWatermark(finalBuffer);
+      wasProcessed = true;
     }
+
+    // Determine content type: if image was processed through Sharp, use configured format; otherwise preserve original
+    const downloadFormat = wasProcessed ? env.IMAGE_DOWNLOAD_FORMAT : 'original';
+    const ext = resultUrl.endsWith('.png') ? 'png' : resultUrl.endsWith('.webp') ? 'webp' : 'jpg';
+    const contentType = downloadFormat === 'png' ? 'image/png'
+      : downloadFormat === 'jpeg' ? 'image/jpeg'
+      : ext === 'png' ? 'image/png'
+      : ext === 'webp' ? 'image/webp'
+      : 'image/jpeg';
+    const fileExt = contentType === 'image/png' ? 'png' : contentType === 'image/webp' ? 'webp' : 'jpg';
 
     return {
       buffer: finalBuffer,
-      filename: `glowge-${jobId}-${variantIndex}.jpg`,
+      filename: `glowge-${jobId}-${variantIndex}.${fileExt}`,
+      contentType,
     };
   },
 
@@ -124,6 +143,18 @@ export const jobsService = {
       await checkDailyLimit(userId);
     }
 
+    // In normal mode, pre-check credit balance before creating the job
+    // to avoid orphaned PROCESSING jobs when credits are insufficient.
+    if (!isLaunchMode() && userId) {
+      const balance = await creditsRepo.getBalance(userId);
+      if (balance < creditCost) {
+        throw new BadRequestError(
+          `Insufficient credits. Need ${creditCost}, have ${balance}.`,
+          'INSUFFICIENT_CREDITS',
+        );
+      }
+    }
+
     const job = await jobsRepo.createJob({
       userId: userId ?? undefined,
       originalUrl,
@@ -140,7 +171,13 @@ export const jobsService = {
       if (isLaunchMode()) {
         dailyUsage = await incrementDailyUsage(userId);
       } else {
-        creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+        try {
+          creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+        } catch (err) {
+          // Credit deduction failed (e.g., race condition) — clean up orphaned job
+          await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {});
+          throw err;
+        }
       }
     }
 

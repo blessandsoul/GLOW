@@ -25,7 +25,7 @@ export function StudioWorkspace({ children }: StudioWorkspaceProps): React.React
     useEffect(() => { setMounted(true); }, []);
 
     return (
-        <div className="container mx-auto max-w-6xl px-3 py-4 md:px-6 md:py-8 lg:px-8">
+        <div className="container mx-auto max-w-6xl px-3 py-4 pb-24 md:px-6 md:py-8 md:pb-8 lg:px-8">
             {/* Page header */}
             <div className="mb-3 md:mb-6 flex flex-wrap gap-2 items-center justify-between">
                 <div className="flex items-center gap-3">

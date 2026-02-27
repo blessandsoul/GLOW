@@ -84,16 +84,6 @@ export function HeroCentered({ wordIndex, rotatingWords }: HeroCenteredProps): R
                         <ArrowRight size={16} weight="bold" className="ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </Button>
-                <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full h-12 rounded-2xl border-zinc-200 bg-white/50 backdrop-blur-sm text-base font-medium text-zinc-600 hover:bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-900/80 transition-all"
-                    asChild
-                >
-                    <Link href="/examples">
-                        {t('hero.btn_examples')}
-                    </Link>
-                </Button>
             </motion.div>
 
             {/* Floating before/after card */}

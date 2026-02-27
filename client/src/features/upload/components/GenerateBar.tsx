@@ -9,7 +9,6 @@ interface GenerateBarProps {
     onGenerate: () => void;
     isLoading: boolean;
     disabled: boolean;
-    userCredits: number;
     isAuthenticated: boolean;
     variant: 'inline' | 'sticky';
 }
@@ -18,7 +17,6 @@ export function GenerateBar({
     onGenerate,
     isLoading,
     disabled,
-    userCredits,
     isAuthenticated,
     variant,
 }: GenerateBarProps): React.ReactElement {
@@ -64,28 +62,15 @@ export function GenerateBar({
     return (
         <div
             className={cn(
-                'fixed bottom-0 inset-x-0 z-40',
+                'fixed inset-x-0 z-40',
+                'bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] md:bottom-0',
                 'border-t border-border/30',
                 'backdrop-blur-xl bg-background/80',
-                'pb-[max(16px,env(safe-area-inset-bottom))]',
+                'pb-3 md:pb-[max(16px,env(safe-area-inset-bottom))]',
                 'px-4 pt-3',
             )}
         >
             {button}
-
-            {!isLoading && isAuthenticated && (
-                <div className="mt-1.5 flex items-center justify-center gap-1">
-                    <Sparkle
-                        size={11}
-                        weight="fill"
-                        className="text-primary/60"
-                        aria-hidden
-                    />
-                    <span className="text-[11px] tabular-nums text-muted-foreground">
-                        {userCredits} {t('ui.text_credits')}
-                    </span>
-                </div>
-            )}
 
             {!isLoading && !isAuthenticated && (
                 <div className="mt-1.5 flex items-center justify-center">

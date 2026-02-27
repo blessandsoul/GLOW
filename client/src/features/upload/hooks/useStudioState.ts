@@ -11,7 +11,6 @@ import type { RootState } from '@/store';
 import { useAppDispatch } from '@/store/hooks';
 import { updateCredits } from '@/features/auth/store/authSlice';
 import { useUpload } from './useUpload';
-import { useGuestJob } from './useGuestJob';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useCreditsBalance } from '@/features/credits/hooks/useCredits';
@@ -24,7 +23,7 @@ import { DEFAULT_SETTINGS } from '../types/upload.types';
 import type { Style, FilterStyle } from '@/features/filters/types/styles.types';
 import type { AppMode } from '../types/presets.types';
 import type { ProductAdSettings } from '../components/ProductAdPanel';
-import type { Job, BatchCreateResult } from '@/features/jobs/types/job.types';
+import type { BatchCreateResult } from '@/features/jobs/types/job.types';
 import type { BeforeAfterJob } from '@/features/before-after/types/before-after.types';
 
 export interface StudioState {
@@ -41,12 +40,11 @@ export interface StudioState {
     retouchUrl: string | null;
     setRetouchUrl: (url: string | null) => void;
     batchResult: BatchCreateResult | null;
-    currentJob: Job | null;
+    currentJob: null;
     isUploading: boolean;
     isAuthenticated: boolean;
     isProUser: boolean;
     userCredits: number;
-    isDemoJob: boolean;
     trendStyles: Style[];
     isLoadingTrends: boolean;
     baJob: BeforeAfterJob | null;
@@ -64,7 +62,6 @@ export interface StudioState {
 export function useStudioState(): StudioState {
     const { t, language } = useLanguage();
     const router = useRouter();
-    const { setGuestJob: setContextGuestJob } = useGuestJob();
 
     const [mode, setMode] = useState<AppMode>('beauty');
     const [customSettings] = useState<PhotoSettings>(DEFAULT_SETTINGS);
@@ -72,18 +69,14 @@ export function useStudioState(): StudioState {
     const [productSettings, setProductSettings] = useState<ProductAdSettings | null>(null);
     const [showStories, setShowStories] = useState(false);
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
-    const [guestJob, setGuestJob] = useState<Job | null>(null);
     const [batchResult, setBatchResult] = useState<BatchCreateResult | null>(null);
     const [processingType] = useState<ProcessingType>('ENHANCE');
-    const [isDemoJob, setIsDemoJob] = useState(false);
 
-    const { job: uploadedJob, isUploading: isAuthUploading, error: uploadError, uploadFile } = useUpload({
+    const { isUploading, error: uploadError, uploadFile } = useUpload({
         onJobCreated: (job) => {
             router.replace(ROUTES.CREATE_RESULT(job.id));
         },
     });
-    const pollId = uploadedJob?.id ?? (guestJob?.id === 'demo' ? null : guestJob?.id ?? null);
-    const { job: polledJob, error: pollingError } = useJobPolling(pollId);
     const { job: baJob, isUploading: isBAUploading, upload: uploadBA, reset: resetBA } = useBeforeAfter();
 
     const dispatch = useAppDispatch();
@@ -110,28 +103,11 @@ export function useStudioState(): StudioState {
     );
 
     useEffect(() => {
-        if ((polledJob?.status === 'DONE' || uploadedJob) && isDemoJob) {
-            setIsDemoJob(false);
-            setGuestJob(null);
-        }
-    }, [polledJob, uploadedJob, isDemoJob]);
-
-    useEffect(() => {
         if (uploadError) {
-            setGuestJob(null);
-            setContextGuestJob(null);
-            setIsDemoJob(false);
+            toast.error(uploadError);
+            router.replace(ROUTES.CREATE);
         }
-    }, [uploadError, setContextGuestJob]);
-
-    useEffect(() => {
-        if (pollingError) {
-            toast.error(pollingError);
-        }
-    }, [pollingError]);
-
-    const currentJob = polledJob ?? uploadedJob ?? guestJob;
-    const isUploading = isAuthUploading;
+    }, [uploadError, router]);
 
     const handleFileSelect = useCallback(
         (file: File) => {
@@ -141,38 +117,22 @@ export function useStudioState(): StudioState {
                     ? { ...selectedStyle.settings, processingType }
                     : { ...customSettings, processingType } as PhotoSettings;
 
-            if (isAuthenticated) {
-                const previewImages = ['/presets/beauty/1.png'];
-                const mockJob: Job = {
-                    id: 'demo',
-                    userId: 'mock-user',
-                    status: 'DONE',
-                    originalUrl: '',
-                    results: previewImages,
-                    createdAt: new Date().toISOString(),
-                };
-                setGuestJob(mockJob);
-                setContextGuestJob(mockJob);
-                setIsDemoJob(true);
-                uploadFile({ file, settings });
-                router.push(ROUTES.CREATE_RESULT('demo'));
+            // Pre-check: block generation if credits are exhausted
+            if (IS_LAUNCH_MODE) {
+                if (isLimitReached) {
+                    toast.error(t('upload.daily_limit_reached'));
+                    return;
+                }
             } else {
-                const previewImages = ['/presets/beauty/1.png'];
-                const mockJob: Job = {
-                    id: 'demo',
-                    userId: null,
-                    status: 'DONE',
-                    originalUrl: '',
-                    results: previewImages,
-                    createdAt: new Date().toISOString(),
-                };
-                setGuestJob(mockJob);
-                setContextGuestJob(mockJob);
-                setIsDemoJob(true);
-                router.push(ROUTES.CREATE_RESULT('demo'));
+                if (userCredits <= 0) {
+                    toast.error(t('upload.no_credits'));
+                    return;
+                }
             }
+
+            uploadFile({ file, settings });
         },
-        [uploadFile, customSettings, processingType, isAuthenticated, selectedStyle, router, setContextGuestJob],
+        [uploadFile, customSettings, processingType, selectedStyle, isLimitReached, userCredits, t],
     );
 
     const handleBASubmit = useCallback(
@@ -210,14 +170,11 @@ export function useStudioState(): StudioState {
     const handleReset = useCallback(() => {
         setShowStories(false);
         setRetouchUrl(null);
-        setGuestJob(null);
-        setContextGuestJob(null);
         setBatchResult(null);
-        setIsDemoJob(false);
         setSelectedStyle(null);
         resetBA();
         router.push(ROUTES.CREATE);
-    }, [resetBA, router, setContextGuestJob]);
+    }, [resetBA, router]);
 
     return {
         t,
@@ -233,12 +190,11 @@ export function useStudioState(): StudioState {
         retouchUrl,
         setRetouchUrl,
         batchResult,
-        currentJob,
+        currentJob: null,
         isUploading,
         isAuthenticated,
         isProUser: IS_LAUNCH_MODE,
         userCredits,
-        isDemoJob,
         trendStyles,
         isLoadingTrends,
         baJob,

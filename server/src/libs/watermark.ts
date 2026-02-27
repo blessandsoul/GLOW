@@ -2,6 +2,7 @@ import sharp from 'sharp';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { logger } from './logger.js';
+import { env } from '../config/env.js';
 
 // ── Types ──
 
@@ -22,10 +23,12 @@ export async function applyWatermark(imageBuffer: Buffer, text = 'Glow.GE'): Pro
           fill="white" opacity="0.75" font-weight="bold">${escapeXml(text)}</text>
   </svg>`;
 
-  return sharp(imageBuffer)
-    .composite([{ input: Buffer.from(svgText), gravity: 'southeast' }])
-    .jpeg({ quality: 90 })
-    .toBuffer();
+  const pipeline = sharp(imageBuffer)
+    .composite([{ input: Buffer.from(svgText), gravity: 'southeast' }]);
+
+  return env.IMAGE_DOWNLOAD_FORMAT === 'png'
+    ? pipeline.png().toBuffer()
+    : pipeline.jpeg({ quality: env.IMAGE_DOWNLOAD_QUALITY }).toBuffer();
 }
 
 // ── Custom branding watermark ──
@@ -70,10 +73,11 @@ export async function applyBranding(
     });
   }
 
-  return sharp(imageBuffer)
-    .composite(layers)
-    .jpeg({ quality: 90 })
-    .toBuffer();
+  const pipeline = sharp(imageBuffer).composite(layers);
+
+  return env.IMAGE_DOWNLOAD_FORMAT === 'png'
+    ? pipeline.png().toBuffer()
+    : pipeline.jpeg({ quality: env.IMAGE_DOWNLOAD_QUALITY }).toBuffer();
 }
 
 // ── SVG builders per style ──
