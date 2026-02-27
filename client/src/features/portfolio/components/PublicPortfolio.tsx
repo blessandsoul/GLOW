@@ -143,7 +143,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                             >
                                 <span className="text-sm text-foreground">{service.name}</span>
                                 <span className="text-sm font-semibold text-foreground">
-                                    {service.price} {service.currency}
+                                    {service.price} ₾{service.priceType === 'hourly' ? ' / საათი' : ''}
                                 </span>
                             </div>
                         ))}

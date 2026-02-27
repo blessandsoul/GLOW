@@ -7,9 +7,8 @@ import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SERVICE_CATEGORIES } from '../types/profile.types';
-import type { ServiceItem } from '../types/profile.types';
+import type { PriceType, ServiceItem } from '../types/profile.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 
@@ -23,14 +22,14 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
     const [selectedCategory, setSelectedCategory] = useState('');
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
-    const [currency, setCurrency] = useState('GEL');
+    const [priceType, setPriceType] = useState<PriceType>('fixed');
     const [open, setOpen] = useState(false);
 
     const category = SERVICE_CATEGORIES.find((c) => c.id === selectedCategory);
 
     const handleSubmit = (): void => {
         if (!selectedCategory || !name.trim()) return;
-        onAdd({ category: selectedCategory, name: name.trim(), price: Number(price) || 0, currency });
+        onAdd({ category: selectedCategory, name: name.trim(), price: Number(price) || 0, priceType });
     };
 
     return (
@@ -119,29 +118,50 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
             )}
 
             {selectedCategory && (
-                <div className="flex items-end gap-2">
-                    <div className="flex-1 space-y-1.5">
+                <div className="space-y-3">
+                    <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground">{t('ui.text_svc_price')}</Label>
-                        <Input
-                            type="number"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            placeholder="0"
-                        />
+                        <div className="relative">
+                            <Input
+                                type="number"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                                placeholder="0"
+                                className="pr-8"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                                ₾
+                            </span>
+                        </div>
                     </div>
-                    <div className="w-24 space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">{t('ui.text_svc_currency')}</Label>
-                        <Select value={currency} onValueChange={setCurrency}>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="GEL">GEL</SelectItem>
-                                <SelectItem value="USD">USD</SelectItem>
-                                <SelectItem value="EUR">EUR</SelectItem>
-                                <SelectItem value="RUB">RUB</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs text-muted-foreground">{t('ui.text_svc_price_type')}</Label>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setPriceType('fixed')}
+                                className={cn(
+                                    'flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 cursor-pointer',
+                                    priceType === 'fixed'
+                                        ? 'border-primary bg-primary text-primary-foreground'
+                                        : 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5'
+                                )}
+                            >
+                                {t('ui.text_svc_fixed')}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPriceType('hourly')}
+                                className={cn(
+                                    'flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 cursor-pointer',
+                                    priceType === 'hourly'
+                                        ? 'border-primary bg-primary text-primary-foreground'
+                                        : 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5'
+                                )}
+                            >
+                                {t('ui.text_svc_hourly')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SERVICE_CATEGORIES } from '../types/profile.types';
 import type { ServiceItem } from '../types/profile.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { cn } from '@/lib/utils';
 
 interface ServiceRowProps {
     service: ServiceItem;
@@ -87,31 +87,43 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                         />
                     )}
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex-1 sm:flex-none sm:w-24">
+                <div className="flex items-stretch gap-1.5">
+                    <div className="relative w-20 shrink-0">
                         <Input
                             type="number"
                             value={service.price || ''}
                             onChange={(e) => onChange(index, 'price', Number(e.target.value))}
                             placeholder="80"
+                            className="pr-7 h-full"
                         />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                            ₾
+                        </span>
                     </div>
-                    <div className="w-24 sm:w-20">
-                        <Select
-                            value={service.currency}
-                            onValueChange={(v) => onChange(index, 'currency', v)}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="GEL">GEL</SelectItem>
-                                <SelectItem value="USD">USD</SelectItem>
-                                <SelectItem value="EUR">EUR</SelectItem>
-                                <SelectItem value="RUB">RUB</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={() => onChange(index, 'priceType', 'fixed')}
+                        className={cn(
+                            'flex-1 rounded-md border px-3 text-xs font-medium transition-all duration-150 cursor-pointer',
+                            (service.priceType ?? 'fixed') === 'fixed'
+                                ? 'border-primary bg-primary text-primary-foreground'
+                                : 'border-border bg-card text-foreground hover:border-primary/50'
+                        )}
+                    >
+                        {t('ui.text_svc_fixed')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onChange(index, 'priceType', 'hourly')}
+                        className={cn(
+                            'flex-1 rounded-md border px-3 text-xs font-medium transition-all duration-150 cursor-pointer',
+                            service.priceType === 'hourly'
+                                ? 'border-primary bg-primary text-primary-foreground'
+                                : 'border-border bg-card text-foreground hover:border-primary/50'
+                        )}
+                    >
+                        {t('ui.text_svc_hourly')}
+                    </button>
                 </div>
             </div>
         </div>

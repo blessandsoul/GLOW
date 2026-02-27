@@ -180,7 +180,7 @@ export function UploadZone({ onFileSelect, isLoading, className, hideGenerateBut
         <label
             className={cn(
                 'group relative flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed',
-                'w-full cursor-pointer transition-all duration-300 py-10 px-6 md:py-8',
+                'w-full cursor-pointer transition-all duration-300 py-10 pb-12 px-6 md:py-8 md:pb-10',
                 isDragging
                     ? 'border-primary bg-primary/5 shadow-inner scale-[1.01]'
                     : 'border-border/40 bg-transparent hover:border-primary/40 hover:bg-muted/30',

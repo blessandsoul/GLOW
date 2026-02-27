@@ -131,7 +131,9 @@ export function ProfileSetup(): React.ReactElement {
                 telegram: profile.telegram ?? '',
                 instagram: profile.instagram ?? '',
                 services: (profile.services ?? []).map((s) => ({
-                    ...s,
+                    name: s.name,
+                    price: s.price,
+                    priceType: (s as ServiceItem).priceType ?? 'fixed',
                     category: (s as ServiceItem).category ?? 'other',
                 })),
             });
