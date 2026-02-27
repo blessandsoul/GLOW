@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Globe, SpinnerGap, CloudCheck, Warning, ArrowSquareOut } from '@phosphor-icons/react';
+import { SpinnerGap, CloudCheck, Warning, ArrowSquareOut } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
@@ -93,16 +93,8 @@ export function PortfolioBuilder(): React.ReactElement {
 
             {/* Header */}
             <div className="mb-6 space-y-4">
-                <div className="flex items-start gap-3">
-                    <div className="rounded-full bg-primary/10 p-2.5 shrink-0">
-                        <Globe size={22} className="text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <h1 className="text-xl font-bold text-foreground sm:text-2xl">{t('portfolio.builder_title')}</h1>
-                        <p className="text-sm text-muted-foreground">
-                            {t('portfolio.builder_desc')}
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between">
+                    <h1 className="text-xl font-bold text-foreground sm:text-2xl">{t('portfolio.header_title')}</h1>
                     {user?.username && (
                         <Button
                             size="sm"
@@ -110,8 +102,7 @@ export function PortfolioBuilder(): React.ReactElement {
                             onClick={() => window.open(`/specialist/${user.username}`, '_blank')}
                         >
                             <ArrowSquareOut size={14} />
-                            <span className="hidden sm:inline">{t('portfolio.btn_open')}</span>
-                            <span className="sm:hidden">{t('portfolio.nav_preview')}</span>
+                            {t('portfolio.nav_preview')}
                         </Button>
                     )}
                 </div>

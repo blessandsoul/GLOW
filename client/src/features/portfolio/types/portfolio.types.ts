@@ -33,7 +33,7 @@ export interface PublicPortfolioData {
     instagram: string | null;
     city: string | null;
     niche: string | null;
-    services: { name: string; price: number; currency: string }[];
+    services: { name: string; price: number; priceType?: 'fixed' | 'hourly' }[];
     items: PortfolioItem[];
     reviews: PublicReview[];
     reviewsCount: number;

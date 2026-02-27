@@ -63,16 +63,15 @@ export function ServicesSection({ form, updateField }: ServicesSectionProps): Re
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-lg font-semibold text-foreground">{t('portfolio.nav_services')}</h2>
-                    <p className="text-sm text-muted-foreground">
-                        {form.services.length > 0
-                            ? `${form.services.length} ${t('portfolio.services_added')}`
-                            : t('portfolio.services_pricing')}
-                    </p>
+                    {form.services.length > 0 && (
+                        <p className="text-sm text-muted-foreground">
+                            {form.services.length} {t('portfolio.services_added')}
+                        </p>
+                    )}
                 </div>
-                {!showAddPanel && (
+                {form.services.length > 0 && !showAddPanel && (
                     <Button
                         type="button"
-                        variant="outline"
                         size="sm"
                         className="gap-1.5"
                         onClick={handleOpenAdd}
@@ -105,45 +104,47 @@ export function ServicesSection({ form, updateField }: ServicesSectionProps): Re
             </Drawer>
 
             {/* Services list */}
-            <div className="rounded-xl border border-border/50 bg-card p-3.5 sm:p-5">
-                {form.services.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-10 text-center">
-                        <div className="mb-3 rounded-full bg-muted p-3">
-                            <Plus size={20} className="text-muted-foreground" />
-                        </div>
-                        <p className="text-sm font-medium text-foreground">{t('portfolio.no_services')}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                            {t('portfolio.no_services_desc')}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="space-y-6">
-                        {servicesByCategory.map(({ category, services }) => (
-                            <div key={category.id} className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                        {category.label}
-                                    </span>
-                                    <div className="h-px flex-1 bg-border/60" />
-                                    <span className="text-xs text-muted-foreground">{services.length}</span>
-                                </div>
-                                <div className="space-y-2">
-                                    {services.map(({ service, originalIndex }) => (
-                                        <ServiceRow
-                                            key={originalIndex}
-                                            service={service}
-                                            index={originalIndex}
-                                            showLabels={false}
-                                            onRemove={handleRemoveService}
-                                            onChange={handleServiceChange}
-                                        />
-                                    ))}
-                                </div>
+            {form.services.length > 0 ? (
+                <div className="space-y-6">
+                    {servicesByCategory.map(({ category, services }) => (
+                        <div key={category.id} className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                    {category.label}
+                                </span>
+                                <div className="h-px flex-1 bg-border/60" />
+                                <span className="text-xs text-muted-foreground">{services.length}</span>
                             </div>
-                        ))}
+                            <div className="space-y-2">
+                                {services.map(({ service, originalIndex }) => (
+                                    <ServiceRow
+                                        key={originalIndex}
+                                        service={service}
+                                        index={originalIndex}
+                                        showLabels={false}
+                                        onRemove={handleRemoveService}
+                                        onChange={handleServiceChange}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <button
+                    type="button"
+                    onClick={handleOpenAdd}
+                    className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/50 py-12 text-center transition-colors hover:border-primary/40 hover:bg-primary/5 cursor-pointer"
+                >
+                    <div className="mb-3 rounded-full bg-primary/10 p-3">
+                        <Plus size={20} className="text-primary" />
                     </div>
-                )}
-            </div>
+                    <p className="text-sm font-medium text-foreground">{t('ui.text_usbwt5')}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                        {t('portfolio.no_services_desc')}
+                    </p>
+                </button>
+            )}
         </div>
     );
 }

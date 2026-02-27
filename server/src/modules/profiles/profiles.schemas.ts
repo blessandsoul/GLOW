@@ -3,7 +3,7 @@ import { z } from 'zod';
 const ServiceItemSchema = z.object({
   name: z.string().min(1, 'Service name is required').max(100),
   price: z.number().min(0, 'Price must be non-negative'),
-  currency: z.string().min(1).max(10).default('GEL'),
+  priceType: z.enum(['fixed', 'hourly']).default('fixed'),
   category: z.string().min(1, 'Category is required').max(100),
 });
 

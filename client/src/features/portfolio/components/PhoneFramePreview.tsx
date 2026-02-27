@@ -80,7 +80,7 @@ export function PhoneFramePreview({
                                 <div key={i} className="flex items-center justify-between rounded-lg bg-muted/40 px-2 py-1">
                                     <span className="text-[10px] text-foreground truncate">{s.name}</span>
                                     <span className="text-[10px] font-medium text-foreground tabular-nums shrink-0 ml-1">
-                                        {s.price} {s.currency}
+                                        {s.price} ₾{s.priceType === 'hourly' ? ' / საათი' : ''}
                                     </span>
                                 </div>
                             ))}

@@ -13,10 +13,12 @@ export interface MasterProfile {
     updatedAt: string;
 }
 
+export type PriceType = 'fixed' | 'hourly';
+
 export interface ServiceItem {
     name: string;
     price: number;
-    currency: string;
+    priceType: PriceType;
     category: string;
 }
 
