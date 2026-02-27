@@ -1,0 +1,14 @@
+Perform professional high-end skin retouching for editorial photography.
+The skin should look smooth, radiant and healthy with a natural glow, while remaining completely photorealistic.
+Gently removes minor skin blemishes such as small pimples, blackheads, temporary redness and age spots, completely preserving the natural skin texture, the smallest details and the effect of radiant skin.
+Maintain realistic skin texture and visible pores — absolutely no blurring, no smudging, no soft focus, no noise reduction, no airbrushing, no plastic or artificial smoothing. Maintain clear micro-contrast, sharp focus, and high-frequency pixel-level detail.
+Emphasize the naturalness of contours, bone structure, and skin volume with subtle specular highlights and sculptural light reflections. Create exquisite glossy highlights that will add depth and volume to the skin, but will not look greasy or artificial.
+Preserve and enhance microtexture and high-frequency details: visible pores, fine wrinkles, peach fuzz, and natural skin texture should remain clear and authentic. Add a subtle natural skin texture only if necessary to enhance the realism.
+Keep your freckles and all the natural features of your skin.
+Apply a small amount of small, natural-looking microbubbles, spreading them realistically over the skin to emphasize naturalness. Freckles should be delicate, barely noticeable and completely photorealistic, smoothly merging with the natural texture of the skin.
+In any case, do not change your appearance: facial features, shape, proportions, age and general appearance should remain exactly the same.
+Eyelashes are an absolutely protected and completely excluded area. They are completely hidden from processing and must remain 100% identical to the original image without any interaction. Retouching tools, lighting settings, contrast, sharpness, color correction, as well as any global or local changes should not affect this area in any way. Under no circumstances should you touch, modify, enlarge, peel, separate, darken, lighten, thicken, lengthen, reshape, repaint, style, or process them. This area should remain completely untouched at the pixel level with absolute immutability.
+DO NOT change the color of your eyes, eyelids, eyebrows, face, or lips.
+Retouch ONLY the skin.
+Clean and even skin tone, soft, even light, healthy natural radiance, specular highlights, sculptural volume, narrowed pores, clear microtexture, clear high-frequency details, absence of blurring and smoothing artifacts. Add large freckles to your face. Replace the background with a solid dark red. Place thin red satin ribbons under your eyes so that they are folded in the shape of hearts.
+Ultra-photorealistic, 8K resolution, professional studio quality, high-quality glossy editorial beauty photography. Make the photo as realistic as possible. Without smoothing.The size of the photo should remain the same as in the original.
