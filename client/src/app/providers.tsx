@@ -37,6 +37,16 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                     { withCredentials: true },
                 );
                 store.dispatch(setUser(res.data.data));
+                // Redirect unverified users to phone verification
+                const userData = res.data.data;
+                if (!userData.isPhoneVerified && typeof window !== 'undefined') {
+                    const currentPath = window.location.pathname;
+                    const allowedUnverified = ['/verify-phone', '/login', '/register'];
+                    if (!allowedUnverified.some(p => currentPath.startsWith(p))) {
+                        window.location.href = '/verify-phone';
+                        return;
+                    }
+                }
                 return;
             } catch (meError: unknown) {
                 // Only attempt refresh on 401 (expired token).
@@ -70,6 +80,16 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                     { withCredentials: true },
                 );
                 store.dispatch(setUser(retryRes.data.data));
+                // Redirect unverified users to phone verification
+                const retryUserData = retryRes.data.data;
+                if (!retryUserData.isPhoneVerified && typeof window !== 'undefined') {
+                    const currentPath = window.location.pathname;
+                    const allowedUnverified = ['/verify-phone', '/login', '/register'];
+                    if (!allowedUnverified.some(p => currentPath.startsWith(p))) {
+                        window.location.href = '/verify-phone';
+                        return;
+                    }
+                }
             } catch {
                 store.dispatch(setInitialized());
             }

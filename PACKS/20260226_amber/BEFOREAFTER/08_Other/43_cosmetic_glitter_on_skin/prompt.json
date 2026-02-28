@@ -1,7 +1,0 @@
-{
-  "name_en": "Cosmetic Glitter on Skin",
-  "name_ru": "Косметический глиттер на коже",
-  "name_ka": "კოსმეტიკური გლიტერი კანზე",
-  "category": "Face decor",
-  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical. Eyelashes, eyebrows: pixel-identical. Hair: unchanged. Lips and makeup: unchanged. SKIN: Professional retouch — natural texture, pores preserved, hydrated glow. Catchlight on iris. ADD GLITTER: Fine metallic cosmetic glitter particles on skin — [GLITTER_COLOR]. Particle size: micro to small (cosmetic grade, not chunky). Finish: reflective, high-shine, editorial beauty style. Texture: realistic cosmetic glitter sitting on skin surface. Distribution: [COVERAGE]. Do not cover eyes, eyelashes, eyebrows, or lips. Glitter must look naturally scattered, not applied in even layer. Glitter follows lighting direction — natural highlights and micro-sparkles. Proper depth and scale. No fantasy glow, no particles floating in air. BACKGROUND: Preserve or replace as specified. QUALITY: No filters, no smoothing. Professional studio quality. Original dimensions."
-}

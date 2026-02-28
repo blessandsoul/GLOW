@@ -18,8 +18,10 @@ export const useAuth = () => {
 
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [isRegistering, setIsRegistering] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
     const [loginError, setLoginError] = useState<Error | null>(null);
     const [registerError, setRegisterError] = useState<Error | null>(null);
+    const [verifyError, setVerifyError] = useState<Error | null>(null);
 
     const login = async (data: ILoginRequest): Promise<void> => {
         setIsLoggingIn(true);
@@ -27,6 +29,10 @@ export const useAuth = () => {
         try {
             const res = await authService.login(data);
             dispatch(setUser(res.user));
+            if (!res.user.isPhoneVerified) {
+                router.push('/verify-phone');
+                return;
+            }
             const searchParams = new URLSearchParams(window.location.search);
             const from = searchParams.get('from');
             const safeRedirect = from && from.startsWith('/') && !from.startsWith('//') ? from : '/dashboard';
@@ -44,9 +50,10 @@ export const useAuth = () => {
         try {
             const res = await authService.register(data);
             dispatch(setUser(res.user));
+            sessionStorage.setItem('otp_request_id', res.otpRequestId);
             const demoJobId = sessionStorage.getItem('glowge_demo_job_id');
             if (demoJobId) sessionStorage.removeItem('glowge_demo_job_id');
-            router.push('/dashboard');
+            router.push('/verify-phone');
         } catch (error) {
             setRegisterError(error instanceof Error ? error : new Error('Registration failed'));
         } finally {
@@ -57,10 +64,40 @@ export const useAuth = () => {
     const logout = async (): Promise<void> => {
         try {
             await authService.logout();
+        } catch {
+            // Server unreachable — clear stale cookies client-side as fallback
+            document.cookie = 'accessToken=; path=/; max-age=0';
+            document.cookie = 'session=; path=/; max-age=0';
         } finally {
             queryClient.clear();
             dispatch(logoutAction());
             router.push('/login');
+        }
+    };
+
+    const verifyPhone = async (requestId: string, code: string): Promise<void> => {
+        setIsVerifying(true);
+        setVerifyError(null);
+        try {
+            const res = await authService.verifyPhone({ requestId, code });
+            dispatch(setUser(res.user));
+            sessionStorage.removeItem('otp_request_id');
+            router.push('/dashboard');
+        } catch (error) {
+            setVerifyError(error instanceof Error ? error : new Error('Verification failed'));
+        } finally {
+            setIsVerifying(false);
+        }
+    };
+
+    const resendOtp = async (): Promise<string | null> => {
+        try {
+            const res = await authService.resendOtp();
+            sessionStorage.setItem('otp_request_id', res.requestId);
+            return res.requestId;
+        } catch (error) {
+            setVerifyError(error instanceof Error ? error : new Error('Failed to resend code'));
+            return null;
         }
     };
 
@@ -71,9 +108,13 @@ export const useAuth = () => {
         login,
         register,
         logout,
+        verifyPhone,
+        resendOtp,
         isLoggingIn,
         isRegistering,
+        isVerifying,
         loginError,
         registerError,
+        verifyError,
     };
 };

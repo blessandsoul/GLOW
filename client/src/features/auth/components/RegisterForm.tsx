@@ -19,6 +19,7 @@ type RegisterFormData = {
     firstName: string;
     lastName: string;
     email: string;
+    phone: string;
     password: string;
     confirmPassword: string;
 };
@@ -34,6 +35,9 @@ export function RegisterForm(): React.ReactElement {
             firstName: z.string().min(1, t('validation.firstname_required')).max(50, t('validation.firstname_max')),
             lastName: z.string().min(1, t('validation.lastname_required')).max(50, t('validation.lastname_max')),
             email: z.string().email(t('validation.email_invalid')),
+            phone: z.string()
+                .min(9, t('validation.phone_required'))
+                .regex(/^\d{9}$/, t('validation.phone_georgian')),
             password: z
                 .string()
                 .min(8, t('validation.password_min'))
@@ -60,6 +64,7 @@ export function RegisterForm(): React.ReactElement {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
+            phone: `+995${data.phone}`,
             password: data.password,
             referralCode: refCode,
         });
@@ -133,6 +138,28 @@ export function RegisterForm(): React.ReactElement {
                         />
                         {errors.email && (
                             <p className="text-sm text-red-500">{errors.email.message}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="phone" className="text-zinc-700 dark:text-zinc-300">
+                            {t('auth.phone')}
+                        </Label>
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground select-none pointer-events-none">
+                                +995
+                            </span>
+                            <Input
+                                id="phone"
+                                type="tel"
+                                placeholder="5XXXXXXXX"
+                                autoComplete="tel"
+                                className={`pl-14 bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 focus-visible:ring-primary/20 ${errors.phone ? 'border-red-500 focus-visible:ring-red-500/20' : ''}`}
+                                {...register('phone')}
+                            />
+                        </div>
+                        {errors.phone && (
+                            <p className="text-sm text-red-500">{errors.phone.message}</p>
                         )}
                     </div>
 

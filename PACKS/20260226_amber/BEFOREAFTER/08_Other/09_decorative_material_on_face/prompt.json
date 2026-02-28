@@ -1,7 +1,0 @@
-{
-  "name_en": "Decorative Material on Face",
-  "name_ru": "Декоративный материал на лице",
-  "name_ka": "დეკორატიული მასალა სახეზე",
-  "category": "Face decor",
-  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical — all facial features, eyes, lips, expression unchanged. Eyelashes and eyebrows exactly as original — no modification. SKIN: Remove minor blemishes only. Beautiful natural texture, slightly shiny, hydrated. Beautiful catchlight on iris. ADD: [DECOR_TYPE] on the face — arranged naturally, realistic look with proper light reflections and depth. BACKGROUND: Solid black, clean. QUALITY: Preserve original color correction, no filters. Sharp focus. Original dimensions."
-}

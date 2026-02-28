@@ -1,7 +1,0 @@
-{
-  "name_en": "Outfit Change",
-  "name_ru": "Замена одежды",
-  "name_ka": "ტანსაცმლის შეცვლა",
-  "category": "Accessories & clothing",
-  "prompt": "Edit the uploaded photo. PRESERVE: Hair — pixel-identical, no change to color, tone, density, volume, thickness, length, position, texture, shine. Absolutely protected from any processing. Face and lips: unchanged — remove only minor skin blemishes. CLOTHING: Replace model's outfit with [NEW_CLOTHING] — realistic fabric texture, proper folds and draping. BACKGROUND: [BG_COLOR]. QUALITY: No filters. Professional studio quality, 8K. Original dimensions — do not crop or change angle."
-}

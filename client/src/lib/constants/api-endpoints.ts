@@ -9,6 +9,8 @@ export const API_ENDPOINTS = {
         REQUEST_PASSWORD_RESET: '/auth/request-password-reset',
         RESET_PASSWORD: '/auth/reset-password',
         CHANGE_PASSWORD: '/auth/change-password',
+        VERIFY_PHONE: '/auth/verify-phone',
+        RESEND_OTP: '/auth/resend-otp',
     },
     USERS: {
         ME: '/users/me',

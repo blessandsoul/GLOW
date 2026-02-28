@@ -1,7 +1,0 @@
-{
-  "name_en": "Basic Skin Retouch + Background Change",
-  "name_ru": "Базовая ретушь кожи + Замена фона",
-  "name_ka": "კანის ბაზური რეტუში + ფონის შეცვლა",
-  "category": "Skin retouch",
-  "prompt": "Edit the uploaded photo. PRESERVE: Face identity 100% identical — all features unchanged. Eyelashes and eyebrows exactly as original. SKIN: Remove minor blemishes only. Preserve natural pores, texture, micro-details. Beautiful, slightly shiny, natural glow. No smoothing, no blurring. BACKGROUND: Solid beautiful [BG_COLOR]. QUALITY: Preserve original color correction, no filters. Sharp focus. Original dimensions."
-}

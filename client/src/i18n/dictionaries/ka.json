@@ -11,7 +11,9 @@
     "password_lower": "საჭიროა მინიმუმ ერთი პატარა ასო",
     "password_number": "საჭიროა მინიმუმ ერთი ციფრი",
     "confirm_password_required": "დაადასტურეთ პაროლი",
-    "passwords_mismatch": "პაროლები არ ემთხვევა"
+    "passwords_mismatch": "პაროლები არ ემთხვევა",
+    "phone_required": "შეიყვანეთ ტელეფონის ნომერი",
+    "phone_georgian": "შეიყვანეთ სწორი ქართული ნომერი (9 ციფრი)"
   },
   "header": {
     "logo": "Glow.GE",
@@ -111,7 +113,16 @@
     "lastname": "გვარი",
     "creating_account": "ვქმნით ანგარიშს...",
     "create_account_btn": "ანგარიშის შექმნა",
-    "already_have_account": "უკვე გაქვთ ანგარიში?"
+    "already_have_account": "უკვე გაქვთ ანგარიში?",
+    "phone": "ტელეფონის ნომერი",
+    "verify_phone_title": "ტელეფონის დადასტურება",
+    "verify_phone_desc": "შეიყვანეთ 6-ციფრიანი კოდი, რომელიც გამოგზავნილია",
+    "verify_btn": "დადასტურება",
+    "verifying": "მოწმდება...",
+    "resend_code": "კოდის ხელახლა გაგზავნა",
+    "resend_in": "ხელახლა გაგზავნა",
+    "code_sent": "კოდი გაგზავნილია",
+    "phone_verified": "ტელეფონი დადასტურებულია"
   },
   "hero": {
     "badge": "Glow.GE AI-სტუდია",
@@ -138,6 +149,7 @@
     "show_before": "რეტუშამდე ნახვა",
     "show_after": "რეტუშის შემდეგ ნახვა",
     "tap_to_compare": "შეეხეთ შესადარებლად",
+    "tap": "შეეხეთ",
     "lux": "ლუქს-რეტუში",
     "completed": "დასრულდა 4.2წმ-ში"
   },

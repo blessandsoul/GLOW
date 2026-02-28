@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { createTrendsController } from './trends.controller.js';
 import { createTrendsService } from './trends.service.js';
-import { authenticate } from '@/libs/auth.js';
+import { authenticate, requirePhoneVerified } from '@/libs/auth.js';
 
 export async function trendsRoutes(app: FastifyInstance): Promise<void> {
   const trendsService = createTrendsService();
@@ -11,5 +11,5 @@ export async function trendsRoutes(app: FastifyInstance): Promise<void> {
   app.get('/current', controller.getCurrent);
 
   // Authenticated route
-  app.get('/archive', { preHandler: [authenticate] }, controller.getArchive);
+  app.get('/archive', { preHandler: [authenticate, requirePhoneVerified] }, controller.getArchive);
 }

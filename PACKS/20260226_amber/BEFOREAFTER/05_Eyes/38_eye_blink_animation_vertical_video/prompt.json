@@ -1,7 +1,0 @@
-{
-  "name_en": "Eye Blink Animation — Vertical Video",
-  "name_ru": "Анимация моргания — Вертикальное видео",
-  "name_ka": "თვალის დახამხამების ანიმაცია — ვერტიკალური ვიდეო",
-  "category": "Animation",
-  "prompt": "Ultra-realistic image-to-video animation based strictly on the reference image. Vertical 9:16. PRESERVE: Face identity with absolute accuracy — face structure, eye shape, eyelashes, eyebrows, skin texture, lips, jewelry, makeup completely unchanged. Lighting, shadows, highlights identical to reference. MOTION: [MOTION]. Eyelids and eyelashes keep original shape and length during blink. Camera completely static — no zoom, no pan, no tilt, no rotation, no shake. No head movement beyond specified, no facial expression change beyond specified. Photorealistic, cinematic quality, high detail, 8K."
-}

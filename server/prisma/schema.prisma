@@ -23,6 +23,9 @@ model User {
   role          String    @default("USER")
   isActive      Boolean   @default(true)
   emailVerified        Boolean   @default(false)
+  phone                String    @unique
+  phoneVerified        Boolean   @default(false)
+  otpRequestId         String?   @db.VarChar(255)
   passwordResetToken   String?   @db.VarChar(255)
   passwordResetExpiry  DateTime?
   deletedAt            DateTime?

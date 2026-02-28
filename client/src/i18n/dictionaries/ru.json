@@ -11,7 +11,9 @@
     "password_lower": "Нужна хотя бы одна строчная буква",
     "password_number": "Нужна хотя бы одна цифра",
     "confirm_password_required": "Подтвердите пароль",
-    "passwords_mismatch": "Пароли не совпадают"
+    "passwords_mismatch": "Пароли не совпадают",
+    "phone_required": "Введите номер телефона",
+    "phone_georgian": "Введите корректный грузинский номер (9 цифр)"
   },
   "header": {
     "logo": "Glow.GE",
@@ -111,7 +113,16 @@
     "lastname": "Фамилия",
     "creating_account": "Создаём аккаунт...",
     "create_account_btn": "Создать аккаунт",
-    "already_have_account": "Уже есть аккаунт?"
+    "already_have_account": "Уже есть аккаунт?",
+    "phone": "Номер телефона",
+    "verify_phone_title": "Подтвердите телефон",
+    "verify_phone_desc": "Введите 6-значный код, отправленный на",
+    "verify_btn": "Подтвердить",
+    "verifying": "Проверяем...",
+    "resend_code": "Отправить код повторно",
+    "resend_in": "Повторно через",
+    "code_sent": "Код отправлен",
+    "phone_verified": "Телефон подтверждён"
   },
   "hero": {
     "badge": "Glow.GE ИИ-Студия",
@@ -134,6 +145,7 @@
     "show_before": "Показать до",
     "show_after": "Показать после",
     "tap_to_compare": "Нажмите для сравнения",
+    "tap": "Нажмите",
     "lux": "Люкс-ретушь",
     "completed": "Завершено за 4.2с"
   },

@@ -10,6 +10,7 @@ export const RegisterSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().min(1, 'Last name is required').max(50),
+  phone: z.string().regex(/^\+995\d{9}$/, 'Phone must be a valid Georgian number (+995XXXXXXXXX)'),
   referralCode: z.string().max(20).optional(),
 });
 
@@ -42,8 +43,14 @@ export const ChangePasswordSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
 });
 
+export const VerifyPhoneSchema = z.object({
+  requestId: z.string().min(1, 'Request ID is required'),
+  code: z.string().length(6, 'Code must be 6 digits').regex(/^\d+$/, 'Code must be numeric'),
+});
+
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type RequestPasswordResetInput = z.infer<typeof RequestPasswordResetSchema>;
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
+export type VerifyPhoneInput = z.infer<typeof VerifyPhoneSchema>;

@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { JwtPayload } from '@/shared/types/index.js';
 import { UnauthorizedError, ForbiddenError } from '@/shared/errors/errors.js';
+import { prisma } from '@/libs/prisma.js';
 
 export async function authenticate(
   request: FastifyRequest,
@@ -42,6 +43,28 @@ export function authorize(...roles: string[]): (
       throw new ForbiddenError('Insufficient permissions');
     }
   };
+}
+
+export async function requirePhoneVerified(
+  request: FastifyRequest,
+  _reply: FastifyReply,
+): Promise<void> {
+  if (!request.user) {
+    throw new UnauthorizedError('Authentication required');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: request.user.id },
+    select: { phone: true, phoneVerified: true },
+  });
+
+  if (!user) {
+    throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
+  }
+
+  if (!user.phoneVerified) {
+    throw new ForbiddenError('Phone verification required', 'PHONE_NOT_VERIFIED');
+  }
 }
 
 export function registerJwtPlugin(app: FastifyInstance): void {

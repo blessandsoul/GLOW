@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ArrowsClockwise, Diamond, Sparkle, Star, TrendUp } from '@phosphor-icons/react';
+import { ArrowRight, Diamond, Sparkle, Star, TrendUp } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 
@@ -118,7 +118,7 @@ export function HeroEditorial({ wordIndex, rotatingWords }: HeroEditorialProps):
 
             {/* Before / After tap-to-toggle card */}
             <motion.div
-                className="relative w-full max-w-sm h-[300px] md:h-auto md:aspect-square rounded-2xl overflow-hidden mb-8 shadow-lg border border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
+                className="relative w-full max-w-sm h-[275px] md:h-auto md:aspect-square rounded-2xl overflow-hidden mb-8 shadow-lg border border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, delay: 0.6, type: 'spring', stiffness: 70, damping: 20 }}
@@ -186,20 +186,19 @@ export function HeroEditorial({ wordIndex, rotatingWords }: HeroEditorialProps):
                     </AnimatePresence>
                 </div>
 
-                {/* Bottom-center tap hint — fades after first tap */}
+                {/* Bottom-left tap hint — fades after first tap */}
                 <AnimatePresence>
                     {hintVisible && (
                         <motion.div
-                            className="absolute bottom-4 inset-x-0 z-30 flex justify-center pointer-events-none"
+                            className="absolute bottom-3 left-3 z-30 pointer-events-none"
                             initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 6 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <div className="flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-sm px-3 py-1.5 shadow-sm">
-                                <ArrowsClockwise size={12} weight="bold" className="text-white/90" />
+                            <div className="rounded-lg bg-black/50 backdrop-blur-sm px-2.5 py-1 shadow-sm">
                                 <span className="text-[10px] font-semibold text-white/90">
-                                    {t('visual.tap_to_compare') ?? 'Tap to compare'}
+                                    {t('visual.tap') ?? 'Touch'}
                                 </span>
                             </div>
                         </motion.div>
