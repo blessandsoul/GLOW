@@ -1,27 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { referralsService } from '../services/referrals.service';
+import type { ReferralStats } from '../types/referrals.types';
 
-export function useReferrals() {
-  const [data, setData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export const referralKeys = {
+  all: ['referrals'] as const,
+  stats: () => [...referralKeys.all, 'stats'] as const,
+};
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchStats = async () => {
-      setIsLoading(true);
-      try {
-        const stats = await referralsService.getMyStats();
-        if (isMounted) setData(stats);
-      } catch (err) {
-        if (isMounted) setError(err instanceof Error ? err : new Error(String(err)));
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-    fetchStats();
-    return () => { isMounted = false; };
-  }, []);
-
-  return { data, isLoading, error };
+export function useReferralStats(): ReturnType<typeof useQuery<ReferralStats>> {
+  return useQuery<ReferralStats>({
+    queryKey: referralKeys.stats(),
+    queryFn: () => referralsService.getMyStats(),
+  });
 }
