@@ -60,8 +60,10 @@ export const referralsService = {
   },
 
   async getMyStats(userId: string, appUrl: string): Promise<ReferralStats> {
-    const user = await referralsRepo.findUserCode(userId);
-    const referrals = await referralsRepo.getStats(userId);
+    const [user, referrals] = await Promise.all([
+      referralsRepo.findUserCode(userId),
+      referralsRepo.getStats(userId),
+    ]);
 
     const referralCode = user?.referralCode ?? null;
     const referralLink = referralCode ? `${appUrl}/r/${referralCode}` : null;

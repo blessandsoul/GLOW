@@ -81,10 +81,8 @@ export function createAuthService(app: FastifyInstance) {
         data: { referralCode },
       });
 
-      // Apply referral if code provided (fire-and-forget, non-fatal)
-      referralsService
-        .applyReferralOnRegister(user.id, input.referralCode, input.phone)
-        .catch((err: unknown) => logger.warn({ err }, 'Failed to apply referral on register'));
+      // Apply referral if code provided (non-fatal, internal try/catch)
+      await referralsService.applyReferralOnRegister(user.id, input.referralCode, input.phone);
 
       // Schedule post-registration email sequence (fire-and-forget, non-fatal)
       scheduleEmailSequence(user.id).catch((err: unknown) =>
