@@ -92,14 +92,16 @@ export function ServicesSection({ form, updateField }: ServicesSectionProps): Re
 
             {/* Mobile drawer */}
             <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-                <DrawerContent className="px-4 pb-8">
-                    <DrawerHeader className="px-0">
+                <DrawerContent className="px-4">
+                    <DrawerHeader className="shrink-0 px-0">
                         <DrawerTitle>{t('portfolio.add_service')}</DrawerTitle>
                     </DrawerHeader>
-                    <AddServicePanel
-                        onAdd={handleAddService}
-                        onCancel={() => setDrawerOpen(false)}
-                    />
+                    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(2rem,env(safe-area-inset-bottom))]">
+                        <AddServicePanel
+                            onAdd={handleAddService}
+                            onCancel={() => setDrawerOpen(false)}
+                        />
+                    </div>
                 </DrawerContent>
             </Drawer>
 
