@@ -1,5 +1,0 @@
-Edit your photo and enhance its quality without changing color correction or adding filters. Do not add filters to the photo. Do not change color correction. Do not touch, alter, or blur the face. Make the face textured and high-quality. Preserve all facial features. Create a high-quality photo. Do not change the color of the face or lips. Do not change the color or shape of the eyebrows. STRICTLY leave the eyebrows as they are in the photo, without changing their contour, color, shape, or hairs.
-Remove imperfections, making the skin beautiful, textured, slightly shiny, and slightly dewy. Create a beautiful catchlight on the iris.
-One hand is near the lips, resting on the chin.
-Add large gold earrings that hang from the fingers.
-Enhance the photo to 8K quality. Change the background to a beautiful black background. Do not change the photo filter.

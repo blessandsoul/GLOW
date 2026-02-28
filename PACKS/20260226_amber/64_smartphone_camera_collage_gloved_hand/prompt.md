@@ -1,1 +1,0 @@
-Make a realistic collage: a hand in a black nitrile glove holds a smartphone with an open camera. My photo is on the camera screen. You can see the camera's grid lines, the shooting button, and the photo mode interface. The background is blurred, black, beauty retouching, high skin detail, professional photography. Improve the 8K quality. Photo size 3:4

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { FastifyInstance } from 'fastify';
 import { authRepo, mapUserToResponse } from './auth.repo.js';
 import { BadRequestError, ConflictError, UnauthorizedError } from '@/shared/errors/errors.js';
+import { sendOtp, verifyOtp } from '@/libs/otp.js';
 import { env } from '@/config/env.js';
 import type {
   RegisterInput,
@@ -59,12 +60,18 @@ export function createAuthService(app: FastifyInstance) {
         throw new ConflictError('Email already registered', 'EMAIL_ALREADY_EXISTS');
       }
 
+      const existingPhone = await authRepo.findUserByPhone(input.phone);
+      if (existingPhone) {
+        throw new ConflictError('Phone number already registered', 'PHONE_ALREADY_EXISTS');
+      }
+
       const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
       const user = await authRepo.createUser({
         email: input.email,
         password: hashedPassword,
         firstName: input.firstName,
         lastName: input.lastName,
+        phone: input.phone,
       });
 
       // Generate and save referral code for new user
@@ -84,10 +91,14 @@ export function createAuthService(app: FastifyInstance) {
         logger.warn({ err }, 'Failed to schedule email sequence'),
       );
 
+      // Send phone verification OTP
+      const otpResult = await sendOtp(input.phone);
+      await authRepo.setOtpRequestId(user.id, otpResult.requestId);
+
       const accessToken = signAccessToken({ id: user.id, role: user.role });
       const refreshToken = await generateRefreshToken(user.id);
 
-      return { user: mapUserToResponse(user), accessToken, refreshToken };
+      return { user: mapUserToResponse(user), accessToken, refreshToken, otpRequestId: otpResult.requestId };
     },
 
     async login(input: LoginInput) {
@@ -217,6 +228,39 @@ export function createAuthService(app: FastifyInstance) {
       const hashedPassword = await bcrypt.hash(input.newPassword, SALT_ROUNDS);
       await authRepo.updatePassword(userId, hashedPassword);
       await authRepo.deleteUserRefreshTokens(userId);
+    },
+
+    async verifyPhone(userId: string, requestId: string, code: string, ipAddress: string) {
+      const user = await authRepo.findUserById(userId);
+      if (!user) {
+        throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
+      }
+      if (user.phoneVerified) {
+        throw new BadRequestError('Phone already verified', 'PHONE_ALREADY_VERIFIED');
+      }
+
+      await verifyOtp(requestId, code, ipAddress);
+
+      const updatedUser = await authRepo.setPhoneVerified(userId);
+      return mapUserToResponse(updatedUser);
+    },
+
+    async resendOtp(userId: string) {
+      const user = await authRepo.findUserById(userId);
+      if (!user) {
+        throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
+      }
+      if (user.phoneVerified) {
+        throw new BadRequestError('Phone already verified', 'PHONE_ALREADY_VERIFIED');
+      }
+      if (!user.phone) {
+        throw new BadRequestError('No phone number on file', 'NO_PHONE_NUMBER');
+      }
+
+      const otpResult = await sendOtp(user.phone);
+      await authRepo.setOtpRequestId(userId, otpResult.requestId);
+
+      return { requestId: otpResult.requestId };
     },
   };
 }

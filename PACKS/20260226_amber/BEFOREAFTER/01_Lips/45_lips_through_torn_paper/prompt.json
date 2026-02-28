@@ -1,7 +1,0 @@
-{
-  "name_en": "Lips Through Torn Paper",
-  "name_ru": "Губы сквозь порванную бумагу",
-  "name_ka": "ტუჩები დახეულ ქაღალდში",
-  "category": "Lips",
-  "prompt": "Edit the uploaded photo. Close-up of lips visible through torn [PAPER_COLOR] paper. PRESERVE: Face identity 100% identical. Lips: pixel-identical — no change to color, temperature, shape, tone, texture. No lip makeup added. Eyebrows and eyelashes: pixel-identical. SKIN: Professional retouch — natural texture, pores preserved, hydrated glow. No smoothing. Paper tear must look realistic with ragged edges, proper depth, and shadows. QUALITY: No filters. Professional studio quality. Original dimensions — do not crop or change angle."
-}

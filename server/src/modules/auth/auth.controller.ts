@@ -5,6 +5,7 @@ import {
   RequestPasswordResetSchema,
   ResetPasswordSchema,
   ChangePasswordSchema,
+  VerifyPhoneSchema,
 } from './auth.schemas.js';
 import type { AuthService } from './auth.service.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
@@ -18,7 +19,10 @@ export function createAuthController(authService: AuthService) {
       const result = await authService.register(input);
       setAuthCookies(reply, result.accessToken, result.refreshToken);
       reply.status(201).send(
-        successResponse('Registration successful', { user: result.user }),
+        successResponse('Registration successful. Please verify your phone.', {
+          user: result.user,
+          otpRequestId: result.otpRequestId,
+        }),
       );
     },
 
@@ -71,6 +75,22 @@ export function createAuthController(authService: AuthService) {
       await authService.changePassword(request.user!.id, input);
       clearAuthCookies(reply);
       reply.send(successResponse('Password changed', null));
+    },
+
+    async verifyPhone(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const input = VerifyPhoneSchema.parse(request.body);
+      const user = await authService.verifyPhone(
+        request.user!.id,
+        input.requestId,
+        input.code,
+        request.ip,
+      );
+      reply.send(successResponse('Phone verified successfully', { user }));
+    },
+
+    async resendOtp(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const result = await authService.resendOtp(request.user!.id);
+      reply.send(successResponse('Verification code sent', { requestId: result.requestId }));
     },
   };
 }

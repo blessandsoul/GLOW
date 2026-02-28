@@ -28,6 +28,11 @@ export function middleware(request: NextRequest): NextResponse {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
+    // /verify-phone requires a session but should NOT redirect to dashboard
+    if (pathname === '/verify-phone' && !token && !session) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
     return NextResponse.next();
 }
 
@@ -40,5 +45,6 @@ export const config = {
         '/create',
         '/login',
         '/register',
+        '/verify-phone',
     ],
 };

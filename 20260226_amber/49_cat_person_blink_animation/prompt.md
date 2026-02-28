@@ -1,1 +1,0 @@
-Ultra-realistic image-to-video animation. PRESERVE: Face, eyebrows, eyelashes completely unchanged — shape, volume, curve identical. All facial features completely unchanged. No frame movement, no zoom change. MOTION: Girl very slightly blinks naturally but does not fully close eyes. Cat blinks its eyes. 8K quality, ultra-realism, high detail.

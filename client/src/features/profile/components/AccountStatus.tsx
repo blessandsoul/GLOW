@@ -1,7 +1,6 @@
 'use client';
 
-import { CheckCircle, Warning, User, Star, ShieldCheck, Buildings } from '@phosphor-icons/react';
-import { Button } from '@/components/ui/button';
+import { User, Star, ShieldCheck, Buildings } from '@phosphor-icons/react';
 import { useAppSelector } from '@/store/hooks';
 import { cn } from '@/lib/utils';
 import type { UserRole } from '@/features/auth/types/auth.types';
@@ -20,7 +19,6 @@ export function AccountStatus(): React.ReactElement {
 
     const role = ROLE_CONFIG[user.role];
     const RoleIcon = role.icon;
-    const verified = user.isEmailVerified;
 
     return (
         <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
@@ -32,20 +30,6 @@ export function AccountStatus(): React.ReactElement {
                     <RoleIcon size={13} weight="fill" />
                     {role.label}
                 </div>
-
-                {/* Email verification */}
-                <div className={cn(
-                    'flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
-                    verified
-                        ? 'bg-success/10 text-success'
-                        : 'bg-warning/10 text-warning'
-                )}>
-                    {verified
-                        ? <CheckCircle size={13} weight="fill" />
-                        : <Warning size={13} weight="fill" />
-                    }
-                    {verified ? 'Email verified' : 'Email not verified'}
-                </div>
             </div>
 
             <div className="space-y-1">
@@ -53,18 +37,10 @@ export function AccountStatus(): React.ReactElement {
                 <p className="text-sm font-medium text-foreground">{user.email}</p>
             </div>
 
-            {!verified && (
-                <div className="rounded-lg border border-warning/30 bg-warning/5 p-3 flex items-start gap-3">
-                    <Warning size={16} className="text-warning mt-0.5 shrink-0" weight="fill" />
-                    <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground">Verify your email</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                            Check your inbox and click the verification link.
-                        </p>
-                    </div>
-                    <Button variant="outline" size="sm" className="text-xs shrink-0">
-                        Resend
-                    </Button>
+            {user.phone && (
+                <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Phone</p>
+                    <p className="text-sm font-medium text-foreground">{user.phone}</p>
                 </div>
             )}
 

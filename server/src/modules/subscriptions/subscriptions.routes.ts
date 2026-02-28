@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { subscriptionsController } from './subscriptions.controller.js';
-import { authenticate } from '@/libs/auth.js';
+import { authenticate, requirePhoneVerified } from '@/libs/auth.js';
 
 export async function subscriptionsRoutes(
   app: FastifyInstance,
@@ -8,22 +8,22 @@ export async function subscriptionsRoutes(
   app.get('/plans', subscriptionsController.getPlans);
   app.get(
     '/current',
-    { preHandler: [authenticate] },
+    { preHandler: [authenticate, requirePhoneVerified] },
     subscriptionsController.getCurrent,
   );
   app.post(
     '/subscribe',
-    { preHandler: [authenticate] },
+    { preHandler: [authenticate, requirePhoneVerified] },
     subscriptionsController.subscribe,
   );
   app.post(
     '/cancel',
-    { preHandler: [authenticate] },
+    { preHandler: [authenticate, requirePhoneVerified] },
     subscriptionsController.cancel,
   );
   app.post(
     '/reactivate',
-    { preHandler: [authenticate] },
+    { preHandler: [authenticate, requirePhoneVerified] },
     subscriptionsController.reactivate,
   );
 }

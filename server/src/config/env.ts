@@ -55,6 +55,9 @@ const envSchema = z.object({
   // Output format for downloads: "png" (lossless, larger) or "jpeg" (lossy, smaller).
   // When watermark is disabled, original format is preserved regardless of this setting.
   IMAGE_DOWNLOAD_FORMAT: z.enum(['png', 'jpeg']).default('png'),
+
+  // OTP (phone verification)
+  OTP_API_KEY: z.string().min(1),
 });
 
 const parsed = envSchema.safeParse(process.env);

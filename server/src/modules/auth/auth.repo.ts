@@ -3,6 +3,7 @@ import { prisma } from '@/libs/prisma.js';
 export const USER_SELECT = {
   id: true,
   email: true,
+  phone: true,
   firstName: true,
   lastName: true,
   username: true,
@@ -10,6 +11,7 @@ export const USER_SELECT = {
   role: true,
   isActive: true,
   emailVerified: true,
+  phoneVerified: true,
   credits: true,
   createdAt: true,
   updatedAt: true,
@@ -18,6 +20,7 @@ export const USER_SELECT = {
 export interface RawSelectedUser {
   id: string;
   email: string;
+  phone: string | null;
   firstName: string;
   lastName: string;
   username: string | null;
@@ -25,6 +28,7 @@ export interface RawSelectedUser {
   role: string;
   isActive: boolean;
   emailVerified: boolean;
+  phoneVerified: boolean;
   credits: number;
   createdAt: Date;
   updatedAt: Date;
@@ -33,6 +37,7 @@ export interface RawSelectedUser {
 export function mapUserToResponse(user: RawSelectedUser): {
   id: string;
   email: string;
+  phone: string | null;
   firstName: string;
   lastName: string;
   username: string | null;
@@ -40,12 +45,13 @@ export function mapUserToResponse(user: RawSelectedUser): {
   role: string;
   isActive: boolean;
   isEmailVerified: boolean;
+  isPhoneVerified: boolean;
   credits: number;
   createdAt: Date;
   updatedAt: Date;
 } {
-  const { emailVerified, ...rest } = user;
-  return { ...rest, isEmailVerified: emailVerified };
+  const { emailVerified, phoneVerified, ...rest } = user;
+  return { ...rest, isEmailVerified: emailVerified, isPhoneVerified: phoneVerified };
 }
 
 export const authRepo = {
@@ -67,6 +73,7 @@ export const authRepo = {
     password: string;
     firstName: string;
     lastName: string;
+    phone: string;
   }) {
     const baseSlug = `${data.firstName}${data.lastName}`
       .toLowerCase()
@@ -170,5 +177,24 @@ export const authRepo = {
       data: { username },
     });
     return username;
+  },
+
+  async findUserByPhone(phone: string) {
+    return prisma.user.findUnique({ where: { phone } });
+  },
+
+  async setPhoneVerified(userId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { phoneVerified: true, otpRequestId: null },
+      select: USER_SELECT,
+    });
+  },
+
+  async setOtpRequestId(userId: string, otpRequestId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { otpRequestId },
+    });
   },
 };

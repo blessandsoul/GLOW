@@ -1,6 +1,0 @@
-Edit your photo and enhance its quality without changing color correction or adding filters. Do not add filters to the photo. Do not change color correction. Do not touch, alter, or blur your face. Make your face textured and high-quality.
-Preserve all facial features. Create a high-quality photo. Do not change your face or lip color. Do not change the color or shape of your eyebrows. STRICTLY leave your eyebrows as they are in the photo, without changing their outline, hairs, or color. Remove imperfections, making your skin beautiful, textured, and slightly shiny. Create a beautiful catchlight on the iris. Do not change your eyelashes, their length, or curl.
-Leave your eyelashes as they are. STRICTLY! Do not apply makeup, do not alter your face, preserve your facial features, make your skin slightly glossy, do not change your eyebrow color, do not apply filters or masks to your face.
-Wavy your hair, keep your hair color. Add raspberry satin bows to the hair, randomly placing them so they look realistic. Add two velvet hearts to the model's hands, one light pink and one raspberry. Make it look like the model is holding them.
-Enhance the photo to 8K quality.
-Change the background to a beautiful velvety black background. Do not change the photo filter.

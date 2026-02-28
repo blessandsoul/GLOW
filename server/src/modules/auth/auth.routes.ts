@@ -15,4 +15,6 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   app.post('/request-password-reset', controller.requestPasswordReset);
   app.post('/reset-password', controller.resetPassword);
   app.post('/change-password', { preHandler: [authenticate] }, controller.changePassword);
+  app.post('/verify-phone', { preHandler: [authenticate] }, controller.verifyPhone);
+  app.post('/resend-otp', { preHandler: [authenticate] }, controller.resendOtp);
 }

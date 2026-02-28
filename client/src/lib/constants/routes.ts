@@ -12,5 +12,6 @@ export const ROUTES = {
     DASHBOARD_REFERRALS: '/dashboard/referrals',
     SHOWCASE: (jobId: string) => `/showcase/${jobId}` as const,
     PORTFOLIO_PUBLIC: (username: string) => `/specialist/${username}` as const,
+    VERIFY_PHONE: '/verify-phone',
     ADMIN: '/admin',
 } as const;

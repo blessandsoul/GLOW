@@ -11,7 +11,8 @@
     { "key": "jobId", "value": "" },
     { "key": "portfolioId", "value": "" },
     { "key": "packageId", "value": "" },
-    { "key": "username", "value": "" }
+    { "key": "username", "value": "" },
+    { "key": "otpRequestId", "value": "" }
   ],
   "item": [
     {
@@ -32,7 +33,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Test1234!\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"referralCode\": \"\"\n}"
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Test1234!\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"+995568000865\",\n  \"referralCode\": \"\"\n}"
             }
           },
           "event": [
@@ -48,6 +49,9 @@
                   "    if (res.data.user.username) {",
                   "      pm.collectionVariables.set('username', res.data.user.username);",
                   "    }",
+                  "  }",
+                  "  if (res.data && res.data.otpRequestId) {",
+                  "    pm.collectionVariables.set('otpRequestId', res.data.otpRequestId);",
                   "  }",
                   "}"
                 ]
@@ -151,6 +155,68 @@
               "raw": "{\n  \"token\": \"paste-reset-token-here\",\n  \"password\": \"NewPass1234!\"\n}"
             }
           }
+        },
+        {
+          "name": "Verify Phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-phone",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify-phone"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{otpRequestId}}\",\n  \"code\": \"123456\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.user) {",
+                  "    pm.collectionVariables.set('userId', res.data.user.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/resend-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "resend-otp"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.requestId) {",
+                  "    pm.collectionVariables.set('otpRequestId', res.data.requestId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
         }
       ]
     },

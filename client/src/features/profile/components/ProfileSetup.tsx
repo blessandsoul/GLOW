@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Plus, UserCircle, SpinnerGap, Camera } from '@phosphor-icons/react';
+import { Plus, UserCircle, SpinnerGap } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -46,40 +46,6 @@ function PersonalInfoSection(): React.ReactElement {
     return (
         <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
             <p className="text-sm font-semibold text-foreground">Personal info</p>
-
-            {/* Avatar */}
-            <div className="flex items-center gap-4">
-                <div className="relative shrink-0">
-                    {user?.avatar ? (
-                        <img
-                            src={user.avatar}
-                            alt={`${user.firstName} ${user.lastName}`}
-                            className="h-16 w-16 rounded-full object-cover border border-border/50"
-                        />
-                    ) : (
-                        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center border border-border/50">
-                            <UserCircle size={32} className="text-primary" />
-                        </div>
-                    )}
-                    <button
-                        type="button"
-                        className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-card border border-border/60 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-sm"
-                        aria-label="Change avatar"
-                    >
-                        <Camera size={12} />
-                    </button>
-                </div>
-                <div>
-                    <p className="text-sm font-medium text-foreground">
-                        {user?.firstName} {user?.lastName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{user?.email}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        {/* TODO: enable upload when backend supports it */}
-                        JPG, PNG or WebP · max 5 MB
-                    </p>
-                </div>
-            </div>
 
             {/* Name fields */}
             <form onSubmit={handleSave} className="space-y-4">

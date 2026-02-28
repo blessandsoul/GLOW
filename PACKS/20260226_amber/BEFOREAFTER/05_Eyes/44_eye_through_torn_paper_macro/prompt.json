@@ -1,7 +1,0 @@
-{
-  "name_en": "Eye Through Torn Paper — Macro",
-  "name_ru": "Глаз сквозь порванную бумагу — Макро",
-  "name_ka": "თვალი დახეულ ქაღალდში — მაკრო",
-  "category": "Macro / Lashes",
-  "prompt": "Edit the uploaded photo. Close-up of the [FOCUS_ZONE] visible through torn [PAPER_COLOR] paper. PRESERVE: Face identity 100% identical. Eyelashes: pixel-identical. Eyebrows: pixel-identical. Hair: unchanged. Lips and makeup: unchanged. SKIN: Professional retouch — natural texture visible, pores preserved, hydrated glow. Catchlight on iris. Paper tear must look realistic with ragged edges, proper depth, and natural shadows. QUALITY: No filters, no smoothing. Professional macro lens quality. Original dimensions."
-}

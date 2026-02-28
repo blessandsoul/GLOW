@@ -1,7 +1,0 @@
-{
-  "name_en": "Makeup Artist Retouch — Makeup Protected",
-  "name_ru": "Ретушь визажиста — Лицо и макияж защищены",
-  "name_ka": "ვიზაჟისტის რეტუში — მაკიაჟი დაცულია",
-  "category": "Makeup artists",
-  "prompt": "Edit the uploaded photo — professional editorial skin retouch. PRESERVE: Face identity 100% identical. Makeup and face are absolutely protected — pixel-identical to original. No change to facial contrast. Eyes, eyelids, eyebrows, lips: no modification. SKIN: Retouch ONLY skin surface. Clear even skin tone, soft flattering light, natural glow, sculpted volume. Pores preserved, microtexture visible. Sharp high-frequency detail, no blur artifacts. BACKGROUND: [BG_COLOR]. QUALITY: No filters. Ultra-photorealistic editorial beauty. 8K quality. Original dimensions — do not resize."
-}

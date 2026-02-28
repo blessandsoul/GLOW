@@ -4,12 +4,15 @@ import type { ApiResponse } from '@/lib/api/api.types';
 import type {
     ILoginRequest,
     IRegisterRequest,
+    IRegisterResponse,
+    IResendOtpResponse,
     IUser,
+    IVerifyPhoneRequest,
 } from '../types/auth.types';
 
 class AuthService {
-    async register(data: IRegisterRequest): Promise<{ user: IUser }> {
-        const response = await apiClient.post<ApiResponse<{ user: IUser }>>(
+    async register(data: IRegisterRequest): Promise<IRegisterResponse> {
+        const response = await apiClient.post<ApiResponse<IRegisterResponse>>(
             API_ENDPOINTS.AUTH.REGISTER,
             data,
         );
@@ -56,6 +59,21 @@ class AuthService {
             currentPassword,
             newPassword,
         });
+    }
+
+    async verifyPhone(data: IVerifyPhoneRequest): Promise<{ user: IUser }> {
+        const response = await apiClient.post<ApiResponse<{ user: IUser }>>(
+            API_ENDPOINTS.AUTH.VERIFY_PHONE,
+            data,
+        );
+        return response.data.data;
+    }
+
+    async resendOtp(): Promise<IResendOtpResponse> {
+        const response = await apiClient.post<ApiResponse<IResendOtpResponse>>(
+            API_ENDPOINTS.AUTH.RESEND_OTP,
+        );
+        return response.data.data;
     }
 }
 
