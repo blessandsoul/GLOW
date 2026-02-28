@@ -1,4 +1,4 @@
-import { referralsRepo } from './referrals.repo.js';
+import { referralsRepo, REFERRAL_REWARDS } from './referrals.repo.js';
 import { env } from '../../config/env.js';
 import { logger } from '../../libs/logger.js';
 
@@ -31,7 +31,7 @@ export const referralsService = {
     referralCode: string | undefined,
     phone: string,
   ): Promise<void> {
-    if (!referralCode) return;
+    if (!referralCode || !phone) return;
     try {
       const referrer = await referralsRepo.findByCode(referralCode);
       if (!referrer || referrer.id === newUserId) return;
@@ -52,9 +52,8 @@ export const referralsService = {
       const pending = await referralsRepo.findPendingReferralByReferredId(referredUserId);
       if (!pending) return;
 
-      await referralsRepo.grantRewards(pending.referrerId, pending.referredId);
-      await referralsRepo.markRewarded(pending.id);
-    } catch (err) {
+      await referralsRepo.grantRewardsAndMarkRewarded(pending.id, pending.referrerId, pending.referredId);
+    } catch (err: unknown) {
       // Non-fatal: log warning but don't block the caller
       logger.warn({ err, referredUserId }, 'Failed to grant pending referral rewards');
     }
@@ -66,7 +65,7 @@ export const referralsService = {
 
     const referralCode = user?.referralCode ?? null;
     const referralLink = referralCode ? `${appUrl}/r/${referralCode}` : null;
-    const totalCreditsEarned = referrals.filter((r) => r.rewardGiven).length * 3;
+    const totalCreditsEarned = referrals.filter((r) => r.rewardGiven).length * REFERRAL_REWARDS.REFERRER_CREDITS;
     const referralBonus = user?.referralBonus ?? 0;
 
     return {
@@ -79,7 +78,7 @@ export const referralsService = {
       recentReferrals: referrals.map((r) => ({
         name: r.referred.firstName,
         joinedAt: r.referred.createdAt,
-        rewarded: r.referred.phoneVerified,
+        rewarded: r.rewardGiven,
       })),
     };
   },

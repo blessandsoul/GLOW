@@ -245,7 +245,7 @@ export function createAuthService(app: FastifyInstance) {
 
       // Grant pending referral rewards (fire-and-forget, non-fatal)
       referralsService.grantPendingRewards(userId)
-        .catch((err) => logger.warn({ err, userId }, 'Failed to grant referral rewards on phone verify'));
+        .catch((err: unknown) => logger.warn({ err, userId }, 'Failed to grant referral rewards on phone verify'));
 
       return mapUserToResponse(updatedUser);
     },
