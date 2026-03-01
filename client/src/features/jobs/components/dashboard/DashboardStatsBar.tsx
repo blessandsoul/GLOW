@@ -10,7 +10,7 @@ import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 
-export function DashboardStatsBar(): React.ReactElement {
+export function DashboardStatsBar(): React.ReactElement | null {
     const { t } = useLanguage();
     const { data, isLoading, isError } = useDashboardStats();
 
