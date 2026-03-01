@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { ROUTES } from '@/lib/constants/routes';
 import { getErrorMessage } from '@/lib/utils/error';
+import { downloadImage } from '@/lib/utils/download';
 import type { RootState } from '@/store';
 import { useAppDispatch } from '@/store/hooks';
 import { updateCredits } from '@/features/auth/store/authSlice';
@@ -176,14 +177,11 @@ export function useStudioState(): StudioState {
         try {
             const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
             const downloadUrl = `${apiBase}/jobs/${jobId}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}`;
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = `glowge-${Date.now()}.jpg`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            await downloadImage(downloadUrl, `glowge-${Date.now()}.jpg`);
             toast.success(t('ui.text_tv2fdm'));
         } catch (err) {
+            // User cancelled share sheet — not an error
+            if (err instanceof Error && err.name === 'AbortError') return;
             toast.error(getErrorMessage(err));
         }
     }, [t]);

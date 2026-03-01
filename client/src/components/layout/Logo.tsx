@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 /* ─────────────────────────────────────────────
@@ -12,22 +12,23 @@ type Spark = { id: number; x: number; y: number; size: number; delay: number };
 function SparkLayer({ active }: { active: boolean }): React.ReactElement | null {
     const [sparks, setSparks] = useState<Spark[]>([]);
 
-    const gen = useCallback((): Spark => ({
+    const genRef = React.useRef((): Spark => ({
         id: Math.random(),
         x: Math.random() * 110 - 10,
         y: Math.random() * 32 - 8,
         size: Math.random() * 6 + 4,
         delay: Math.random() * 0.8,
-    }), []);
+    }));
 
     useEffect(() => {
         if (!active) { setSparks([]); return; }
+        const gen = genRef.current;
         setSparks(Array.from({ length: 5 }, gen));
         const t = setInterval(() => {
             setSparks((p) => p.map((s, i) => Math.random() > 0.5 ? { ...gen(), id: s.id + i * 0.001 } : s));
         }, 900);
         return () => clearInterval(t);
-    }, [active, gen]);
+    }, [active]);
 
     if (!active) return null;
 

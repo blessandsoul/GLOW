@@ -303,6 +303,8 @@
     "text_fta2fm": "Link copied!",
     "text_copy_link": "Copy portfolio link",
     "text_668ns3": "Before and After comparison",
+    "compare_slider": "Comparison slider",
+    "compare_slider_hint": "Drag to compare",
     "text_89w4ja": "After retouch",
     "text_usihek": "Before retouch",
     "text_w5glk4": "Start retouch (",
@@ -778,6 +780,16 @@
     "mock_general_7": "I'm the Glow virtual assistant ✨ I help with choosing a master, booking, and navigation!",
     "mock_default_1": "Interesting question! Our managers can help better — want to contact them?",
     "mock_default_2": "I didn't quite get that 😅 Try rephrasing or choose an action below!",
-    "mock_default_3": "Happy to help! Specify what exactly you are interested in ✨"
+    "mock_default_3": "Happy to help! Specify what exactly you are interested in ✨",
+    "quick_services": "Services",
+    "quick_navigation": "Navigation",
+    "quick_portfolio": "Portfolio",
+    "quick_support": "Support",
+    "sleeping_tooltip": "Wake me up! 😴",
+    "active_tooltip": "Hey, gorgeous! ✨",
+    "retry": "Try again",
+    "mute": "Mute sounds",
+    "unmute": "Unmute sounds",
+    "fallback_notice": "offline"
   }
 }

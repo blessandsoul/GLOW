@@ -5,6 +5,7 @@ import Image from 'next/image';
 import {
     DownloadSimple, Sparkle, WarningCircle,
     LinkSimple, Stamp, MagnifyingGlassPlus,
+    SlidersHorizontal, GridFour,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import { WatermarkOverlay } from '@/features/branding/components/WatermarkPrevie
 import { useBranding } from '@/features/branding/hooks/useBranding';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
 import { ImageLightbox } from '@/features/portfolio/components/ImageLightbox';
+import { ImageCompare } from '@/components/ui/ImageCompare';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -60,6 +62,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
 
     const [showBranding, setShowBranding] = useState(false);
     const [selectedAfterIdx, setSelectedAfterIdx] = useState(0);
+    const [compareMode, setCompareMode] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
 
@@ -140,64 +143,120 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
             {/* Before / After comparison — prominent, full-width on mobile */}
             {results.length > 0 && job.originalUrl && (
                 <div className="flex flex-col gap-2">
-                    <div className="grid grid-cols-2 gap-1.5">
-                        {/* Before (Original) */}
-                        <button
-                            type="button"
-                            onClick={() => openLightbox(0)}
-                            className="group relative overflow-hidden rounded-xl border border-border/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                        >
-                            <div className="relative aspect-3/4">
-                                <Image
-                                    src={getServerImageUrl(job.originalUrl)}
-                                    alt={t('ui.text_pt6')}
-                                    fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                                    sizes="(max-width: 640px) 50vw, 40vw"
-                                    unoptimized
-                                />
-                            </div>
-                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
-                                <span className="text-[11px] font-semibold text-white/90">{t('ui.text_pt6')}</span>
-                                <MagnifyingGlassPlus size={14} className="text-white/60" />
-                            </div>
-                        </button>
-
-                        {/* After (Result) */}
-                        <button
-                            type="button"
-                            onClick={() => openLightbox(1)}
-                            className={cn(
-                                'group relative overflow-hidden rounded-xl border border-primary/30 ring-1 ring-primary/20',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-                            )}
-                        >
-                            <div className="relative aspect-3/4">
-                                <Image
-                                    src={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
-                                    alt={t('ui.text_gnzjzw')}
-                                    fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                                    sizes="(max-width: 640px) 50vw, 40vw"
-                                    unoptimized
-                                />
-                                {brandingVisible && brandingProfile && (
-                                    <WatermarkOverlay
-                                        style={brandingProfile.watermarkStyle}
-                                        color={brandingProfile.primaryColor}
-                                        name={brandingProfile.displayName ?? ''}
-                                        handle={brandingProfile.instagramHandle ?? ''}
-                                        logoUrl={brandingProfile.logoUrl ? getServerImageUrl(brandingProfile.logoUrl) : null}
-                                        opacity={brandingProfile.watermarkOpacity}
-                                    />
+                    {/* View mode toggle: Grid vs Slider */}
+                    <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-medium text-muted-foreground">
+                            {t('ui.text_668ns3')}
+                        </span>
+                        <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5">
+                            <button
+                                type="button"
+                                onClick={() => setCompareMode(false)}
+                                className={cn(
+                                    'flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold transition-all duration-200',
+                                    !compareMode
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground',
                                 )}
-                            </div>
-                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
-                                <span className="text-[11px] font-semibold text-white/90">{t('ui.text_gnzjzw')}</span>
-                                <MagnifyingGlassPlus size={14} className="text-white/60" />
-                            </div>
-                        </button>
+                                aria-label={t('ui.text_pt6') + ' / ' + t('ui.text_gnzjzw')}
+                            >
+                                <GridFour size={12} weight={!compareMode ? 'fill' : 'regular'} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setCompareMode(true)}
+                                className={cn(
+                                    'flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold transition-all duration-200',
+                                    compareMode
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground',
+                                )}
+                                aria-label={t('ui.compare_slider')}
+                            >
+                                <SlidersHorizontal size={12} weight={compareMode ? 'fill' : 'regular'} />
+                            </button>
+                        </div>
                     </div>
+
+                    {compareMode ? (
+                        /* ── Slider comparison view ── */
+                        <div className="overflow-hidden rounded-xl border border-border/50">
+                            <ImageCompare
+                                beforeSrc={getServerImageUrl(job.originalUrl)}
+                                afterSrc={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
+                                beforeAlt={t('ui.text_pt6')}
+                                afterAlt={t('ui.text_gnzjzw')}
+                                className="aspect-3/4 w-full"
+                                initialPosition={50}
+                                beforeScale={1.30}
+                            />
+                            <div className="flex items-center justify-between bg-muted/30 px-3 py-1.5">
+                                <span className="text-[10px] font-semibold text-muted-foreground">{t('ui.text_pt6')}</span>
+                                <span className="text-[10px] text-muted-foreground">{t('ui.compare_slider_hint')}</span>
+                                <span className="text-[10px] font-semibold text-muted-foreground">{t('ui.text_gnzjzw')}</span>
+                            </div>
+                        </div>
+                    ) : (
+                        /* ── Side-by-side grid view ── */
+                        <div className="grid grid-cols-2 gap-1.5">
+                            {/* Before (Original) */}
+                            <button
+                                type="button"
+                                onClick={() => openLightbox(0)}
+                                className="group relative overflow-hidden rounded-xl border border-border/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                            >
+                                <div className="relative aspect-3/4">
+                                    <Image
+                                        src={getServerImageUrl(job.originalUrl)}
+                                        alt={t('ui.text_pt6')}
+                                        fill
+                                        className="scale-[1.30] object-cover transition-transform duration-300 group-hover:scale-[1.32]"
+                                        sizes="(max-width: 640px) 50vw, 40vw"
+                                        unoptimized
+                                    />
+                                </div>
+                                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
+                                    <span className="text-[11px] font-semibold text-white/90">{t('ui.text_pt6')}</span>
+                                    <MagnifyingGlassPlus size={14} className="text-white/60" />
+                                </div>
+                            </button>
+
+                            {/* After (Result) */}
+                            <button
+                                type="button"
+                                onClick={() => openLightbox(1)}
+                                className={cn(
+                                    'group relative overflow-hidden rounded-xl border border-primary/30 ring-1 ring-primary/20',
+                                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                )}
+                            >
+                                <div className="relative aspect-3/4">
+                                    <Image
+                                        src={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
+                                        alt={t('ui.text_gnzjzw')}
+                                        fill
+                                        className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                                        sizes="(max-width: 640px) 50vw, 40vw"
+                                        unoptimized
+                                    />
+                                    {brandingVisible && brandingProfile && (
+                                        <WatermarkOverlay
+                                            style={brandingProfile.watermarkStyle}
+                                            color={brandingProfile.primaryColor}
+                                            name={brandingProfile.displayName ?? ''}
+                                            handle={brandingProfile.instagramHandle ?? ''}
+                                            logoUrl={brandingProfile.logoUrl ? getServerImageUrl(brandingProfile.logoUrl) : null}
+                                            opacity={brandingProfile.watermarkOpacity}
+                                        />
+                                    )}
+                                </div>
+                                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
+                                    <span className="text-[11px] font-semibold text-white/90">{t('ui.text_gnzjzw')}</span>
+                                    <MagnifyingGlassPlus size={14} className="text-white/60" />
+                                </div>
+                            </button>
+                        </div>
+                    )}
 
                     {/* Variant thumbnails — only when multiple results */}
                     {results.length > 1 && (

@@ -7,6 +7,7 @@ interface ChatMessagePayload {
     message: string;
     language: string;
     history: Array<{ role: 'user' | 'assistant'; content: string }>;
+    currentPage?: string;
 }
 
 class ChatService {

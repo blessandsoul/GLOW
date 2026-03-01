@@ -1469,7 +1469,7 @@
       "description_ru": "Профессиональная ретушь для стилиста по волосам",
       "description_ka": "პროფესიული რეტუში თმის სტილისტისთვის",
       "previewUrl": "/filters/amber/hair.webp",
-      "prompt": "Edit the uploaded photo — professional editorial retouch for hair stylist portfolio. PRESERVE: Face identity 100% identical — facial structure, proportions, eyes, nose, lips, jawline, expression, age, skin tone unchanged. HAIR: Absolutely protected — pixel-identical to original. No change to color, tone, density, volume, thickness, length, shape, position, texture, shine. No smoothing, no modification of any kind. Hair is the master's work — zero interaction. EYELASHES: Exact original length, curl pattern, density, direction — no modification, no mascara effect, no volume change. EYEBROWS: Exact original shape, color, arch, thickness, density — no changes. LIPS: Unchanged. MAKEUP: Unchanged. SKIN: [SKIN_RETOUCH_LEVEL]. Beautiful catchlight on iris. [EXTRAS]. BACKGROUND: [BACKGROUND]. LIGHTING: [LIGHTING_STYLE]. QUALITY: Preserve original color correction, no filters. Ultra-photorealistic fashion photography. Sharp focus, natural skin detail. 8K quality. Original dimensions — do not crop or resize.",
+      "prompt": "Edit the uploaded photo — professional editorial retouch for hair stylist portfolio. PRESERVE: Face identity 100% identical — facial structure, proportions, eyes, nose, lips, jawline, expression, age, skin tone unchanged. HAIR: Absolutely protected — pixel-identical to original. No change to color, tone, density, volume, thickness, length, shape, position, texture, shine. No smoothing, no modification of any kind. Hair is the master's work — zero interaction. EYELASHES: Exact original length, curl pattern, density, direction — no modification, no mascara effect, no volume change. EYEBROWS: Exact original shape, color, arch, thickness, density — no changes. LIPS: Unchanged. MAKEUP: Unchanged. SKIN: [SKIN_RETOUCH_LEVEL]. Beautiful catchlight on iris. [EXTRAS]. BACKGROUND: [BACKGROUND]. QUALITY: Preserve original color correction, no filters. Ultra-photorealistic fashion photography. Sharp focus, natural skin detail. 8K quality. Original dimensions — do not crop or resize.",
       "sortOrder": 1,
       "variables": [
         {
@@ -1572,38 +1572,6 @@
           ]
         },
         {
-          "id": "LIGHTING_STYLE",
-          "type": "select",
-          "label_en": "Lighting",
-          "label_ru": "Свет",
-          "label_ka": "განათება",
-          "required": true,
-          "default": "cinematic",
-          "options": [
-            {
-              "id": "cinematic",
-              "value": "Cinematic lighting with strong contour/backlight from behind for depth and sculpted volume. Rim light highlights on shoulders and hair edges. High-contrast studio look",
-              "label_en": "Cinematic Rim",
-              "label_ru": "Кинематографический",
-              "label_ka": "კინემატოგრაფიული"
-            },
-            {
-              "id": "soft",
-              "value": "Soft diffused studio lighting, even illumination. Gentle highlights on hair for natural shine. Beauty dish from above-front",
-              "label_en": "Soft Studio",
-              "label_ru": "Мягкий студийный",
-              "label_ka": "რბილი სტუდიური"
-            },
-            {
-              "id": "high-contrast",
-              "value": "Hard high-contrast editorial studio lighting. Sculptural highlights on cheekbones, temples. Strong shadows for dramatic depth and dimension",
-              "label_en": "High Contrast",
-              "label_ru": "Высокий контраст",
-              "label_ka": "მაღალი კონტრასტი"
-            }
-          ]
-        },
-        {
           "id": "EXTRAS",
           "type": "multi-select",
           "label_en": "Extra Effects",
@@ -1664,14 +1632,14 @@
           "label_ru": "Фон",
           "label_ka": "ფონი",
           "required": true,
-          "default": "marble",
+          "default": "rose-gold",
           "options": [
             {
-              "id": "marble",
-              "value": "Soft white marble surface with subtle grey veining transitioning into a creamy blush-pink gradient — luxury nail salon aesthetic. Scattered soft rose petals slightly out of focus in the far background",
-              "label_en": "Marble + Petals",
-              "label_ru": "Мрамор + лепестки",
-              "label_ka": "მარმარილო + ფურცლები"
+              "id": "rose-gold",
+              "value": "Soft gradient from deep rose-gold to warm nude — luxury cosmetic brand aesthetic. Subtle bokeh light particles floating in the background, warm and romantic",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
             },
             {
               "id": "black",
@@ -1688,25 +1656,11 @@
               "label_ka": "თეთრი სტუდია"
             },
             {
-              "id": "white-fur",
-              "value": "White mink fur coat from natural fur as background element — luxurious, realistic fur texture with proper depth and volume",
-              "label_en": "White Fur",
-              "label_ru": "Белый мех",
-              "label_ka": "თეთრი ბეწვი"
-            },
-            {
-              "id": "velvet",
-              "value": "Rich deep burgundy velvet fabric surface — luxury, soft light-absorbing texture with subtle folds",
-              "label_en": "Burgundy Velvet",
-              "label_ru": "Бордовый бархат",
-              "label_ka": "ბორდო ხავერდი"
-            },
-            {
-              "id": "rose-gold",
-              "value": "Soft gradient from deep rose-gold to warm nude — luxury cosmetic brand aesthetic. Subtle bokeh light particles floating in the background, warm and romantic",
-              "label_en": "Rose Gold",
-              "label_ru": "Розовое золото",
-              "label_ka": "ვარდისფერი ოქრო"
+              "id": "floral",
+              "value": "Soft out-of-focus floral background with warm blush tones and scattered petals — romantic beauty campaign feel",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
             },
             {
               "id": "dusty-rose",
@@ -1714,6 +1668,27 @@
               "label_en": "Dusty Rose",
               "label_ru": "Пыльная роза",
               "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "value": "Soft luminous pearl-white gradient with subtle warm undertone — clean, glowing, airy. Faint dewy mist effect in the background creating depth. Premium skincare campaign feel — pure, fresh, radiant",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "value": "Deep velvet black with subtle warm amber light spill from behind the model — creating elegant rim separation. Faint golden dust particles floating in the background, barely visible. Luxury lash brand campaign feel",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "value": "Rich deep chocolate-to-caramel gradient with warm golden bokeh highlights scattered softly — luxury hair salon campaign aesthetic",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },

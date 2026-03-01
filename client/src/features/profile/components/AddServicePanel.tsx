@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Plus } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
@@ -24,6 +24,7 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
     const [price, setPrice] = useState('');
     const [priceType, setPriceType] = useState<PriceType>('fixed');
     const [open, setOpen] = useState(false);
+    const justSelected = useRef(false);
 
     const category = SERVICE_CATEGORIES.find((c) => c.id === selectedCategory);
 
@@ -66,8 +67,8 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
                             <PopoverAnchor asChild>
                                 <Input
                                     value={name}
-                                    onChange={(e) => { setName(e.target.value); setOpen(true); }}
-                                    onFocus={() => setOpen(true)}
+                                    onChange={(e) => { setName(e.target.value); if (!justSelected.current) setOpen(true); }}
+                                    onFocus={() => { if (!justSelected.current) setOpen(true); }}
                                     placeholder={t('ui.text_svc_placeholder')}
                                     autoFocus
                                 />
@@ -94,8 +95,10 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
                                                         key={s}
                                                         value={s}
                                                         onSelect={() => {
+                                                            justSelected.current = true;
                                                             setName(s);
                                                             setOpen(false);
+                                                            setTimeout(() => { justSelected.current = false; }, 150);
                                                         }}
                                                     >
                                                         {s}

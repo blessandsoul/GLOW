@@ -1,3 +1,5 @@
+import Script from 'next/script';
+
 import { APP_NAME } from '@/lib/constants/app.constants';
 
 export function Footer(): React.ReactElement {
@@ -7,6 +9,10 @@ export function Footer(): React.ReactElement {
                 <p>
                     &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
                 </p>
+                {/* TOP.GE ASYNC COUNTER CODE */}
+                <div id="top-ge-counter-container" data-site-id="118567"></div>
+                <Script async src="//counter.top.ge/counter.js" strategy="afterInteractive" />
+                {/* / END OF TOP.GE COUNTER CODE */}
             </div>
         </footer>
     );

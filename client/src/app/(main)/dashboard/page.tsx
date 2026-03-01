@@ -23,6 +23,7 @@ import { BulkActionBar } from '@/features/jobs/components/dashboard/BulkActionBa
 import { useDashboardGallery, useDeleteJob, useBulkDeleteJobs } from '@/features/jobs/hooks/useDashboard';
 import { useGallerySelection } from '@/features/jobs/hooks/useGallerySelection';
 import { useMyPortfolio } from '@/features/portfolio/hooks/usePortfolio';
+import { downloadImage } from '@/lib/utils/download';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -64,7 +65,11 @@ export default function DashboardPage(): React.ReactElement {
 
     const handleDownload = useCallback((jobId: string): void => {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
-        window.open(`${apiBase}/jobs/${jobId}/download?variant=0`, '_blank');
+        const url = `${apiBase}/jobs/${jobId}/download?variant=0`;
+        downloadImage(url, `glowge-${Date.now()}.jpg`).catch(() => {
+            // Fallback: open in new tab if share/download fails
+            window.open(url, '_blank');
+        });
     }, []);
 
     const handleConfirmDelete = useCallback((): void => {

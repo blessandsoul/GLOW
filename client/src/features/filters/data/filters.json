@@ -1459,35 +1459,6 @@
           ]
         },
         {
-          "id": "LIGHTING_STYLE",
-          "type": "select",
-          "label_en": "Lighting",
-          "label_ru": "Свет",
-          "label_ka": "განათება",
-          "required": true,
-          "default": "cinematic",
-          "options": [
-            {
-              "id": "cinematic",
-              "label_en": "Cinematic Rim",
-              "label_ru": "Кинематографический",
-              "label_ka": "კინემატოგრაფიული"
-            },
-            {
-              "id": "soft",
-              "label_en": "Soft Studio",
-              "label_ru": "Мягкий студийный",
-              "label_ka": "რბილი სტუდიური"
-            },
-            {
-              "id": "high-contrast",
-              "label_en": "High Contrast",
-              "label_ru": "Высокий контраст",
-              "label_ka": "მაღალი კონტრასტი"
-            }
-          ]
-        },
-        {
           "id": "EXTRAS",
           "type": "multi-select",
           "label_en": "Extra Effects",
@@ -1543,13 +1514,13 @@
           "label_ru": "Фон",
           "label_ka": "ფონი",
           "required": true,
-          "default": "marble",
+          "default": "rose-gold",
           "options": [
             {
-              "id": "marble",
-              "label_en": "Marble + Petals",
-              "label_ru": "Мрамор + лепестки",
-              "label_ka": "მარმარილო + ფურცლები"
+              "id": "rose-gold",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
             },
             {
               "id": "black",
@@ -1564,28 +1535,34 @@
               "label_ka": "თეთრი სტუდია"
             },
             {
-              "id": "white-fur",
-              "label_en": "White Fur",
-              "label_ru": "Белый мех",
-              "label_ka": "თეთრი ბეწვი"
-            },
-            {
-              "id": "velvet",
-              "label_en": "Burgundy Velvet",
-              "label_ru": "Бордовый бархат",
-              "label_ka": "ბორდო ხავერდი"
-            },
-            {
-              "id": "rose-gold",
-              "label_en": "Rose Gold",
-              "label_ru": "Розовое золото",
-              "label_ka": "ვარდისფერი ოქრო"
+              "id": "floral",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
             },
             {
               "id": "dusty-rose",
               "label_en": "Dusty Rose",
               "label_ru": "Пыльная роза",
               "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },

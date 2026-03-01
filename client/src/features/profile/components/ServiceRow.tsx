@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Trash } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
@@ -23,6 +23,7 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
     const { t } = useLanguage();
     const category = SERVICE_CATEGORIES.find((c) => c.id === service.category);
     const [open, setOpen] = useState(false);
+    const justSelected = useRef(false);
 
     const hasSuggestions = Boolean(category && category.suggestions.length > 0);
 
@@ -54,7 +55,7 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                                 <Input
                                     value={service.name}
                                     onChange={(e) => onChange(index, 'name', e.target.value)}
-                                    onFocus={() => setOpen(true)}
+                                    onFocus={() => { if (!justSelected.current) setOpen(true); }}
                                     placeholder={t('ui.text_883inc')}
                                 />
                             </PopoverTrigger>
@@ -67,8 +68,10 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                                                     key={s}
                                                     value={s}
                                                     onSelect={() => {
+                                                        justSelected.current = true;
                                                         onChange(index, 'name', s);
                                                         setOpen(false);
+                                                        setTimeout(() => { justSelected.current = false; }, 150);
                                                     }}
                                                 >
                                                     {s}

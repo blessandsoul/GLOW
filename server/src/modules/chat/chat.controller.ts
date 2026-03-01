@@ -5,7 +5,7 @@ import { successResponse } from '@shared/responses/successResponse.js';
 
 export const chatController = {
   async sendMessage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-    const { message, language } = SendChatMessageSchema.parse(request.body);
+    const { message, language, currentPage } = SendChatMessageSchema.parse(request.body);
 
     // Extract history from body (validated separately to keep schema clean)
     const body = request.body as Record<string, unknown>;
@@ -31,7 +31,7 @@ export const chatController = {
 
     const clientIp = request.ip;
 
-    const result = await chatService.sendMessage(message, history, language, clientIp);
+    const result = await chatService.sendMessage(message, history, language, clientIp, currentPage);
 
     await reply.send(successResponse('Chat reply generated', result));
   },

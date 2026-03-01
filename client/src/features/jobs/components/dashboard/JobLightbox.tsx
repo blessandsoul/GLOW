@@ -9,6 +9,7 @@ import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
 import { ROUTES } from '@/lib/constants/routes';
+import { downloadImage } from '@/lib/utils/download';
 import type { Job } from '../../types/job.types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
@@ -100,7 +101,11 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
 
     const handleDownload = (e: React.MouseEvent): void => {
         stop(e);
-        window.open(`${API_BASE}/jobs/${job.id}/download?variant=${safeVariant === 0 ? 0 : safeVariant - 1}`, '_blank');
+        const variant = safeVariant === 0 ? 0 : safeVariant - 1;
+        const url = `${API_BASE}/jobs/${job.id}/download?variant=${variant}`;
+        downloadImage(url, `glowge-${Date.now()}.jpg`).catch(() => {
+            window.open(url, '_blank');
+        });
     };
     const handleShare = (e: React.MouseEvent): void => {
         stop(e);

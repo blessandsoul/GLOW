@@ -22,6 +22,10 @@ export interface ChatMessage {
     timestamp: Date;
     category?: ChatCategory;
     showQuickActions?: boolean;
+    isFallback?: boolean;
+    retryCount?: number;
+    originalUserMessage?: string;
+    feedback?: 'liked' | 'disliked' | null;
 }
 
 export interface QuickAction {

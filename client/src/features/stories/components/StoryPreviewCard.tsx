@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import { downloadImage } from '@/lib/utils/download';
 import { STORY_LAYOUT_LABELS } from '../types/story.types';
 import type { GeneratedStory } from '../types/story.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
@@ -16,11 +17,10 @@ export function StoryPreviewCard({ story }: StoryPreviewCardProps): React.ReactE
     const meta = STORY_LAYOUT_LABELS[story.layout];
 
     const handleDownload = (): void => {
-        const a = document.createElement('a');
-        a.href = story.imageUrl;
-        a.download = `glowge-story-${story.layout.toLowerCase()}-${Date.now()}.jpg`;
-        a.click();
-        toast.success(t('ui.text_dmbihz'));
+        const filename = `glowge-story-${story.layout.toLowerCase()}-${Date.now()}.jpg`;
+        downloadImage(story.imageUrl, filename)
+            .then(() => toast.success(t('ui.text_dmbihz')))
+            .catch(() => { /* User cancelled share sheet */ });
     };
 
     return (

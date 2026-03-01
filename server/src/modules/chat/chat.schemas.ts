@@ -7,7 +7,8 @@ export const SendChatMessageSchema = z.object({
     .min(1, 'Message cannot be empty')
     .max(500, 'Message too long (max 500 characters)')
     .transform((val) => val.replace(/<[^>]*>/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '').trim()),
-  language: z.enum(['ru', 'ka']).default('ru'),
+  language: z.enum(['ru', 'ka', 'en']).default('ru'),
+  currentPage: z.string().max(200).optional(),
 });
 
 export type SendChatMessageInput = z.infer<typeof SendChatMessageSchema>;

@@ -19,6 +19,7 @@ interface ImageCompareProps {
     beforeAlt?: string;
     afterAlt?: string;
     initialPosition?: number;
+    beforeScale?: number;
     className?: string;
 }
 
@@ -30,6 +31,7 @@ export function ImageCompare({
     beforeAlt = 'Before',
     afterAlt = 'After',
     initialPosition = 50,
+    beforeScale = 1,
     className,
 }: ImageCompareProps): React.JSX.Element {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,6 @@ export function ImageCompare({
     const rawPosition = useMotionValue(initialPosition);
     const position = useSpring(rawPosition, SPRING_CONFIG);
 
-    const beforeClip = useTransform(position, (v) => `inset(0 ${100 - v}% 0 0)`);
     const afterClip = useTransform(position, (v) => `inset(0 0 0 ${v}%)`);
     const dividerLeft = useTransform(position, (v) => `${v}%`);
 
@@ -107,16 +108,16 @@ export function ImageCompare({
             tabIndex={0}
             onKeyDown={handleKeyDown}
         >
-            {/* Before image (left side, full width, clipped from right) */}
-            <motion.img
+            {/* Before image (full, sits underneath) */}
+            <img
                 src={beforeSrc}
                 alt={beforeAlt}
                 className="absolute inset-0 h-full w-full object-cover"
-                style={{ clipPath: beforeClip, willChange: 'clip-path' }}
+                style={beforeScale !== 1 ? { transform: `scale(${beforeScale})` } : undefined}
                 draggable={false}
             />
 
-            {/* After image (right side, full width, clipped from left) */}
+            {/* After image (clipped from left, overlays before) */}
             <motion.img
                 src={afterSrc}
                 alt={afterAlt}
