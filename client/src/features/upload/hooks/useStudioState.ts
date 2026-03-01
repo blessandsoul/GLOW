@@ -19,7 +19,7 @@ import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { useDailyUsage } from '@/features/jobs/hooks/useDailyUsage';
 import { useCurrentTrends } from '@/features/trends/hooks/useTrends';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import type { PhotoSettings, ProcessingType } from '../types/upload.types';
+import type { PhotoSettings, ProcessingType, DecorationSettings } from '../types/upload.types';
 import { DEFAULT_SETTINGS } from '../types/upload.types';
 import type { Style, FilterStyle, MasterPrompt, PromptVariableValues } from '@/features/filters/types/styles.types';
 import type { AppMode } from '../types/presets.types';
@@ -64,6 +64,12 @@ export interface StudioState {
     isLimitReached: boolean;
     countdown: string;
     refetchDailyUsage: () => Promise<void>;
+    decorationObjects: string[];
+    setDecorationObjects: (objects: string[]) => void;
+    decorationCustomText: string;
+    setDecorationCustomText: (text: string) => void;
+    decorationPlacement: string;
+    setDecorationPlacement: (placement: string) => void;
 }
 
 export function useStudioState(): StudioState {
@@ -80,6 +86,9 @@ export function useStudioState(): StudioState {
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
     const [batchResult, setBatchResult] = useState<BatchCreateResult | null>(null);
     const [processingType] = useState<ProcessingType>('ENHANCE');
+    const [decorationObjects, setDecorationObjects] = useState<string[]>([]);
+    const [decorationCustomText, setDecorationCustomText] = useState('');
+    const [decorationPlacement, setDecorationPlacement] = useState('');
 
     // 2 credits only when ALL extras are selected; everything else = 1 credit
     const isCustomized = useMemo(() => {
@@ -146,6 +155,17 @@ export function useStudioState(): StudioState {
                 settings = { ...customSettings, processingType };
             }
 
+            // Attach decoration settings if any decorations are selected
+            const hasDecorations = decorationObjects.length > 0 || decorationCustomText.trim().length > 0;
+            if (hasDecorations) {
+                const decorations: DecorationSettings = {
+                    selectedObjects: decorationObjects,
+                    customText: decorationCustomText,
+                    placement: decorationPlacement,
+                };
+                settings = { ...settings, decorations };
+            }
+
             // Pre-check: block generation if credits are exhausted
             if (IS_LAUNCH_MODE) {
                 if (isLimitReached) {
@@ -161,7 +181,7 @@ export function useStudioState(): StudioState {
 
             uploadFile({ file, settings });
         },
-        [uploadFile, customSettings, processingType, selectedStyle, selectedMasterPrompt, promptVariables, isCustomized, isLimitReached, userCredits, t],
+        [uploadFile, customSettings, processingType, selectedStyle, selectedMasterPrompt, promptVariables, isCustomized, isLimitReached, userCredits, t, decorationObjects, decorationCustomText, decorationPlacement],
     );
 
     const handleBASubmit = useCallback(
@@ -200,6 +220,9 @@ export function useStudioState(): StudioState {
         setSelectedStyle(null);
         setSelectedMasterPrompt(null);
         setPromptVariables({});
+        setDecorationObjects([]);
+        setDecorationCustomText('');
+        setDecorationPlacement('');
         resetBA();
         router.push(ROUTES.CREATE);
     }, [resetBA, router]);
@@ -241,5 +264,11 @@ export function useStudioState(): StudioState {
         isLimitReached: IS_LAUNCH_MODE ? isLimitReached : false,
         countdown,
         refetchDailyUsage,
+        decorationObjects,
+        setDecorationObjects,
+        decorationCustomText,
+        setDecorationCustomText,
+        decorationPlacement,
+        setDecorationPlacement,
     };
 }

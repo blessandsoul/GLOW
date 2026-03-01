@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { localized } from '@/i18n/config';
 import type { SupportedLanguage } from '@/i18n/config';
 import type { MasterPrompt, PromptVariable, PromptVariableValues } from '../types/styles.types';
+import { DecorationPanel } from '@/features/decorations/components/DecorationPanel';
+import { getNicheFromMasterPrompt } from '@/features/decorations/data/decorations';
 
 interface PromptConfiguratorProps {
     masterPrompt: MasterPrompt;
@@ -18,6 +20,12 @@ interface PromptConfiguratorProps {
     t: (key: string) => string;
     isCustomized?: boolean;
     cost?: number;
+    decorationObjects: string[];
+    decorationCustomText: string;
+    decorationPlacement: string;
+    onDecorationObjectsChange: (objects: string[]) => void;
+    onDecorationCustomTextChange: (text: string) => void;
+    onDecorationPlacementChange: (placement: string) => void;
 }
 
 function PromptConfiguratorInner({
@@ -30,6 +38,12 @@ function PromptConfiguratorInner({
     t,
     isCustomized = false,
     cost = 1,
+    decorationObjects,
+    decorationCustomText,
+    decorationPlacement,
+    onDecorationObjectsChange,
+    onDecorationCustomTextChange,
+    onDecorationPlacementChange,
 }: PromptConfiguratorProps): React.ReactElement {
 
     const handleSelectChange = useCallback((variableId: string, optionId: string) => {
@@ -154,6 +168,20 @@ function PromptConfiguratorInner({
                     />
                 ))}
             </div>
+
+            {/* Decoration panel */}
+            <div className="h-px bg-border/30" />
+            <DecorationPanel
+                niche={getNicheFromMasterPrompt(masterPrompt.id)}
+                selectedObjects={decorationObjects}
+                customText={decorationCustomText}
+                placement={decorationPlacement}
+                onObjectsChange={onDecorationObjectsChange}
+                onCustomTextChange={onDecorationCustomTextChange}
+                onPlacementChange={onDecorationPlacementChange}
+                language={language}
+                t={t}
+            />
 
             {/* Cost indicator — shows when customized */}
             {isCustomized && (

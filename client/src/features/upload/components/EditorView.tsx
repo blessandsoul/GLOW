@@ -21,6 +21,7 @@ import type { Style, FilterStyle, StyleCategory, StyleSubcategory, MasterPrompt,
 import type { AppMode } from '../types/presets.types';
 import type { ProductAdSettings } from './ProductAdPanel';
 import type { BatchCreateResult } from '@/features/jobs/types/job.types';
+import { DecorationPanel } from '@/features/decorations/components/DecorationPanel';
 import { localized } from '@/i18n/config';
 import type { SupportedLanguage } from '@/i18n/config';
 
@@ -58,6 +59,12 @@ interface EditorViewProps {
     isCustomized: boolean;
     masterPromptCost: number;
     isLimitReached: boolean;
+    decorationObjects: string[];
+    decorationCustomText: string;
+    decorationPlacement: string;
+    onDecorationObjectsChange: (objects: string[]) => void;
+    onDecorationCustomTextChange: (text: string) => void;
+    onDecorationPlacementChange: (placement: string) => void;
 }
 
 export function EditorView({
@@ -87,6 +94,12 @@ export function EditorView({
     isCustomized,
     masterPromptCost,
     isLimitReached,
+    decorationObjects,
+    decorationCustomText,
+    decorationPlacement,
+    onDecorationObjectsChange,
+    onDecorationCustomTextChange,
+    onDecorationPlacementChange,
 }: EditorViewProps): React.ReactElement {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -225,6 +238,29 @@ export function EditorView({
                         t={t}
                         isCustomized={isCustomized}
                         cost={masterPromptCost}
+                        decorationObjects={decorationObjects}
+                        decorationCustomText={decorationCustomText}
+                        decorationPlacement={decorationPlacement}
+                        onDecorationObjectsChange={onDecorationObjectsChange}
+                        onDecorationCustomTextChange={onDecorationCustomTextChange}
+                        onDecorationPlacementChange={onDecorationPlacementChange}
+                    />
+                </div>
+            )}
+
+            {/* ──── Standalone Decoration Panel: mobile only, when regular filter selected ──── */}
+            {mode === 'beauty' && selectedStyle && !selectedMasterPrompt && (
+                <div className="order-2 px-4 py-2 md:hidden">
+                    <DecorationPanel
+                        niche="general"
+                        selectedObjects={decorationObjects}
+                        customText={decorationCustomText}
+                        placement={decorationPlacement}
+                        onObjectsChange={onDecorationObjectsChange}
+                        onCustomTextChange={onDecorationCustomTextChange}
+                        onPlacementChange={onDecorationPlacementChange}
+                        language={language as SupportedLanguage}
+                        t={t}
                     />
                 </div>
             )}
@@ -282,6 +318,23 @@ export function EditorView({
                         hideGenerateButton
                         onPendingFileChange={handlePendingFileChange}
                     />
+                )}
+
+                {/* Standalone decoration panel — desktop only, when regular filter selected */}
+                {mode === 'beauty' && selectedStyle && !selectedMasterPrompt && (
+                    <div className="hidden md:block mt-3">
+                        <DecorationPanel
+                            niche="general"
+                            selectedObjects={decorationObjects}
+                            customText={decorationCustomText}
+                            placement={decorationPlacement}
+                            onObjectsChange={onDecorationObjectsChange}
+                            onCustomTextChange={onDecorationCustomTextChange}
+                            onPlacementChange={onDecorationPlacementChange}
+                            language={language as SupportedLanguage}
+                            t={t}
+                        />
+                    </div>
                 )}
 
                 {/* Generate button — desktop only */}
@@ -368,6 +421,12 @@ export function EditorView({
                             t={t}
                             isCustomized={isCustomized}
                             cost={masterPromptCost}
+                            decorationObjects={decorationObjects}
+                            decorationCustomText={decorationCustomText}
+                            decorationPlacement={decorationPlacement}
+                            onDecorationObjectsChange={onDecorationObjectsChange}
+                            onDecorationCustomTextChange={onDecorationCustomTextChange}
+                            onDecorationPlacementChange={onDecorationPlacementChange}
                         />
                     ) : (
                         <StylesGallery

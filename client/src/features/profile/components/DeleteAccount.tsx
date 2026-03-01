@@ -10,8 +10,10 @@ import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/features/auth/store/authSlice';
 import { usersService } from '@/features/users/services/users.service';
 import { getErrorMessage } from '@/lib/utils/error';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 export function DeleteAccount(): React.ReactElement {
+    const { t } = useLanguage();
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [confirm, setConfirm] = useState('');
@@ -38,12 +40,11 @@ export function DeleteAccount(): React.ReactElement {
         <section className="space-y-4 rounded-xl border border-destructive/30 bg-destructive/5 p-6">
             <div className="flex items-center gap-2">
                 <Warning size={16} className="text-destructive" weight="fill" />
-                <p className="text-sm font-semibold text-destructive">Delete account</p>
+                <p className="text-sm font-semibold text-destructive">{t('ui.profile_delete_account')}</p>
             </div>
 
             <p className="text-xs text-muted-foreground leading-relaxed">
-                This will permanently delete your account, portfolio, services, and all associated data.
-                This action cannot be undone.
+                {t('ui.profile_delete_warning')}
             </p>
 
             {!open ? (
@@ -54,13 +55,13 @@ export function DeleteAccount(): React.ReactElement {
                     onClick={() => setOpen(true)}
                 >
                     <Trash size={14} />
-                    Delete my account
+                    {t('ui.profile_delete_btn')}
                 </Button>
             ) : (
                 <div className="space-y-3">
                     <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground">
-                            Type <span className="font-mono font-bold text-destructive">{CONFIRM_WORD}</span> to confirm
+                            {t('ui.profile_delete_confirm')} <span className="font-mono font-bold text-destructive">{CONFIRM_WORD}</span>
                         </Label>
                         <Input
                             value={confirm}
@@ -79,7 +80,7 @@ export function DeleteAccount(): React.ReactElement {
                             className="gap-1.5 cursor-pointer"
                         >
                             {isDeleting && <SpinnerGap size={14} className="animate-spin" />}
-                            {isDeleting ? 'Deleting...' : 'Delete permanently'}
+                            {isDeleting ? t('ui.profile_deleting') : t('ui.profile_delete_permanently')}
                         </Button>
                         <Button
                             type="button"
@@ -88,7 +89,7 @@ export function DeleteAccount(): React.ReactElement {
                             onClick={() => { setOpen(false); setConfirm(''); }}
                             className="cursor-pointer"
                         >
-                            Cancel
+                            {t('ui.profile_cancel')}
                         </Button>
                     </div>
                 </div>

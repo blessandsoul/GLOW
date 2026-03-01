@@ -43,6 +43,12 @@ export function UploadSection(): React.ReactElement {
             isCustomized={state.isCustomized}
             masterPromptCost={state.masterPromptCost}
             isLimitReached={state.isLimitReached || noCredits}
+            decorationObjects={state.decorationObjects}
+            decorationCustomText={state.decorationCustomText}
+            decorationPlacement={state.decorationPlacement}
+            onDecorationObjectsChange={state.setDecorationObjects}
+            onDecorationCustomTextChange={state.setDecorationCustomText}
+            onDecorationPlacementChange={state.setDecorationPlacement}
         />
     );
 }

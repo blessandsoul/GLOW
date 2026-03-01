@@ -12,10 +12,14 @@ import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 
 export function DashboardStatsBar(): React.ReactElement {
     const { t } = useLanguage();
-    const { data, isLoading } = useDashboardStats();
+    const { data, isLoading, isError } = useDashboardStats();
 
-    if (isLoading || !data) {
+    if (isLoading && !data) {
         return <Skeleton className="h-11 rounded-xl" />;
+    }
+
+    if (isError || !data) {
+        return null;
     }
 
     const creditColor =

@@ -91,6 +91,14 @@ export default function RootLayout({
           <RegisterPWA />
         </Providers>
         {process.env.NODE_ENV === 'development' && <Agentation />}
+        {/* TOP.GE ASYNC COUNTER CODE */}
+        <footer className="border-t border-border/50 bg-background py-4">
+          <div className="container mx-auto flex items-center justify-center px-4">
+            <div id="top-ge-counter-container" data-site-id="118567"></div>
+          </div>
+        </footer>
+        <Script async src="//counter.top.ge/counter.js" strategy="afterInteractive" />
+        {/* / END OF TOP.GE COUNTER CODE */}
       </body>
     </html>
   );

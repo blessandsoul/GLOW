@@ -25,6 +25,11 @@ Glow.GE ამას 5 წამში აგვარებს:
 
 glow.ge
 
+——————————————
+Facebook ➜ facebook.com/www.glow.ge
+Instagram ➜ instagram.com/www_glow_ge
+——————————————
+
 #მანიკური #ფრჩხილები #ნეილმასტერი #ფრჩხილებისდიზაინი #ნეილარტი #რეტუში #პორტფოლიო #glowge #სილამაზე #ფოტო #მასტერი #გელლაქი
 
 ## First Comment

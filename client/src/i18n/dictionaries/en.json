@@ -791,5 +791,12 @@
     "mute": "Mute sounds",
     "unmute": "Unmute sounds",
     "fallback_notice": "offline"
+  },
+  "decorations": {
+    "section_title": "Decorations",
+    "your_idea": "Your idea",
+    "custom_placeholder": "e.g. pink roses scattered around",
+    "placement_title": "Placement",
+    "clear_all": "Clear"
   }
 }

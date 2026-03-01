@@ -8,14 +8,14 @@ import { getErrorMessage } from '@/lib/utils/error';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { DashboardStats, Job, JobStatus } from '../types/job.types';
 
-export function useDashboardStats(): { data: DashboardStats | undefined; isLoading: boolean } {
-    const { data, isLoading } = useQuery<DashboardStats>({
+export function useDashboardStats(): { data: DashboardStats | undefined; isLoading: boolean; isError: boolean } {
+    const { data, isLoading, isError } = useQuery<DashboardStats>({
         queryKey: ['jobs', 'stats'],
         queryFn: () => jobService.getStats(),
         staleTime: 0,
     });
 
-    return { data, isLoading };
+    return { data, isLoading, isError };
 }
 
 export function useDashboardGallery(filters: { status?: JobStatus; limit?: number } = {}): {

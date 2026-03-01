@@ -12,6 +12,7 @@ import { authService } from '@/features/auth/services/auth.service';
 import { useAppDispatch } from '@/store/hooks';
 import { logout as logoutAction } from '@/features/auth/store/authSlice';
 import { getErrorMessage } from '@/lib/utils/error';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 interface PasswordField {
     current: string;
@@ -25,26 +26,27 @@ interface FieldErrors {
     confirm?: string;
 }
 
-function validate(fields: PasswordField): FieldErrors {
-    const errors: FieldErrors = {};
-    if (!fields.current) errors.current = 'Enter your current password';
-    if (fields.next.length < 8) errors.next = 'Min 8 characters';
-    else if (!/[A-Z]/.test(fields.next)) errors.next = 'Must contain uppercase letter';
-    else if (!/[a-z]/.test(fields.next)) errors.next = 'Must contain lowercase letter';
-    else if (!/[0-9]/.test(fields.next)) errors.next = 'Must contain a number';
-    if (fields.next && fields.confirm && fields.next !== fields.confirm) {
-        errors.confirm = 'Passwords do not match';
-    }
-    return errors;
-}
-
 export function ChangePassword(): React.ReactElement {
+    const { t } = useLanguage();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [fields, setFields] = useState<PasswordField>({ current: '', next: '', confirm: '' });
     const [errors, setErrors] = useState<FieldErrors>({});
     const [show, setShow] = useState({ current: false, next: false, confirm: false });
     const [isSaving, setIsSaving] = useState(false);
+
+    const validate = useCallback((f: PasswordField): FieldErrors => {
+        const errs: FieldErrors = {};
+        if (!f.current) errs.current = t('ui.profile_err_current_required');
+        if (f.next.length < 8) errs.next = t('ui.profile_err_min_8');
+        else if (!/[A-Z]/.test(f.next)) errs.next = t('ui.profile_err_uppercase');
+        else if (!/[a-z]/.test(f.next)) errs.next = t('ui.profile_err_lowercase');
+        else if (!/[0-9]/.test(f.next)) errs.next = t('ui.profile_err_number');
+        if (f.next && f.confirm && f.next !== f.confirm) {
+            errs.confirm = t('ui.profile_err_mismatch');
+        }
+        return errs;
+    }, [t]);
 
     const handleChange = useCallback((field: keyof PasswordField, value: string): void => {
         setFields((prev) => ({ ...prev, [field]: value }));
@@ -61,38 +63,36 @@ export function ChangePassword(): React.ReactElement {
         setIsSaving(true);
         try {
             await authService.changePassword(fields.current, fields.next);
-            // Server invalidates all sessions and clears cookies on password change.
-            // Gracefully log out and redirect to login with a success message.
-            toast.success('Password changed successfully. Please log in again.');
+            toast.success(t('ui.profile_password_success'));
             dispatch(logoutAction());
             router.push('/login');
         } catch (error) {
             toast.error(getErrorMessage(error));
             setIsSaving(false);
         }
-    }, [fields, dispatch, router]);
+    }, [fields, dispatch, router, validate, t]);
 
     const toggleShow = useCallback((field: keyof typeof show): void => {
         setShow((prev) => ({ ...prev, [field]: !prev[field] }));
     }, []);
 
+    const fieldConfig = [
+        { id: 'current', label: t('ui.profile_current_password'), field: 'current' },
+        { id: 'next', label: t('ui.profile_new_password'), field: 'next' },
+        { id: 'confirm', label: t('ui.profile_confirm_password'), field: 'confirm' },
+    ] as const;
+
     return (
         <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
             <div className="flex items-center gap-2">
                 <LockKey size={16} className="text-muted-foreground" />
-                <p className="text-sm font-semibold text-foreground">Change password</p>
+                <p className="text-sm font-semibold text-foreground">{t('ui.profile_change_password')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Hidden username field for password manager accessibility */}
                 <input type="text" name="username" autoComplete="username" className="sr-only" tabIndex={-1} aria-hidden="true" />
-                {(
-                    [
-                        { id: 'current', label: 'Current password', field: 'current' },
-                        { id: 'next', label: 'New password', field: 'next' },
-                        { id: 'confirm', label: 'Confirm new password', field: 'confirm' },
-                    ] as const
-                ).map(({ id, label, field }) => (
+                {fieldConfig.map(({ id, label, field }) => (
                     <div key={id} className="space-y-1.5">
                         <Label htmlFor={id} className="text-xs text-muted-foreground">{label}</Label>
                         <div className="relative">
@@ -121,7 +121,7 @@ export function ChangePassword(): React.ReactElement {
 
                 <Button type="submit" size="sm" disabled={isSaving} className="gap-1.5">
                     {isSaving && <SpinnerGap size={14} className="animate-spin" />}
-                    {isSaving ? 'Saving...' : 'Update password'}
+                    {isSaving ? t('ui.profile_saving') : t('ui.profile_update_password')}
                 </Button>
             </form>
         </section>

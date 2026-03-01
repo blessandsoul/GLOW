@@ -787,5 +787,12 @@
     "mute": "Выключить звук",
     "unmute": "Включить звук",
     "fallback_notice": "офлайн"
+  },
+  "decorations": {
+    "section_title": "Декорации",
+    "your_idea": "Твоя идея",
+    "custom_placeholder": "напр. розовые розы вокруг",
+    "placement_title": "Расположение",
+    "clear_all": "Очистить"
   }
 }

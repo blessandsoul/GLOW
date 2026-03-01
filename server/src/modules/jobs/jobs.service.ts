@@ -14,6 +14,7 @@ import { filtersService } from '../filters/filters.service.js';
 import { creditsService } from '../credits/credits.service.js';
 import { creditsRepo } from '../credits/credits.repo.js';
 import { buildPromptFromSettings, DEFAULT_PROMPT } from './prompt-builder.js';
+import { buildDecorationPrompt } from './decoration-builder.js';
 import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
 import { isLaunchMode, checkDailyLimit, incrementDailyUsage, getDailyUsage } from '../../libs/launch-mode.js';
 import { env } from '../../config/env.js';
@@ -203,6 +204,19 @@ export const jobsService = {
     if (!prompt) {
       prompt = DEFAULT_PROMPT;
     }
+
+    // Append decoration instructions if present
+    if (settings && typeof settings === 'object' && 'decorations' in settings) {
+      const decorations = (settings as { decorations?: { selectedObjects: string[]; customText: string; placement: string } }).decorations;
+      if (decorations) {
+        const decorationFragment = buildDecorationPrompt(decorations);
+        if (decorationFragment) {
+          prompt = `${prompt}\n\n${decorationFragment}`;
+          promptSource += '+decorations';
+        }
+      }
+    }
+
     logger.info({ jobId: job.id, promptSource, promptLength: prompt.length }, 'Resolved prompt for AI processing');
 
     // Process with AI asynchronously (fire-and-forget)

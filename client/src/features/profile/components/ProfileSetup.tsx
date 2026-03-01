@@ -35,7 +35,7 @@ function PersonalInfoSection(): React.ReactElement {
         try {
             const updatedUser = await usersService.updateMe({ firstName, lastName });
             dispatch(setUser(updatedUser));
-            toast.success('Name updated');
+            toast.success(t('ui.profile_name_updated'));
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
@@ -45,13 +45,13 @@ function PersonalInfoSection(): React.ReactElement {
 
     return (
         <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
-            <p className="text-sm font-semibold text-foreground">Personal info</p>
+            <p className="text-sm font-semibold text-foreground">{t('ui.profile_personal_info')}</p>
 
             {/* Name fields */}
             <form onSubmit={handleSave} className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
-                        <Label htmlFor="firstName" className="text-xs text-muted-foreground">First name</Label>
+                        <Label htmlFor="firstName" className="text-xs text-muted-foreground">{t('ui.profile_first_name')}</Label>
                         <Input
                             id="firstName"
                             value={firstName}
@@ -60,7 +60,7 @@ function PersonalInfoSection(): React.ReactElement {
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <Label htmlFor="lastName" className="text-xs text-muted-foreground">Last name</Label>
+                        <Label htmlFor="lastName" className="text-xs text-muted-foreground">{t('ui.profile_last_name')}</Label>
                         <Input
                             id="lastName"
                             value={lastName}
@@ -71,7 +71,7 @@ function PersonalInfoSection(): React.ReactElement {
                 </div>
                 <Button type="submit" size="sm" disabled={isSaving} className="gap-1.5">
                     {isSaving && <SpinnerGap size={14} className="animate-spin" />}
-                    {isSaving ? t('ui.text_y9fzx8') : 'Save name'}
+                    {isSaving ? t('ui.text_y9fzx8') : t('ui.profile_save_name')}
                 </Button>
             </form>
         </section>

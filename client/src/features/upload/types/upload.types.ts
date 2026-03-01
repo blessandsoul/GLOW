@@ -8,6 +8,12 @@ export type Lighting = 'normal' | 'bright' | 'dark';
 export type Sharpness = 'soft' | 'sharp' | 'hdr';
 export type ProcessingType = 'ENHANCE' | 'RETOUCH' | 'BACKGROUND' | 'PRO_EDIT';
 
+export interface DecorationSettings {
+    selectedObjects: string[];
+    customText: string;
+    placement: string;
+}
+
 export interface PhotoSettings {
     niche: Niche;
     style: PhotoStyle;
@@ -18,6 +24,7 @@ export interface PhotoSettings {
     processingType?: ProcessingType;
     filterId?: string;
     promptVariables?: Record<string, string | string[]>;
+    decorations?: DecorationSettings;
 }
 
 export const DEFAULT_SETTINGS: PhotoSettings = {
