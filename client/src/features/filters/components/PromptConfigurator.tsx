@@ -13,6 +13,7 @@ interface PromptConfiguratorProps {
     variables: PromptVariableValues;
     onVariablesChange: (vars: PromptVariableValues) => void;
     onBack: () => void;
+    onQuickGenerate?: () => void;
     language: SupportedLanguage;
     t: (key: string) => string;
     isCustomized?: boolean;
@@ -24,6 +25,7 @@ function PromptConfiguratorInner({
     variables,
     onVariablesChange,
     onBack,
+    onQuickGenerate,
     language,
     t,
     isCustomized = false,
@@ -48,7 +50,8 @@ function PromptConfiguratorInner({
             defaults[v.id] = v.default;
         }
         onVariablesChange(defaults);
-    }, [masterPrompt, onVariablesChange]);
+        onQuickGenerate?.();
+    }, [masterPrompt, onVariablesChange, onQuickGenerate]);
 
     // Resolve current value for each variable (use default if not set)
     const resolvedVariables = useMemo(() => {

@@ -162,6 +162,10 @@ export function EditorView({
         if (pendingFile) handleFileSelect(pendingFile);
     }, [pendingFile, handleFileSelect]);
 
+    const handleQuickGenerate = useCallback(() => {
+        if (pendingFile) handleFileSelect(pendingFile);
+    }, [pendingFile, handleFileSelect]);
+
     return (
         <div className="flex w-full flex-col md:flex-row">
 
@@ -216,6 +220,7 @@ export function EditorView({
                         variables={promptVariables}
                         onVariablesChange={setPromptVariables}
                         onBack={handleMasterPromptBack}
+                        onQuickGenerate={handleQuickGenerate}
                         language={language as SupportedLanguage}
                         t={t}
                         isCustomized={isCustomized}
@@ -358,6 +363,7 @@ export function EditorView({
                             variables={promptVariables}
                             onVariablesChange={setPromptVariables}
                             onBack={handleMasterPromptBack}
+                            onQuickGenerate={handleQuickGenerate}
                             language={language as SupportedLanguage}
                             t={t}
                             isCustomized={isCustomized}
@@ -413,8 +419,9 @@ export function EditorView({
             <StyleDrawer
                 open={drawerOpen}
                 onOpenChange={setDrawerOpen}
-                onSelect={setSelectedStyle}
-                selectedId={selectedStyle?.id ?? null}
+                onSelect={handleStyleSelect}
+                onMasterPromptSelect={handleMasterPromptSelect}
+                selectedId={selectedStyle?.id ?? selectedMasterPrompt?.id ?? null}
                 trendStyles={trendStyles}
                 isLoadingTrends={isLoadingTrends}
             />

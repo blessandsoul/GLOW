@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
@@ -99,9 +100,9 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
     const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
     const current = images[safeIndex];
 
-    return (
+    return createPortal(
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
+            className="fixed inset-0 z-60 flex items-center justify-center bg-black"
             onClick={onClose}
             role="dialog"
             aria-modal="true"
@@ -150,7 +151,7 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
 
             {/* Image area with swipe */}
             <div
-                className="relative flex h-full w-full items-center justify-center px-4 py-16"
+                className="flex h-full w-full items-center justify-center px-4 py-12 sm:px-14 sm:py-14"
                 onClick={(e) => e.stopPropagation()}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -198,6 +199,7 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
                     ))}
                 </div>
             )}
-        </div>
+        </div>,
+        document.body,
     );
 }

@@ -125,7 +125,7 @@ function ResultsPageShell({ children }: { children: React.ReactNode }): React.Re
 
 function CreateNewBar({ t }: { t: (key: string) => string }): React.ReactElement {
     return (
-        <div className="sticky bottom-0 z-30 bg-background/80 backdrop-blur-sm border-t border-border/30 px-4 py-3 md:static md:bg-transparent md:backdrop-blur-none md:border-0 md:px-0 md:pt-4 md:pb-6">
+        <div className="px-3 py-3 md:px-6 md:pb-6 md:pt-4">
             <Button size="sm" className="w-full gap-1.5 md:w-auto" asChild>
                 <Link href={ROUTES.CREATE}>
                     <Plus size={14} weight="bold" />

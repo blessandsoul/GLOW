@@ -1,21 +1,21 @@
 {
   "categories": [
     {
-      "id": "obsidian",
-      "label_ka": "OBSIDIAN",
-      "label_ru": "OBSIDIAN",
-      "label_en": "OBSIDIAN",
-      "icon": "Sparkle",
-      "count": 9,
-      "sortOrder": 0
-    },
-    {
       "id": "amber",
       "label_ka": "რეტუში",
       "label_ru": "РЕТУШЬ",
       "label_en": "RETOUCH",
       "icon": "Wand2",
       "count": 5,
+      "sortOrder": 0
+    },
+    {
+      "id": "obsidian",
+      "label_ka": "OBSIDIAN",
+      "label_ru": "OBSIDIAN",
+      "label_en": "OBSIDIAN",
+      "icon": "Sparkle",
+      "count": 9,
       "sortOrder": 1
     }
   ],
@@ -27,7 +27,7 @@
       "name_ka": "მკვეთრი წითელი ტუჩსაცხი",
       "name_ru": "Яркие красные губы",
       "name_en": "Bold Red Lip",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing, no blur.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nRich saturated true-red lipstick with clean sharply defined edges following the natural lip line exactly. Satin lip finish. Thin precise black eyeliner along the upper lash line only, very subtle natural wing. Light mascara coat for definition only, no exaggerated effect. Soft matte complexion base, very subtle and natural-looking. Light realistic contour enhancing natural bone structure without reshaping.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing, no blur. MAKEUP (do not reshape any facial feature): Rich saturated true-red lipstick with clean sharply defined edges following the natural lip line exactly. Satin lip finish. Thin precise black eyeliner along the upper lash line only, very subtle natural wing. Light mascara coat for definition only, no exaggerated effect. Soft matte complexion base, very subtle and natural-looking. Light realistic contour enhancing natural bone structure without reshaping. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/01_bold_red_lip/after.png",
       "beforeUrl": "/filters/obsidian/01_bold_red_lip/before.jpg",
       "description_ka": "კლასიკური, თავდაჯერებული, დროგაუსაძლისი, თანამედროვე ძველი ჰოლივუდი",
@@ -41,7 +41,7 @@
       "name_ka": "Clean Girl",
       "name_ru": "Clean Girl",
       "name_en": "Clean Girl",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Create a dewy luminous \"skin-from-within\" glow, hydrated and radiant but not oily.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nMinimal concealer effect under eyes, bright and fresh, not heavy. No visible eyeliner, lash line left natural and soft. Barely-there mascara, lashes lightly defined and separated, no clumping or false-lash effect. No eyeshadow or only faintest wash of warm nude across lid. Brows brushed upward with fluffy feathered texture, filled only where sparse, maintaining original shape. Soft cream blush on apples of cheeks, warm peach or soft pink. Subtle wet-look highlighter on cheekbone tops and nose bridge only, no glitter. Lips with hydrating tinted balm in your-lips-but-better shade, dusty rose or warm nude, no sharp lip liner.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Create a dewy luminous \"skin-from-within\" glow, hydrated and radiant but not oily. MAKEUP (do not reshape any facial feature): Minimal concealer effect under eyes, bright and fresh, not heavy. No visible eyeliner, lash line left natural and soft. Barely-there mascara, lashes lightly defined and separated, no clumping or false-lash effect. No eyeshadow or only faintest wash of warm nude across lid. Brows brushed upward with fluffy feathered texture, filled only where sparse, maintaining original shape. Soft cream blush on apples of cheeks, warm peach or soft pink. Subtle wet-look highlighter on cheekbone tops and nose bridge only, no glitter. Lips with hydrating tinted balm in your-lips-but-better shade, dusty rose or warm nude, no sharp lip liner. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/02_clean_girl/after.png",
       "beforeUrl": "/filters/obsidian/02_clean_girl/before.jpg",
       "description_ka": "მბზინავი, მინიმალისტური, ბუნებრივი, შიგნიდან მანათობელი კანი",
@@ -55,7 +55,7 @@
       "name_ka": "Coquette",
       "name_ru": "Coquette",
       "name_en": "Coquette",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Porcelain dewy base with lit-from-within luminosity, sheer coverage.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nSoft baby pink cream blush on apples of cheeks AND across nose bridge for innocent flush. Delicate rosy lip tint in pale ballet-pink, blotted for soft-stain finish. Pink shimmer on inner eye corners for wide-eyed sparkle. Soft pink-champagne shimmer dusted lightly across center of lids. Feathery wispy lashes, natural-looking but curled. Brows brushed up and softened with clear gel, natural, never harsh. Tiny dab of pink highlighter on cupid's bow and chin. No contour, no bronzer. Palette stays within pink-rose-champagne tones exclusively.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Porcelain dewy base with lit-from-within luminosity, sheer coverage. MAKEUP (do not reshape any facial feature): Soft baby pink cream blush on apples of cheeks AND across nose bridge for innocent flush. Delicate rosy lip tint in pale ballet-pink, blotted for soft-stain finish. Pink shimmer on inner eye corners for wide-eyed sparkle. Soft pink-champagne shimmer dusted lightly across center of lids. Feathery wispy lashes, natural-looking but curled. Brows brushed up and softened with clear gel, natural, never harsh. Tiny dab of pink highlighter on cupid's bow and chin. No contour, no bronzer. Palette stays within pink-rose-champagne tones exclusively. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/03_coquette/after.png",
       "beforeUrl": "/filters/obsidian/03_coquette/before.jpg",
       "description_ka": "ნაზი, ბალეტკორი, ვარდისფერი, დელიკატურად ქალური",
@@ -69,7 +69,7 @@
       "name_ka": "Douyin",
       "name_ru": "Douyin",
       "name_en": "Douyin",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Dewy bright luminous base, hydrated with youthful glow.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nSoft peachy-pink flush concentrated on center of face — cheeks, nose, chin. Fine champagne-pink aegyo-sal shimmer on under-eye puff area. Soft gradient coral lip with blurred edges, deeper coral at center fading to nothing at edges. Light pink-peach eyeshadow wash across lids with soft shimmer at center. Straight soft brows in natural gray-brown, youthful and unstructured. Single coat of curling mascara on upper lashes, cute not dramatic. Subtle highlight on nose bridge and under-eye area for brightening. No contour. Overall \"bitten peach\" effect, fresh and juicy.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Dewy bright luminous base, hydrated with youthful glow. MAKEUP (do not reshape any facial feature): Soft peachy-pink flush concentrated on center of face — cheeks, nose, chin. Fine champagne-pink aegyo-sal shimmer on under-eye puff area. Soft gradient coral lip with blurred edges, deeper coral at center fading to nothing at edges. Light pink-peach eyeshadow wash across lids with soft shimmer at center. Straight soft brows in natural gray-brown, youthful and unstructured. Single coat of curling mascara on upper lashes, cute not dramatic. Subtle highlight on nose bridge and under-eye area for brightening. No contour. Overall \"bitten peach\" effect, fresh and juicy. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/04_douyin/after.png",
       "beforeUrl": "/filters/obsidian/04_douyin/before.jpg",
       "description_ka": "ახალგაზრდული, ატმისფერი, K-beauty, მინის კანი",
@@ -83,7 +83,7 @@
       "name_ka": "გლიტერი",
       "name_ru": "Глиттер",
       "name_en": "Glitter",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nSoft smoky eyeshadow base in champagne and warm bronze tones, blended seamlessly with realistic gradient transitions. Fine reflective glitter layered lightly across eyelids, tasteful editorial sparkle, not chunky. Tiny rhinestone crystal accents placed at inner corners of both eyes. Full voluminous but realistic lashes aligned naturally to lash line. Lips in nude-pink satin shade with natural dimension, not overlined. Brows groomed and natural, keep original shape, slight definition only. No heavy foundation. No contour reshaping. Only the eye area is dramatically transformed. Palette: champagne-bronze-gold eye focus with neutral everything else.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. MAKEUP (do not reshape any facial feature): Soft smoky eyeshadow base in champagne and warm bronze tones, blended seamlessly with realistic gradient transitions. Fine reflective glitter layered lightly across eyelids, tasteful editorial sparkle, not chunky. Tiny rhinestone crystal accents placed at inner corners of both eyes. Full voluminous but realistic lashes aligned naturally to lash line. Lips in nude-pink satin shade with natural dimension, not overlined. Brows groomed and natural, keep original shape, slight definition only. No heavy foundation. No contour reshaping. Only the eye area is dramatically transformed. Palette: champagne-bronze-gold eye focus with neutral everything else. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/05_glitter/after.png",
       "beforeUrl": "/filters/obsidian/05_glitter/before.jpg",
       "description_ka": "სარედაქციო, მდიდრული, სასცენო გლამური",
@@ -97,7 +97,7 @@
       "name_ka": "ოქროს საათის ნათება",
       "name_ru": "Сияние золотого часа",
       "name_en": "Golden Hour Glow",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Dewy radiant base with warm golden undertone.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nWarm peachy-gold tones across face mimicking sunset golden hour light on skin. Bronze shimmer on cheekbones, warm golden-bronze highlight that catches light. Warm golden shimmer eyeshadow across lids in soft amber-peach, satin finish. Warm coral blush blended on cheekbones, sun-warmed peachy-golden flush. Honey-toned glossy lip, warm golden-nude with high-shine wet finish. Light golden highlight on nose bridge, forehead, and cupid's bow. Brows natural and groomed, slightly warmed with golden-brown tones. Lashes curled and coated in brown-black, warm and sun-lit looking. Entire face reads as bathed in warm sunset light, cohesive warm golden palette.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Dewy radiant base with warm golden undertone. MAKEUP (do not reshape any facial feature): Warm peachy-gold tones across face mimicking sunset golden hour light on skin. Bronze shimmer on cheekbones, warm golden-bronze highlight that catches light. Warm golden shimmer eyeshadow across lids in soft amber-peach, satin finish. Warm coral blush blended on cheekbones, sun-warmed peachy-golden flush. Honey-toned glossy lip, warm golden-nude with high-shine wet finish. Light golden highlight on nose bridge, forehead, and cupid's bow. Brows natural and groomed, slightly warmed with golden-brown tones. Lashes curled and coated in brown-black, warm and sun-lit looking. Entire face reads as bathed in warm sunset light, cohesive warm golden palette. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/06_golden_hour_glow/after.png",
       "beforeUrl": "/filters/obsidian/06_golden_hour_glow/before.jpg",
       "description_ka": "მზით სავსე, თბილი ბრინჯაო, მანათობელი ოქროსფერი ნათება",
@@ -111,7 +111,7 @@
       "name_ka": "Old Money",
       "name_ru": "Old Money",
       "name_en": "Old Money",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Soft matte satin finish, flawless but never shiny, never cakey.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nPerfectly blended muted neutral eyeshadow in soft taupe across lid, slightly deeper in crease. Nude-rose lips in creamy matte formula, understated and perfectly even. Groomed natural brows filled with light feathered strokes only where needed, maintaining original shape. Subtle warm contour under cheekbones blended invisibly. Muted dusty rose blush barely visible, placed high on cheekbones. No shimmer, no glitter, no visible highlight — everything matte-satin and refined. Thin line of dark brown eyeliner on upper lash line blended softly, no wing. Natural-looking lashes curled and separated, never dramatic. Overall impression: expensive, effortless, understated.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Soft matte satin finish, flawless but never shiny, never cakey. MAKEUP (do not reshape any facial feature): Perfectly blended muted neutral eyeshadow in soft taupe across lid, slightly deeper in crease. Nude-rose lips in creamy matte formula, understated and perfectly even. Groomed natural brows filled with light feathered strokes only where needed, maintaining original shape. Subtle warm contour under cheekbones blended invisibly. Muted dusty rose blush barely visible, placed high on cheekbones. No shimmer, no glitter, no visible highlight — everything matte-satin and refined. Thin line of dark brown eyeliner on upper lash line blended softly, no wing. Natural-looking lashes curled and separated, never dramatic. Overall impression: expensive, effortless, understated. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/07_old_money/after.png",
       "beforeUrl": "/filters/obsidian/07_old_money/before.jpg",
       "description_ka": "მკრთალი, დახვეწილი, ჩუმად მდიდრული, ბუნებრივი",
@@ -125,7 +125,7 @@
       "name_ka": "ვარდის ფურცელი",
       "name_ru": "Лепесток розы",
       "name_en": "Rose Petal",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Dewy petal-soft finish, luminous but not oily.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nSoft diffused rose-pink blush across cheeks, blended widely and seamlessly. Blush extends slightly onto nose bridge for connected romantic flush. Matching rosy lip stain in true rose-pink shade, blotted for petal-soft matte finish. Pink shimmer eyeshadow on lids in soft rose-gold wash, barely there. Natural brows brushed up and softened, unfilled, delicate. Fine pink-champagne highlight on cheekbone peaks and inner eye corners. Light mascara in brown-black, soft feathery feminine lashes. No contour, no bronzer. Rose blush is the defining color and dimension. Everything in the pink-rose family, no warm oranges or cool purples.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details. Remove only minor temporary blemishes. No plastic smoothing, no airbrushing. Dewy petal-soft finish, luminous but not oily. MAKEUP (do not reshape any facial feature): Soft diffused rose-pink blush across cheeks, blended widely and seamlessly. Blush extends slightly onto nose bridge for connected romantic flush. Matching rosy lip stain in true rose-pink shade, blotted for petal-soft matte finish. Pink shimmer eyeshadow on lids in soft rose-gold wash, barely there. Natural brows brushed up and softened, unfilled, delicate. Fine pink-champagne highlight on cheekbone peaks and inner eye corners. Light mascara in brown-black, soft feathery feminine lashes. No contour, no bronzer. Rose blush is the defining color and dimension. Everything in the pink-rose family, no warm oranges or cool purples. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/08_rose_petal/after.png",
       "beforeUrl": "/filters/obsidian/08_rose_petal/before.jpg",
       "description_ka": "რომანტიული, ბაღისებრ ნაზი, ვარდისფერი ფერმკრთალი, მბზინავი",
@@ -139,7 +139,7 @@
       "name_ka": "მზე",
       "name_ru": "Солнце",
       "name_en": "Sun-Kissed",
-      "prompt": "Edit the uploaded photo and enhance its quality without changing color correction or adding filters.\r\n\r\nIdentity and appearance protection (STRICTLY follow):\r\nDO NOT alter the face shape, bone structure, jawline, chin, or facial proportions.\r\nDO NOT alter the eyes, eyelids, irises, sclera, pupil, or eye shape.\r\nDO NOT alter the length, curl, thickness, direction, density, or style of eyelashes. Eyelashes must remain exactly as in the original photo.\r\nDO NOT alter the shape, color, direction, arch, or thickness of eyebrows. Eyebrows must remain exactly as in the original photo.\r\nDO NOT alter the nose shape or size.\r\nDO NOT alter the natural lip shape or size.\r\nDO NOT alter the skin tone, skin color, or color temperature.\r\nDO NOT alter the hairstyle, hair shape, length, volume, parting, or hair color.\r\nDO NOT alter the body shape, proportions, clothing, or pose.\r\nDO NOT alter the background, environment, camera angle, framing, or crop.\r\nDO NOT alter the lighting direction, shadows, or contrast.\r\nDO NOT add filters. DO NOT change color correction.\r\n\r\nSkin: preserve real skin texture with visible pores and micro-details fully visible. No plastic smoothing, no airbrushing. Dewy slightly oily-looking skin, like sunscreen and sun exposure combined.\r\n\r\nMakeup application ONLY (do not reshape any facial feature):\r\nHeavy warm coral-peach blush draped generously across nose bridge connecting both cheeks. Blush extends up to forehead and down to chin mimicking real sunburn pattern. Natural-looking freckles scattered across nose and cheeks in varying warm brown tones and sizes. Barely any other makeup — no eyeshadow, no liner, no visible foundation. Lips natural with just a hint of warm peach balm, slightly dry sun-exposed look. Brows natural, unfilled, slightly sun-bleached appearance. No contour. Warm peach-red tones only, no pink, no cool tones.\r\n\r\nHair: keep identical. Only smooth flyaways and improve shine.\r\n\r\nDo not change the photo filter.",
+      "prompt": "Edit the uploaded photo and enhance its quality. PRESERVE: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions unchanged. Eyes, eyelids, irises, pupil, eye shape unchanged. Eyelashes: exact original length, curl, thickness, direction, density — no modification. Eyebrows: exact original shape, color, direction, arch, thickness — no modification. Nose shape and size unchanged. Natural lip shape and size unchanged. Skin tone, skin color, color temperature unchanged. Hairstyle, hair shape, length, volume, parting, hair color unchanged. Body shape, proportions, clothing, pose unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. No filters, no color correction changes. SKIN: Preserve real skin texture with visible pores and micro-details fully visible. No plastic smoothing, no airbrushing. Dewy slightly oily-looking skin, like sunscreen and sun exposure combined. MAKEUP (do not reshape any facial feature): Heavy warm coral-peach blush draped generously across nose bridge connecting both cheeks. Blush extends up to forehead and down to chin mimicking real sunburn pattern. Natural-looking freckles scattered across nose and cheeks in varying warm brown tones and sizes. Barely any other makeup — no eyeshadow, no liner, no visible foundation. Lips natural with just a hint of warm peach balm, slightly dry sun-exposed look. Brows natural, unfilled, slightly sun-bleached appearance. No contour. Warm peach-red tones only, no pink, no cool tones. HAIR: Keep identical, only smooth flyaways and improve shine.",
       "previewUrl": "/filters/obsidian/09_sun/after.png",
       "beforeUrl": "/filters/obsidian/09_sun/before.jpg",
       "description_ka": "მარჯნისფერი, მზისგან ნაკოცნი, ნამდვილი ნამზეურის სითბო",
@@ -1323,6 +1323,34 @@
               "label_en": "Floral Bokeh",
               "label_ru": "Цветочный боке",
               "label_ka": "ყვავილები"
+            },
+            {
+              "id": "dusty-rose",
+              "value": "Muted dusty rose background with grey undertone — editorial, high-fashion, ash-pink studio backdrop",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "value": "Soft luminous pearl-white gradient with subtle warm undertone — clean, glowing, airy. Faint dewy mist effect in the background creating depth. Premium skincare campaign feel — pure, fresh, radiant",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "value": "Deep velvet black with subtle warm amber light spill from behind the model — creating elegant rim separation. Faint golden dust particles floating in the background, barely visible. Luxury lash brand campaign feel",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "value": "Rich deep chocolate-to-caramel gradient with warm golden bokeh highlights scattered softly — luxury hair salon campaign aesthetic",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },
@@ -1419,6 +1447,13 @@
               "label_en": "Rim Light",
               "label_ru": "Контровой свет",
               "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "value": "Add subtle highlighter effect on cheekbone tops, nose tip, and cupid's bow — editorial luminous finish",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
             }
           ]
         }
@@ -1473,6 +1508,34 @@
               "label_en": "Dusty Rose",
               "label_ru": "Пыльная роза",
               "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "value": "Soft luminous pearl-white gradient with subtle warm undertone — clean, glowing, airy. Faint dewy mist effect in the background creating depth. Premium skincare campaign feel — pure, fresh, radiant",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "value": "Deep velvet black with subtle warm amber light spill from behind the model — creating elegant rim separation. Faint golden dust particles floating in the background, barely visible. Luxury lash brand campaign feel",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "rose-gold",
+              "value": "Soft gradient from deep rose-gold to warm nude — luxury cosmetic brand aesthetic. Subtle bokeh light particles floating in the background, warm and romantic",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "floral",
+              "value": "Soft out-of-focus floral background with warm blush tones and scattered petals — romantic beauty campaign feel",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
             }
           ]
         },
@@ -1562,6 +1625,20 @@
               "label_en": "Wet Skin",
               "label_ru": "Влажная кожа",
               "label_ka": "სველი კანი"
+            },
+            {
+              "id": "rim-light",
+              "value": "Add rim light from behind — golden separation light on hair and shoulders for depth",
+              "label_en": "Rim Light",
+              "label_ru": "Контровой свет",
+              "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "value": "Add subtle highlighter effect on cheekbone tops, nose tip, and cupid's bow — editorial luminous finish",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
             }
           ]
         }
@@ -1577,7 +1654,7 @@
       "description_ru": "Профессиональная ретушь для мастера маникюра",
       "description_ka": "პროფესიული რეტუში ფრჩხილების მასტერისთვის",
       "previewUrl": "/filters/amber/nails.webp",
-      "prompt": "Edit the uploaded manicure/pedicure photo — professional retouch for nail master portfolio. NAILS AND MANICURE/PEDICURE: 100% pixel-identical — completely protected area. No changes whatsoever to nail color, tone, temperature, shape, finish, length, design, or any detail. Nails must remain pixel-identical to original. This is the master's work — absolute zero interaction. SKIN: Texture preserved with visible pores — no smoothing, no airbrushing. Natural hand/foot skin with realistic texture. Remove only minor blemishes and redness. Even skin tone, healthy natural appearance. [HAND_ACCESSORY]. [EXTRAS]. BACKGROUND: [BACKGROUND]. SETUP: Soft studio lighting, subtle depth gradient. Proper highlights on nail surface preserving original finish (gel shine, matte, etc.). Gentle shadows under fingers/toes for natural depth. QUALITY: No filters. Ultra-photorealistic, high-quality fashion photography look. Sharp focus on nails. Original dimensions — do not resize.",
+      "prompt": "Edit the uploaded manicure/pedicure photo — professional retouch for nail master portfolio. NAILS AND MANICURE/PEDICURE: 100% pixel-identical — completely protected area. No changes whatsoever to nail color, tone, temperature, shape, finish, length, design, or any detail. Nails must remain pixel-identical to original. This is the master's work — absolute zero interaction. SKIN: [SKIN_RETOUCH_LEVEL]. [HAND_ACCESSORY]. [EXTRAS]. BACKGROUND: [BACKGROUND]. SETUP: Soft studio lighting, subtle depth gradient. Proper highlights on nail surface preserving original finish (gel shine, matte, etc.). Gentle shadows under fingers/toes for natural depth. QUALITY: No filters. Ultra-photorealistic, high-quality fashion photography look. Sharp focus on nails. Original dimensions — do not resize.",
       "sortOrder": 2,
       "variables": [
         {
@@ -1604,6 +1681,13 @@
               "label_ka": "შავი"
             },
             {
+              "id": "white-studio",
+              "value": "Clean solid white studio background — bright, airy, professional",
+              "label_en": "White Studio",
+              "label_ru": "Белая студия",
+              "label_ka": "თეთრი სტუდია"
+            },
+            {
               "id": "white-fur",
               "value": "White mink fur coat from natural fur as background element — luxurious, realistic fur texture with proper depth and volume",
               "label_en": "White Fur",
@@ -1616,6 +1700,52 @@
               "label_en": "Burgundy Velvet",
               "label_ru": "Бордовый бархат",
               "label_ka": "ბორდო ხავერდი"
+            },
+            {
+              "id": "rose-gold",
+              "value": "Soft gradient from deep rose-gold to warm nude — luxury cosmetic brand aesthetic. Subtle bokeh light particles floating in the background, warm and romantic",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "dusty-rose",
+              "value": "Muted dusty rose background with grey undertone — editorial, high-fashion, ash-pink studio backdrop",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            }
+          ]
+        },
+        {
+          "id": "SKIN_RETOUCH_LEVEL",
+          "type": "select",
+          "label_en": "Skin Retouch",
+          "label_ru": "Ретушь кожи",
+          "label_ka": "კანის რეტუში",
+          "required": true,
+          "default": "full",
+          "options": [
+            {
+              "id": "light",
+              "value": "Natural hand/foot skin texture preserved. Remove only minor blemishes and redness. Even skin tone. No smoothing, no airbrushing",
+              "label_en": "Light",
+              "label_ru": "Лёгкая",
+              "label_ka": "მსუბუქი"
+            },
+            {
+              "id": "medium",
+              "value": "Natural hand/foot skin with realistic texture preserved. Remove minor blemishes and redness. Even skin tone, healthy natural glow. No smoothing, no airbrushing",
+              "label_en": "Medium",
+              "label_ru": "Средняя",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "full",
+              "value": "Professional retouch of hand/foot skin. Natural texture preserved with visible pores. Remove blemishes, redness, minor imperfections. Even skin tone, healthy radiant appearance. No smoothing, no airbrushing",
+              "label_en": "Full Editorial",
+              "label_ru": "Полная",
+              "label_ka": "სრული"
             }
           ]
         },
@@ -1688,7 +1818,7 @@
       "description_ru": "Профессиональная ретушь для косметолога",
       "description_ka": "პროფესიული რეტუში კოსმეტოლოგისთვის",
       "previewUrl": "/filters/amber/skin.webp",
-      "prompt": "Edit the uploaded photo — professional editorial skin retouch at magazine cover level for cosmetologist portfolio. PRESERVE: Face identity 100% identical — one-to-one likeness. No changes to facial features, proportions, age, expression. Original camera angle, crop, framing preserved. EYELASHES: Pixel-identical — no change to color, curl, density, volume, thickness, length, direction, separation. No mascara effect, no enhancement. Absolutely protected from any processing with ZERO interaction. EYEBROWS: Pixel-identical — no change to color, density, shape, tone, texture. No grooming, no filling, no makeup. Absolutely protected. LIPS: Pixel-identical — no change to color, shape, texture. No lip makeup added. HAIR: Pixel-identical — preserve all texture, position, natural shine. Unchanged. MAKEUP: Unchanged — preserve all existing makeup application. SKIN: This is the master's work — [SKIN_FINISH]. STRICT: Do not change skin color, tone, temperature, or undertone. No color grading applied to skin. No white balance shifts. Skin hue, saturation, luminance must remain identical to original. Sharp high-frequency detail preserved. [EXTRAS]. BACKGROUND: [BACKGROUND]. QUALITY: Preserve original color correction, temperature, tone. No filters added. Professional Vogue-level editorial finish. Ultra-photorealistic. Sharp focus. 8K quality. Original dimensions — do not crop or resize.",
+      "prompt": "Edit the uploaded photo — professional editorial skin retouch at magazine cover level for cosmetologist portfolio. PRESERVE: Face identity 100% identical — one-to-one likeness. No changes to facial features, proportions, age, expression. Original camera angle, crop, framing preserved. EYELASHES: Pixel-identical — no change to color, curl, density, volume, thickness, length, direction, separation. No mascara effect, no enhancement. Absolutely protected from any processing with ZERO interaction. EYEBROWS: Pixel-identical — no change to color, density, shape, tone, texture. No grooming, no filling, no makeup. Absolutely protected. LIPS: Pixel-identical — no change to color, shape, texture. No lip makeup added. HAIR: Pixel-identical — preserve all texture, position, natural shine. Unchanged. MAKEUP: Unchanged — preserve all existing makeup application. SKIN: This is the master's work — [SKIN_RETOUCH_LEVEL]. Skin finish style: [SKIN_FINISH]. STRICT: Do not change skin color, tone, temperature, or undertone. No color grading applied to skin. No white balance shifts. Skin hue, saturation, luminance must remain identical to original. Sharp high-frequency detail preserved. [EXTRAS]. BACKGROUND: [BACKGROUND]. QUALITY: Preserve original color correction, temperature, tone. No filters added. Professional Vogue-level editorial finish. Ultra-photorealistic. Sharp focus. 8K quality. Original dimensions — do not crop or resize.",
       "sortOrder": 3,
       "variables": [
         {
@@ -1727,6 +1857,66 @@
               "label_en": "Rose Gold",
               "label_ru": "Розовое золото",
               "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "floral",
+              "value": "Soft out-of-focus floral background with warm blush tones and scattered petals — romantic beauty campaign feel",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            },
+            {
+              "id": "dusty-rose",
+              "value": "Muted dusty rose background with grey undertone — editorial, high-fashion, ash-pink studio backdrop",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "amber-velvet",
+              "value": "Deep velvet black with subtle warm amber light spill from behind the model — creating elegant rim separation. Faint golden dust particles floating in the background, barely visible. Luxury lash brand campaign feel",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "value": "Rich deep chocolate-to-caramel gradient with warm golden bokeh highlights scattered softly — luxury hair salon campaign aesthetic",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
+            }
+          ]
+        },
+        {
+          "id": "SKIN_RETOUCH_LEVEL",
+          "type": "select",
+          "label_en": "Skin Retouch",
+          "label_ru": "Ретушь кожи",
+          "label_ka": "კანის რეტუში",
+          "required": true,
+          "default": "full",
+          "options": [
+            {
+              "id": "light",
+              "value": "Professional editorial retouch. Remove only minor temporary blemishes (acne, redness, spots). Preserve all natural texture — pores, micro-details, vellus hair. Even skin tone, natural glow. No smoothing, no blurring, no airbrushing",
+              "label_en": "Light",
+              "label_ru": "Лёгкая",
+              "label_ka": "მსუბუქი"
+            },
+            {
+              "id": "medium",
+              "value": "Professional editorial retouch. Smooth, hydrated, radiant with natural glow. Natural texture visible — pores preserved, micro-details intact. Remove minor temporary blemishes (acne, redness, spots). Even skin tone, dewy glow. Hydrated editorial glow with subtle highlights. No plastic effect, no airbrushing",
+              "label_en": "Medium",
+              "label_ru": "Средняя",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "full",
+              "value": "Professional editorial retouch. Smooth, hydrated, radiant with natural glow. Natural texture visible — pores preserved, micro-details intact, vellus hair preserved. Remove only minor temporary blemishes (acne, redness, spots). Even skin tone, dewy glow. Hydrated editorial glow with subtle highlights. Micro-contrast enhanced for realistic depth. No plastic effect, no smoothing, no blurring, no airbrushing, no noise reduction. Natural light transitions preserved",
+              "label_en": "Full Editorial",
+              "label_ru": "Полная",
+              "label_ka": "სრული"
             }
           ]
         },
@@ -1771,6 +1961,13 @@
           "required": false,
           "default": [],
           "options": [
+            {
+              "id": "wet-skin",
+              "value": "Add wet dewy skin effect on face — glistening highlights, fresh hydrated look",
+              "label_en": "Wet Skin",
+              "label_ru": "Влажная кожа",
+              "label_ka": "სველი კანი"
+            },
             {
               "id": "freckles",
               "value": "Add soft natural freckles across nose and cheeks — delicate, barely noticeable, photorealistic",
@@ -1845,6 +2042,34 @@
               "label_en": "Rose Gold",
               "label_ru": "Розовое золото",
               "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "floral",
+              "value": "Soft out-of-focus floral background with warm blush tones and scattered petals — romantic beauty campaign feel",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            },
+            {
+              "id": "dusty-rose",
+              "value": "Muted dusty rose background with grey undertone — editorial, high-fashion, ash-pink studio backdrop",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "value": "Soft luminous pearl-white gradient with subtle warm undertone — clean, glowing, airy. Faint dewy mist effect in the background creating depth. Premium skincare campaign feel — pure, fresh, radiant",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "chocolate",
+              "value": "Rich deep chocolate-to-caramel gradient with warm golden bokeh highlights scattered softly — luxury hair salon campaign aesthetic",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },
@@ -1941,6 +2166,13 @@
               "label_en": "Rim Light",
               "label_ru": "Контровой свет",
               "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "value": "Add subtle highlighter effect on cheekbone tops, nose tip, and cupid's bow — editorial luminous finish",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
             }
           ]
         }

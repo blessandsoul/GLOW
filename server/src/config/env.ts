@@ -33,6 +33,7 @@ const envSchema = z.object({
 
   // OpenAI config (required when AI_PROVIDER=openai)
   OPENAI_API_KEY: z.string().default(''),
+  OPENAI_CHAT_MODEL: z.string().default('gpt-4o-mini'),
   OPENAI_IMAGE_MODEL: z.string().default('gpt-image-1'),
   OPENAI_IMAGE_COUNT: z.coerce.number().int().min(1).max(4).default(1),
   // Switch between "low" (fast/cheap) and "high" (max quality) — controls size, quality, format, fidelity

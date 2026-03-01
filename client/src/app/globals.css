@@ -175,6 +175,11 @@
     display: none;
   }
 
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -276,5 +281,154 @@
   @starting-style {
     opacity: 0;
     transform: translateY(10px);
+  }
+}
+
+/* ── Sonner toast — premium compact overrides ────────────────────────────── */
+
+/* Base toast: compact sizing, upgraded radius & shadow */
+[data-sonner-toast][data-styled='true'] {
+  --border-radius: 12px;
+  font-family: var(--font-geist-sans), var(--font-noto-georgian), ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  padding: 10px 14px;
+  gap: 8px;
+  box-shadow:
+    0 2px 16px oklch(0 0 0 / 0.06),
+    0 1px 3px oklch(0 0 0 / 0.04);
+  max-width: 340px;
+}
+
+[data-sonner-toast][data-styled='true'] [data-icon] {
+  height: 16px;
+  width: 16px;
+}
+
+[data-sonner-toast][data-styled='true'] [data-title] {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+[data-sonner-toast][data-styled='true'] [data-description] {
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0.75;
+}
+
+[data-sonner-toast][data-styled='true'] [data-close-button] {
+  height: 20px;
+  width: 20px;
+  border-radius: 6px;
+  transition: opacity 150ms ease, background 150ms ease;
+}
+
+/* ── Light theme — OKLCH richColor overrides ─────────────────────────────── */
+[data-sonner-toaster][data-sonner-theme='light'] {
+  --normal-bg: oklch(1 0 0);
+  --normal-border: oklch(0.88 0.02 340);
+  --normal-text: oklch(0.2 0.03 340);
+
+  --success-bg: oklch(0.97 0.03 155);
+  --success-border: oklch(0.88 0.08 155);
+  --success-text: oklch(0.35 0.14 155);
+
+  --info-bg: oklch(0.97 0.02 232);
+  --info-border: oklch(0.88 0.07 232);
+  --info-text: oklch(0.40 0.14 232);
+
+  --warning-bg: oklch(0.97 0.03 70);
+  --warning-border: oklch(0.88 0.10 70);
+  --warning-text: oklch(0.42 0.14 55);
+
+  --error-bg: oklch(0.97 0.03 27);
+  --error-border: oklch(0.88 0.10 27);
+  --error-text: oklch(0.42 0.19 27);
+}
+
+/* ── Dark theme — OKLCH richColor overrides ──────────────────────────────── */
+[data-sonner-toaster][data-sonner-theme='dark'] {
+  --normal-bg: oklch(0.20 0 0);
+  --normal-border: oklch(0.30 0 0);
+  --normal-text: oklch(0.95 0 0);
+
+  --success-bg: oklch(0.18 0.04 155);
+  --success-border: oklch(0.28 0.06 155);
+  --success-text: oklch(0.75 0.14 155);
+
+  --info-bg: oklch(0.18 0.04 232);
+  --info-border: oklch(0.28 0.06 232);
+  --info-text: oklch(0.75 0.12 232);
+
+  --warning-bg: oklch(0.20 0.04 70);
+  --warning-border: oklch(0.30 0.07 70);
+  --warning-text: oklch(0.80 0.14 70);
+
+  --error-bg: oklch(0.20 0.05 27);
+  --error-border: oklch(0.30 0.08 27);
+  --error-text: oklch(0.78 0.18 27);
+}
+
+/* ── Left accent bar on typed toasts ─────────────────────────────────────── */
+[data-rich-colors='true'][data-sonner-toast][data-type='success'] {
+  border-left: 3px solid oklch(0.527 0.185 155.024);
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] {
+  border-left: 3px solid oklch(0.577 0.245 27.325);
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
+  border-left: 3px solid oklch(0.769 0.188 70.08);
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='info'] {
+  border-left: 3px solid oklch(0.609 0.179 231.7);
+}
+
+/* ── Toast icon entrance ─────────────────────────────────────────────────── */
+@keyframes toast-icon-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-sonner-toast][data-mounted='true'] [data-icon] > * {
+    animation: toast-icon-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+
+/* ── AlertDialog premium animations ──────────────────────────────────────── */
+@keyframes dialog-overlay-in {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to   { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+@keyframes dialog-overlay-out {
+  from { opacity: 1; backdrop-filter: blur(8px); }
+  to   { opacity: 0; backdrop-filter: blur(0); }
+}
+
+@keyframes dialog-slide-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes dialog-slide-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+    filter: blur(4px);
   }
 }

@@ -4,12 +4,13 @@ import { X } from '@phosphor-icons/react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { StylesGallery } from './StylesGallery';
-import type { Style } from '../types/styles.types';
+import type { Style, MasterPrompt } from '../types/styles.types';
 
 interface StyleDrawerProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSelect: (style: Style) => void;
+    onMasterPromptSelect?: (mp: MasterPrompt) => void;
     selectedId: string | null;
     trendStyles: Style[];
     isLoadingTrends: boolean;
@@ -19,6 +20,7 @@ export function StyleDrawer({
     open,
     onOpenChange,
     onSelect,
+    onMasterPromptSelect,
     selectedId,
     trendStyles,
     isLoadingTrends,
@@ -48,6 +50,10 @@ export function StyleDrawer({
                             onSelect(style);
                             setTimeout(() => onOpenChange(false), 200);
                         }}
+                        onMasterPromptSelect={onMasterPromptSelect ? (mp) => {
+                            onMasterPromptSelect(mp);
+                            setTimeout(() => onOpenChange(false), 200);
+                        } : undefined}
                         selectedId={selectedId}
                         trendStyles={trendStyles}
                         isLoadingTrends={isLoadingTrends}

@@ -119,25 +119,6 @@ export function LoginForm(): React.ReactElement {
                         </Link>
                     </p>
                 </form>
-
-                <div className="mt-6 border-t border-zinc-100 dark:border-zinc-800/50 pt-6">
-                    <Button
-                        variant="outline"
-                        className="w-full h-11 gap-2 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all active:scale-[0.98] rounded-xl font-medium"
-                        disabled={isLoggingIn}
-                        onClick={() => login({ email: 'admin@glow.ge.demo', password: 'demo1234' })}
-                    >
-                        {isLoggingIn ? (
-                            <SpinnerGap size={18} className="animate-spin" />
-                        ) : (
-                            <Star size={18} />
-                        )}
-                        {t('auth.demo_login')}
-                    </Button>
-                    <p className="mt-2 text-center text-[11px] text-zinc-400">
-                        {t('auth.demo_desc')}
-                    </p>
-                </div>
             </CardContent>
         </Card>
     );

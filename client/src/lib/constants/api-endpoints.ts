@@ -77,4 +77,7 @@ export const API_ENDPOINTS = {
         USERS: '/admin/users',
         STATS: '/admin/stats',
     },
+    CHAT: {
+        MESSAGE: '/chat/message',
+    },
 } as const;

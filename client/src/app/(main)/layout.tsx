@@ -8,9 +8,9 @@ export default function MainLayout({
     children: React.ReactNode;
 }): React.ReactElement {
     return (
-        <div className="flex h-dvh flex-col overflow-hidden md:h-auto md:min-h-dvh md:overflow-visible">
+        <div className="relative min-h-dvh pt-14">
             <Header />
-            <main className="flex-1 overflow-y-auto md:overflow-visible">{children}</main>
+            <main className="pb-16 md:pb-0">{children}</main>
             <Footer />
             <MobileBottomNav />
         </div>

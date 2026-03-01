@@ -1,24 +1,24 @@
 {
   "categories": [
     {
-      "id": "obsidian",
-      "label_ka": "OBSIDIAN",
-      "label_ru": "OBSIDIAN",
-      "label_en": "OBSIDIAN",
-      "icon": "Sparkle",
-      "count": 9,
-      "sortOrder": 0,
-      "coverUrl": "/filters/obsidian/obsidian-cover.png"
-    },
-    {
       "id": "amber",
       "label_ka": "რეტუში",
       "label_ru": "РЕТУШЬ",
       "label_en": "RETOUCH",
       "icon": "Wand2",
       "count": 5,
+      "sortOrder": 0,
+      "coverUrl": "/filters/amber/amber-cover.png"
+    },
+    {
+      "id": "obsidian",
+      "label_ka": "OBSIDIAN",
+      "label_ru": "OBSIDIAN",
+      "label_en": "OBSIDIAN",
+      "icon": "Sparkle",
+      "count": 9,
       "sortOrder": 1,
-      "coverUrl": "/filters/amber/mock.png"
+      "coverUrl": "/filters/obsidian/obsidian-cover.png"
     }
   ],
   "subcategories": [],
@@ -1236,6 +1236,30 @@
               "label_en": "Floral Bokeh",
               "label_ru": "Цветочный боке",
               "label_ka": "ყვავილები"
+            },
+            {
+              "id": "dusty-rose",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },
@@ -1323,6 +1347,12 @@
               "label_en": "Rim Light",
               "label_ru": "Контровой свет",
               "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
             }
           ]
         }
@@ -1350,10 +1380,10 @@
           "default": "chocolate",
           "options": [
             {
-              "id": "chocolate",
-              "label_en": "Chocolate Gold",
-              "label_ru": "Шоколад + золото",
-              "label_ka": "შოკოლადი + ოქრო"
+              "id": "rose-gold",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
             },
             {
               "id": "black",
@@ -1368,10 +1398,34 @@
               "label_ka": "თეთრი სტუდია"
             },
             {
+              "id": "floral",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            },
+            {
               "id": "dusty-rose",
               "label_en": "Dusty Rose",
               "label_ru": "Пыльная роза",
               "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },
@@ -1443,16 +1497,28 @@
           "default": [],
           "options": [
             {
+              "id": "wet-skin",
+              "label_en": "Wet Skin",
+              "label_ru": "Влажная кожа",
+              "label_ka": "სველი კანი"
+            },
+            {
               "id": "freckles",
               "label_en": "Freckles",
               "label_ru": "Веснушки",
               "label_ka": "ჭორფლები"
             },
             {
-              "id": "wet-skin",
-              "label_en": "Wet Skin",
-              "label_ru": "Влажная кожа",
-              "label_ka": "სველი კანი"
+              "id": "rim-light",
+              "label_en": "Rim Light",
+              "label_ru": "Контровой свет",
+              "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
             }
           ]
         }
@@ -1492,6 +1558,12 @@
               "label_ka": "შავი"
             },
             {
+              "id": "white-studio",
+              "label_en": "White Studio",
+              "label_ru": "Белая студия",
+              "label_ka": "თეთრი სტუდია"
+            },
+            {
               "id": "white-fur",
               "label_en": "White Fur",
               "label_ru": "Белый мех",
@@ -1502,6 +1574,47 @@
               "label_en": "Burgundy Velvet",
               "label_ru": "Бордовый бархат",
               "label_ka": "ბორდო ხავერდი"
+            },
+            {
+              "id": "rose-gold",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "dusty-rose",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            }
+          ]
+        },
+        {
+          "id": "SKIN_RETOUCH_LEVEL",
+          "type": "select",
+          "label_en": "Skin Retouch",
+          "label_ru": "Ретушь кожи",
+          "label_ka": "კანის რეტუში",
+          "required": true,
+          "default": "full",
+          "options": [
+            {
+              "id": "light",
+              "label_en": "Light",
+              "label_ru": "Лёгкая",
+              "label_ka": "მსუბუქი"
+            },
+            {
+              "id": "medium",
+              "label_en": "Medium",
+              "label_ru": "Средняя",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "full",
+              "label_en": "Full Editorial",
+              "label_ru": "Полная",
+              "label_ka": "სრული"
             }
           ]
         },
@@ -1581,10 +1694,10 @@
           "default": "pearl-white",
           "options": [
             {
-              "id": "pearl-white",
-              "label_en": "Pearl White",
-              "label_ru": "Жемчужный",
-              "label_ka": "მარგალიტისფერი"
+              "id": "rose-gold",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
             },
             {
               "id": "black",
@@ -1599,10 +1712,63 @@
               "label_ka": "თეთრი სტუდია"
             },
             {
-              "id": "rose-gold",
-              "label_en": "Rose Gold",
-              "label_ru": "Розовое золото",
-              "label_ka": "ვარდისფერი ოქრო"
+              "id": "floral",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            },
+            {
+              "id": "dusty-rose",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
+            }
+          ]
+        },
+        {
+          "id": "SKIN_RETOUCH_LEVEL",
+          "type": "select",
+          "label_en": "Skin Retouch",
+          "label_ru": "Ретушь кожи",
+          "label_ka": "კანის რეტუში",
+          "required": true,
+          "default": "full",
+          "options": [
+            {
+              "id": "light",
+              "label_en": "Light",
+              "label_ru": "Лёгкая",
+              "label_ka": "მსუბუქი"
+            },
+            {
+              "id": "medium",
+              "label_en": "Medium",
+              "label_ru": "Средняя",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "full",
+              "label_en": "Full Editorial",
+              "label_ru": "Полная",
+              "label_ka": "სრული"
             }
           ]
         },
@@ -1644,6 +1810,12 @@
           "required": false,
           "default": [],
           "options": [
+            {
+              "id": "wet-skin",
+              "label_en": "Wet Skin",
+              "label_ru": "Влажная кожа",
+              "label_ka": "სველი კანი"
+            },
             {
               "id": "freckles",
               "label_en": "Freckles",
@@ -1688,10 +1860,10 @@
           "default": "amber-velvet",
           "options": [
             {
-              "id": "amber-velvet",
-              "label_en": "Amber Velvet",
-              "label_ru": "Янтарный бархат",
-              "label_ka": "ქარვისფერი ხავერდი"
+              "id": "rose-gold",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
             },
             {
               "id": "black",
@@ -1706,10 +1878,34 @@
               "label_ka": "თეთრი სტუდია"
             },
             {
-              "id": "rose-gold",
-              "label_en": "Rose Gold",
-              "label_ru": "Розовое золото",
-              "label_ka": "ვარდისფერი ოქრო"
+              "id": "floral",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            },
+            {
+              "id": "dusty-rose",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
             }
           ]
         },
@@ -1797,6 +1993,12 @@
               "label_en": "Rim Light",
               "label_ru": "Контровой свет",
               "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
             }
           ]
         }

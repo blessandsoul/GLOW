@@ -29,7 +29,7 @@ export function BuilderNav({ activeSection, onSectionClick, criteria }: BuilderN
     return (
         <>
             {/* Mobile: Sticky 2x2 segmented tabs — full text visible */}
-            <nav className="sticky -top-px z-30 -mx-4 border-b border-border/30 bg-background px-4 pb-2 md:hidden">
+            <nav className="sticky top-14 z-30 -mx-4 border-b border-border/30 bg-background px-4 py-2 md:hidden">
                 <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted/50 p-1">
                     {SECTIONS.map((s) => (
                         <button

@@ -1,0 +1,1 @@
+export { useChatAssistant } from './useChatAssistant';

@@ -104,7 +104,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }): R
                 className="motion-safe:transition-[opacity,transform] motion-safe:duration-200 motion-safe:ease-out"
                 style={{
                     opacity: transitioning ? 0 : 1,
-                    transform: transitioning ? 'translateY(4px)' : 'translateY(0)',
+                    transform: transitioning ? 'translateY(4px)' : 'none',
                 }}
             >
                 {children}

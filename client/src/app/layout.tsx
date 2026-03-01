@@ -5,6 +5,7 @@ import { Agentation } from 'agentation';
 import { Providers } from './providers';
 import { RegisterPWA } from '@/components/common/RegisterPWA';
 import { LanguageDetector } from '@/features/i18n/components/LanguageDetector';
+import { ChatAssistant } from '@/features/chat-assistant';
 import './globals.css';
 
 const geistSans = Geist({
@@ -85,6 +86,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <ChatAssistant />
           <LanguageDetector />
           <RegisterPWA />
         </Providers>

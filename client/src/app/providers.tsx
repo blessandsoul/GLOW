@@ -5,6 +5,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { ThemeProvider } from 'next-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
+import { CheckCircle, XCircle, WarningCircle, Info, SpinnerGap } from '@phosphor-icons/react';
 import axios from 'axios';
 import { store } from '@/store';
 import { LanguageProvider } from '@/i18n/LanguageProvider';
@@ -117,7 +118,24 @@ export function Providers({
                     <LanguageProvider>
                         <AuthHydrator>
                             {children}
-                            <Toaster position="top-right" richColors />
+                            <Toaster
+                                position="bottom-left"
+                                richColors
+                                closeButton
+                                toastOptions={{
+                                    classNames: {
+                                        toast: 'group/toast',
+                                        closeButton: 'opacity-0 group-hover/toast:opacity-100 transition-opacity',
+                                    },
+                                }}
+                                icons={{
+                                    success: <CheckCircle weight="fill" size={16} />,
+                                    error: <XCircle weight="fill" size={16} />,
+                                    warning: <WarningCircle weight="fill" size={16} />,
+                                    info: <Info weight="fill" size={16} />,
+                                    loading: <SpinnerGap size={16} className="animate-spin" />,
+                                }}
+                            />
                         </AuthHydrator>
                     </LanguageProvider>
                 </ThemeProvider>

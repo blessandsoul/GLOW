@@ -313,7 +313,7 @@ export function StylesGallery({
                                                     sizes="400px"
                                                     className="object-cover"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-black/10" />
+                                                <div className="absolute inset-0 bg-black/25" />
                                                 <div className="relative z-10 flex w-full items-center justify-between px-3.5">
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[12px] font-bold tracking-widest text-white/95">
