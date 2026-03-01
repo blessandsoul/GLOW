@@ -8,7 +8,7 @@ import {
     Moon, Sun,
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
-    CaretDown, Plus, ShieldCheck, SignOut,
+    CaretDown, Plus, ShieldCheck, SignOut, ArrowsClockwise,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
@@ -19,6 +19,7 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { useDailyUsage } from '@/features/jobs/hooks/useDailyUsage';
+import { useFlushDailyLimits } from '@/features/admin/hooks/useAdmin';
 
 type NavItem = {
     href: string;
@@ -172,6 +173,7 @@ export function Header(): React.ReactElement {
     const [mounted, setMounted] = useState(false);
     const { remaining: dailyRemaining, data: dailyData } = useDailyUsage();
     const dailyLimit = dailyData?.limit ?? 5;
+    const { flush: flushLimits, isPending: isFlushing } = useFlushDailyLimits();
 
     useEffect(() => {
         setMounted(true);
@@ -214,18 +216,31 @@ export function Header(): React.ReactElement {
                                 <NavDropdown key={group.category} group={group} pathname={pathname} t={t} />
                             ))}
                             {user?.role === 'ADMIN' && (
-                                <Link
-                                    href={ROUTES.ADMIN}
-                                    className={cn(
-                                        'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
-                                        pathname.startsWith(ROUTES.ADMIN)
-                                            ? 'bg-primary/10 text-primary font-medium'
-                                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
-                                    )}
-                                >
-                                    <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
-                                    Admin
-                                </Link>
+                                <>
+                                    <Link
+                                        href={ROUTES.ADMIN}
+                                        className={cn(
+                                            'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                                            pathname.startsWith(ROUTES.ADMIN)
+                                                ? 'bg-primary/10 text-primary font-medium'
+                                                : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                                        )}
+                                    >
+                                        <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                                        Admin
+                                    </Link>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => flushLimits()}
+                                        disabled={isFlushing}
+                                        title="Reset all daily generation limits"
+                                        className="h-7 gap-1 px-2 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                    >
+                                        <ArrowsClockwise size={13} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
+                                        Flush
+                                    </Button>
+                                </>
                             )}
                             <div className="mx-2 h-5 w-px bg-border/50" />
                             <span className="text-sm text-muted-foreground">
@@ -299,6 +314,18 @@ export function Header(): React.ReactElement {
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                             Free
                         </span>
+                    )}
+                    {isAuthenticated && user?.role === 'ADMIN' && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => flushLimits()}
+                            disabled={isFlushing}
+                            title="Reset all daily generation limits"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        >
+                            <ArrowsClockwise size={16} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
+                        </Button>
                     )}
                     <LanguageSwitcher />
                     <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('ui.text_jehhj')} className="h-8 w-8 transition-colors duration-200">

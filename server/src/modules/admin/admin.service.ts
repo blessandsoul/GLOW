@@ -1,5 +1,7 @@
 import { adminRepo } from './admin.repo.js';
 import { isLaunchMode, getDailyUsage } from '../../libs/launch-mode.js';
+import { redis } from '../../libs/redis.js';
+import { logger } from '../../libs/logger.js';
 import type { AdminUsersQuery } from './admin.schemas.js';
 
 export function createAdminService() {
@@ -50,6 +52,15 @@ export function createAdminService() {
 
     async getStats() {
       return adminRepo.getStats();
+    },
+
+    async flushDailyLimits(): Promise<{ deletedKeys: number }> {
+      const keys = await redis.keys('launch_daily:*');
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+      logger.info({ deletedKeys: keys.length }, 'Admin flushed daily generation limits');
+      return { deletedKeys: keys.length };
     },
   };
 }

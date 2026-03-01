@@ -7,7 +7,7 @@ import { successResponse } from '../../shared/responses/successResponse.js';
 import { paginatedResponse } from '../../shared/responses/paginatedResponse.js';
 import type { JwtPayload } from '../../shared/types/index.js';
 
-const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 export const jobsController = {
