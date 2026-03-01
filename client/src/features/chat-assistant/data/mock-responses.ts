@@ -14,15 +14,17 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
     services: [
         {
             patterns: [
-                'наращивание',
-                'ресницы',
-                'объём',
-                'классика',
-                'lash',
-                'eyelash',
-                'extensions',
-                'წამწამები',
-                'დაგრძელება'
+                'ретушь',
+                'retouch',
+                'обработка',
+                'фото',
+                'photo',
+                'нейросеть',
+                'ai',
+                'რეტუში',
+                'ფოტო',
+                'დამუშავება',
+                'ნეირონქსელი'
             ],
             responses: [
                 'chat.mock_services_1',
@@ -32,14 +34,16 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
         },
         {
             patterns: [
-                'ламинирование',
-                'ботокс',
-                'lifting',
-                'лифтинг',
-                'окрашивание',
-                'lamination',
-                'ლამინირება',
-                'ბოტოქსი'
+                'кожа',
+                'текстура',
+                'сглаживание',
+                'тон',
+                'skin',
+                'texture',
+                'smooth',
+                'კანი',
+                'ტექსტურა',
+                'გაგლუვება'
             ],
             responses: [
                 'chat.mock_services_3',
@@ -48,7 +52,7 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
             followUpActions: ['services', 'support'],
         },
         {
-            patterns: ['цена', 'стоимость', 'сколько', 'прайс', 'price', 'cost', 'ფასი', 'რა ღირს', 'ღირებულება'],
+            patterns: ['цена', 'стоимость', 'сколько', 'прайс', 'price', 'cost', 'ფასი', 'რა ღირს', 'ღირებულება', 'тариф', 'tariff'],
             responses: [
                 'chat.mock_services_5',
                 'chat.mock_services_6',
@@ -59,17 +63,15 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
     navigation: [
         {
             patterns: [
-                'каталог',
-                'мастера',
-                'найти',
-                'поиск',
-                'browse',
-                'catalog',
-                'find',
-                'კატალოგი',
-                'იპოვე',
-                'ძებნა',
-                'ოსტატი'
+                'загрузить',
+                'upload',
+                'попробовать',
+                'try',
+                'начать',
+                'start',
+                'ატვირთვა',
+                'სცადე',
+                'დაწყება'
             ],
             responses: [
                 'chat.mock_nav_1',
@@ -138,7 +140,7 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
             ],
         },
         {
-            patterns: ['запись', 'записаться', 'время', 'дата', 'appointment', 'book', 'ჩაწერა', 'დრო', 'თარიღი'],
+            patterns: ['загрузка', 'загрузить', 'upload', 'как', 'how', 'როგორ', 'ატვირთვა'],
             responses: [
                 'chat.mock_support_3',
                 'chat.mock_support_4',
@@ -149,20 +151,17 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
     portfolio: [
         {
             patterns: [
-                'работы',
-                'фото',
-                'портфолио',
+                'пример',
                 'результат',
                 'до после',
-                'portfolio',
-                'photo',
+                'example',
                 'results',
                 'before after',
-                'ფოტო',
+                'sample',
                 'შედეგი',
-                'პორტფოლიო',
-                'ნამუშევარი',
-                'მანამდე'
+                'მაგალითი',
+                'მანამდე',
+                'ნამუშევარი'
             ],
             responses: [
                 'chat.mock_portfolio_1',
@@ -171,7 +170,7 @@ export const MOCK_RESPONSES: Record<ChatCategory, MockResponse[]> = {
             followUpActions: ['navigation', 'services'],
         },
         {
-            patterns: ['стиль', 'тренд', 'модно', 'trend', 'style', 'სტილი', 'ტრენდი', 'მოდა'],
+            patterns: ['качество', 'натуральный', 'естественный', 'quality', 'natural', 'ხარისხი', 'ბუნებრივი'],
             responses: [
                 'chat.mock_portfolio_3',
             ],

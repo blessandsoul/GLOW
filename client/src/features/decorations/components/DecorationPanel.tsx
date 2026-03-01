@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Flower, MapPin, PencilSimple, X, Sparkle, CircleNotch } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -83,16 +83,25 @@ function DecorationPanelInner({
             } else {
                 next.add(index);
             }
-            // Sync selected AI promptValues into customText
-            const aiTexts = Array.from(next).map(i => aiSuggestions[i]?.promptValue).filter(Boolean);
-            const manualText = customText.split(',').map(s => s.trim()).filter(s => {
-                return s.length > 0 && !aiSuggestions.some(a => a.promptValue === s);
-            });
-            const combined = [...manualText, ...aiTexts].join(', ');
-            onCustomTextChange(combined);
             return next;
         });
-    }, [aiSuggestions, customText, onCustomTextChange]);
+    }, []);
+
+    // Sync selected AI promptValues into customText after selectedAi changes
+    const isInitialMount = useRef(true);
+    useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+        const aiTexts = Array.from(selectedAi).map(i => aiSuggestions[i]?.promptValue).filter(Boolean);
+        const manualText = customText.split(',').map(s => s.trim()).filter(s => {
+            return s.length > 0 && !aiSuggestions.some(a => a.promptValue === s);
+        });
+        const combined = [...manualText, ...aiTexts].join(', ');
+        onCustomTextChange(combined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedAi]);
 
     return (
         <div className="flex flex-col gap-3">
