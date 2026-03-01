@@ -13,7 +13,7 @@ interface BeforeAfterUploadProps {
     isLoading: boolean;
 }
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_SIZE = 10 * 1024 * 1024;
 
 function validateFile(file: File): boolean {
@@ -137,7 +137,7 @@ function DropSlot({ label, sublabel, preview, isLoading, onFile, onClear }: Drop
         return (
             <div className="relative overflow-hidden rounded-xl border border-border/50">
                 <label className="group cursor-pointer block">
-                    <input type="file" className="sr-only" accept="image/jpeg,image/png,image/webp"
+                    <input type="file" className="sr-only" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                         onChange={handleChange} disabled={isLoading} />
                     <div className="relative aspect-3/4">
                         <Image src={preview} alt={label} fill className="object-cover" />
@@ -174,7 +174,7 @@ function DropSlot({ label, sublabel, preview, isLoading, onFile, onClear }: Drop
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
         >
-            <input type="file" className="sr-only" accept="image/jpeg,image/png,image/webp"
+            <input type="file" className="sr-only" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                 onChange={handleChange} disabled={isLoading} />
             <div className="rounded-full bg-primary/10 p-2.5">
                 <UploadSimple size={16} className="text-primary" />

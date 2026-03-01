@@ -76,6 +76,7 @@ export const API_ENDPOINTS = {
     ADMIN: {
         USERS: '/admin/users',
         STATS: '/admin/stats',
+        FLUSH_DAILY_LIMITS: '/admin/flush-daily-limits',
     },
     CHAT: {
         MESSAGE: '/chat/message',

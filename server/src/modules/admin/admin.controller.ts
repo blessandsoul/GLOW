@@ -16,5 +16,10 @@ export function createAdminController(adminService: AdminService) {
       const stats = await adminService.getStats();
       reply.send(successResponse('Admin stats retrieved', stats));
     },
+
+    async flushDailyLimits(_request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const result = await adminService.flushDailyLimits();
+      reply.send(successResponse('Daily generation limits flushed', result));
+    },
   };
 }

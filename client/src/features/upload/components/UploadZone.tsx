@@ -15,7 +15,7 @@ interface UploadZoneProps {
     onPendingFileChange?: (file: File | null) => void;
 }
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_SIZE = 10 * 1024 * 1024;
 
 export function UploadZone({ onFileSelect, isLoading, className, hideGenerateButton, onPendingFileChange }: UploadZoneProps): React.ReactElement {
@@ -101,7 +101,7 @@ export function UploadZone({ onFileSelect, isLoading, className, hideGenerateBut
                     <input
                         type="file"
                         className="sr-only"
-                        accept="image/jpeg,image/png,image/webp"
+                        accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                         onChange={handleChange}
                         disabled={isLoading}
                     />
@@ -194,7 +194,7 @@ export function UploadZone({ onFileSelect, isLoading, className, hideGenerateBut
             <input
                 type="file"
                 className="sr-only"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                 onChange={handleChange}
                 disabled={isLoading}
             />

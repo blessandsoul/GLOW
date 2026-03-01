@@ -11,4 +11,5 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
 
   app.get('/users', { preHandler: adminGuard }, controller.getUsers);
   app.get('/stats', { preHandler: adminGuard }, controller.getStats);
+  app.post('/flush-daily-limits', { preHandler: adminGuard }, controller.flushDailyLimits);
 }

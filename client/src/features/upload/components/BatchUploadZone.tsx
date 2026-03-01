@@ -23,7 +23,7 @@ interface BatchUploadZoneProps {
   isProUser: boolean;
 }
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_FILES = 10;
 
 export function BatchUploadZone({ onBatchComplete, isProUser }: BatchUploadZoneProps): React.ReactElement {
@@ -143,7 +143,7 @@ export function BatchUploadZone({ onBatchComplete, isProUser }: BatchUploadZoneP
           ref={inputRef}
           type="file"
           multiple
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
           className="hidden"
           onChange={(e) => addFiles(e.target.files)}
           disabled={isUploading}

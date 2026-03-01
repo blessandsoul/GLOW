@@ -25,6 +25,8 @@ export const ALLOWED_LOGO_TYPES = [
   'image/jpeg',
   'image/png',
   'image/webp',
+  'image/heic',
+  'image/heif',
 ] as const;
 
 export const MAX_LOGO_SIZE = 5 * 1024 * 1024; // 5MB

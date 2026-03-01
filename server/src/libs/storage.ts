@@ -15,7 +15,7 @@ export interface StorageFile {
   mimetype: string;
 }
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'] as const;
 type AllowedImageType = (typeof ALLOWED_IMAGE_TYPES)[number];
 
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -69,7 +69,7 @@ export function validateImage(
 ): void {
   if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype as AllowedImageType)) {
     throw new BadRequestError(
-      'Invalid file type. Allowed: JPEG, PNG, WebP',
+      'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC, HEIF',
       'INVALID_FILE_TYPE',
     );
   }
