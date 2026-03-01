@@ -81,4 +81,7 @@ export const API_ENDPOINTS = {
     CHAT: {
         MESSAGE: '/chat/message',
     },
+    DECORATIONS: {
+        SUGGEST: '/decorations/suggest',
+    },
 } as const;

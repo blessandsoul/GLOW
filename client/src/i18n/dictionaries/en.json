@@ -797,6 +797,8 @@
     "your_idea": "Your idea",
     "custom_placeholder": "e.g. pink roses scattered around",
     "placement_title": "Placement",
-    "clear_all": "Clear"
+    "clear_all": "Clear",
+    "generate_ideas": "New ideas",
+    "ai_suggestions": "AI suggestions"
   }
 }

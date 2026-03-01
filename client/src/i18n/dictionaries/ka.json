@@ -834,6 +834,8 @@
     "your_idea": "შენი იდეა",
     "custom_placeholder": "მაგ. ვარდისფერი ვარდები გარშემო",
     "placement_title": "განლაგება",
-    "clear_all": "გასუფთავება"
+    "clear_all": "გასუფთავება",
+    "generate_ideas": "ახალი იდეები",
+    "ai_suggestions": "AI იდეები"
   }
 }

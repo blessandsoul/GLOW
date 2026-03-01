@@ -793,6 +793,8 @@
     "your_idea": "Твоя идея",
     "custom_placeholder": "напр. розовые розы вокруг",
     "placement_title": "Расположение",
-    "clear_all": "Очистить"
+    "clear_all": "Очистить",
+    "generate_ideas": "Новые идеи",
+    "ai_suggestions": "Идеи от AI"
   }
 }
