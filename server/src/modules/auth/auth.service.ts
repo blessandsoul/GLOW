@@ -81,10 +81,8 @@ export function createAuthService(app: FastifyInstance) {
         data: { referralCode },
       });
 
-      // Apply referral if code provided (fire-and-forget, non-fatal)
-      referralsService
-        .applyReferralOnRegister(user.id, input.referralCode)
-        .catch((err: unknown) => logger.warn({ err }, 'Failed to apply referral on register'));
+      // Apply referral if code provided (non-fatal, internal try/catch)
+      await referralsService.applyReferralOnRegister(user.id, input.referralCode, input.phone);
 
       // Schedule post-registration email sequence (fire-and-forget, non-fatal)
       scheduleEmailSequence(user.id).catch((err: unknown) =>
@@ -242,6 +240,11 @@ export function createAuthService(app: FastifyInstance) {
       await verifyOtp(requestId, code, ipAddress);
 
       const updatedUser = await authRepo.setPhoneVerified(userId);
+
+      // Grant pending referral rewards (fire-and-forget, non-fatal)
+      referralsService.grantPendingRewards(userId)
+        .catch((err: unknown) => logger.warn({ err, userId }, 'Failed to grant referral rewards on phone verify'));
+
       return mapUserToResponse(updatedUser);
     },
 

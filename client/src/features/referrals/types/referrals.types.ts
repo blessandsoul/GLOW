@@ -3,6 +3,8 @@ export interface ReferralStats {
   referralLink: string | null;
   totalReferrals: number;
   totalCreditsEarned: number;
+  bonusDailyGenerations: number;
+  currentDailyLimit: number;
   recentReferrals: Array<{
     name: string;
     joinedAt: string;

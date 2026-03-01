@@ -20,6 +20,7 @@ model User {
   username      String?   @unique
   avatar        String?   @db.VarChar(1000)
   credits       Int       @default(5)
+  referralBonus Int       @default(0)
   role          String    @default("USER")
   isActive      Boolean   @default(true)
   emailVerified        Boolean   @default(false)
@@ -289,15 +290,17 @@ model Subscription {
 }
 
 model Referral {
-  id          String   @id @default(uuid())
-  referrerId  String
-  referredId  String   @unique
-  rewardGiven Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id            String   @id @default(uuid())
+  referrerId    String
+  referredId    String   @unique
+  referredPhone String   @db.VarChar(20)
+  rewardGiven   Boolean  @default(false)
+  createdAt     DateTime @default(now())
 
   referrer User @relation("referrerReferrals", fields: [referrerId], references: [id], onDelete: Cascade)
   referred User @relation("referredReferral", fields: [referredId], references: [id], onDelete: Cascade)
 
   @@index([referrerId])
+  @@index([referredPhone])
   @@map("referrals")
 }
