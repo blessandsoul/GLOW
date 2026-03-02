@@ -32,9 +32,15 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
 
     const handleDownload = async (url: string, id: string, variantIndex: number, branded: boolean = false, upscale: boolean = false): Promise<void> => {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
-        const downloadUrl = `${apiBase}/jobs/${id}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}${upscale ? '&upscale=1' : ''}`;
         try {
-            await downloadImage(downloadUrl, `glowge-${Date.now()}.jpg`);
+            if (upscale) {
+                const { prepareAndDownloadHD } = await import('@/lib/utils/download');
+                const prepareUrl = `${apiBase}/jobs/${id}/prepare-hd?variant=${variantIndex}`;
+                await prepareAndDownloadHD(prepareUrl, `glowge-hd-${Date.now()}.jpg`);
+            } else {
+                const downloadUrl = `${apiBase}/jobs/${id}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}`;
+                await downloadImage(downloadUrl, `glowge-${Date.now()}.jpg`);
+            }
         } catch {
             // User cancelled share sheet or download failed — silently ignore
         }

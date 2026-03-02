@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, ListResultsQuerySchema, BatchSettingsSchema, BulkDeleteSchema } from './jobs.schemas.js';
+import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, ListResultsQuerySchema, BatchSettingsSchema, BulkDeleteSchema, PrepareHDQuerySchema } from './jobs.schemas.js';
 import { jobsService } from './jobs.service.js';
 import { BadRequestError } from '../../shared/errors/errors.js';
 import { isLaunchMode, getDailyUsage } from '../../libs/launch-mode.js';
@@ -30,6 +30,15 @@ export const jobsController = {
       .header('Content-Disposition', `attachment; filename="${filename}"`)
       .header('Cache-Control', 'no-store')
       .send(buffer);
+  },
+
+  async prepareHD(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { jobId } = JobIdParamSchema.parse(request.params);
+    const { variant } = PrepareHDQuerySchema.parse(request.query);
+    const user = request.user as JwtPayload | undefined;
+
+    const result = await jobsService.prepareHD(jobId, variant, user?.id);
+    await reply.send(successResponse('HD image ready', result));
   },
 
   async create(request: FastifyRequest, reply: FastifyReply): Promise<void> {

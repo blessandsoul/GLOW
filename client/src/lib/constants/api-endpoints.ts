@@ -46,6 +46,7 @@ export const API_ENDPOINTS = {
         GUEST: '/jobs/guest',
         BATCH: '/jobs/batch',
         DOWNLOAD: (id: string, variant: number, upscale?: boolean) => `/jobs/${id}/download?variant=${variant}${upscale ? '&upscale=1' : ''}`,
+        PREPARE_HD: (id: string, variant: number) => `/jobs/${id}/prepare-hd?variant=${variant}`,
         DELETE: (id: string) => `/jobs/${id}`,
         BULK_DELETE: '/jobs/bulk',
         STATS: '/jobs/stats',

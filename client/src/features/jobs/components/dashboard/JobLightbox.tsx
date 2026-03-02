@@ -115,8 +115,9 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
         setIsUpscaling(true);
         try {
             const variant = safeVariant === 0 ? 0 : safeVariant - 1;
-            const url = `${API_BASE}/jobs/${job.id}/download?variant=${variant}&upscale=1`;
-            await downloadImage(url, `glowge-hd-${Date.now()}.jpg`);
+            const prepareUrl = `${API_BASE}/jobs/${job.id}/prepare-hd?variant=${variant}`;
+            const { prepareAndDownloadHD } = await import('@/lib/utils/download');
+            await prepareAndDownloadHD(prepareUrl, `glowge-hd-${Date.now()}.jpg`);
         } catch {
             toast.error(t('ui.download_hd_failed'));
         } finally {

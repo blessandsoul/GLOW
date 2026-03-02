@@ -196,9 +196,15 @@ export function useStudioState(): StudioState {
     const handleDownload = useCallback(async (url: string, jobId: string, variantIndex: number, branded: boolean = false, upscale: boolean = false) => {
         try {
             const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
-            const downloadUrl = `${apiBase}/jobs/${jobId}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}${upscale ? '&upscale=1' : ''}`;
-            await downloadImage(downloadUrl, `glowge-${Date.now()}.jpg`);
-            if (!upscale) toast.success(t('ui.text_tv2fdm'));
+            if (upscale) {
+                const { prepareAndDownloadHD } = await import('@/lib/utils/download');
+                const prepareUrl = `${apiBase}/jobs/${jobId}/prepare-hd?variant=${variantIndex}`;
+                await prepareAndDownloadHD(prepareUrl, `glowge-hd-${Date.now()}.jpg`);
+            } else {
+                const downloadUrl = `${apiBase}/jobs/${jobId}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}`;
+                await downloadImage(downloadUrl, `glowge-${Date.now()}.jpg`);
+                toast.success(t('ui.text_tv2fdm'));
+            }
         } catch (err) {
             // User cancelled share sheet — not an error
             if (err instanceof Error && err.name === 'AbortError') return;

@@ -76,10 +76,11 @@ export default function DashboardPage(): React.ReactElement {
 
     const handleHDDownload = useCallback(async (jobId: string): Promise<void> => {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
-        const url = `${apiBase}/jobs/${jobId}/download?variant=0&upscale=1`;
+        const prepareUrl = `${apiBase}/jobs/${jobId}/prepare-hd?variant=0`;
         const toastId = toast.loading(t('ui.download_hd_preparing'));
         try {
-            await downloadImage(url, `glowge-hd-${Date.now()}.jpg`);
+            const { prepareAndDownloadHD } = await import('@/lib/utils/download');
+            await prepareAndDownloadHD(prepareUrl, `glowge-hd-${Date.now()}.jpg`);
             toast.success(t('ui.download_hd_success'), { id: toastId });
         } catch {
             toast.error(t('ui.download_hd_failed'), { id: toastId });

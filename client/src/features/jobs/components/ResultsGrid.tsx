@@ -66,6 +66,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
     const [isUpscaling, setIsUpscaling] = useState(false);
+    const [hdImageUrl, setHdImageUrl] = useState<string | null>(null);
 
     const openLightbox = useCallback((index: number) => {
         setLightboxInitialIndex(index);
@@ -74,16 +75,44 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
 
     const results = job.results ?? [];
 
+    // The displayed after image: HD version if available, otherwise the normal result
+    const afterImageUrl = hdImageUrl ?? (results[selectedAfterIdx] ?? results[0]);
+
+    // When user selects a different variant, clear HD state
+    const handleSelectVariant = useCallback((i: number) => {
+        setSelectedAfterIdx(i);
+        setHdImageUrl(null);
+    }, []);
+
     const handleHDDownload = useCallback(async () => {
         setIsUpscaling(true);
         try {
-            await onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false, true);
+            const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/api/v1';
+            const prepareUrl = `${apiBase}/jobs/${job.id}/prepare-hd?variant=${selectedAfterIdx}`;
+            const response = await fetch(prepareUrl, { method: 'POST', credentials: 'include' });
+
+            if (!response.ok) {
+                let message = 'HD download failed';
+                try {
+                    const json = await response.json() as { error?: { message?: string } };
+                    if (json?.error?.message) message = json.error.message;
+                } catch { /* not JSON */ }
+                throw new Error(message);
+            }
+
+            const result = await response.json() as { data?: { url?: string } };
+            const hdPath = result?.data?.url;
+            if (!hdPath) throw new Error('No HD URL returned');
+
+            // Show the HD image — it's a server-relative path like /uploads/hd/xxx.jpg
+            setHdImageUrl(hdPath);
+            toast.success(t('ui.image_enhanced'));
         } catch {
             toast.error(t('ui.download_hd_failed'));
         } finally {
             setIsUpscaling(false);
         }
-    }, [onDownload, results, selectedAfterIdx, job.id, t]);
+    }, [job.id, selectedAfterIdx, t]);
 
     // Build lightbox images array: [Before, After]
     // NOTE: This useMemo MUST be before any early returns to maintain consistent hook ordering
@@ -91,9 +120,9 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
         if (!job.originalUrl || results.length === 0) return [];
         return [
             { imageUrl: job.originalUrl, title: t('ui.text_pt6') },
-            { imageUrl: results[selectedAfterIdx] ?? results[0], title: t('ui.text_gnzjzw') },
+            { imageUrl: afterImageUrl, title: t('ui.text_gnzjzw') },
         ];
-    }, [job.originalUrl, results, selectedAfterIdx, t]);
+    }, [job.originalUrl, results, afterImageUrl, t]);
 
     if (job.status === 'PENDING' || job.status === 'PROCESSING') {
         return (
@@ -195,7 +224,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                         <div className="overflow-hidden rounded-xl border border-border/50">
                             <ImageCompare
                                 beforeSrc={getServerImageUrl(job.originalUrl)}
-                                afterSrc={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
+                                afterSrc={getServerImageUrl(afterImageUrl)}
                                 beforeAlt={t('ui.text_pt6')}
                                 afterAlt={t('ui.text_gnzjzw')}
                                 className="aspect-3/4 w-full"
@@ -233,7 +262,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                                 </div>
                             </button>
 
-                            {/* After (Result) */}
+                            {/* After (Result) — shows HD version if available */}
                             <button
                                 type="button"
                                 onClick={() => openLightbox(1)}
@@ -244,7 +273,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                             >
                                 <div className="relative aspect-3/4">
                                     <Image
-                                        src={getServerImageUrl(results[selectedAfterIdx] ?? results[0])}
+                                        src={getServerImageUrl(afterImageUrl)}
                                         alt={t('ui.text_gnzjzw')}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
@@ -260,6 +289,12 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                                             logoUrl={brandingProfile.logoUrl ? getServerImageUrl(brandingProfile.logoUrl) : null}
                                             opacity={brandingProfile.watermarkOpacity}
                                         />
+                                    )}
+                                    {/* HD badge */}
+                                    {hdImageUrl && (
+                                        <div className="absolute left-1.5 top-1.5 rounded-md bg-primary px-1.5 py-0.5">
+                                            <span className="text-[9px] font-bold text-primary-foreground">HD</span>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-black/70 to-transparent px-2.5 pb-2 pt-8">
@@ -279,7 +314,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                                     <button
                                         key={i}
                                         type="button"
-                                        onClick={() => setSelectedAfterIdx(i)}
+                                        onClick={() => handleSelectVariant(i)}
                                         className={cn(
                                             'relative h-12 w-9 shrink-0 overflow-hidden rounded-md border transition-all duration-150',
                                             selectedAfterIdx === i
@@ -334,21 +369,35 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                         variant="outline"
                         className="w-full gap-1.5 text-xs h-9"
                         disabled={isUpscaling}
-                        onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false)}
+                        onClick={async () => {
+                            if (hdImageUrl) {
+                                // HD is ready — download directly from the static file URL
+                                try {
+                                    const { downloadImage } = await import('@/lib/utils/download');
+                                    await downloadImage(getServerImageUrl(hdImageUrl), `glowge-hd-${Date.now()}.jpg`);
+                                } catch {
+                                    toast.error(t('ui.download_hd_failed'));
+                                }
+                            } else {
+                                onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false);
+                            }
+                        }}
                     >
                         <DownloadSimple size={13} />
                         {t('ui.download_btn')}
                     </Button>
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full gap-1.5 text-xs h-9"
-                        onClick={handleHDDownload}
-                        disabled={isUpscaling}
-                    >
-                        <ArrowsOut size={13} />
-                        {t('ui.download_hd')}
-                    </Button>
+                    {!hdImageUrl && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full gap-1.5 text-xs h-9"
+                            onClick={handleHDDownload}
+                            disabled={isUpscaling}
+                        >
+                            <ArrowsOut size={13} />
+                            {t('ui.enhance_to_hd')}
+                        </Button>
+                    )}
                     <ShareButton jobId={job.id} />
                     <AddToPortfolioButton
                         jobId={job.id}
