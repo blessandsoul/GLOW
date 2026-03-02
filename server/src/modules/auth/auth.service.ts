@@ -147,6 +147,13 @@ export function createAuthService(app: FastifyInstance) {
         throw new UnauthorizedError('Refresh token expired', 'REFRESH_TOKEN_EXPIRED');
       }
 
+      // H5 fix: reject refresh for deactivated or soft-deleted accounts
+      const { user } = storedToken;
+      if (!user.isActive || user.deletedAt) {
+        await authRepo.deleteRefreshToken(refreshTokenValue);
+        throw new UnauthorizedError('Account is deactivated', 'ACCOUNT_DEACTIVATED');
+      }
+
       // Rotate refresh token
       await authRepo.deleteRefreshToken(refreshTokenValue);
 

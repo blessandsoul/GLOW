@@ -62,7 +62,9 @@ export async function requirePhoneVerified(
     throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
   }
 
-  if (user.phone && !user.phoneVerified) {
+  // C4 fix: block ALL unverified users, not just those with a phone set.
+  // Previous guard `if (user.phone && !user.phoneVerified)` allowed phone=null users to bypass.
+  if (!user.phoneVerified) {
     throw new ForbiddenError('Phone verification required', 'PHONE_NOT_VERIFIED');
   }
 }

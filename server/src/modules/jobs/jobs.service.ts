@@ -37,6 +37,10 @@ export const jobsService = {
     if (job.status !== 'DONE') {
       throw new ForbiddenError('Job processing not complete', 'JOB_NOT_READY');
     }
+    // C2 fix: enforce ownership — job.userId is null for guest jobs (allowed without auth)
+    if (job.userId && job.userId !== requestingUserId) {
+      throw new ForbiddenError('Job not found or access denied', 'JOB_FORBIDDEN');
+    }
 
     const results = job.results as string[] | null;
     if (!results || !results[variantIndex]) {
@@ -373,6 +377,10 @@ export const jobsService = {
     }
     if (job.status !== 'DONE') {
       throw new ForbiddenError('Job processing not complete', 'JOB_NOT_READY');
+    }
+    // C1 fix: enforce ownership — HD upscaling is expensive, must be owned
+    if (job.userId && job.userId !== requestingUserId) {
+      throw new ForbiddenError('Job not found or access denied', 'JOB_FORBIDDEN');
     }
 
     const results = job.results as string[] | null;

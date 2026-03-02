@@ -118,6 +118,20 @@ export async function buildApp() {
       return;
     }
 
+    // Fastify's own HTTP errors (empty body with Content-Type: application/json,
+    // malformed JSON, secure-json-parse __proto__ rejection, rate limit, etc.).
+    // These have a numeric `statusCode` but no `validation` property.
+    if ('statusCode' in error && typeof (error as { statusCode: unknown }).statusCode === 'number') {
+      const status = (error as { statusCode: number }).statusCode;
+      if (status < 500) {
+        reply.status(status).send({
+          success: false,
+          error: { code: 'BAD_REQUEST', message: error.message },
+        });
+        return;
+      }
+    }
+
     // Unexpected errors
     logger.error({ err: error, url: request.url, method: request.method }, 'Unhandled error');
     reply.status(500).send({
