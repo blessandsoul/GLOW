@@ -255,7 +255,7 @@ export function createAuthService(app: FastifyInstance) {
         throw new BadRequestError('Phone already verified', 'PHONE_ALREADY_VERIFIED');
       }
 
-      await verifyOtp(requestId, code, ipAddress);
+      await verifyOtp(user.phone!, requestId, code);
 
       const updatedUser = await authRepo.setPhoneVerified(userId);
 

@@ -46,7 +46,6 @@
     "@fastify/static": "^9.0.0",
     "@google/genai": "^1.42.0",
     "@prisma/client": "^6.19.2",
-    "@smart-pay-chain/otp": "^2.1.7",
     "@types/sharp": "^0.31.1",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.69.3",

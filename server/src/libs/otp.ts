@@ -1,73 +1,109 @@
-import { OtpClient, OtpChannel, InvalidOtpError, OtpExpiredError, RateLimitError } from '@smart-pay-chain/otp';
 import { env } from '@/config/env.js';
-import { BadRequestError } from '@/shared/errors/errors.js';
+import { BadRequestError, InternalError } from '@/shared/errors/errors.js';
 import { logger } from '@/libs/logger.js';
 
-const OTP_TTL = 300; // 5 minutes
-const OTP_LENGTH = 6;
+const GOSMS_BASE_URL = 'https://api.gosms.ge';
 
-const client = new OtpClient({
-  apiKey: env.OTP_API_KEY,
-  autoConfig: true,
-});
+interface GoSmsOtpSendResponse {
+  success: boolean;
+  hash: string;
+}
+
+interface GoSmsErrorResponse {
+  errorCode: number;
+  message: string;
+}
+
+function formatPhone(phoneNumber: string): string {
+  // gosms.ge expects "995XXXXXXXXX" — strip leading "+" if present
+  return phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber;
+}
+
+async function gosmsPost<T>(path: string, body: Record<string, string>): Promise<T> {
+  const response = await fetch(`${GOSMS_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  const data = (await response.json()) as T | GoSmsErrorResponse;
+
+  if (!response.ok) {
+    const err = data as GoSmsErrorResponse;
+    throw { isGoSmsError: true, errorCode: err.errorCode, message: err.message };
+  }
+
+  return data as T;
+}
+
+function handleGoSmsError(error: unknown, context: 'send' | 'verify'): never {
+  const isGoSmsError =
+    typeof error === 'object' &&
+    error !== null &&
+    (error as Record<string, unknown>).isGoSmsError === true;
+
+  if (isGoSmsError) {
+    const { errorCode } = error as { errorCode: number };
+    switch (errorCode) {
+      case 109:
+        throw new BadRequestError('Too many attempts, please try again later', 'OTP_RATE_LIMIT');
+      case 111:
+        throw new BadRequestError('Verification code has expired', 'OTP_EXPIRED');
+      case 112:
+        throw new BadRequestError('Invalid verification code', 'INVALID_OTP');
+      case 105:
+        throw new BadRequestError('Invalid phone number', 'INVALID_PHONE');
+      case 100:
+        logger.error({ errorCode }, 'gosms.ge API key invalid');
+        throw new InternalError('OTP service configuration error', 'OTP_CONFIG_ERROR');
+      default:
+        logger.error({ errorCode }, `Failed to ${context} OTP`);
+        throw new BadRequestError(
+          context === 'send' ? 'Failed to send verification code' : 'Failed to verify code',
+          context === 'send' ? 'OTP_SEND_FAILED' : 'OTP_VERIFY_FAILED',
+        );
+    }
+  }
+
+  logger.error({ err: error }, `Unexpected error during OTP ${context}`);
+  throw new BadRequestError(
+    context === 'send' ? 'Failed to send verification code' : 'Failed to verify code',
+    context === 'send' ? 'OTP_SEND_FAILED' : 'OTP_VERIFY_FAILED',
+  );
+}
 
 /**
- * Send an SMS OTP to the given phone number.
- * Returns the requestId needed for verification.
+ * Send an SMS OTP to the given phone number via gosms.ge.
+ * Returns the hash needed for verification (stored as otpRequestId).
  */
 export async function sendOtp(phoneNumber: string): Promise<{ requestId: string }> {
   try {
-    const result = await client.sendOtp({
-      phoneNumber,
-      channel: OtpChannel.SMS,
-      ttl: OTP_TTL,
-      length: OTP_LENGTH,
+    const response = await gosmsPost<GoSmsOtpSendResponse>('/api/otp/send', {
+      api_key: env.OTP_API_KEY,
+      phone: formatPhone(phoneNumber),
     });
 
-    return { requestId: result.requestId };
+    return { requestId: response.hash };
   } catch (error) {
-    if (error instanceof InvalidOtpError) {
-      throw new BadRequestError('Invalid verification code', 'INVALID_OTP');
-    }
-    if (error instanceof OtpExpiredError) {
-      throw new BadRequestError('Verification code has expired', 'OTP_EXPIRED');
-    }
-    if (error instanceof RateLimitError) {
-      throw new BadRequestError('Too many attempts, please try again later', 'OTP_RATE_LIMIT');
-    }
-
-    logger.error({ err: error, phoneNumber }, 'Failed to send OTP');
-    throw new BadRequestError('Failed to send verification code', 'OTP_SEND_FAILED');
+    handleGoSmsError(error, 'send');
   }
 }
 
 /**
- * Verify an OTP code against a requestId.
+ * Verify an OTP code against the stored hash via gosms.ge.
  * Returns true if the code is valid.
  */
-export async function verifyOtp(requestId: string, code: string, ipAddress: string): Promise<boolean> {
+export async function verifyOtp(phone: string, requestId: string, code: string): Promise<boolean> {
   try {
-    await client.verifyOtp({
-      requestId,
+    await gosmsPost('/api/otp/verify', {
+      api_key: env.OTP_API_KEY,
+      phone: formatPhone(phone),
+      hash: requestId,
       code,
-      ipAddress,
     });
 
-    // SDK throws on failure (InvalidOtpError, OtpExpiredError, etc.)
-    // If no error was thrown, verification succeeded
     return true;
   } catch (error) {
-    if (error instanceof InvalidOtpError) {
-      throw new BadRequestError('Invalid verification code', 'INVALID_OTP');
-    }
-    if (error instanceof OtpExpiredError) {
-      throw new BadRequestError('Verification code has expired', 'OTP_EXPIRED');
-    }
-    if (error instanceof RateLimitError) {
-      throw new BadRequestError('Too many attempts, please try again later', 'OTP_RATE_LIMIT');
-    }
-
-    logger.error({ err: error, requestId }, 'Failed to verify OTP');
-    throw new BadRequestError('Failed to verify code', 'OTP_VERIFY_FAILED');
+    handleGoSmsError(error, 'verify');
   }
 }
