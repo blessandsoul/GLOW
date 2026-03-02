@@ -9,6 +9,7 @@ import {
     Trash,
     Check,
     CheckCircle,
+    ArrowsOut,
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -23,6 +24,7 @@ interface GalleryCardProps {
     onClick: () => void;
     onDelete: () => void;
     onDownload: () => void;
+    onHDDownload?: () => void;
 }
 
 function GalleryCardInner({
@@ -33,6 +35,7 @@ function GalleryCardInner({
     onClick,
     onDelete,
     onDownload,
+    onHDDownload,
 }: GalleryCardProps): React.ReactElement {
     const { t } = useLanguage();
     const isDone = job.status === 'DONE';
@@ -131,10 +134,20 @@ function GalleryCardInner({
                         type="button"
                         onClick={stopAndCall(onDownload)}
                         className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors duration-150 hover:bg-white/30"
-                        aria-label={t('dashboard.delete_btn')}
+                        aria-label={t('ui.download_btn')}
                     >
                         <DownloadSimple size={18} />
                     </button>
+                    {onHDDownload && (
+                        <button
+                            type="button"
+                            onClick={stopAndCall(onHDDownload)}
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors duration-150 hover:bg-white/30"
+                            aria-label={t('ui.download_hd')}
+                        >
+                            <ArrowsOut size={18} />
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={stopAndCall(onDelete)}

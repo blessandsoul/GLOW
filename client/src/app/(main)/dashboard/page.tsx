@@ -23,6 +23,7 @@ import { BulkActionBar } from '@/features/jobs/components/dashboard/BulkActionBa
 import { useDashboardGallery, useDeleteJob, useBulkDeleteJobs } from '@/features/jobs/hooks/useDashboard';
 import { useGallerySelection } from '@/features/jobs/hooks/useGallerySelection';
 import { useMyPortfolio } from '@/features/portfolio/hooks/usePortfolio';
+import { toast } from 'sonner';
 import { downloadImage } from '@/lib/utils/download';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
@@ -63,14 +64,27 @@ export default function DashboardPage(): React.ReactElement {
         setStatusFilter(s);
     }, []);
 
-    const handleDownload = useCallback((jobId: string): void => {
+    const handleDownload = useCallback(async (jobId: string): Promise<void> => {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
         const url = `${apiBase}/jobs/${jobId}/download?variant=0`;
-        downloadImage(url, `glowge-${Date.now()}.jpg`).catch(() => {
-            // Fallback: open in new tab if share/download fails
-            window.open(url, '_blank');
-        });
-    }, []);
+        try {
+            await downloadImage(url, `glowge-${Date.now()}.jpg`);
+        } catch {
+            toast.error(t('ui.download_hd_failed'));
+        }
+    }, [t]);
+
+    const handleHDDownload = useCallback(async (jobId: string): Promise<void> => {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
+        const url = `${apiBase}/jobs/${jobId}/download?variant=0&upscale=1`;
+        const toastId = toast.loading(t('ui.download_hd_preparing'));
+        try {
+            await downloadImage(url, `glowge-hd-${Date.now()}.jpg`);
+            toast.success(t('ui.download_hd_success'), { id: toastId });
+        } catch {
+            toast.error(t('ui.download_hd_failed'), { id: toastId });
+        }
+    }, [t]);
 
     const handleConfirmDelete = useCallback((): void => {
         if (deleteTarget) {
@@ -143,6 +157,7 @@ export default function DashboardPage(): React.ReactElement {
                                 onClick={() => router.push(ROUTES.CREATE_RESULT(job.id))}
                                 onDelete={() => setDeleteTarget(job.id)}
                                 onDownload={() => handleDownload(job.id)}
+                                onHDDownload={() => handleHDDownload(job.id)}
                             />
                         ))}
                     </div>

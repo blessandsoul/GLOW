@@ -18,6 +18,7 @@ import { buildDecorationPrompt } from './decoration-builder.js';
 import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
 import { isLaunchMode, checkDailyLimit, incrementDailyUsage, getDailyUsage } from '../../libs/launch-mode.js';
 import { env } from '../../config/env.js';
+import { upscaleImage } from '../../libs/upscale.js';
 import type { StorageFile } from '../../libs/storage.js';
 
 export const jobsService = {
@@ -26,6 +27,7 @@ export const jobsService = {
     variantIndex: number,
     requestingUserId: string | undefined,
     branded: boolean,
+    upscale: boolean = false,
   ): Promise<{ buffer: Buffer; filename: string; contentType: string }> {
     const job = await jobsRepo.findJobByIdWithUser(jobId);
 
@@ -71,6 +73,12 @@ export const jobsService = {
 
     let finalBuffer = imageBuffer;
     let wasProcessed = false;
+
+    // Upscale image via Replicate Real-ESRGAN if requested
+    if (upscale) {
+      finalBuffer = await upscaleImage(finalBuffer);
+      wasProcessed = true;
+    }
 
     // Apply custom branding if requested, watermarks enabled, and user has an active branding profile
     if (watermarkEnabled && branded && job.userId) {

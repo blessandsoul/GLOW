@@ -13,7 +13,7 @@ const MAX_FILE_BYTES = 5 * 1024 * 1024;
 export const jobsController = {
   async download(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     const { jobId } = JobIdParamSchema.parse(request.params);
-    const { variant, branded } = DownloadQuerySchema.parse(request.query);
+    const { variant, branded, upscale } = DownloadQuerySchema.parse(request.query);
 
     const user = request.user as JwtPayload | undefined;
 
@@ -22,6 +22,7 @@ export const jobsController = {
       variant,
       user?.id,
       branded === 1,
+      upscale === 1,
     );
 
     await reply

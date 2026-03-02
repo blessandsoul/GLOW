@@ -45,7 +45,7 @@ export const API_ENDPOINTS = {
         RESULTS: '/jobs/results',
         GUEST: '/jobs/guest',
         BATCH: '/jobs/batch',
-        DOWNLOAD: (id: string, variant: number) => `/jobs/${id}/download?variant=${variant}`,
+        DOWNLOAD: (id: string, variant: number, upscale?: boolean) => `/jobs/${id}/download?variant=${variant}${upscale ? '&upscale=1' : ''}`,
         DELETE: (id: string) => `/jobs/${id}`,
         BULK_DELETE: '/jobs/bulk',
         STATS: '/jobs/stats',

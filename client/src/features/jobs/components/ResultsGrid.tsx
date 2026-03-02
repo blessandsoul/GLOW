@@ -5,7 +5,7 @@ import Image from 'next/image';
 import {
     DownloadSimple, Sparkle, WarningCircle,
     LinkSimple, Stamp, MagnifyingGlassPlus,
-    SlidersHorizontal, GridFour,
+    SlidersHorizontal, GridFour, ArrowsOut,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ import { getServerImageUrl } from '@/lib/utils/image';
 interface ResultsGridProps {
     job: Job;
     isAuthenticated: boolean;
-    onDownload: (url: string, jobId: string, variantIndex: number, branded: boolean) => void;
+    onDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean, upscale?: boolean) => void;
     onRetouch?: (url: string) => void;
 }
 
@@ -65,6 +65,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
     const [compareMode, setCompareMode] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
+    const [isUpscaling, setIsUpscaling] = useState(false);
 
     const openLightbox = useCallback((index: number) => {
         setLightboxInitialIndex(index);
@@ -72,6 +73,17 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
     }, []);
 
     const results = job.results ?? [];
+
+    const handleHDDownload = useCallback(async () => {
+        setIsUpscaling(true);
+        try {
+            await onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false, true);
+        } catch {
+            toast.error(t('ui.download_hd_failed'));
+        } finally {
+            setIsUpscaling(false);
+        }
+    }, [onDownload, results, selectedAfterIdx, job.id, t]);
 
     // Build lightbox images array: [Before, After]
     // NOTE: This useMemo MUST be before any early returns to maintain consistent hook ordering
@@ -294,11 +306,23 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
             {/* Quick action row */}
             {results.length > 0 && (
                 <div className="flex flex-col gap-1.5">
+                    {/* HD upscaling loading state */}
+                    {isUpscaling && (
+                        <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+                            <span className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                            <div className="min-w-0">
+                                <p className="text-xs font-semibold text-foreground">{t('ui.download_hd_preparing')}</p>
+                                <p className="text-[11px] text-muted-foreground">{t('ui.upscaling')}</p>
+                            </div>
+                        </div>
+                    )}
+
                     {hasBranding && (
                         <Button
                             size="sm"
                             variant="outline"
                             className="w-full gap-1.5 text-xs h-9"
+                            disabled={isUpscaling}
                             onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, true)}
                         >
                             <Stamp size={13} weight="fill" />
@@ -309,10 +333,21 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                         size="sm"
                         variant="outline"
                         className="w-full gap-1.5 text-xs h-9"
+                        disabled={isUpscaling}
                         onClick={() => onDownload(results[selectedAfterIdx] ?? results[0], job.id, selectedAfterIdx, false)}
                     >
                         <DownloadSimple size={13} />
                         {t('ui.download_btn')}
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full gap-1.5 text-xs h-9"
+                        onClick={handleHDDownload}
+                        disabled={isUpscaling}
+                    >
+                        <ArrowsOut size={13} />
+                        {t('ui.download_hd')}
                     </Button>
                     <ShareButton jobId={job.id} />
                     <AddToPortfolioButton

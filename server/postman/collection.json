@@ -661,11 +661,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/jobs/{{jobId}}/download?variant=0",
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/download?variant=0&upscale=0",
               "host": ["{{baseUrl}}"],
               "path": ["jobs", "{{jobId}}", "download"],
               "query": [
-                { "key": "variant", "value": "0", "description": "Variant index (0-based)" }
+                { "key": "variant", "value": "0", "description": "Variant index (0-based)" },
+                { "key": "upscale", "value": "0", "description": "Set to 1 for 4x HD upscale via Real-ESRGAN" }
               ]
             }
           }
