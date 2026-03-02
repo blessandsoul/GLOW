@@ -947,6 +947,36 @@
           }
         }
       ]
+    },
+    {
+      "name": "Catalog (Public)",
+      "description": "Public reference data endpoints — no token required.",
+      "item": [
+        {
+          "name": "Get Specialities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/specialities",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "specialities"]
+            }
+          }
+        },
+        {
+          "name": "Get Service Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/service-categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "service-categories"]
+            }
+          }
+        }
+      ]
     }
   ]
 }

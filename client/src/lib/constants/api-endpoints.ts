@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
     PORTFOLIO: {
         ME: '/portfolio/me',
         CREATE: '/portfolio',
+        UPLOAD: '/portfolio/upload',
         REORDER: '/portfolio/reorder',
         UPDATE: (id: string) => `/portfolio/${id}`,
         DELETE: (id: string) => `/portfolio/${id}`,
@@ -83,5 +84,9 @@ export const API_ENDPOINTS = {
     },
     DECORATIONS: {
         SUGGEST: '/decorations/suggest',
+    },
+    CATALOG: {
+        SPECIALITIES: '/catalog/specialities',
+        SERVICE_CATEGORIES: '/catalog/service-categories',
     },
 } as const;

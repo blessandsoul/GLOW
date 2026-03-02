@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
-import { SERVICE_CATEGORIES } from '../types/profile.types';
+import { useServiceCategories } from '../hooks/useCatalog';
 import type { PriceType, ServiceItem } from '../types/profile.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ interface AddServicePanelProps {
 
 export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): React.ReactElement {
     const { t } = useLanguage();
+    const { categories } = useServiceCategories();
     const [selectedCategory, setSelectedCategory] = useState('');
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
@@ -26,7 +27,7 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
     const [open, setOpen] = useState(false);
     const justSelected = useRef(false);
 
-    const category = SERVICE_CATEGORIES.find((c) => c.id === selectedCategory);
+    const category = categories.find((c) => c.id === selectedCategory);
 
     const handleSubmit = (): void => {
         if (!selectedCategory || !name.trim()) return;
@@ -40,10 +41,11 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
             <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">{t('ui.text_svc_cat')}</Label>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {SERVICE_CATEGORIES.map((cat) => (
+                    {categories.map((cat) => (
                         <button
                             key={cat.id}
                             type="button"
+                            data-category-button
                             onClick={() => { setSelectedCategory(cat.id); setName(''); setOpen(true); }}
                             className={cn(
                                 'flex items-center gap-1.5 rounded-lg border px-3 py-2 text-left text-xs font-medium transition-all duration-150 cursor-pointer',
@@ -79,7 +81,7 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
                                 onOpenAutoFocus={(e) => e.preventDefault()}
                                 onInteractOutside={(e) => {
                                     const target = e.target as HTMLElement;
-                                    if (target.closest('[data-slot="popover-anchor"]')) {
+                                    if (target.closest('[data-slot="popover-anchor"]') || target.closest('[data-category-button]')) {
                                         e.preventDefault();
                                     }
                                 }}

@@ -73,7 +73,7 @@ export const authRepo = {
     password: string;
     firstName: string;
     lastName: string;
-    phone: string;
+    phone?: string;
   }) {
     const baseSlug = `${data.firstName}${data.lastName}`
       .toLowerCase()

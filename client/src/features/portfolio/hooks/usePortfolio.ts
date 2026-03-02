@@ -18,6 +18,8 @@ export function useMyPortfolio(): {
     isLoading: boolean;
     addItem: (formData: PortfolioItemFormData) => Promise<void>;
     isAdding: boolean;
+    uploadImage: (file: File) => Promise<void>;
+    isUploading: boolean;
     updateItem: (params: { id: string; data: Partial<PortfolioItemFormData> }) => Promise<void>;
     deleteItem: (id: string) => Promise<void>;
     isDeleting: boolean;
@@ -65,6 +67,19 @@ export function useMyPortfolio(): {
         },
         onSuccess: () => {
             toast.success(t('system.sys_ykzsc6'));
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: portfolioKeys.me() });
+        },
+    });
+
+    const uploadMutation = useMutation({
+        mutationFn: (file: File) => portfolioService.uploadImage(file),
+        onSuccess: () => {
+            toast.success(t('system.sys_ykzsc6'));
+        },
+        onError: (err) => {
+            toast.error(getErrorMessage(err));
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: portfolioKeys.me() });
@@ -127,6 +142,10 @@ export function useMyPortfolio(): {
         await addMutation.mutateAsync(formData);
     };
 
+    const uploadImage = async (file: File): Promise<void> => {
+        await uploadMutation.mutateAsync(file);
+    };
+
     const updateItem = async ({ id, data }: { id: string; data: Partial<PortfolioItemFormData> }): Promise<void> => {
         await updateMutation.mutateAsync({ id, data });
     };
@@ -140,6 +159,8 @@ export function useMyPortfolio(): {
         isLoading,
         addItem,
         isAdding: addMutation.isPending,
+        uploadImage,
+        isUploading: uploadMutation.isPending,
         updateItem,
         deleteItem,
         isDeleting: deleteMutation.isPending,

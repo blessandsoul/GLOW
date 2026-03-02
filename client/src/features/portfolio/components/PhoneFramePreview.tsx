@@ -5,7 +5,7 @@ import { MapPin, Star } from '@phosphor-icons/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { getServerImageUrl } from '@/lib/utils/image';
-import { CITIES, NICHES } from '@/features/profile/types/profile.types';
+import { useSpecialities } from '@/features/profile/hooks/useCatalog';
 import type { ServiceItem } from '@/features/profile/types/profile.types';
 import type { PortfolioItem } from '../types/portfolio.types';
 
@@ -29,8 +29,9 @@ export function PhoneFramePreview({
     avatar,
 }: PhoneFramePreviewProps): React.ReactElement {
     const { t } = useLanguage();
-    const cityLabel = CITIES.find((c) => c.value === city)?.label ?? city;
-    const nicheLabel = NICHES.find((n) => n.value === niche)?.label ?? niche;
+    const { specialities } = useSpecialities();
+    const cityLabel = city;
+    const nicheLabel = specialities.find((n) => n.slug === niche)?.label ?? niche;
 
     return (
         <div className="w-[260px] md:w-[280px] rounded-[2rem] border-[3px] border-foreground/15 bg-background shadow-xl overflow-hidden">

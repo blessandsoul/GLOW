@@ -1,8 +1,9 @@
 import { portfolioRepo } from './portfolio.repo.js';
 import { NotFoundError, ForbiddenError } from '@/shared/errors/errors.js';
 import { getPlanConfig } from '@/modules/subscriptions/subscriptions.constants.js';
+import { deleteFile } from '@/libs/storage.js';
 import { prisma } from '@/libs/prisma.js';
-import type { CreatePortfolioItemInput, UpdatePortfolioItemInput, ReorderPortfolioInput } from './portfolio.schemas.js';
+import type { CreatePortfolioItemInput, UpdatePortfolioItemInput, ReorderPortfolioInput, UploadPortfolioItemInput } from './portfolio.schemas.js';
 
 export function createPortfolioService() {
   return {
@@ -32,6 +33,32 @@ export function createPortfolioService() {
       return portfolioRepo.create(userId, input, maxSort + 1);
     },
 
+    async uploadItem(userId: string, imageUrl: string, metadata: UploadPortfolioItemInput) {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { subscription: { select: { plan: true } } },
+      });
+      const config = getPlanConfig(user?.subscription?.plan ?? 'FREE');
+
+      if (config.maxPortfolioItems !== null) {
+        const count = await portfolioRepo.countByUserId(userId);
+        if (count >= config.maxPortfolioItems) {
+          throw new ForbiddenError(
+            `Portfolio limit reached (${config.maxPortfolioItems} items). Upgrade your plan for unlimited portfolio.`,
+            'PORTFOLIO_LIMIT_REACHED',
+          );
+        }
+      }
+
+      const maxSort = await portfolioRepo.getMaxSortOrder(userId);
+      return portfolioRepo.create(userId, {
+        imageUrl,
+        title: metadata.title,
+        niche: metadata.niche,
+        isPublished: true,
+      }, maxSort + 1);
+    },
+
     async updateItem(userId: string, itemId: string, input: UpdatePortfolioItemInput) {
       const item = await portfolioRepo.findById(itemId);
       if (!item) {
@@ -52,6 +79,11 @@ export function createPortfolioService() {
         throw new ForbiddenError('You do not own this portfolio item', 'NOT_OWNER');
       }
       await portfolioRepo.delete(itemId);
+
+      // Clean up uploaded files (only portfolio-uploaded images, not job results)
+      if (item.imageUrl.startsWith('/uploads/portfolio/')) {
+        await deleteFile(item.imageUrl);
+      }
     },
 
     async reorderItems(userId: string, input: ReorderPortfolioInput) {
@@ -89,6 +121,8 @@ export function createPortfolioService() {
         avatar: user.avatar,
         bio: profile?.bio ?? null,
         instagram: profile?.instagram ?? null,
+        whatsapp: profile?.whatsapp ?? null,
+        telegram: profile?.telegram ?? null,
         city: profile?.city ?? null,
         niche: profile?.niche ?? null,
         services: profile?.services ?? [],

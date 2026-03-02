@@ -29,18 +29,20 @@ export const referralsService = {
   async applyReferralOnRegister(
     newUserId: string,
     referralCode: string | undefined,
-    phone: string,
+    phone?: string,
   ): Promise<void> {
-    if (!referralCode || !phone) return;
+    if (!referralCode) return;
     try {
       const referrer = await referralsRepo.findByCode(referralCode);
       if (!referrer || referrer.id === newUserId) return;
 
-      // Anti-abuse: check if this phone was already used in a referral
-      const existingReferral = await referralsRepo.findReferralByPhone(phone);
-      if (existingReferral) return;
+      // Anti-abuse: check if this phone was already used in a referral (only if phone provided)
+      if (phone) {
+        const existingReferral = await referralsRepo.findReferralByPhone(phone);
+        if (existingReferral) return;
+      }
 
-      await referralsRepo.createReferral(referrer.id, newUserId, phone);
+      await referralsRepo.createReferral(referrer.id, newUserId, phone ?? '');
     } catch (err) {
       // Non-fatal: referral errors should never break registration
       logger.warn({ err, newUserId, referralCode }, 'Failed to apply referral');

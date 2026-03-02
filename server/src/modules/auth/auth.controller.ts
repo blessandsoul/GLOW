@@ -18,10 +18,13 @@ export function createAuthController(authService: AuthService) {
       const input = RegisterSchema.parse(request.body);
       const result = await authService.register(input);
       setAuthCookies(reply, result.accessToken, result.refreshToken);
+      const message = result.otpRequestId
+        ? 'Registration successful. Please verify your phone.'
+        : 'Registration successful';
       reply.status(201).send(
-        successResponse('Registration successful. Please verify your phone.', {
+        successResponse(message, {
           user: result.user,
-          otpRequestId: result.otpRequestId,
+          ...(result.otpRequestId ? { otpRequestId: result.otpRequestId } : {}),
         }),
       );
     },

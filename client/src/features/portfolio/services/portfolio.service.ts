@@ -32,6 +32,20 @@ class PortfolioService {
         await apiClient.delete(API_ENDPOINTS.PORTFOLIO.DELETE(id));
     }
 
+    async uploadImage(file: File, title?: string, niche?: string): Promise<PortfolioItem> {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (title) formData.append('title', title);
+        if (niche) formData.append('niche', niche);
+
+        const { data } = await apiClient.post<ApiResponse<PortfolioItem>>(
+            API_ENDPOINTS.PORTFOLIO.UPLOAD,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } },
+        );
+        return data.data;
+    }
+
     async reorderItems(payload: ReorderPayload): Promise<PortfolioItem[]> {
         const { data } = await apiClient.patch<ApiResponse<PortfolioItem[]>>(
             API_ENDPOINTS.PORTFOLIO.REORDER,

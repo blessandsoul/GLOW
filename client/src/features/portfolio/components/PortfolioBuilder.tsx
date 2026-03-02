@@ -64,6 +64,8 @@ export function PortfolioBuilder(): React.ReactElement {
         jobResults,
         portfolioImageUrls,
         addItem,
+        uploadImage,
+        isUploading,
         updateItem,
         deleteItem,
         progress,
@@ -128,6 +130,7 @@ export function PortfolioBuilder(): React.ReactElement {
                             form={form}
                             updateField={updateField}
                             saveStatus={saveStatus}
+                            user={user}
                         />
                     </section>
 
@@ -145,6 +148,8 @@ export function PortfolioBuilder(): React.ReactElement {
                             portfolioImageUrls={portfolioImageUrls}
                             isResultsLoading={isResultsLoading}
                             onAdd={addItem}
+                            onUpload={uploadImage}
+                            isUploading={isUploading}
                             onUpdate={updateItem}
                             onDelete={deleteItem}
                         />

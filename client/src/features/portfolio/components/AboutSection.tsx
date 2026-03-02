@@ -1,12 +1,19 @@
 'use client';
 
-import React, { useCallback } from 'react';
-import { CloudCheck, SpinnerGap, Warning, MapPin, InstagramLogo, WhatsappLogo, TelegramLogo, Phone } from '@phosphor-icons/react';
+import React, { useCallback, useRef, useState } from 'react';
+import { CloudCheck, SpinnerGap, Warning, MapPin, InstagramLogo, WhatsappLogo, TelegramLogo, Phone, Camera } from '@phosphor-icons/react';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import { CITIES, NICHES } from '@/features/profile/types/profile.types';
+import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { usersService } from '@/features/users/services/users.service';
+import { useAppDispatch } from '@/store/hooks';
+import { setUser } from '@/features/auth/store/authSlice';
+import { getServerImageUrl } from '@/lib/utils/image';
+import { getErrorMessage } from '@/lib/utils/error';
+import type { IUser } from '@/features/auth/types/auth.types';
 import type { ProfileFormData } from '@/features/profile/types/profile.types';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -15,6 +22,7 @@ interface AboutSectionProps {
     form: ProfileFormData;
     updateField: <K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => void;
     saveStatus: SaveStatus;
+    user: IUser | null;
 }
 
 function SaveIndicator({ status }: { status: SaveStatus }): React.ReactElement | null {
@@ -44,14 +52,44 @@ function SaveIndicator({ status }: { status: SaveStatus }): React.ReactElement |
     );
 }
 
-export function AboutSection({ form, updateField, saveStatus }: AboutSectionProps): React.ReactElement {
+export function AboutSection({ form, updateField, saveStatus, user }: AboutSectionProps): React.ReactElement {
     const { t } = useLanguage();
+    const dispatch = useAppDispatch();
+    const { specialities } = useSpecialities();
+    const avatarInputRef = useRef<HTMLInputElement>(null);
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
     const handleBioChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>): void => {
         if (e.target.value.length <= 500) {
             updateField('bio', e.target.value);
         }
     }, [updateField]);
+
+    const handleAvatarChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        e.target.value = '';
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error(t('portfolio.file_too_large'));
+            return;
+        }
+
+        setIsUploadingAvatar(true);
+        try {
+            const { avatarUrl } = await usersService.uploadAvatar(file);
+            if (user) {
+                dispatch(setUser({ ...user, avatar: avatarUrl }));
+            }
+            toast.success(t('portfolio.avatar_updated'));
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setIsUploadingAvatar(false);
+        }
+    }, [user, dispatch, t]);
+
+    const displayName = user ? `${user.firstName} ${user.lastName}`.trim() : '';
 
     return (
         <div className="space-y-6">
@@ -64,6 +102,47 @@ export function AboutSection({ form, updateField, saveStatus }: AboutSectionProp
                 <SaveIndicator status={saveStatus} />
             </div>
 
+            {/* Avatar card */}
+            <div className="flex items-center gap-4 rounded-xl border border-border/50 bg-card p-5">
+                <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*,.heic,.heif"
+                    className="hidden"
+                    onChange={handleAvatarChange}
+                />
+                <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={isUploadingAvatar}
+                    className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-border/50 transition-all duration-200 hover:border-primary/40 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label={t('portfolio.change_avatar')}
+                >
+                    {user?.avatar ? (
+                        <img
+                            src={getServerImageUrl(user.avatar)}
+                            alt={displayName}
+                            className="h-full w-full object-cover"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-primary/10 text-lg font-bold text-primary">
+                            {displayName.charAt(0).toUpperCase() || '?'}
+                        </div>
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        {isUploadingAvatar ? (
+                            <SpinnerGap size={18} className="text-white animate-spin" />
+                        ) : (
+                            <Camera size={18} className="text-white" />
+                        )}
+                    </div>
+                </button>
+                <div>
+                    <p className="text-sm font-medium text-foreground">{t('portfolio.profile_photo')}</p>
+                    <p className="text-xs text-muted-foreground">{t('portfolio.profile_photo_desc')}</p>
+                </div>
+            </div>
+
             {/* Basic info card */}
             <div className="space-y-4 rounded-xl border border-border/50 bg-card p-5">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -72,16 +151,12 @@ export function AboutSection({ form, updateField, saveStatus }: AboutSectionProp
                             <MapPin size={12} />
                             {t('ui.text_ghe07f')}
                         </Label>
-                        <Select value={form.city} onValueChange={(v) => updateField('city', v)}>
-                            <SelectTrigger id="builder-city" className="w-full">
-                                <SelectValue placeholder={t('ui.text_46q4bx')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {CITIES.map((c) => (
-                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Input
+                            id="builder-city"
+                            value={form.city}
+                            onChange={(e) => updateField('city', e.target.value)}
+                            placeholder={t('ui.text_46q4bx')}
+                        />
                     </div>
 
                     <div className="space-y-1.5">
@@ -93,8 +168,8 @@ export function AboutSection({ form, updateField, saveStatus }: AboutSectionProp
                                 <SelectValue placeholder={t('portfolio.select_specialty')} />
                             </SelectTrigger>
                             <SelectContent>
-                                {NICHES.map((n) => (
-                                    <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>
+                                {specialities.map((n) => (
+                                    <SelectItem key={n.slug} value={n.slug}>{n.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
