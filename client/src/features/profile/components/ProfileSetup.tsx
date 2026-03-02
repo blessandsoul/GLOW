@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useProfile } from '../hooks/useProfile';
-import { CITIES, NICHES, DEFAULT_PROFILE, SERVICE_CATEGORIES } from '../types/profile.types';
+import { useSpecialities, useServiceCategories } from '../hooks/useCatalog';
+import { DEFAULT_PROFILE } from '../types/profile.types';
 import type { ProfileFormData, ServiceItem } from '../types/profile.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -83,6 +84,8 @@ function PersonalInfoSection(): React.ReactElement {
 export function ProfileSetup(): React.ReactElement {
     const { t } = useLanguage();
     const { profile, isLoading, save, isSaving } = useProfile();
+    const { specialities } = useSpecialities();
+    const { categories } = useServiceCategories();
     const [form, setForm] = useState<ProfileFormData>(DEFAULT_PROFILE);
     const [showAddPanel, setShowAddPanel] = useState(false);
 
@@ -143,7 +146,7 @@ export function ProfileSetup(): React.ReactElement {
     );
 
     // Group services by category for display
-    const servicesByCategory = SERVICE_CATEGORIES
+    const servicesByCategory = categories
         .map((cat) => ({
             category: cat,
             services: form.services
@@ -186,16 +189,12 @@ export function ProfileSetup(): React.ReactElement {
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                         <Label htmlFor="city" className="text-xs text-muted-foreground">{t('ui.text_ghe07f')}</Label>
-                        <Select value={form.city} onValueChange={(v) => handleChange('city', v)}>
-                            <SelectTrigger id="city" className="w-full">
-                                <SelectValue placeholder={t('ui.text_46q4bx')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {CITIES.map((c) => (
-                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Input
+                            id="city"
+                            value={form.city}
+                            onChange={(e) => handleChange('city', e.target.value)}
+                            placeholder={t('ui.text_46q4bx')}
+                        />
                     </div>
 
                     <div className="space-y-1.5">
@@ -205,8 +204,8 @@ export function ProfileSetup(): React.ReactElement {
                                 <SelectValue placeholder={t('ui.text_vy4xke')} />
                             </SelectTrigger>
                             <SelectContent>
-                                {NICHES.map((n) => (
-                                    <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>
+                                {specialities.map((n) => (
+                                    <SelectItem key={n.slug} value={n.slug}>{n.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

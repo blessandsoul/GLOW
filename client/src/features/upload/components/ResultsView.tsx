@@ -7,7 +7,7 @@ interface ResultsViewProps {
     currentJob: Job;
     isAuthenticated: boolean;
     setRetouchUrl: (url: string | null) => void;
-    handleDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean) => Promise<void>;
+    handleDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean, upscale?: boolean) => Promise<void>;
 }
 
 export function ResultsView({

@@ -37,6 +37,13 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
     jobsController.download,
   );
 
+  // Prepare HD (upscaled) image — saves to disk and returns URL
+  app.post(
+    '/:jobId/prepare-hd',
+    { preHandler: [optionalAuth] },
+    jobsController.prepareHD,
+  );
+
   // Delete single job (authenticated)
   app.delete('/:jobId', { preHandler: [authenticate, requirePhoneVerified] }, jobsController.delete);
 }

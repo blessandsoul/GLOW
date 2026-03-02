@@ -110,6 +110,8 @@ export const portfolioRepo = {
         city: true,
         niche: true,
         instagram: true,
+        whatsapp: true,
+        telegram: true,
         services: true,
       },
     });

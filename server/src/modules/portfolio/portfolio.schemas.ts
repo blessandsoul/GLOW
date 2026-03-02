@@ -10,6 +10,13 @@ export const CreatePortfolioItemSchema = z.object({
 
 export type CreatePortfolioItemInput = z.infer<typeof CreatePortfolioItemSchema>;
 
+export const UploadPortfolioItemSchema = z.object({
+  title: z.string().max(200).optional(),
+  niche: z.string().max(100).optional(),
+});
+
+export type UploadPortfolioItemInput = z.infer<typeof UploadPortfolioItemSchema>;
+
 export const UpdatePortfolioItemSchema = z.object({
   title: z.string().max(200).optional(),
   niche: z.string().max(100).optional(),

@@ -18,6 +18,7 @@ import { buildDecorationPrompt } from './decoration-builder.js';
 import { getPlanConfig } from '../subscriptions/subscriptions.constants.js';
 import { isLaunchMode, checkDailyLimit, incrementDailyUsage, getDailyUsage } from '../../libs/launch-mode.js';
 import { env } from '../../config/env.js';
+import { upscaleImage } from '../../libs/upscale.js';
 import type { StorageFile } from '../../libs/storage.js';
 
 export const jobsService = {
@@ -26,6 +27,7 @@ export const jobsService = {
     variantIndex: number,
     requestingUserId: string | undefined,
     branded: boolean,
+    upscale: boolean = false,
   ): Promise<{ buffer: Buffer; filename: string; contentType: string }> {
     const job = await jobsRepo.findJobByIdWithUser(jobId);
 
@@ -71,6 +73,12 @@ export const jobsService = {
 
     let finalBuffer = imageBuffer;
     let wasProcessed = false;
+
+    // Upscale image via Replicate Real-ESRGAN if requested
+    if (upscale) {
+      finalBuffer = await upscaleImage(finalBuffer);
+      wasProcessed = true;
+    }
 
     // Apply custom branding if requested, watermarks enabled, and user has an active branding profile
     if (watermarkEnabled && branded && job.userId) {
@@ -352,6 +360,57 @@ export const jobsService = {
       credits: user?.credits ?? 0,
       plan: user?.subscription?.plan ?? 'FREE',
     };
+  },
+
+  async prepareHD(
+    jobId: string,
+    variantIndex: number,
+    requestingUserId: string | undefined,
+  ): Promise<{ url: string }> {
+    const job = await jobsRepo.findJobByIdWithUser(jobId);
+    if (!job) {
+      throw new NotFoundError('Job not found', 'JOB_NOT_FOUND');
+    }
+    if (job.status !== 'DONE') {
+      throw new ForbiddenError('Job processing not complete', 'JOB_NOT_READY');
+    }
+
+    const results = job.results as string[] | null;
+    if (!results || !results[variantIndex]) {
+      throw new NotFoundError('Result variant not found', 'VARIANT_NOT_FOUND');
+    }
+
+    // Load image from local storage or external URL
+    const resultUrl = results[variantIndex];
+    let imageBuffer: Buffer;
+
+    if (resultUrl.startsWith('/uploads/')) {
+      const filePath = join(process.cwd(), resultUrl);
+      try {
+        imageBuffer = await readFile(filePath);
+      } catch {
+        throw new NotFoundError('Result image file not found', 'IMAGE_FETCH_FAILED');
+      }
+    } else {
+      const response = await fetch(resultUrl);
+      if (!response.ok) {
+        throw new NotFoundError('Could not fetch image', 'IMAGE_FETCH_FAILED');
+      }
+      imageBuffer = Buffer.from(await response.arrayBuffer());
+    }
+
+    // Upscale via Replicate
+    const upscaledBuffer = await upscaleImage(imageBuffer);
+
+    // Save to /uploads/hd/
+    const hdFile: StorageFile = {
+      buffer: upscaledBuffer,
+      filename: `hd-${jobId}-${variantIndex}.jpg`,
+      mimetype: 'image/jpeg',
+    };
+    const hdUrl = await uploadFile(hdFile, 'hd');
+
+    return { url: hdUrl };
   },
 
   async getResultImages(userId: string): Promise<{ jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[]> {

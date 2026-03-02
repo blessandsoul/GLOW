@@ -57,6 +57,9 @@ const envSchema = z.object({
   // When watermark is disabled, original format is preserved regardless of this setting.
   IMAGE_DOWNLOAD_FORMAT: z.enum(['png', 'jpeg']).default('png'),
 
+  // Replicate (image upscaling via Real-ESRGAN)
+  REPLICATE_API_TOKEN: z.string().default(''),
+
   // OTP (phone verification)
   OTP_API_KEY: z.string().min(1),
 });

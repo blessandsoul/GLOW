@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { writeFile, mkdir, unlink, access } from 'node:fs/promises';
 import { join, extname } from 'node:path';
+import sharp from 'sharp';
 import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import { BadRequestError } from '@/shared/errors/errors.js';
@@ -58,6 +59,18 @@ export async function deleteFile(url: string): Promise<void> {
  */
 export function getFileUrl(relativePath: string): string {
   return `${env.APP_URL}${relativePath}`;
+}
+
+/**
+ * Convert HEIC/HEIF images to JPEG. Pass-through for other formats.
+ */
+export async function processImage(file: StorageFile): Promise<StorageFile> {
+  if (file.mimetype === 'image/heic' || file.mimetype === 'image/heif') {
+    const buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+    const filename = file.filename.replace(/\.hei[cf]$/i, '.jpg');
+    return { buffer, filename, mimetype: 'image/jpeg' };
+  }
+  return file;
 }
 
 /**

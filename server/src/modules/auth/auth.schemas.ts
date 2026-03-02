@@ -10,7 +10,7 @@ export const RegisterSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().min(1, 'Last name is required').max(50),
-  phone: z.string().regex(/^\+995\d{9}$/, 'Phone must be a valid Georgian number (+995XXXXXXXXX)'),
+  phone: z.string().regex(/^\+995\d{9}$/, 'Phone must be a valid Georgian number (+995XXXXXXXXX)').optional(),
   referralCode: z.string().max(20).optional(),
 });
 

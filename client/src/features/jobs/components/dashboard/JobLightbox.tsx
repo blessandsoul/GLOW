@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { X, CaretLeft, CaretRight, DownloadSimple, ShareNetwork, Trash } from '@phosphor-icons/react';
+import { X, CaretLeft, CaretRight, DownloadSimple, ShareNetwork, Trash, ArrowsOut } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -33,6 +33,7 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
     const touchStartY = useRef(0);
     const isDragging = useRef(false);
     const [translateX, setTranslateX] = useState(0);
+    const [isUpscaling, setIsUpscaling] = useState(false);
 
     useEffect(() => {
         if (open) { setCurrentJobIndex(initialJobIndex); setSelectedVariant(1); }
@@ -99,13 +100,29 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
     const currentImageUrl = getServerImageUrl(variantUrls[safeVariant]);
     const stop = (e: React.MouseEvent): void => { e.stopPropagation(); };
 
-    const handleDownload = (e: React.MouseEvent): void => {
+    const handleDownload = async (e: React.MouseEvent): Promise<void> => {
         stop(e);
         const variant = safeVariant === 0 ? 0 : safeVariant - 1;
         const url = `${API_BASE}/jobs/${job.id}/download?variant=${variant}`;
-        downloadImage(url, `glowge-${Date.now()}.jpg`).catch(() => {
-            window.open(url, '_blank');
-        });
+        try {
+            await downloadImage(url, `glowge-${Date.now()}.jpg`);
+        } catch {
+            toast.error(t('ui.download_hd_failed'));
+        }
+    };
+    const handleHDDownload = async (e: React.MouseEvent): Promise<void> => {
+        stop(e);
+        setIsUpscaling(true);
+        try {
+            const variant = safeVariant === 0 ? 0 : safeVariant - 1;
+            const prepareUrl = `${API_BASE}/jobs/${job.id}/prepare-hd?variant=${variant}`;
+            const { prepareAndDownloadHD } = await import('@/lib/utils/download');
+            await prepareAndDownloadHD(prepareUrl, `glowge-hd-${Date.now()}.jpg`);
+        } catch {
+            toast.error(t('ui.download_hd_failed'));
+        } finally {
+            setIsUpscaling(false);
+        }
     };
     const handleShare = (e: React.MouseEvent): void => {
         stop(e);
@@ -142,6 +159,15 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
                 <div className={cn('relative h-full w-full max-w-lg', !isDragging.current && 'transition-transform duration-200 ease-out')} style={{ transform: `translateX(${translateX}px)` }}>
                     <Image src={currentImageUrl} alt={`Job result ${safeVariant}`} fill className="object-contain" sizes="100vw" priority unoptimized />
                 </div>
+                {/* HD upscaling spinner */}
+                {isUpscaling && (
+                    <div className="absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center">
+                        <div className="flex items-center gap-2.5 rounded-full bg-black/70 px-4 py-2.5 backdrop-blur-sm">
+                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            <span className="text-xs font-medium text-white">{t('ui.download_hd_preparing')}</span>
+                        </div>
+                    </div>
+                )}
             </div>
             {/* Bottom panel: actions + thumbnails */}
             <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2" onClick={stop}>
@@ -149,6 +175,13 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
                 <div className="flex items-center gap-2 md:absolute md:bottom-20 md:right-4 md:flex-col">
                     <button type="button" onClick={handleDownload} className={ACTION_BTN} aria-label="Download">
                         <DownloadSimple size={20} className="text-white" />
+                    </button>
+                    <button type="button" onClick={handleHDDownload} disabled={isUpscaling} className={cn(ACTION_BTN, isUpscaling && 'opacity-60')} aria-label="Download HD">
+                        {isUpscaling ? (
+                            <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        ) : (
+                            <ArrowsOut size={20} className="text-white" />
+                        )}
                     </button>
                     <button type="button" onClick={handleShare} className={ACTION_BTN} aria-label="Share">
                         <ShareNetwork size={20} className="text-white" />

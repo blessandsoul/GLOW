@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Eye, EyeSlash, Trash, Plus, Images } from '@phosphor-icons/react';
+import React, { useRef, useState } from 'react';
+import { Eye, EyeSlash, Trash, Plus, Images, UploadSimple, SpinnerGap } from '@phosphor-icons/react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
@@ -12,12 +13,16 @@ import { getServerImageUrl } from '@/lib/utils/image';
 import type { PortfolioItem, PortfolioItemFormData } from '../types/portfolio.types';
 import type { JobResultImage } from '../types/builder.types';
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 interface GallerySectionProps {
     items: PortfolioItem[];
     jobResults: JobResultImage[];
     portfolioImageUrls: Set<string>;
     isResultsLoading: boolean;
     onAdd: (data: PortfolioItemFormData) => Promise<void>;
+    onUpload: (file: File) => Promise<void>;
+    isUploading: boolean;
     onUpdate: (params: { id: string; data: Partial<PortfolioItemFormData> }) => Promise<void>;
     onDelete: (id: string) => Promise<void>;
 }
@@ -28,10 +33,13 @@ export function GallerySection({
     portfolioImageUrls,
     isResultsLoading,
     onAdd,
+    onUpload,
+    isUploading,
     onUpdate,
     onDelete,
 }: GallerySectionProps): React.ReactElement {
     const { t } = useLanguage();
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [pickerOpen, setPickerOpen] = useState(false);
     const publishedCount = items.filter((i) => i.isPublished).length;
     const availableToAdd = jobResults.filter((img) => !portfolioImageUrls.has(img.imageUrl)).length;
@@ -40,9 +48,37 @@ export function GallerySection({
         await onAdd(data);
     };
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Reset input so the same file can be selected again
+        e.target.value = '';
+
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error(t('portfolio.file_too_large'));
+            return;
+        }
+
+        await onUpload(file);
+    };
+
+    const triggerUpload = (): void => {
+        fileInputRef.current?.click();
+    };
+
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            {/* Hidden file input */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.heic,.heif"
+                className="hidden"
+                onChange={handleFileChange}
+            />
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 className="text-lg font-semibold text-foreground">{t('portfolio.nav_gallery')}</h2>
                     {items.length > 0 && (
@@ -52,15 +88,33 @@ export function GallerySection({
                     )}
                 </div>
                 {items.length > 0 && (
-                    <Button
-                        size="sm"
-                        className="shrink-0 gap-1.5"
-                        onClick={() => setPickerOpen(true)}
-                        disabled={isResultsLoading}
-                    >
-                        <Plus size={14} />
-                        {t('portfolio.gallery_add_btn')}
-                    </Button>
+                    <div className="flex w-full gap-2 sm:w-auto">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 gap-1.5 sm:flex-initial"
+                            onClick={triggerUpload}
+                            disabled={isUploading}
+                        >
+                            {isUploading ? (
+                                <SpinnerGap size={14} className="animate-spin" />
+                            ) : (
+                                <UploadSimple size={14} />
+                            )}
+                            {isUploading
+                                ? (t('portfolio.uploading'))
+                                : (t('portfolio.upload_photo'))}
+                        </Button>
+                        <Button
+                            size="sm"
+                            className="flex-1 gap-1.5 sm:flex-initial"
+                            onClick={() => setPickerOpen(true)}
+                            disabled={isResultsLoading}
+                        >
+                            <Plus size={14} />
+                            {t('portfolio.gallery_add_btn')}
+                        </Button>
+                    </div>
                 )}
             </div>
 
@@ -125,19 +179,43 @@ export function GallerySection({
                     ))}
                 </div>
             ) : (
-                <button
-                    type="button"
-                    onClick={() => setPickerOpen(true)}
-                    className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/50 py-12 text-center transition-colors hover:border-primary/40 hover:bg-primary/5 cursor-pointer"
-                >
-                    <div className="mb-3 rounded-full bg-primary/10 p-3">
-                        <Plus size={20} className="text-primary" />
-                    </div>
-                    <p className="text-sm font-medium text-foreground">{t('portfolio.gallery_add_btn')}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        {t('portfolio.gallery_empty')}
-                    </p>
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        type="button"
+                        onClick={triggerUpload}
+                        disabled={isUploading}
+                        className="flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/50 py-12 text-center transition-colors hover:border-primary/40 hover:bg-primary/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <div className="mb-3 rounded-full bg-primary/10 p-3">
+                            {isUploading ? (
+                                <SpinnerGap size={20} className="text-primary animate-spin" />
+                            ) : (
+                                <UploadSimple size={20} className="text-primary" />
+                            )}
+                        </div>
+                        <p className="text-sm font-medium text-foreground">
+                            {isUploading
+                                ? (t('portfolio.uploading'))
+                                : (t('portfolio.upload_photo'))}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            {t('portfolio.upload_photo_desc')}
+                        </p>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setPickerOpen(true)}
+                        className="flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/50 py-12 text-center transition-colors hover:border-primary/40 hover:bg-primary/5 cursor-pointer"
+                    >
+                        <div className="mb-3 rounded-full bg-primary/10 p-3">
+                            <Plus size={20} className="text-primary" />
+                        </div>
+                        <p className="text-sm font-medium text-foreground">{t('portfolio.gallery_add_btn')}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            {t('portfolio.gallery_empty')}
+                        </p>
+                    </button>
+                </div>
             )}
 
             {/* Image picker drawer */}

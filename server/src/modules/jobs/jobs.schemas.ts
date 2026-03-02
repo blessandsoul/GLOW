@@ -7,6 +7,7 @@ export const JobIdParamSchema = z.object({
 export const DownloadQuerySchema = z.object({
   variant: z.coerce.number().int().min(0).default(0),
   branded: z.coerce.number().int().min(0).max(1).default(0),
+  upscale: z.coerce.number().int().min(0).max(1).default(0),
 });
 
 export const CreateJobSchema = z.object({
@@ -31,4 +32,8 @@ export const BatchSettingsSchema = z.object({
 export const ListResultsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(100),
+});
+
+export const PrepareHDQuerySchema = z.object({
+  variant: z.coerce.number().int().min(0).default(0),
 });

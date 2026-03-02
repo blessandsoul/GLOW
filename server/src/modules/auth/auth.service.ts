@@ -60,9 +60,11 @@ export function createAuthService(app: FastifyInstance) {
         throw new ConflictError('Email already registered', 'EMAIL_ALREADY_EXISTS');
       }
 
-      const existingPhone = await authRepo.findUserByPhone(input.phone);
-      if (existingPhone) {
-        throw new ConflictError('Phone number already registered', 'PHONE_ALREADY_EXISTS');
+      if (input.phone) {
+        const existingPhone = await authRepo.findUserByPhone(input.phone);
+        if (existingPhone) {
+          throw new ConflictError('Phone number already registered', 'PHONE_ALREADY_EXISTS');
+        }
       }
 
       const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
@@ -71,7 +73,7 @@ export function createAuthService(app: FastifyInstance) {
         password: hashedPassword,
         firstName: input.firstName,
         lastName: input.lastName,
-        phone: input.phone,
+        ...(input.phone ? { phone: input.phone } : {}),
       });
 
       // Generate and save referral code for new user
@@ -89,14 +91,23 @@ export function createAuthService(app: FastifyInstance) {
         logger.warn({ err }, 'Failed to schedule email sequence'),
       );
 
-      // Send phone verification OTP
-      const otpResult = await sendOtp(input.phone);
-      await authRepo.setOtpRequestId(user.id, otpResult.requestId);
+      let otpRequestId: string | null = null;
+
+      if (input.phone) {
+        // Send phone verification OTP
+        const otpResult = await sendOtp(input.phone);
+        await authRepo.setOtpRequestId(user.id, otpResult.requestId);
+        otpRequestId = otpResult.requestId;
+      } else {
+        // No phone → grant referral rewards immediately (no verification step)
+        referralsService.grantPendingRewards(user.id)
+          .catch((err: unknown) => logger.warn({ err, userId: user.id }, 'Failed to grant referral rewards on register'));
+      }
 
       const accessToken = signAccessToken({ id: user.id, role: user.role });
       const refreshToken = await generateRefreshToken(user.id);
 
-      return { user: mapUserToResponse(user), accessToken, refreshToken, otpRequestId: otpResult.requestId };
+      return { user: mapUserToResponse(user), accessToken, refreshToken, otpRequestId };
     },
 
     async login(input: LoginInput) {

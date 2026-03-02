@@ -62,7 +62,7 @@ export async function requirePhoneVerified(
     throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
   }
 
-  if (!user.phoneVerified) {
+  if (user.phone && !user.phoneVerified) {
     throw new ForbiddenError('Phone verification required', 'PHONE_NOT_VERIFIED');
   }
 }

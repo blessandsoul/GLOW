@@ -24,7 +24,7 @@ model User {
   role          String    @default("USER")
   isActive      Boolean   @default(true)
   emailVerified        Boolean   @default(false)
-  phone                String    @unique
+  phone                String?   @unique
   phoneVerified        Boolean   @default(false)
   otpRequestId         String?   @db.VarChar(255)
   passwordResetToken   String?   @db.VarChar(255)
@@ -303,4 +303,51 @@ model Referral {
   @@index([referrerId])
   @@index([referredPhone])
   @@map("referrals")
+}
+
+// ─────────────────────────────────────────────
+// Lookup Tables: Catalog
+// ─────────────────────────────────────────────
+
+model Speciality {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  label     String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("specialities")
+}
+
+model ServiceCategory {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  label     String
+  icon      String   @default("✦")
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  suggestions ServiceSuggestion[]
+
+  @@index([isActive, sortOrder])
+  @@map("service_categories")
+}
+
+model ServiceSuggestion {
+  id         String   @id @default(uuid())
+  categoryId String
+  name       String
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  category ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId, sortOrder])
+  @@map("service_suggestions")
 }

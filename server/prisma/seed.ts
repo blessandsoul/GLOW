@@ -157,6 +157,117 @@ async function main(): Promise<void> {
     });
   }
 
+  // ─── Specialities (niches) ──────────────────────────────────────────────────
+  const specialities = [
+    { slug: 'lashes', label: 'წამწამები', sortOrder: 0 },
+    { slug: 'nails', label: 'ფრჩხილები', sortOrder: 1 },
+    { slug: 'brows', label: 'წარბები', sortOrder: 2 },
+    { slug: 'makeup', label: 'მაკიაჟი', sortOrder: 3 },
+    { slug: 'hair', label: 'თმა', sortOrder: 4 },
+    { slug: 'skincare', label: 'კანის მოვლა', sortOrder: 5 },
+  ];
+
+  for (const spec of specialities) {
+    await prisma.speciality.upsert({
+      where: { slug: spec.slug },
+      update: { label: spec.label, sortOrder: spec.sortOrder },
+      create: spec,
+    });
+  }
+
+  // ─── Service Categories & Suggestions ─────────────────────────────────────
+  const serviceCategories = [
+    {
+      slug: 'lashes', label: 'ლეში ინდუსტრია', icon: '✦', sortOrder: 0,
+      suggestions: [
+        'წამწამების კორექცია', 'წამწამების მოხსნა', 'წამწამების ლამინირება',
+        'წამწამების შეღებვა', 'წამწამების ბიოზავივი', 'Lash Lift',
+      ],
+    },
+    {
+      slug: 'brows', label: 'წარბები', icon: '✦', sortOrder: 1,
+      suggestions: [
+        'წარბების არქიტექტურა', 'წარბების შეღებვა ხნოთი', 'წარბების შეღებვა საღებავით',
+        'წარბების ლამინირება', 'წარბების ბიოზავივი', 'წარბების კორექცია ცვილით',
+        'წარბების კორექცია ძაფით', 'წარბების ფორმირება პინცეტით',
+      ],
+    },
+    {
+      slug: 'nails', label: 'ფრჩხილები', icon: '✦', sortOrder: 2,
+      suggestions: [
+        'კლასიკური მანიკური', 'აპარატული მანიკური', 'კომბინირებული მანიკური',
+        'კლასიკური პედიკური', 'აპარატული პედიკური', 'გელ-ლაქის გადაფარვა',
+        'გელით ნარდი', 'აკრილით ნარდი', 'გელ-ლაქის მოხსნა',
+        'ფრჩხილების დიზაინი', 'ფრჩხილების გამაგრება', 'French / Ombre',
+      ],
+    },
+    {
+      slug: 'makeup', label: 'მაკიაჟი', icon: '✦', sortOrder: 3,
+      suggestions: [
+        'დღიური მაკიაჟი', 'საღამოს მაკიაჟი', 'საქორწილო მაკიაჟი',
+        'მაკიაჟი ფოტოსესიისთვის', 'მაკიაჟი ღონისძიებისთვის', 'Smoky eyes',
+        'ნუდ მაკიაჟი', 'ტუჩების პერმანენტული მაკიაჟი',
+        'წარბების პერმანენტული მაკიაჟი', 'ქუთუთოების პერმანენტული მაკიაჟი',
+      ],
+    },
+    {
+      slug: 'hair', label: 'თმა', icon: '✦', sortOrder: 4,
+      suggestions: [
+        'თმის შეღებვა', 'ჰაილაიტინგი', 'ბალაიაჟი', 'ომბრე', 'ტონირება',
+        'ქალის ვარცხნილობა', 'თმის ვარცხნა', 'კერატინის გასწორება',
+        'ბოტოქსი თმისთვის', 'ფესვების შეღებვა', 'თმის პრიალა', 'თმის ნარდი',
+      ],
+    },
+    {
+      slug: 'skincare', label: 'კანის მოვლა', icon: '✦', sortOrder: 5,
+      suggestions: [
+        'სახის გაწმენდა', 'სახის პილინგი', 'სახის მასაჟი', 'მიკრონიდლინგი',
+        'RF-ლიფტინგი', 'ულტრაბგერითი გაწმენდა', 'მეზოთერაპია',
+        'ბიორევიტალიზაცია', 'კონტურული პლასტიკა', 'ბოტულინოთერაპია',
+        'კრიოთერაპია', 'ლიმფოდრენაჟული მასაჟი',
+      ],
+    },
+    {
+      slug: 'waxing', label: 'დეპილაცია / შუგარინგი', icon: '✦', sortOrder: 6,
+      suggestions: [
+        'შუგარინგი (ბიკინი)', 'შუგარინგი (ფეხები)', 'შუგარინგი (იღლია)',
+        'ცვილის დეპილაცია', 'ლაზერული ეპილაცია', 'ფოტოეპილაცია',
+        'სახის დეპილაცია', 'ხელების დეპილაცია',
+      ],
+    },
+    {
+      slug: 'body', label: 'მასაჟი / სხეული', icon: '✦', sortOrder: 7,
+      suggestions: [
+        'კლასიკური მასაჟი', 'ანტიცელულიტური მასაჟი', 'დამამშვიდებელი მასაჟი',
+        'შეფუთვა', 'LPG-მასაჟი', 'პრესოთერაპია', 'ცხელი ქვები', 'Spa-პროგრამა',
+      ],
+    },
+    {
+      slug: 'other', label: 'სხვა', icon: '✦', sortOrder: 8,
+      suggestions: [],
+    },
+  ];
+
+  for (const cat of serviceCategories) {
+    const created = await prisma.serviceCategory.upsert({
+      where: { slug: cat.slug },
+      update: { label: cat.label, icon: cat.icon, sortOrder: cat.sortOrder },
+      create: { slug: cat.slug, label: cat.label, icon: cat.icon, sortOrder: cat.sortOrder },
+    });
+
+    // Re-seed suggestions (safe — not FK-referenced elsewhere)
+    await prisma.serviceSuggestion.deleteMany({ where: { categoryId: created.id } });
+    if (cat.suggestions.length > 0) {
+      await prisma.serviceSuggestion.createMany({
+        data: cat.suggestions.map((name, i) => ({
+          categoryId: created.id,
+          name,
+          sortOrder: i,
+        })),
+      });
+    }
+  }
+
   // eslint-disable-next-line no-console
   console.log('✅ Seeding complete');
   // eslint-disable-next-line no-console

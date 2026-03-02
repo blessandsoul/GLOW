@@ -29,8 +29,11 @@ export interface PublicReview {
 export interface PublicPortfolioData {
     username: string;
     displayName: string;
+    avatar: string | null;
     bio: string | null;
     instagram: string | null;
+    whatsapp: string | null;
+    telegram: string | null;
     city: string | null;
     niche: string | null;
     services: { name: string; price: number; priceType?: 'fixed' | 'hourly' }[];

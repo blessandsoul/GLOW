@@ -8,7 +8,7 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { AddServicePanel } from '@/features/profile/components/AddServicePanel';
 import { ServiceRow } from '@/features/profile/components/ServiceRow';
-import { SERVICE_CATEGORIES } from '@/features/profile/types/profile.types';
+import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
 import type { ServiceItem, ProfileFormData } from '@/features/profile/types/profile.types';
 
 interface ServicesSectionProps {
@@ -18,6 +18,7 @@ interface ServicesSectionProps {
 
 export function ServicesSection({ form, updateField }: ServicesSectionProps): React.ReactElement {
     const { t } = useLanguage();
+    const { categories } = useServiceCategories();
     const [showAddPanel, setShowAddPanel] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -41,7 +42,7 @@ export function ServicesSection({ form, updateField }: ServicesSectionProps): Re
         [form.services, updateField]
     );
 
-    const servicesByCategory = SERVICE_CATEGORIES
+    const servicesByCategory = categories
         .map((cat) => ({
             category: cat,
             services: form.services
