@@ -78,7 +78,7 @@ export function GallerySection({
                 onChange={handleFileChange}
             />
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 className="text-lg font-semibold text-foreground">{t('portfolio.nav_gallery')}</h2>
                     {items.length > 0 && (
@@ -88,11 +88,11 @@ export function GallerySection({
                     )}
                 </div>
                 {items.length > 0 && (
-                    <div className="flex gap-2">
+                    <div className="flex w-full gap-2 sm:w-auto">
                         <Button
                             size="sm"
                             variant="outline"
-                            className="shrink-0 gap-1.5"
+                            className="flex-1 gap-1.5 sm:flex-initial"
                             onClick={triggerUpload}
                             disabled={isUploading}
                         >
@@ -107,7 +107,7 @@ export function GallerySection({
                         </Button>
                         <Button
                             size="sm"
-                            className="shrink-0 gap-1.5"
+                            className="flex-1 gap-1.5 sm:flex-initial"
                             onClick={() => setPickerOpen(true)}
                             disabled={isResultsLoading}
                         >
