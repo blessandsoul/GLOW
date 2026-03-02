@@ -67,6 +67,13 @@ export function createAuthService(app: FastifyInstance) {
         }
       }
 
+      // Send OTP BEFORE creating the user so a failed OTP never leaves an orphaned account
+      let otpRequestId: string | null = null;
+      if (input.phone) {
+        const otpResult = await sendOtp(input.phone);
+        otpRequestId = otpResult.requestId;
+      }
+
       const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
       const user = await authRepo.createUser({
         email: input.email,
@@ -91,13 +98,8 @@ export function createAuthService(app: FastifyInstance) {
         logger.warn({ err }, 'Failed to schedule email sequence'),
       );
 
-      let otpRequestId: string | null = null;
-
-      if (input.phone) {
-        // Send phone verification OTP
-        const otpResult = await sendOtp(input.phone);
-        await authRepo.setOtpRequestId(user.id, otpResult.requestId);
-        otpRequestId = otpResult.requestId;
+      if (otpRequestId) {
+        await authRepo.setOtpRequestId(user.id, otpRequestId);
       } else {
         // No phone → grant referral rewards immediately (no verification step)
         referralsService.grantPendingRewards(user.id)

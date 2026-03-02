@@ -16,7 +16,7 @@ export function VerifyPhoneForm(): React.ReactElement {
     const { t } = useLanguage();
     const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
     const [requestId, setRequestId] = useState('');
-    const [resendCooldown, setResendCooldown] = useState(60);
+    const [resendCooldown, setResendCooldown] = useState(0);
     const [isResending, setIsResending] = useState(false);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -25,13 +25,22 @@ export function VerifyPhoneForm(): React.ReactElement {
         ? `+995 ${user.phone[4]}** *** *${user.phone.slice(-2)}`
         : '';
 
-    // Load requestId from sessionStorage
+    // Load requestId from sessionStorage, or auto-send a fresh OTP for stuck users
+    // (users who log in while unverified have no sessionStorage requestId)
     useEffect(() => {
         const stored = sessionStorage.getItem('otp_request_id');
         if (stored) {
             setRequestId(stored);
+            setResendCooldown(60);
+        } else {
+            resendOtp().then((newId) => {
+                if (newId) {
+                    setRequestId(newId);
+                    setResendCooldown(60);
+                }
+            });
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Cooldown timer
     useEffect(() => {
