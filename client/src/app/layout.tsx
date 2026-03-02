@@ -32,11 +32,15 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://glow.ge',
+  ),
   title: {
     default: 'Glow.GE',
     template: '%s | Glow.GE',
   },
-  description: 'Glow.GE — AI-powered platform for beauty professionals. Lashes, hair, nails, makeup and more.',
+  description:
+    'Glow.GE — AI-powered platform for beauty professionals. Lashes, hair, nails, makeup and more.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -45,6 +49,20 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Glow.GE',
+    title: 'Glow.GE — Beauty Platform',
+    description:
+      'AI-powered platform for beauty professionals. Find top masters for lashes, hair, nails, makeup and more.',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Glow.GE — Beauty Platform',
+    description:
+      'AI-powered platform for beauty professionals. Find top masters for lashes, hair, nails, makeup and more.',
   },
 };
 
