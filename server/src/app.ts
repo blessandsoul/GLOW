@@ -9,6 +9,7 @@ import fastifyStatic from '@fastify/static';
 import { join } from 'node:path';
 import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
+import { redis } from '@/libs/redis.js';
 import { AppError } from '@/shared/errors/AppError.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
 import { authRoutes } from '@/modules/auth/auth.routes.js';
@@ -54,6 +55,7 @@ export async function buildApp() {
   await app.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
+    redis,  // shared counter across all PM2 cluster workers
   });
 
   await app.register(cookie);
