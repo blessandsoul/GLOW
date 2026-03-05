@@ -27,6 +27,7 @@ export interface AdminStats {
 
 export interface AdminUserImage {
     jobId: string;
+    originalUrl: string;
     imageUrl: string;
     variantIndex: number;
     createdAt: string;

@@ -124,7 +124,7 @@ export const adminRepo = {
     const [jobs, totalJobs] = await Promise.all([
       prisma.job.findMany({
         where: { userId, status: 'DONE', results: { not: Prisma.DbNull } },
-        select: { id: true, results: true, createdAt: true },
+        select: { id: true, originalUrl: true, results: true, createdAt: true },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
@@ -134,12 +134,12 @@ export const adminRepo = {
       }),
     ]);
 
-    const images: { jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[] = [];
+    const images: { jobId: string; originalUrl: string | null; imageUrl: string; variantIndex: number; createdAt: Date }[] = [];
     for (const job of jobs) {
       const results = job.results as string[] | null;
       if (!results) continue;
       for (let i = 0; i < results.length; i++) {
-        images.push({ jobId: job.id, imageUrl: results[i], variantIndex: i, createdAt: job.createdAt });
+        images.push({ jobId: job.id, originalUrl: job.originalUrl, imageUrl: results[i], variantIndex: i, createdAt: job.createdAt });
       }
     }
     return { images, totalJobs };

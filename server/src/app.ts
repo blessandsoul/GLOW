@@ -29,6 +29,7 @@ import { adminRoutes } from '@/modules/admin/admin.routes.js';
 import { chatRoutes } from '@/modules/chat/chat.routes.js';
 import { decorationsRoutes } from '@/modules/decorations/decorations.routes.js';
 import { catalogRoutes } from '@/modules/catalog/catalog.routes.js';
+import { imagesRoutes } from '@/modules/images/images.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -171,6 +172,7 @@ export async function buildApp() {
   await app.register(chatRoutes, { prefix: '/api/v1/chat' });
   await app.register(decorationsRoutes, { prefix: '/api/v1/decorations' });
   await app.register(catalogRoutes, { prefix: '/api/v1/catalog' });
+  await app.register(imagesRoutes, { prefix: '/api/v1/images' });
 
   return app;
 }

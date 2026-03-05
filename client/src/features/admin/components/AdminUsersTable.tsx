@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAdminUsers, useAdminUserImages } from '../hooks/useAdmin';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import type { AdminUser } from '../types/admin.types';
 
 const LIMIT = 10;
@@ -101,6 +101,18 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
     const { images, pagination, isLoading } = useAdminUserImages(isOpen ? userId : null, page, IMAGES_LIMIT);
+
+    const jobGroups = useMemo(() => {
+        const groups = new Map<string, { originalUrl: string; results: typeof images; createdAt: string }>();
+        for (const img of images) {
+            if (!groups.has(img.jobId)) {
+                groups.set(img.jobId, { originalUrl: img.originalUrl, results: [], createdAt: img.createdAt });
+            }
+            groups.get(img.jobId)!.results.push(img);
+        }
+        return Array.from(groups.values());
+    }, [images]);
+
     const contentRef = useRef<HTMLDivElement>(null);
     const [height, setHeight] = useState(0);
     const [shouldRender, setShouldRender] = useState(isOpen);
@@ -150,22 +162,32 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
                             <p className="text-sm text-muted-foreground">{t('admin.no_images')}</p>
                         ) : (
                             <div className="space-y-3">
-                                <div className="flex flex-wrap gap-2">
-                                    {images.map((img) => (
-                                        <a
-                                            key={`${img.jobId}-${img.variantIndex}`}
-                                            href={getServerImageUrl(img.imageUrl)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="group relative"
-                                        >
-                                            <img
-                                                src={getServerImageUrl(img.imageUrl)}
-                                                alt=""
-                                                className="h-16 w-16 rounded-md object-cover transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50"
-                                                loading="lazy"
-                                            />
-                                        </a>
+                                <div className="flex flex-wrap gap-4">
+                                    {jobGroups.map((group, i) => (
+                                        <div key={i} className="flex items-start gap-1.5">
+                                            {/* Before */}
+                                            <div className="flex flex-col items-center gap-1">
+                                                <a href={getServerImageUrl(group.originalUrl)} target="_blank" rel="noopener noreferrer" className="group relative">
+                                                    <img src={getThumbUrl(group.originalUrl, 128)} alt="" className="h-16 w-16 rounded-md object-cover ring-1 ring-border/50 transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50" loading="lazy" />
+                                                </a>
+                                                <span className="text-[10px] text-muted-foreground">Before</span>
+                                            </div>
+
+                                            {/* Arrow */}
+                                            <div className="flex h-16 items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/50"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                            </div>
+
+                                            {/* After(s) */}
+                                            {group.results.map((img) => (
+                                                <div key={img.variantIndex} className="flex flex-col items-center gap-1">
+                                                    <a href={getServerImageUrl(img.imageUrl)} target="_blank" rel="noopener noreferrer" className="group relative">
+                                                        <img src={getThumbUrl(img.imageUrl, 128)} alt="" className="h-16 w-16 rounded-md object-cover ring-1 ring-border/50 transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50" loading="lazy" />
+                                                    </a>
+                                                    <span className="text-[10px] text-muted-foreground">After</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     ))}
                                 </div>
                                 {pagination && pagination.hasNextPage && (

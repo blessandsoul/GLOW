@@ -23,3 +23,13 @@ export function getServerImageUrl(path: string): string {
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
   return `${getServerOrigin()}${path}`;
 }
+
+/**
+ * Build a thumbnail URL via the server-side resize endpoint.
+ * Falls back to the original image URL if the path is already absolute.
+ */
+export function getThumbUrl(path: string, width: number = 128): string {
+  if (!path) return path;
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  return `${getServerOrigin()}/api/v1/images/thumb?url=${encodeURIComponent(path)}&w=${width}`;
+}

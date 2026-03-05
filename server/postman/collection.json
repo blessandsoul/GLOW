@@ -1154,6 +1154,28 @@
           }
         }
       ]
+    },
+    {
+      "name": "Images",
+      "description": "Image utility endpoints (public).",
+      "item": [
+        {
+          "name": "Get Thumbnail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/images/thumb?url=/uploads/jobs/example.jpg&w=128",
+              "host": ["{{baseUrl}}"],
+              "path": ["images", "thumb"],
+              "query": [
+                { "key": "url", "value": "/uploads/jobs/example.jpg", "description": "Relative path to the original image (must start with /uploads/)" },
+                { "key": "w", "value": "128", "description": "Thumbnail width in pixels (16-512, default 128)" }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
