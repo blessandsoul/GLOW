@@ -386,6 +386,11 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                         <DownloadSimple size={13} />
                         {t('ui.download_btn')}
                     </Button>
+                    <ShareButton jobId={job.id} />
+                    <AddToPortfolioButton
+                        jobId={job.id}
+                        imageUrl={results[selectedAfterIdx] ?? results[0]}
+                    />
                     {!hdImageUrl && (
                         <Button
                             size="sm"
@@ -402,11 +407,6 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                             {t('ui.enhance_to_hd')}
                         </Button>
                     )}
-                    <ShareButton jobId={job.id} />
-                    <AddToPortfolioButton
-                        jobId={job.id}
-                        imageUrl={results[selectedAfterIdx] ?? results[0]}
-                    />
                     <CaptionGenerator jobId={job.id} />
                 </div>
             )}

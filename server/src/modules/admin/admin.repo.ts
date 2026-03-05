@@ -151,17 +151,16 @@ export const adminRepo = {
     for (const job of jobs) {
       const results = job.results as string[] | null;
       if (!results) continue;
+      // All captions for this job (shared across variants)
+      const jobCaptions = job.captions.map(({ language, text, hashtags }) => ({ language, text, hashtags }));
       for (let i = 0; i < results.length; i++) {
-        const variantCaptions = job.captions
-          .filter((c) => c.variant === String(i))
-          .map(({ language, text, hashtags }) => ({ language, text, hashtags }));
         images.push({
           jobId: job.id,
           originalUrl: job.originalUrl,
           imageUrl: results[i],
           variantIndex: i,
           createdAt: job.createdAt,
-          captions: variantCaptions,
+          captions: i === 0 ? jobCaptions : [],
         });
       }
     }

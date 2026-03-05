@@ -151,7 +151,7 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
 
     return (
         <TableRow>
-            <TableCell colSpan={COL_COUNT} className="!p-0">
+            <TableCell colSpan={COL_COUNT} className="!p-0 !whitespace-normal">
                 <div
                     className="overflow-hidden transition-[max-height] duration-300 ease-out"
                     style={{ maxHeight: isOpen ? height || 'none' : 0 }}
@@ -196,12 +196,12 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
                                                 ))}
                                             </div>
                                             {group.captions.length > 0 && (
-                                                <div className="ml-1 space-y-1.5 border-l-2 border-border/50 pl-3">
+                                                <div className="ml-1 max-w-[600px] space-y-1.5 border-l-2 border-border/50 pl-3">
                                                     {group.captions.map((cap, ci) => (
                                                         <div key={ci}>
-                                                            <p className="text-sm text-foreground/80 line-clamp-2">{cap.text}</p>
+                                                            <p className="text-sm text-foreground/80 break-words">{cap.text}</p>
                                                             {cap.hashtags && (
-                                                                <p className="text-xs text-primary/60">{cap.hashtags}</p>
+                                                                <p className="text-xs text-primary/60 break-words">{cap.hashtags}</p>
                                                             )}
                                                         </div>
                                                     ))}
