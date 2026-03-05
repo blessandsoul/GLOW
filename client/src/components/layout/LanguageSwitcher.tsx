@@ -62,7 +62,7 @@ const FLAG_MAP: Record<SupportedLanguage, typeof FlagGE> = {
     en: FlagGB,
 };
 
-const LANGUAGES: { code: SupportedLanguage; Flag: typeof FlagGE }[] = [
+export const LANGUAGES: { code: SupportedLanguage; Flag: typeof FlagGE }[] = [
     { code: 'ka', Flag: FlagGE },
     { code: 'ru', Flag: FlagRU },
     { code: 'en', Flag: FlagGB },

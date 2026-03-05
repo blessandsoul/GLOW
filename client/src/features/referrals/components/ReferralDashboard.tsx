@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { toast } from 'sonner';
-import { Copy, Users, CheckCircle, Clock, Gift, TrendUp, ArrowClockwise } from '@phosphor-icons/react';
+import { Copy, Users, CheckCircle, Clock, Gift, TrendUp, ArrowClockwise, Phone } from '@phosphor-icons/react';
+import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { ReferralDashboardSkeleton } from './ReferralDashboardSkeleton';
 import { useReferralStats } from '../hooks/useReferrals';
 import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error';
+import { ROUTES } from '@/lib/constants/routes';
 
 function formatDate(dateStr: string): string {
   return new Intl.DateTimeFormat('ka-GE', {
@@ -39,6 +42,27 @@ export function ReferralDashboard(): React.ReactElement | null {
 
   if (isLoading) {
     return <ReferralDashboardSkeleton />;
+  }
+
+  const isPhoneNotVerified =
+    axios.isAxiosError(error) &&
+    (error.response?.data as { error?: { code?: string } })?.error?.code === 'PHONE_NOT_VERIFIED';
+
+  if (isPhoneNotVerified) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card px-6 py-16 text-center shadow-sm">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+          <Phone size={22} className="text-primary" />
+        </div>
+        <p className="text-sm font-semibold text-foreground">დაადასტურეთ ტელეფონი</p>
+        <p className="mt-1.5 max-w-xs text-xs text-muted-foreground">
+          რეფერალური პროგრამით სარგებლობისთვის საჭიროა ტელეფონის ნომრის ვერიფიკაცია
+        </p>
+        <Button asChild variant="outline" size="sm" className="mt-5">
+          <Link href={ROUTES.DASHBOARD_PROFILE}>პროფილის გვერდი</Link>
+        </Button>
+      </div>
+    );
   }
 
   if (error) {

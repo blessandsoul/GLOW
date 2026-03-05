@@ -35,10 +35,14 @@ async function main(): Promise<void> {
   await app.listen({ port: env.PORT, host: env.HOST });
   logger.info(`Server running at http://${env.HOST}:${env.PORT} [${env.NODE_ENV}]`);
 
-  // Start subscription renewal schedule
-  startSubscriptionRenewalSchedule().catch((err) => {
-    logger.warn({ err }, 'Failed to start subscription renewal schedule');
-  });
+  // Start subscription renewal schedule — only on the primary PM2 cluster worker
+  // (NODE_APP_INSTANCE is set by PM2; undefined means we're running outside PM2)
+  const isPrimaryInstance = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
+  if (isPrimaryInstance) {
+    startSubscriptionRenewalSchedule().catch((err) => {
+      logger.warn({ err }, 'Failed to start subscription renewal schedule');
+    });
+  }
 
   // Graceful shutdown
   const shutdown = async (signal: string): Promise<void> => {

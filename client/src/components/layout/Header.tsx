@@ -8,13 +8,13 @@ import {
     Moon, Sun,
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
-    CaretDown, Plus, ShieldCheck, SignOut, ArrowsClockwise,
+    CaretDown, Plus, ShieldCheck, SignOut, ArrowsClockwise, List,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
 import { ROUTES } from '@/lib/constants/routes';
 import { Logo } from './Logo';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import { LanguageSwitcher, LANGUAGES } from './LanguageSwitcher';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
@@ -56,10 +56,7 @@ const NAV_GROUPS: NavGroup[] = [
     },
 ];
 
-// Filter out referrals/business nav group in launch mode
-const ACTIVE_NAV_GROUPS = IS_LAUNCH_MODE
-    ? NAV_GROUPS.filter((g) => g.category !== 'nav.cat_business')
-    : NAV_GROUPS;
+const ACTIVE_NAV_GROUPS = NAV_GROUPS;
 
 const isItemActive = (item: NavItem, pathname: string): boolean =>
     item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(item.href + '/');
@@ -159,6 +156,129 @@ function NavDropdown({ group, pathname, t }: {
             {open && (
                 <div className="absolute left-0 top-full z-50 mt-1.5 min-w-40 rounded-xl border border-border/50 bg-background/95 p-1.5 shadow-lg backdrop-blur-sm">
                     <DropdownGroup group={group} pathname={pathname} t={t} onClose={() => setOpen(false)} />
+                </div>
+            )}
+        </div>
+    );
+}
+
+type MobileMenuProps = {
+    isAuthenticated: boolean;
+    pathname: string;
+    logout: () => void;
+    mounted: boolean;
+    resolvedTheme: string | undefined;
+    toggleTheme: () => void;
+    t: (key: string) => string;
+};
+
+function MobileMenu({ isAuthenticated, pathname, logout, mounted, resolvedTheme, toggleTheme, t }: MobileMenuProps): React.ReactElement {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    const { language, setLanguage } = useLanguage();
+
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e: MouseEvent): void => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e: KeyboardEvent): void => {
+            if (e.key === 'Escape') setOpen(false);
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [open]);
+
+    const isReferralsActive = pathname === ROUTES.DASHBOARD_REFERRALS;
+
+    return (
+        <div ref={ref} className="relative">
+            <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                aria-expanded={open}
+                aria-label="Menu"
+                className={cn(
+                    'flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200',
+                    'hover:bg-muted/40 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                    open && 'bg-muted/50',
+                )}
+            >
+                <List size={18} />
+            </button>
+
+            {open && (
+                <div className="absolute right-0 top-full z-50 mt-1.5 min-w-52 rounded-xl border border-border/50 bg-background/95 p-1.5 shadow-lg backdrop-blur-sm">
+                    {isAuthenticated && (
+                        <>
+                            <Link
+                                href={ROUTES.DASHBOARD_REFERRALS}
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150',
+                                    isReferralsActive
+                                        ? 'bg-primary/10 text-primary font-medium'
+                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                                )}
+                            >
+                                <UsersThree size={15} weight={isReferralsActive ? 'fill' : 'regular'} />
+                                {t('nav.referrals')}
+                            </Link>
+                            <div className="my-1 h-px bg-border/50" />
+                        </>
+                    )}
+
+                    <div className="flex items-center justify-between rounded-md px-2.5 py-1.5">
+                        <span className="text-xs text-muted-foreground">Language</span>
+                        <div className="flex gap-0.5">
+                            {LANGUAGES.map(({ code, Flag }) => (
+                                <button
+                                    key={code}
+                                    type="button"
+                                    onClick={() => setLanguage(code)}
+                                    aria-label={code}
+                                    className={cn(
+                                        'flex h-7 w-8 items-center justify-center rounded-md transition-all duration-150',
+                                        language === code ? 'bg-primary/10' : 'hover:bg-muted/60',
+                                    )}
+                                >
+                                    <Flag className="h-3.5 w-5 shrink-0" />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={toggleTheme}
+                        className="flex w-full items-center justify-between rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-muted/60 hover:text-foreground"
+                    >
+                        <span>{t('ui.text_jehhj')}</span>
+                        {mounted && (resolvedTheme === 'dark'
+                            ? <Moon size={15} weight="fill" />
+                            : <Sun size={15} weight="fill" />
+                        )}
+                    </button>
+
+                    {isAuthenticated && (
+                        <>
+                            <div className="my-1 h-px bg-border/50" />
+                            <button
+                                type="button"
+                                onClick={() => { logout(); setOpen(false); }}
+                                className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-destructive transition-colors duration-150 hover:bg-destructive/10"
+                            >
+                                <SignOut size={15} weight="bold" />
+                                {t('auth.logout')}
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
         </div>
@@ -327,15 +447,15 @@ export function Header(): React.ReactElement {
                             <ArrowsClockwise size={16} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
                         </Button>
                     )}
-                    <LanguageSwitcher />
-                    <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('ui.text_jehhj')} className="h-8 w-8 transition-colors duration-200">
-                        {mounted && (resolvedTheme === 'dark' ? <Moon size={16} weight="fill" /> : <Sun size={16} weight="fill" />)}
-                    </Button>
-                    {isAuthenticated && (
-                        <Button variant="ghost" size="icon" onClick={logout} aria-label={t('auth.logout')} className="h-8 w-8 text-muted-foreground transition-colors duration-200">
-                            <SignOut size={16} weight="bold" />
-                        </Button>
-                    )}
+                    <MobileMenu
+                        isAuthenticated={isAuthenticated}
+                        pathname={pathname}
+                        logout={logout}
+                        mounted={mounted}
+                        resolvedTheme={resolvedTheme}
+                        toggleTheme={toggleTheme}
+                        t={t}
+                    />
                 </div>
             </div>
 

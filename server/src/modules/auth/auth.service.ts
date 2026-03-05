@@ -67,6 +67,13 @@ export function createAuthService(app: FastifyInstance) {
         }
       }
 
+      // Send OTP BEFORE creating the user so a failed OTP never leaves an orphaned account
+      let otpRequestId: string | null = null;
+      if (input.phone) {
+        const otpResult = await sendOtp(input.phone);
+        otpRequestId = otpResult.requestId;
+      }
+
       const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
       const user = await authRepo.createUser({
         email: input.email,
@@ -91,13 +98,8 @@ export function createAuthService(app: FastifyInstance) {
         logger.warn({ err }, 'Failed to schedule email sequence'),
       );
 
-      let otpRequestId: string | null = null;
-
-      if (input.phone) {
-        // Send phone verification OTP
-        const otpResult = await sendOtp(input.phone);
-        await authRepo.setOtpRequestId(user.id, otpResult.requestId);
-        otpRequestId = otpResult.requestId;
+      if (otpRequestId) {
+        await authRepo.setOtpRequestId(user.id, otpRequestId);
       } else {
         // No phone → grant referral rewards immediately (no verification step)
         referralsService.grantPendingRewards(user.id)
@@ -145,6 +147,13 @@ export function createAuthService(app: FastifyInstance) {
       if (storedToken.expiresAt < new Date()) {
         await authRepo.deleteRefreshToken(refreshTokenValue);
         throw new UnauthorizedError('Refresh token expired', 'REFRESH_TOKEN_EXPIRED');
+      }
+
+      // H5 fix: reject refresh for deactivated or soft-deleted accounts
+      const { user } = storedToken;
+      if (!user.isActive || user.deletedAt) {
+        await authRepo.deleteRefreshToken(refreshTokenValue);
+        throw new UnauthorizedError('Account is deactivated', 'ACCOUNT_DEACTIVATED');
       }
 
       // Rotate refresh token
@@ -248,7 +257,7 @@ export function createAuthService(app: FastifyInstance) {
         throw new BadRequestError('Phone already verified', 'PHONE_ALREADY_VERIFIED');
       }
 
-      await verifyOtp(requestId, code, ipAddress);
+      await verifyOtp(user.phone!, requestId, code);
 
       const updatedUser = await authRepo.setPhoneVerified(userId);
 

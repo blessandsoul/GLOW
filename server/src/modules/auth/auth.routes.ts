@@ -8,13 +8,23 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   const controller = createAuthController(authService);
 
   app.post('/register', controller.register);
-  app.post('/login', controller.login);
+  // C5 fix: login brute-force — 10 attempts per IP per 15 min
+  app.post('/login', {
+    config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
+  }, controller.login);
   app.post('/refresh', controller.refresh);
   app.post('/logout', controller.logout);
   app.get('/me', { preHandler: [authenticate] }, controller.me);
-  app.post('/request-password-reset', controller.requestPasswordReset);
+  // Prevent password reset email bombing — 5 per IP per 15 min
+  app.post('/request-password-reset', {
+    config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
+  }, controller.requestPasswordReset);
   app.post('/reset-password', controller.resetPassword);
   app.post('/change-password', { preHandler: [authenticate] }, controller.changePassword);
   app.post('/verify-phone', { preHandler: [authenticate] }, controller.verifyPhone);
-  app.post('/resend-otp', { preHandler: [authenticate] }, controller.resendOtp);
+  // Prevent OTP/SMS flooding — 3 per IP per 15 min
+  app.post('/resend-otp', {
+    preHandler: [authenticate],
+    config: { rateLimit: { max: 3, timeWindow: '15 minutes' } },
+  }, controller.resendOtp);
 }
