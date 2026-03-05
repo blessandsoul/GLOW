@@ -31,4 +31,27 @@ export interface AdminUserImage {
     imageUrl: string;
     variantIndex: number;
     createdAt: string;
+    captions: { language: string; text: string; hashtags: string }[];
+}
+
+export interface AdminPortfolioUser {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    username: string | null;
+    avatar: string | null;
+    niche: string | null;
+    totalItems: number;
+    publishedItems: number;
+    latestItemDate: string | null;
+}
+
+export interface AdminPortfolioItem {
+    id: string;
+    imageUrl: string;
+    title: string | null;
+    niche: string | null;
+    isPublished: boolean;
+    sortOrder: number;
+    createdAt: string;
 }

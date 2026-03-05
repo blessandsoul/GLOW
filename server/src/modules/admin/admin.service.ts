@@ -2,7 +2,7 @@ import { adminRepo } from './admin.repo.js';
 import { isLaunchMode, getDailyUsage } from '../../libs/launch-mode.js';
 import { redis } from '../../libs/redis.js';
 import { logger } from '../../libs/logger.js';
-import type { AdminUsersQuery } from './admin.schemas.js';
+import type { AdminUsersQuery, AdminPortfoliosQuery } from './admin.schemas.js';
 
 export function createAdminService() {
   return {
@@ -67,6 +67,39 @@ export function createAdminService() {
       const deleted = await redis.del(key);
       logger.info({ userId, deleted }, 'Admin flushed own daily generation limit');
       return { deleted: deleted > 0 };
+    },
+
+    async getPortfolioUsers(query: AdminPortfoliosQuery) {
+      const { page, limit, search } = query;
+
+      const [users, totalItems] = await Promise.all([
+        adminRepo.findUsersWithPortfolios(page, limit, search),
+        adminRepo.countUsersWithPortfolios(search),
+      ]);
+
+      const userIds = users.map((u) => u.id);
+      const [publishedCounts, latestDates] = await Promise.all([
+        adminRepo.countPublishedByUserIds(userIds),
+        adminRepo.getLatestItemDateByUserIds(userIds),
+      ]);
+
+      const items = users.map((user) => ({
+        userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        avatar: user.avatar,
+        niche: user.masterProfile?.niche ?? null,
+        totalItems: user._count.portfolioItems,
+        publishedItems: publishedCounts[user.id] ?? 0,
+        latestItemDate: latestDates[user.id] ?? null,
+      }));
+
+      return { items, totalItems };
+    },
+
+    async getPortfolioItems(userId: string, page: number, limit: number) {
+      return adminRepo.findPortfolioItems(userId, page, limit);
     },
   };
 }

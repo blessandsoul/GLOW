@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api/axios.config';
 import type { ApiResponse, PaginatedApiResponse, PaginationMeta } from '@/lib/api/api.types';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
-import type { AdminUser, AdminStats, AdminUserImage } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem } from '../types/admin.types';
 
 class AdminService {
     async getUsers(params?: {
@@ -45,6 +45,35 @@ class AdminService {
             API_ENDPOINTS.ADMIN.FLUSH_DAILY_LIMITS,
         );
         return data.data;
+    }
+
+    async getPortfolioUsers(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+    }): Promise<{ items: AdminPortfolioUser[]; pagination: PaginationMeta }> {
+        const { data } = await apiClient.get<PaginatedApiResponse<AdminPortfolioUser>>(
+            API_ENDPOINTS.ADMIN.PORTFOLIOS,
+            { params },
+        );
+        return {
+            items: data.data.items,
+            pagination: data.data.pagination,
+        };
+    }
+
+    async getPortfolioItems(
+        userId: string,
+        params?: { page?: number; limit?: number },
+    ): Promise<{ items: AdminPortfolioItem[]; pagination: PaginationMeta }> {
+        const { data } = await apiClient.get<PaginatedApiResponse<AdminPortfolioItem>>(
+            API_ENDPOINTS.ADMIN.PORTFOLIO_ITEMS(userId),
+            { params },
+        );
+        return {
+            items: data.data.items,
+            pagination: data.data.pagination,
+        };
     }
 }
 

@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { AdminUsersQuerySchema, userImagesParamsSchema, userImagesQuerySchema } from './admin.schemas.js';
+import { AdminUsersQuerySchema, userImagesParamsSchema, userImagesQuerySchema, AdminPortfoliosQuerySchema, portfolioItemsParamsSchema, portfolioItemsQuerySchema } from './admin.schemas.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
 import { paginatedResponse } from '@/shared/responses/paginatedResponse.js';
 import type { AdminService } from './admin.service.js';
@@ -27,6 +27,19 @@ export function createAdminController(adminService: AdminService) {
     async flushDailyLimits(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const result = await adminService.flushDailyLimits(request.user!.id);
       reply.send(successResponse('Daily generation limit flushed', result));
+    },
+
+    async getPortfolioUsers(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const query = AdminPortfoliosQuerySchema.parse(request.query);
+      const { items, totalItems } = await adminService.getPortfolioUsers(query);
+      reply.send(paginatedResponse('Portfolio users retrieved', items, query.page, query.limit, totalItems));
+    },
+
+    async getPortfolioItems(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const { userId } = portfolioItemsParamsSchema.parse(request.params);
+      const { page, limit } = portfolioItemsQuerySchema.parse(request.query);
+      const { items, totalItems } = await adminService.getPortfolioItems(userId, page, limit);
+      reply.send(paginatedResponse('Portfolio items retrieved', items, page, limit, totalItems));
     },
   };
 }

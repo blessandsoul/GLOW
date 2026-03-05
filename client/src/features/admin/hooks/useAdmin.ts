@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import type { AdminUser, AdminStats, AdminUserImage } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem } from '../types/admin.types';
 import type { PaginationMeta } from '@/lib/api/api.types';
 
 export function useAdminUsers(
@@ -90,4 +90,55 @@ export function useFlushDailyLimits(): {
     });
 
     return { flush: mutate, isPending };
+}
+
+export function useAdminPortfolioUsers(
+    page: number,
+    limit: number,
+    search?: string,
+): {
+    users: AdminPortfolioUser[];
+    pagination: PaginationMeta | null;
+    isLoading: boolean;
+} {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['admin', 'portfolios', { page, limit, search }],
+        queryFn: () => adminService.getPortfolioUsers({ page, limit, search }),
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return {
+        users: data?.items ?? [],
+        pagination: data?.pagination ?? null,
+        isLoading,
+    };
+}
+
+export function useAdminPortfolioItems(
+    userId: string | null,
+    page: number = 1,
+    limit: number = 12,
+): {
+    items: AdminPortfolioItem[];
+    pagination: PaginationMeta | null;
+    isLoading: boolean;
+} {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['admin', 'portfolio-items', userId, { page, limit }],
+        queryFn: () => adminService.getPortfolioItems(userId!, { page, limit }),
+        enabled: !!userId,
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return {
+        items: data?.items ?? [],
+        pagination: data?.pagination ?? null,
+        isLoading,
+    };
 }

@@ -389,12 +389,16 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                     {!hdImageUrl && (
                         <Button
                             size="sm"
-                            variant="outline"
-                            className="w-full gap-1.5 text-xs h-9"
+                            className={cn(
+                                'w-full gap-2 text-xs h-10 font-semibold',
+                                'bg-primary text-primary-foreground hover:bg-primary/90',
+                                'shadow-sm shadow-primary/25',
+                                'transition-all duration-200 active:scale-[0.98]',
+                            )}
                             onClick={handleHDDownload}
                             disabled={isUpscaling}
                         >
-                            <ArrowsOut size={13} />
+                            <ArrowsOut size={14} weight="bold" />
                             {t('ui.enhance_to_hd')}
                         </Button>
                     )}

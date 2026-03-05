@@ -86,6 +86,8 @@ export const API_ENDPOINTS = {
         USER_IMAGES: (userId: string) => `/admin/users/${userId}/images`,
         STATS: '/admin/stats',
         FLUSH_DAILY_LIMITS: '/admin/flush-daily-limits',
+        PORTFOLIOS: '/admin/portfolios',
+        PORTFOLIO_ITEMS: (userId: string) => `/admin/portfolios/${userId}/items`,
     },
     CHAT: {
         MESSAGE: '/chat/message',
