@@ -14,7 +14,8 @@ datasource db {
 model User {
   id            String    @id @default(uuid())
   email         String    @unique
-  password      String
+  password      String?
+  googleId      String?   @unique
   firstName     String
   lastName      String
   username      String?   @unique
@@ -48,6 +49,7 @@ model User {
   creditPurchases  CreditPurchase[]
   referralsGiven   Referral[]       @relation("referrerReferrals")
   referralReceived Referral?        @relation("referredReferral")
+  hdUpscaleLogs    HdUpscaleLog[]
 
   @@map("users")
 }
@@ -81,9 +83,10 @@ model Job {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user     User?     @relation(fields: [userId], references: [id])
-  captions Caption[]
-  reviews  Review[]
+  user           User?          @relation(fields: [userId], references: [id])
+  captions       Caption[]
+  reviews        Review[]
+  hdUpscaleLogs  HdUpscaleLog[]
 
   @@index([userId])
   @@index([status])
@@ -350,4 +353,23 @@ model ServiceSuggestion {
 
   @@index([categoryId, sortOrder])
   @@map("service_suggestions")
+}
+
+// ─────────────────────────────────────────────
+// HD Upscale Tracking
+// ─────────────────────────────────────────────
+
+model HdUpscaleLog {
+  id        String   @id @default(uuid())
+  userId    String
+  jobId     String
+  variant   Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  job  Job  @relation(fields: [jobId], references: [id])
+
+  @@index([userId])
+  @@index([jobId])
+  @@map("hd_upscale_logs")
 }

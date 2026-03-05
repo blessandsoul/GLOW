@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { AdminUsersQuerySchema } from './admin.schemas.js';
+import { AdminUsersQuerySchema, userImagesParamsSchema, userImagesQuerySchema } from './admin.schemas.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
 import { paginatedResponse } from '@/shared/responses/paginatedResponse.js';
 import type { AdminService } from './admin.service.js';
@@ -15,6 +15,13 @@ export function createAdminController(adminService: AdminService) {
     async getStats(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const stats = await adminService.getStats();
       reply.send(successResponse('Admin stats retrieved', stats));
+    },
+
+    async getUserImages(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const { userId } = userImagesParamsSchema.parse(request.params);
+      const { page, limit } = userImagesQuerySchema.parse(request.query);
+      const { images, totalJobs } = await adminService.getUserImages(userId, page, limit);
+      reply.send(paginatedResponse('User images retrieved', images, page, limit, totalJobs));
     },
 
     async flushDailyLimits(_request: FastifyRequest, reply: FastifyReply): Promise<void> {

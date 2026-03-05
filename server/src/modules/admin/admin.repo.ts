@@ -82,12 +82,29 @@ export const adminRepo = {
     return result;
   },
 
+  async countHdUpscalesByUserIds(userIds: string[]): Promise<Record<string, number>> {
+    if (userIds.length === 0) return {};
+
+    const counts = await prisma.hdUpscaleLog.groupBy({
+      by: ['userId'],
+      where: { userId: { in: userIds } },
+      _count: true,
+    });
+
+    const result: Record<string, number> = {};
+    for (const row of counts) {
+      result[row.userId] = row._count;
+    }
+    return result;
+  },
+
   async getStats() {
-    const [totalUsers, totalJobs, totalCaptions, subscriptions] =
+    const [totalUsers, totalJobs, totalCaptions, totalHdUpscales, subscriptions] =
       await Promise.all([
         prisma.user.count({ where: { deletedAt: null } }),
         prisma.job.count(),
         prisma.caption.count(),
+        prisma.hdUpscaleLog.count(),
         prisma.subscription.groupBy({
           by: ['plan'],
           where: { status: 'ACTIVE' },
@@ -100,6 +117,31 @@ export const adminRepo = {
       activeSubscriptions[sub.plan] = sub._count;
     }
 
-    return { totalUsers, totalJobs, totalCaptions, activeSubscriptions };
+    return { totalUsers, totalJobs, totalCaptions, totalHdUpscales, activeSubscriptions };
+  },
+
+  async findUserImages(userId: string, page: number, limit: number) {
+    const [jobs, totalJobs] = await Promise.all([
+      prisma.job.findMany({
+        where: { userId, status: 'DONE', results: { not: null } },
+        select: { id: true, results: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.job.count({
+        where: { userId, status: 'DONE', results: { not: null } },
+      }),
+    ]);
+
+    const images: { jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[] = [];
+    for (const job of jobs) {
+      const results = job.results as string[] | null;
+      if (!results) continue;
+      for (let i = 0; i < results.length; i++) {
+        images.push({ jobId: job.id, imageUrl: results[i], variantIndex: i, createdAt: job.createdAt });
+      }
+    }
+    return { images, totalJobs };
   },
 };

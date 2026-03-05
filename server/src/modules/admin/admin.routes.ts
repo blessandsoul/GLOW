@@ -10,6 +10,7 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
   const adminGuard = [authenticate, authorize('ADMIN'), requirePhoneVerified];
 
   app.get('/users', { preHandler: adminGuard }, controller.getUsers);
+  app.get('/users/:userId/images', { preHandler: adminGuard }, controller.getUserImages);
   app.get('/stats', { preHandler: adminGuard }, controller.getStats);
   app.post('/flush-daily-limits', { preHandler: adminGuard }, controller.flushDailyLimits);
 }

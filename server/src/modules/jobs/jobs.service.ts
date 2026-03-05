@@ -418,6 +418,13 @@ export const jobsService = {
     };
     const hdUrl = await uploadFile(hdFile, 'hd');
 
+    // Log HD upscale usage (fire-and-forget)
+    if (requestingUserId) {
+      prisma.hdUpscaleLog.create({
+        data: { userId: requestingUserId, jobId, variant: variantIndex },
+      }).catch((err) => logger.error({ err }, 'Failed to log HD upscale'));
+    }
+
     return { url: hdUrl };
   },
 

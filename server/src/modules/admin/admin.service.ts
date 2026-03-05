@@ -15,7 +15,10 @@ export function createAdminService() {
       ]);
 
       const userIds = users.map((u) => u.id);
-      const captionCounts = await adminRepo.countCaptionsByUserIds(userIds);
+      const [captionCounts, hdUpscaleCounts] = await Promise.all([
+        adminRepo.countCaptionsByUserIds(userIds),
+        adminRepo.countHdUpscalesByUserIds(userIds),
+      ]);
 
       // In launch mode, fetch daily usage for all users on this page
       let dailyUsageMap: Record<string, { used: number; limit: number }> = {};
@@ -43,6 +46,7 @@ export function createAdminService() {
         plan: user.subscription?.plan ?? 'FREE',
         jobCount: user._count.jobs,
         captionCount: captionCounts[user.id] ?? 0,
+        hdUpscaleCount: hdUpscaleCounts[user.id] ?? 0,
         createdAt: user.createdAt,
         dailyUsage: dailyUsageMap[user.id] ?? null,
       }));
@@ -52,6 +56,10 @@ export function createAdminService() {
 
     async getStats() {
       return adminRepo.getStats();
+    },
+
+    async getUserImages(userId: string, page: number, limit: number) {
+      return adminRepo.findUserImages(userId, page, limit);
     },
 
     async flushDailyLimits(): Promise<{ deletedKeys: number }> {
