@@ -22,16 +22,25 @@ async function fetchReferralBonus(userId: string): Promise<number> {
   return user?.referralBonus ?? 0;
 }
 
+async function decrementReferralBonus(userId: string): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { referralBonus: { decrement: 1 } },
+  });
+}
+
 export async function getDailyUsage(
   userId: string,
-  referralBonus?: number,
-): Promise<{ used: number; limit: number; resetsAt: string }> {
+): Promise<{ used: number; limit: number; bonusRemaining: number; resetsAt: string }> {
   const key = redisKey(userId);
-  const [value, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
+  const [value, ttl, bonusRemaining] = await Promise.all([
+    redis.get(key),
+    redis.ttl(key),
+    fetchReferralBonus(userId),
+  ]);
 
   const used = value ? parseInt(value, 10) : 0;
-  const bonus = referralBonus ?? await fetchReferralBonus(userId);
-  const limit = env.LAUNCH_DAILY_LIMIT + bonus;
+  const limit = env.LAUNCH_DAILY_LIMIT;
 
   // Heal orphaned keys: if key exists without TTL, set one
   if (value && ttl === -1) {
@@ -41,15 +50,30 @@ export async function getDailyUsage(
   const remainingTtl = ttl > 0 ? ttl : TTL_SECONDS;
   const resetsAt = new Date(Date.now() + remainingTtl * 1000).toISOString();
 
-  return { used, limit, resetsAt };
+  return { used, limit, bonusRemaining, resetsAt };
 }
 
 export async function incrementDailyUsage(
   userId: string,
-  referralBonus?: number,
-): Promise<{ used: number; limit: number; resetsAt: string }> {
+): Promise<{ used: number; limit: number; bonusRemaining: number; resetsAt: string }> {
   const key = redisKey(userId);
-  const used = await redis.incr(key);
+  const bonusRemaining = await fetchReferralBonus(userId);
+  const currentUsed = await redis.get(key);
+  const currentCount = currentUsed ? parseInt(currentUsed, 10) : 0;
+  const limit = env.LAUNCH_DAILY_LIMIT;
+
+  let used: number;
+  let newBonusRemaining = bonusRemaining;
+
+  if (currentCount >= limit && bonusRemaining > 0) {
+    // Over daily limit but has bonus — consume one bonus generation
+    await decrementReferralBonus(userId);
+    newBonusRemaining = bonusRemaining - 1;
+    used = currentCount; // Don't increment Redis counter
+  } else {
+    // Normal daily usage — increment Redis counter
+    used = await redis.incr(key);
+  }
 
   // Ensure TTL always exists — set on first increment or heal if missing
   const ttl = await redis.ttl(key);
@@ -59,17 +83,14 @@ export async function incrementDailyUsage(
 
   const remainingTtl = ttl > 0 ? ttl : TTL_SECONDS;
   const resetsAt = new Date(Date.now() + remainingTtl * 1000).toISOString();
-  const bonus = referralBonus ?? await fetchReferralBonus(userId);
-  const limit = env.LAUNCH_DAILY_LIMIT + bonus;
 
-  return { used, limit, resetsAt };
+  return { used, limit, bonusRemaining: newBonusRemaining, resetsAt };
 }
 
 export async function checkDailyLimit(userId: string): Promise<void> {
-  const bonus = await fetchReferralBonus(userId);
-  const { used, limit, resetsAt } = await getDailyUsage(userId, bonus);
+  const { used, limit, bonusRemaining, resetsAt } = await getDailyUsage(userId);
 
-  if (used >= limit) {
+  if (used >= limit && bonusRemaining <= 0) {
     throw new ForbiddenError(
       `Daily generation limit reached (${limit}). Resets at ${resetsAt}`,
       'DAILY_LIMIT_REACHED',

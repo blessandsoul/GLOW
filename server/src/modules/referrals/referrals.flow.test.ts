@@ -114,7 +114,7 @@ describe('Stats after referral rewards', () => {
   const userId = 'user-with-referrals';
   const appUrl = 'https://glow.ge';
 
-  it('should reflect bonusDailyGenerations from referralBonus field', async () => {
+  it('should reflect bonusGenerationsRemaining from referralBonus field', async () => {
     const now = new Date();
     // User has referred 3 people who all verified
     mockRepo.findUserCode.mockResolvedValue({ referralCode: 'MYCODE', referralBonus: 9 });
@@ -126,8 +126,8 @@ describe('Stats after referral rewards', () => {
 
     const stats = await referralsService.getMyStats(userId, appUrl);
 
-    expect(stats.bonusDailyGenerations).toBe(9); // 3 referrals * 3 credits each
-    expect(stats.currentDailyLimit).toBe(14); // 5 base + 9 bonus
+    expect(stats.bonusGenerationsRemaining).toBe(9); // 3 referrals * 3 credits each
+    expect(stats.currentDailyLimit).toBe(5); // base only
     expect(stats.totalCreditsEarned).toBe(9);
     expect(stats.totalReferrals).toBe(3);
   });

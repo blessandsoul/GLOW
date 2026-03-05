@@ -193,8 +193,8 @@ describe('referralsService.getMyStats', () => {
     expect(stats.referralLink).toBe('https://glow.ge/r/TESTCODE');
     expect(stats.totalReferrals).toBe(2);
     expect(stats.totalCreditsEarned).toBe(3); // 1 rewarded * 3
-    expect(stats.bonusDailyGenerations).toBe(6);
-    expect(stats.currentDailyLimit).toBe(11); // 5 base + 6 bonus
+    expect(stats.bonusGenerationsRemaining).toBe(6);
+    expect(stats.currentDailyLimit).toBe(5); // base only
     expect(stats.recentReferrals).toHaveLength(2);
     expect(stats.recentReferrals[0]).toEqual({
       name: 'ნინო',
@@ -218,7 +218,7 @@ describe('referralsService.getMyStats', () => {
     expect(stats.referralLink).toBeNull();
     expect(stats.totalReferrals).toBe(0);
     expect(stats.totalCreditsEarned).toBe(0);
-    expect(stats.bonusDailyGenerations).toBe(0);
+    expect(stats.bonusGenerationsRemaining).toBe(0);
     expect(stats.currentDailyLimit).toBe(5); // base only
     expect(stats.recentReferrals).toEqual([]);
   });
@@ -231,7 +231,7 @@ describe('referralsService.getMyStats', () => {
 
     expect(stats.referralCode).toBeNull();
     expect(stats.referralLink).toBeNull();
-    expect(stats.bonusDailyGenerations).toBe(0);
+    expect(stats.bonusGenerationsRemaining).toBe(0);
     expect(stats.currentDailyLimit).toBe(5);
   });
 

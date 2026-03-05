@@ -7,7 +7,7 @@ interface ReferralStats {
   referralLink: string | null;
   totalReferrals: number;
   totalCreditsEarned: number;
-  bonusDailyGenerations: number;
+  bonusGenerationsRemaining: number;
   currentDailyLimit: number;
   recentReferrals: Array<{
     name: string;
@@ -77,8 +77,8 @@ export const referralsService = {
       referralLink,
       totalReferrals: referrals.length,
       totalCreditsEarned,
-      bonusDailyGenerations: referralBonus,
-      currentDailyLimit: env.LAUNCH_DAILY_LIMIT + referralBonus,
+      bonusGenerationsRemaining: referralBonus,
+      currentDailyLimit: env.LAUNCH_DAILY_LIMIT,
       recentReferrals: referrals.map((r) => ({
         name: r.referred.firstName,
         joinedAt: r.referred.createdAt,

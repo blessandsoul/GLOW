@@ -151,7 +151,7 @@ export function ReferralDashboard(): React.ReactElement | null {
           <div className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-xl bg-success/10">
             <Gift size={18} className="text-success" />
           </div>
-          <p className="text-2xl font-bold tabular-nums text-foreground">+{stats.bonusDailyGenerations}</p>
+          <p className="text-2xl font-bold tabular-nums text-foreground">{stats.bonusGenerationsRemaining}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">ბონუს გენერაცია</p>
         </div>
         <div className="relative rounded-2xl border border-border/60 bg-card p-4 shadow-sm">
@@ -169,7 +169,7 @@ export function ReferralDashboard(): React.ReactElement | null {
           {[
             { step: '1', text: 'გაუზიარეთ თქვენი ბმული მეგობარს' },
             { step: '2', text: 'ის რეგისტრირდება Glow.GE-ზე' },
-            { step: '3', text: 'თქვენ იღებთ +3 დღიურ გენერაციას, ის +1-ს' },
+            { step: '3', text: 'თქვენ იღებთ +3 ბონუს გენერაციას, ის +1-ს' },
           ].map(({ step, text }) => (
             <div key={step} className="flex items-center gap-3">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">

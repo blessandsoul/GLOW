@@ -179,7 +179,7 @@ export const jobsService = {
 
     // Deduct credits or track daily usage depending on mode
     let creditsRemaining: number | undefined;
-    let dailyUsage: { used: number; limit: number; resetsAt: string } | undefined;
+    let dailyUsage: { used: number; limit: number; bonusRemaining: number; resetsAt: string } | undefined;
     if (userId) {
       if (isLaunchMode()) {
         dailyUsage = await incrementDailyUsage(userId);
@@ -352,7 +352,7 @@ export const jobsService = {
       return {
         totalJobs: stats.totalJobs,
         totalPhotos: stats.totalResults,
-        credits: dailyUsage.limit - dailyUsage.used,
+        credits: (dailyUsage.limit - dailyUsage.used) + dailyUsage.bonusRemaining,
         plan: 'LAUNCH',
         dailyUsage,
       };
@@ -470,8 +470,8 @@ export const jobsService = {
 
     if (isLaunchMode()) {
       // In launch mode: check daily limit has room for all files
-      const { used, limit } = await getDailyUsage(userId);
-      const remaining = limit - used;
+      const { used, limit, bonusRemaining } = await getDailyUsage(userId);
+      const remaining = (limit - used) + bonusRemaining;
       if (files.length > remaining) {
         throw new BadRequestError(
           `Daily limit: ${remaining} generations remaining today (need ${files.length})`,
@@ -599,7 +599,7 @@ export const jobsService = {
         await incrementDailyUsage(userId);
       }
       const usage = await getDailyUsage(userId);
-      creditsRemaining = usage.limit - usage.used;
+      creditsRemaining = (usage.limit - usage.used) + usage.bonusRemaining;
     }
 
     return { batchId, jobs, creditsRemaining };

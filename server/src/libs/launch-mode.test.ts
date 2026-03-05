@@ -10,6 +10,7 @@ const { mockRedis, mockPrismaUser } = vi.hoisted(() => ({
   },
   mockPrismaUser: {
     findUnique: vi.fn(),
+    update: vi.fn(),
   },
 }));
 
@@ -35,28 +36,32 @@ describe('isLaunchMode', () => {
 describe('getDailyUsage', () => {
   const userId = 'user-123';
 
-  it('should return base limit when no referral bonus', async () => {
+  it('should return base limit and zero bonus when no referral bonus', async () => {
     mockRedis.get.mockResolvedValue(null);
     mockRedis.ttl.mockResolvedValue(-2);
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
 
-    const result = await getDailyUsage(userId, 0);
+    const result = await getDailyUsage(userId);
 
     expect(result.used).toBe(0);
     expect(result.limit).toBe(5); // base LAUNCH_DAILY_LIMIT
+    expect(result.bonusRemaining).toBe(0);
     expect(result.resetsAt).toBeDefined();
   });
 
-  it('should return personalized limit with referral bonus', async () => {
+  it('should return base limit with bonusRemaining from DB', async () => {
     mockRedis.get.mockResolvedValue('2');
     mockRedis.ttl.mockResolvedValue(3600);
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 6 });
 
-    const result = await getDailyUsage(userId, 6);
+    const result = await getDailyUsage(userId);
 
     expect(result.used).toBe(2);
-    expect(result.limit).toBe(11); // 5 base + 6 bonus
+    expect(result.limit).toBe(5); // base only, no bonus added
+    expect(result.bonusRemaining).toBe(6);
   });
 
-  it('should fetch referral bonus from DB when not provided', async () => {
+  it('should fetch referral bonus from DB', async () => {
     mockRedis.get.mockResolvedValue('1');
     mockRedis.ttl.mockResolvedValue(7200);
     mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 9 });
@@ -67,7 +72,8 @@ describe('getDailyUsage', () => {
       where: { id: userId },
       select: { referralBonus: true },
     });
-    expect(result.limit).toBe(14); // 5 + 9
+    expect(result.limit).toBe(5); // base only
+    expect(result.bonusRemaining).toBe(9);
   });
 
   it('should default to 0 bonus when user not found in DB', async () => {
@@ -77,14 +83,16 @@ describe('getDailyUsage', () => {
 
     const result = await getDailyUsage(userId);
 
-    expect(result.limit).toBe(5); // 5 + 0
+    expect(result.limit).toBe(5);
+    expect(result.bonusRemaining).toBe(0);
   });
 
   it('should heal orphaned keys (TTL = -1)', async () => {
     mockRedis.get.mockResolvedValue('3');
     mockRedis.ttl.mockResolvedValue(-1); // key exists but no TTL
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
 
-    await getDailyUsage(userId, 0);
+    await getDailyUsage(userId);
 
     expect(mockRedis.expire).toHaveBeenCalledWith('launch_daily:user-123', 86400);
   });
@@ -102,15 +110,15 @@ describe('checkDailyLimit', () => {
     await expect(checkDailyLimit(userId)).resolves.toBeUndefined();
   });
 
-  it('should throw ForbiddenError when usage equals base limit', async () => {
+  it('should throw ForbiddenError when usage equals base limit and no bonus', async () => {
     mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
-    mockRedis.get.mockResolvedValue('5'); // 5 used, limit is 5
+    mockRedis.get.mockResolvedValue('5'); // 5 used, limit is 5, no bonus
     mockRedis.ttl.mockResolvedValue(3600);
 
     await expect(checkDailyLimit(userId)).rejects.toThrow(ForbiddenError);
   });
 
-  it('should throw ForbiddenError when usage exceeds limit', async () => {
+  it('should throw ForbiddenError when usage exceeds limit and no bonus', async () => {
     mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
     mockRedis.get.mockResolvedValue('7');
     mockRedis.ttl.mockResolvedValue(3600);
@@ -118,32 +126,32 @@ describe('checkDailyLimit', () => {
     await expect(checkDailyLimit(userId)).rejects.toThrow(ForbiddenError);
   });
 
-  it('should allow more usage when user has referral bonus', async () => {
+  it('should allow when over daily limit but has bonus remaining', async () => {
     mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 3 });
-    mockRedis.get.mockResolvedValue('7'); // 7 used, limit is 5 + 3 = 8
+    mockRedis.get.mockResolvedValue('5'); // at daily limit but has 3 bonus
     mockRedis.ttl.mockResolvedValue(3600);
 
     await expect(checkDailyLimit(userId)).resolves.toBeUndefined();
   });
 
-  it('should throw when usage reaches bonused limit', async () => {
-    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 3 });
-    mockRedis.get.mockResolvedValue('8'); // 8 used, limit is 5 + 3 = 8
+  it('should throw when over daily limit and no bonus remaining', async () => {
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
+    mockRedis.get.mockResolvedValue('5'); // at daily limit, 0 bonus
     mockRedis.ttl.mockResolvedValue(3600);
 
     await expect(checkDailyLimit(userId)).rejects.toThrow(ForbiddenError);
   });
 
-  it('should include actual limit in error message', async () => {
-    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 6 });
-    mockRedis.get.mockResolvedValue('11'); // 11 used, limit is 5 + 6 = 11
+  it('should include base limit in error message', async () => {
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
+    mockRedis.get.mockResolvedValue('5');
     mockRedis.ttl.mockResolvedValue(3600);
 
     try {
       await checkDailyLimit(userId);
       expect.fail('Should have thrown');
     } catch (err) {
-      expect((err as ForbiddenError).message).toContain('(11)');
+      expect((err as ForbiddenError).message).toContain('(5)');
     }
   });
 });
@@ -152,42 +160,56 @@ describe('checkDailyLimit', () => {
 describe('incrementDailyUsage', () => {
   const userId = 'user-123';
 
-  it('should increment counter and return personalized limit', async () => {
-    mockRedis.incr.mockResolvedValue(1);
-    mockRedis.ttl.mockResolvedValue(-1); // new key, no TTL yet
+  it('should increment Redis counter when under daily limit', async () => {
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 3 });
+    mockRedis.get.mockResolvedValue('2'); // under limit of 5
+    mockRedis.incr.mockResolvedValue(3);
+    mockRedis.ttl.mockResolvedValue(3600);
 
-    const result = await incrementDailyUsage(userId, 3);
+    const result = await incrementDailyUsage(userId);
 
     expect(mockRedis.incr).toHaveBeenCalledWith('launch_daily:user-123');
-    expect(result.used).toBe(1);
-    expect(result.limit).toBe(8); // 5 + 3
+    expect(result.used).toBe(3);
+    expect(result.limit).toBe(5); // base only
+    expect(result.bonusRemaining).toBe(3); // bonus untouched
+  });
+
+  it('should consume bonus when at daily limit with bonus remaining', async () => {
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 3 });
+    mockPrismaUser.update.mockResolvedValue({});
+    mockRedis.get.mockResolvedValue('5'); // at limit of 5
+    mockRedis.ttl.mockResolvedValue(3600);
+
+    const result = await incrementDailyUsage(userId);
+
+    expect(mockRedis.incr).not.toHaveBeenCalled(); // should NOT increment Redis
+    expect(mockPrismaUser.update).toHaveBeenCalledWith({
+      where: { id: userId },
+      data: { referralBonus: { decrement: 1 } },
+    });
+    expect(result.used).toBe(5); // stays at 5
+    expect(result.bonusRemaining).toBe(2); // 3 - 1
   });
 
   it('should set TTL when key has no expiry', async () => {
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
+    mockRedis.get.mockResolvedValue(null); // no key yet
     mockRedis.incr.mockResolvedValue(1);
     mockRedis.ttl.mockResolvedValue(-1);
 
-    await incrementDailyUsage(userId, 0);
+    await incrementDailyUsage(userId);
 
     expect(mockRedis.expire).toHaveBeenCalledWith('launch_daily:user-123', 86400);
   });
 
   it('should not reset TTL when key already has one', async () => {
+    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 0 });
+    mockRedis.get.mockResolvedValue('3');
     mockRedis.incr.mockResolvedValue(4);
     mockRedis.ttl.mockResolvedValue(50000);
 
-    await incrementDailyUsage(userId, 0);
+    await incrementDailyUsage(userId);
 
     expect(mockRedis.expire).not.toHaveBeenCalled();
-  });
-
-  it('should fetch bonus from DB when not provided', async () => {
-    mockRedis.incr.mockResolvedValue(2);
-    mockRedis.ttl.mockResolvedValue(3600);
-    mockPrismaUser.findUnique.mockResolvedValue({ referralBonus: 12 });
-
-    const result = await incrementDailyUsage(userId);
-
-    expect(result.limit).toBe(17); // 5 + 12
   });
 });
