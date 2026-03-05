@@ -43,6 +43,9 @@ apiClient.interceptors.response.use(
             }
 
             if (isRefreshing) {
+                if (failedQueue.length >= 20) {
+                    return Promise.reject(new Error('Too many queued requests'));
+                }
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 }).then(() => {

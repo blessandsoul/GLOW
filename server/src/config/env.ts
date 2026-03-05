@@ -62,6 +62,11 @@ const envSchema = z.object({
 
   // OTP (phone verification)
   OTP_API_KEY: z.string().min(1),
+
+  // Google OAuth
+  GOOGLE_CLIENT_ID: z.string().min(1).default(''),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).default(''),
+  GOOGLE_CALLBACK_URL: z.string().url().default('http://localhost:4000/api/v1/auth/google/callback'),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -81,8 +81,8 @@ export function useFlushDailyLimits(): {
 } {
     const { mutate, isPending } = useMutation({
         mutationFn: () => adminService.flushDailyLimits(),
-        onSuccess: (data) => {
-            toast.success(`Daily limits flushed (${data.deletedKeys} keys cleared)`);
+        onSuccess: () => {
+            toast.success('Your daily limit has been reset');
         },
         onError: (error) => {
             toast.error(getErrorMessage(error));

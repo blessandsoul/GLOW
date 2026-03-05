@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { UpdateUserSchema } from './users.schemas.js';
+import { UpdateUserSchema, DeleteAccountSchema } from './users.schemas.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
 import { BadRequestError } from '@/shared/errors/errors.js';
 import { clearAuthCookies } from '@/modules/auth/auth.cookies.js';
@@ -23,8 +23,14 @@ export function createUsersController(usersService: UsersService) {
       reply.send(successResponse('Avatar updated', { avatarUrl }));
     },
 
+    async deleteAccountRequestOtp(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const result = await usersService.deleteAccountRequestOtp(request.user!.id);
+      reply.send(successResponse('Verification code sent', { requestId: result.requestId }));
+    },
+
     async deleteMe(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-      await usersService.deleteAccount(request.user!.id);
+      const input = DeleteAccountSchema.parse(request.body);
+      await usersService.deleteAccount(request.user!.id, input);
       clearAuthCookies(reply);
       reply.send(successResponse('Account deleted', null));
     },

@@ -14,6 +14,7 @@ import { useAuth } from '../hooks/useAuth';
 import { getErrorMessage } from '@/lib/utils/error';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { Logo } from '@/components/layout/Logo';
+import { GoogleButton } from './GoogleButton';
 
 type RegisterFormData = {
     firstName: string;
@@ -81,7 +82,7 @@ export function RegisterForm(): React.ReactElement {
                 <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('auth.free_photos_desc')}</p>
             </CardHeader>
             <CardContent className="px-8 pb-8">
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-4">
                     {refCode && (
                         <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
                             <Gift size={18} weight="fill" className="shrink-0" />
@@ -89,6 +90,19 @@ export function RegisterForm(): React.ReactElement {
                         </div>
                     )}
 
+                    <GoogleButton referralCode={refCode} />
+
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+                        </div>
+                        <div className="relative flex justify-center text-xs">
+                            <span className="bg-white px-2 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-500">{t('auth.or')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
                     {registerError && (
                         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
                             {getErrorMessage(registerError)}

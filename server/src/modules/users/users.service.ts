@@ -1,9 +1,10 @@
 import { usersRepo } from './users.repo.js';
 import { mapUserToResponse } from '@/modules/auth/auth.repo.js';
-import { NotFoundError } from '@/shared/errors/errors.js';
+import { NotFoundError, BadRequestError } from '@/shared/errors/errors.js';
 import { uploadFile, deleteFile, validateImage } from '@/libs/storage.js';
+import { sendOtp, verifyOtp } from '@/libs/otp.js';
 import type { StorageFile } from '@/libs/storage.js';
-import type { UpdateUserInput } from './users.schemas.js';
+import type { UpdateUserInput, DeleteAccountInput } from './users.schemas.js';
 import type { MultipartFile } from '@fastify/multipart';
 
 export function createUsersService() {
@@ -43,11 +44,33 @@ export function createUsersService() {
       return { user: mapUserToResponse(updated), avatarUrl };
     },
 
-    async deleteAccount(userId: string) {
+    async deleteAccountRequestOtp(userId: string) {
       const user = await usersRepo.findUserById(userId);
       if (!user) {
         throw new NotFoundError('User not found', 'USER_NOT_FOUND');
       }
+      if (!user.phone) {
+        throw new BadRequestError('A verified phone number is required to delete your account', 'NO_PHONE_NUMBER');
+      }
+      if (!user.phoneVerified) {
+        throw new BadRequestError('Please verify your phone number first', 'PHONE_NOT_VERIFIED');
+      }
+
+      const otpResult = await sendOtp(user.phone);
+      return { requestId: otpResult.requestId };
+    },
+
+    async deleteAccount(userId: string, input: DeleteAccountInput) {
+      const user = await usersRepo.findUserById(userId);
+      if (!user) {
+        throw new NotFoundError('User not found', 'USER_NOT_FOUND');
+      }
+      if (!user.phone || !user.phoneVerified) {
+        throw new BadRequestError('A verified phone number is required', 'PHONE_NOT_VERIFIED');
+      }
+
+      // Verify OTP code
+      await verifyOtp(user.phone, input.otpRequestId, input.code);
 
       // Delete avatar file if exists
       if (user.avatar) {

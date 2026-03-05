@@ -116,6 +116,17 @@ export const jobsRepo = {
     return result.count;
   },
 
+  async failStaleJobs(thresholdDate: Date): Promise<number> {
+    const result = await prisma.job.updateMany({
+      where: {
+        status: 'PROCESSING',
+        createdAt: { lt: thresholdDate },
+      },
+      data: { status: 'FAILED' },
+    });
+    return result.count;
+  },
+
   async getStatsByUserId(userId: string): Promise<{ totalJobs: number; totalDone: number; totalResults: number }> {
     const [totalJobs, totalDone, doneJobs] = await Promise.all([
       prisma.job.count({ where: { userId } }),

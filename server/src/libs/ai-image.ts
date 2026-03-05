@@ -59,6 +59,8 @@ async function processWithGemini(
         ],
         config: {
           responseModalities: ['Text', 'Image'],
+          httpOptions: { timeout: 120_000 },
+          abortSignal: AbortSignal.timeout(120_000),
         },
       });
 
@@ -96,6 +98,10 @@ async function processWithGemini(
 
     return { urls };
   } catch (err: unknown) {
+    if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError')) {
+      logger.error('Gemini API call timed out');
+      throw new InternalError('Image processing timed out. Please try again.');
+    }
     if (err instanceof InternalError || err instanceof BadRequestError) {
       throw err;
     }

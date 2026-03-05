@@ -17,8 +17,17 @@ class UsersService {
         return response.data.data;
     }
 
-    async deleteMe(): Promise<void> {
-        await apiClient.delete(API_ENDPOINTS.USERS.ME);
+    async deleteRequestOtp(): Promise<{ requestId: string }> {
+        const response = await apiClient.post<ApiResponse<{ requestId: string }>>(
+            API_ENDPOINTS.USERS.DELETE_REQUEST_OTP,
+        );
+        return response.data.data;
+    }
+
+    async deleteMe(otpRequestId: string, code: string): Promise<void> {
+        await apiClient.delete(API_ENDPOINTS.USERS.ME, {
+            data: { otpRequestId, code },
+        });
     }
 
     async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {

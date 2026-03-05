@@ -53,10 +53,9 @@ export function StudioWorkspace({ children }: StudioWorkspaceProps): React.React
                             {dailyRemaining}/{dailyLimit} {t('ui.daily_remaining')}
                         </span>
                     ) : (
-                        <Link
-                            href={ROUTES.DASHBOARD_CREDITS}
+                        <span
                             className={cn(
-                                'absolute right-0 top-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80',
+                                'absolute right-0 top-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums',
                                 (user.credits ?? 0) >= 50
                                     ? 'bg-warning/15 text-warning'
                                     : (user.credits ?? 0) >= 10
@@ -66,7 +65,7 @@ export function StudioWorkspace({ children }: StudioWorkspaceProps): React.React
                         >
                             <Coins size={13} weight="fill" />
                             {user.credits ?? 0} {t('ui.text_credits')}
-                        </Link>
+                        </span>
                     )
                 )}
             </div>

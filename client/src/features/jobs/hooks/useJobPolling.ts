@@ -6,6 +6,7 @@ import { getErrorMessage } from '@/lib/utils/error';
 import type { Job } from '../types/job.types';
 
 const MAX_RETRIES = 3;
+const MAX_POLL_DURATION_MS = 3 * 60 * 1000; // 3 minutes
 
 export function useJobPolling(jobId: string | null): { job: Job | null; isPolling: boolean; error: string | null } {
     const [job, setJob] = useState<Job | null>(null);
@@ -23,8 +24,16 @@ export function useJobPolling(jobId: string | null): { job: Job | null; isPollin
         let isMounted = true;
         let timeoutId: NodeJS.Timeout;
         let retryCount = 0;
+        const startedAt = Date.now();
 
         const poll = async (): Promise<void> => {
+            if (Date.now() - startedAt > MAX_POLL_DURATION_MS) {
+                if (isMounted) {
+                    setError('Processing is taking longer than expected. Please refresh the page to check again.');
+                    setIsPolling(false);
+                }
+                return;
+            }
             setIsPolling(true);
             try {
                 const data = await jobService.getJob(jobId);

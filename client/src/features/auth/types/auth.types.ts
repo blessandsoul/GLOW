@@ -10,6 +10,7 @@ export interface IUser {
     role: UserRole;
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
+    hasPassword: boolean;
     avatar?: string;
     credits: number;
     createdAt: string;
@@ -42,6 +43,16 @@ export interface IVerifyPhoneRequest {
 
 export interface IResendOtpResponse {
     requestId: string;
+}
+
+export interface IChangePasswordOtpResponse {
+    requestId: string;
+}
+
+export interface IRecoverPasswordRequestResponse {
+    recoveryToken: string;
+    requestId: string;
+    maskedPhone: string;
 }
 
 export interface IAuthState {

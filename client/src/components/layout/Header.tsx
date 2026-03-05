@@ -8,7 +8,7 @@ import {
     Moon, Sun,
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
-    CaretDown, Plus, ShieldCheck, SignOut, ArrowsClockwise, List,
+    CaretDown, Plus, ShieldCheck, ArrowsClockwise,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
@@ -162,21 +162,10 @@ function NavDropdown({ group, pathname, t }: {
     );
 }
 
-type MobileMenuProps = {
-    isAuthenticated: boolean;
-    userRole: string | undefined;
-    pathname: string;
-    logout: () => void;
-    mounted: boolean;
-    resolvedTheme: string | undefined;
-    toggleTheme: () => void;
-    t: (key: string) => string;
-};
-
-function MobileMenu({ isAuthenticated, userRole, pathname, logout, mounted, resolvedTheme, toggleTheme, t }: MobileMenuProps): React.ReactElement {
+function MobileLanguageSwitcher(): React.ReactElement {
+    const { language, setLanguage } = useLanguage();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const { language, setLanguage } = useLanguage();
 
     useEffect(() => {
         if (!open) return;
@@ -187,16 +176,8 @@ function MobileMenu({ isAuthenticated, userRole, pathname, logout, mounted, reso
         return () => document.removeEventListener('mousedown', handler);
     }, [open]);
 
-    useEffect(() => {
-        if (!open) return;
-        const handler = (e: KeyboardEvent): void => {
-            if (e.key === 'Escape') setOpen(false);
-        };
-        document.addEventListener('keydown', handler);
-        return () => document.removeEventListener('keydown', handler);
-    }, [open]);
-
-    const isReferralsActive = pathname === ROUTES.DASHBOARD_REFERRALS;
+    const currentFlag = LANGUAGES.find((l) => l.code === language);
+    const CurrentFlag = currentFlag?.Flag ?? LANGUAGES[0].Flag;
 
     return (
         <div ref={ref} className="relative">
@@ -204,100 +185,29 @@ function MobileMenu({ isAuthenticated, userRole, pathname, logout, mounted, reso
                 type="button"
                 onClick={() => setOpen((v) => !v)}
                 aria-expanded={open}
-                aria-label="Menu"
+                aria-label="Change language"
                 className={cn(
-                    'flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200',
-                    'hover:bg-muted/40 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                    'flex h-8 w-8 items-center justify-center rounded-md transition-all duration-150',
+                    'hover:bg-muted/40 active:scale-[0.98]',
                     open && 'bg-muted/50',
                 )}
             >
-                <List size={18} />
+                <CurrentFlag className="h-3.5 w-5 shrink-0" />
             </button>
 
             {open && (
-                <div className="absolute right-0 top-full z-50 mt-1.5 min-w-52 rounded-xl border border-border/50 bg-background/95 p-1.5 shadow-lg backdrop-blur-sm">
-                    {isAuthenticated && userRole === 'ADMIN' && (
-                        <>
-                            <Link
-                                href={ROUTES.ADMIN}
-                                onClick={() => setOpen(false)}
-                                className={cn(
-                                    'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150',
-                                    pathname.startsWith(ROUTES.ADMIN)
-                                        ? 'bg-primary/10 text-primary font-medium'
-                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
-                                )}
-                            >
-                                <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
-                                Admin
-                            </Link>
-                            <div className="my-1 h-px bg-border/50" />
-                        </>
-                    )}
-                    {isAuthenticated && (
-                        <>
-                            <Link
-                                href={ROUTES.DASHBOARD_REFERRALS}
-                                onClick={() => setOpen(false)}
-                                className={cn(
-                                    'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150',
-                                    isReferralsActive
-                                        ? 'bg-primary/10 text-primary font-medium'
-                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
-                                )}
-                            >
-                                <UsersThree size={15} weight={isReferralsActive ? 'fill' : 'regular'} />
-                                {t('nav.referrals')}
-                            </Link>
-                            <div className="my-1 h-px bg-border/50" />
-                        </>
-                    )}
-
-                    <div className="flex items-center justify-between rounded-md px-2.5 py-1.5">
-                        <span className="text-xs text-muted-foreground">Language</span>
-                        <div className="flex gap-0.5">
-                            {LANGUAGES.map(({ code, Flag }) => (
-                                <button
-                                    key={code}
-                                    type="button"
-                                    onClick={() => setLanguage(code)}
-                                    aria-label={code}
-                                    className={cn(
-                                        'flex h-7 w-8 items-center justify-center rounded-md transition-all duration-150',
-                                        language === code ? 'bg-primary/10' : 'hover:bg-muted/60',
-                                    )}
-                                >
-                                    <Flag className="h-3.5 w-5 shrink-0" />
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={toggleTheme}
-                        className="flex w-full items-center justify-between rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-muted/60 hover:text-foreground"
-                    >
-                        <span>{t('ui.text_jehhj')}</span>
-                        {mounted && (resolvedTheme === 'dark'
-                            ? <Moon size={15} weight="fill" />
-                            : <Sun size={15} weight="fill" />
-                        )}
-                    </button>
-
-                    {isAuthenticated && (
-                        <>
-                            <div className="my-1 h-px bg-border/50" />
-                            <button
-                                type="button"
-                                onClick={() => { logout(); setOpen(false); }}
-                                className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-destructive transition-colors duration-150 hover:bg-destructive/10"
-                            >
-                                <SignOut size={15} weight="bold" />
-                                {t('auth.logout')}
-                            </button>
-                        </>
-                    )}
+                <div className="absolute right-0 top-full z-50 mt-1.5 rounded-xl border border-border/50 bg-background/95 p-1 shadow-lg backdrop-blur-sm">
+                    {LANGUAGES.filter((l) => l.code !== language).map(({ code, Flag }) => (
+                        <button
+                            key={code}
+                            type="button"
+                            onClick={() => { setLanguage(code); setOpen(false); }}
+                            aria-label={code}
+                            className="flex w-full items-center justify-center rounded-md p-1.5 hover:bg-muted/60 transition-colors duration-150"
+                        >
+                            <Flag className="h-3.5 w-5 shrink-0" />
+                        </button>
+                    ))}
                 </div>
             )}
         </div>
@@ -405,10 +315,9 @@ export function Header(): React.ReactElement {
                                         {dailyRemaining}/{dailyLimit}
                                     </span>
                                 ) : (
-                                    <Link
-                                        href={ROUTES.DASHBOARD_CREDITS}
+                                    <span
                                         className={cn(
-                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80',
+                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
                                             (user.credits ?? 0) >= 50
                                                 ? 'bg-warning/15 text-warning'
                                                 : (user.credits ?? 0) >= 10
@@ -418,7 +327,7 @@ export function Header(): React.ReactElement {
                                     >
                                         <Coins size={11} weight="fill" />
                                         {user.credits ?? 0}
-                                    </Link>
+                                    </span>
                                 )
                             )}
                             <Button variant="ghost" size="sm" className="text-xs" onClick={logout}>
@@ -448,34 +357,48 @@ export function Header(): React.ReactElement {
                 </nav>
 
                 {/* Mobile Header Actions */}
-                <div className="flex items-center gap-1.5 md:hidden">
+                <div className="flex items-center gap-1 md:hidden">
                     {IS_LAUNCH_MODE && isAuthenticated && (
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                             Free
                         </span>
                     )}
                     {isAuthenticated && user?.role === 'ADMIN' && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => flushLimits()}
-                            disabled={isFlushing}
-                            title="Reset all daily generation limits"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        >
-                            <ArrowsClockwise size={16} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
-                        </Button>
+                        <>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => flushLimits()}
+                                disabled={isFlushing}
+                                title="Reset all daily generation limits"
+                                className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            >
+                                <ArrowsClockwise size={16} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
+                            </Button>
+                            <Link
+                                href={ROUTES.ADMIN}
+                                className={cn(
+                                    'flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-150',
+                                    pathname.startsWith(ROUTES.ADMIN)
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground',
+                                )}
+                                aria-label="Admin"
+                            >
+                                <ShieldCheck size={16} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                            </Link>
+                        </>
                     )}
-                    <MobileMenu
-                        isAuthenticated={isAuthenticated}
-                        userRole={user?.role}
-                        pathname={pathname}
-                        logout={logout}
-                        mounted={mounted}
-                        resolvedTheme={resolvedTheme}
-                        toggleTheme={toggleTheme}
-                        t={t}
-                    />
+                    <MobileLanguageSwitcher />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleTheme}
+                        aria-label={t('ui.text_10vvk3')}
+                        className="h-8 w-8 transition-colors duration-200 active:scale-[0.98]"
+                    >
+                        {mounted && (resolvedTheme === 'dark' ? <Moon size={16} weight="fill" /> : <Sun size={16} weight="fill" />)}
+                    </Button>
                 </div>
             </div>
 

@@ -1,5 +1,5 @@
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect } from 'react';
+import { Canvas, useFrame, useThree, invalidate } from '@react-three/fiber';
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, useState } from 'react';
 import { Color } from 'three';
 
 const hexToNormalizedRGB = hex => {
@@ -80,6 +80,7 @@ const SilkPlane = forwardRef(function SilkPlane({ uniforms }, ref) {
   useFrame((_state, delta) => {
     if (ref.current?.material?.uniforms) {
       ref.current.material.uniforms.uTime.value += 0.1 * delta;
+      invalidate();
     }
   });
 
@@ -104,6 +105,8 @@ SilkPlane.displayName = 'SilkPlane';
 
 const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, rotation = 0 }) => {
   const meshRef = useRef();
+  const containerRef = useRef();
+  const [isVisible, setIsVisible] = useState(true);
 
   const uniforms = useMemo(
     () => ({
@@ -117,10 +120,26 @@ const Silk = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, r
     [speed, scale, noiseIntensity, color, rotation]
   );
 
+  // Pause rendering when not visible
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <Canvas dpr={[1, 1.5]} frameloop="always">
-      <SilkPlane ref={meshRef} uniforms={uniforms} />
-    </Canvas>
+    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      {isVisible && (
+        <Canvas dpr={[1, 1.5]} frameloop="demand">
+          <SilkPlane ref={meshRef} uniforms={uniforms} />
+        </Canvas>
+      )}
+    </div>
   );
 };
 

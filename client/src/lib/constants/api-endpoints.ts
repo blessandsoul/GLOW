@@ -9,14 +9,18 @@ export const API_ENDPOINTS = {
         REQUEST_PASSWORD_RESET: '/auth/request-password-reset',
         RESET_PASSWORD: '/auth/reset-password',
         CHANGE_PASSWORD: '/auth/change-password',
+        CHANGE_PASSWORD_REQUEST_OTP: '/auth/change-password/request-otp',
         VERIFY_PHONE: '/auth/verify-phone',
         RESEND_OTP: '/auth/resend-otp',
         GOOGLE: '/auth/google',
         SET_PHONE: '/auth/set-phone',
+        RECOVER_PASSWORD_REQUEST: '/auth/recover-password/request',
+        RECOVER_PASSWORD: '/auth/recover-password',
     },
     USERS: {
         ME: '/users/me',
         AVATAR: '/users/me/avatar',
+        DELETE_REQUEST_OTP: '/users/me/delete-request-otp',
     },
     PROFILES: {
         ME: '/profiles/me',

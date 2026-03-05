@@ -8,6 +8,10 @@ export async function usersRoutes(app: FastifyInstance): Promise<void> {
   const controller = createUsersController(usersService);
 
   app.patch('/me', { preHandler: [authenticate, requirePhoneVerified] }, controller.updateMe);
+  app.post('/me/delete-request-otp', {
+    preHandler: [authenticate, requirePhoneVerified],
+    config: { rateLimit: { max: 3, timeWindow: '15 minutes' } },
+  }, controller.deleteAccountRequestOtp);
   app.delete('/me', { preHandler: [authenticate, requirePhoneVerified] }, controller.deleteMe);
   app.post('/me/avatar', { preHandler: [authenticate, requirePhoneVerified] }, controller.uploadAvatar);
 }

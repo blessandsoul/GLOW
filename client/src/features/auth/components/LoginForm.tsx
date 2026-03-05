@@ -9,10 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
 import { getErrorMessage } from '@/lib/utils/error';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { Logo } from '@/components/layout/Logo';
+import { GoogleButton } from './GoogleButton';
 
 type LoginFormData = {
     email: string;
@@ -22,6 +24,8 @@ type LoginFormData = {
 export function LoginForm(): React.ReactElement {
     const { login, isLoggingIn, loginError } = useAuth();
     const { t } = useLanguage();
+    const searchParams = useSearchParams();
+    const googleError = searchParams.get('error');
 
     const loginSchema = z.object({
         email: z.string().email(t('validation.email_invalid')),
@@ -53,10 +57,28 @@ export function LoginForm(): React.ReactElement {
                 <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('auth.login_desc')}</p>
             </CardHeader>
             <CardContent className="px-8 pb-8">
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {loginError && (
+                <div className="space-y-4">
+                    <GoogleButton />
+
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+                        </div>
+                        <div className="relative flex justify-center text-xs">
+                            <span className="bg-white px-2 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-500">{t('auth.or')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+                    {(loginError || googleError) && (
                         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
-                            {getErrorMessage(loginError)}
+                            {loginError
+                                ? getErrorMessage(loginError)
+                                : googleError === 'google_denied'
+                                    ? t('auth.google_denied')
+                                    : t('auth.google_failed')
+                            }
                         </div>
                     )}
 
@@ -78,7 +100,7 @@ export function LoginForm(): React.ReactElement {
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-300">{t('ui.text_j84600')}</Label>
-                            <Link href="/reset-password"
+                            <Link href="/forgot-password"
                                 className="text-xs font-medium text-primary hover:text-primary/80 transition-colors">
                                 {t('auth.forgot_password')}
                             </Link>

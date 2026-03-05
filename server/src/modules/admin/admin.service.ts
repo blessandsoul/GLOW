@@ -62,13 +62,11 @@ export function createAdminService() {
       return adminRepo.findUserImages(userId, page, limit);
     },
 
-    async flushDailyLimits(): Promise<{ deletedKeys: number }> {
-      const keys = await redis.keys('launch_daily:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
-      logger.info({ deletedKeys: keys.length }, 'Admin flushed daily generation limits');
-      return { deletedKeys: keys.length };
+    async flushDailyLimits(userId: string): Promise<{ deleted: boolean }> {
+      const key = `launch_daily:${userId}`;
+      const deleted = await redis.del(key);
+      logger.info({ userId, deleted }, 'Admin flushed own daily generation limit');
+      return { deleted: deleted > 0 };
     },
   };
 }

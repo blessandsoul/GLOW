@@ -102,8 +102,8 @@ export function BatchUploadZone({ onBatchComplete, isProUser }: BatchUploadZoneP
           <div className="text-center">
             <p className="mb-1 font-semibold text-foreground">{t('ui.text_wdnnzm')}</p>
             <p className="mb-3 text-sm text-muted-foreground">{t('ui.text_kdymaj')}</p>
-            <Button size="sm" variant="default" asChild>
-              <a href="/dashboard/credits">{t('ui.text_wr7op1')}</a>
+            <Button size="sm" variant="default" disabled>
+              {t('ui.text_wr7op1')}
             </Button>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { prisma, disconnectPrisma } from '@/libs/prisma.js';
 import { connectRedis, disconnectRedis } from '@/libs/redis.js';
 import { emailWorker } from '@/libs/queue.js';
 import { subscriptionWorker, startSubscriptionRenewalSchedule } from '@/libs/subscription-worker.js';
+import { jobsService } from '@/modules/jobs/jobs.service.js';
 
 async function main(): Promise<void> {
   const app = await buildApp();
@@ -39,6 +40,10 @@ async function main(): Promise<void> {
   // (NODE_APP_INSTANCE is set by PM2; undefined means we're running outside PM2)
   const isPrimaryInstance = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
   if (isPrimaryInstance) {
+    jobsService.failStaleProcessingJobs().catch((err) => {
+      logger.warn({ err }, 'Failed to clean up stale processing jobs');
+    });
+
     startSubscriptionRenewalSchedule().catch((err) => {
       logger.warn({ err }, 'Failed to start subscription renewal schedule');
     });

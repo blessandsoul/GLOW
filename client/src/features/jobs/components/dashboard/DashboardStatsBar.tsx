@@ -39,15 +39,12 @@ export function DashboardStatsBar(): React.ReactElement | null {
                     </span>
                 </div>
             ) : (
-                <Link
-                    href={ROUTES.DASHBOARD_CREDITS}
-                    className="flex items-center gap-1.5 whitespace-nowrap transition-colors duration-150 hover:text-primary"
-                >
+                <div className="flex items-center gap-1.5 whitespace-nowrap">
                     <Diamond size={16} weight="fill" className="text-primary shrink-0" />
                     <span className={cn('text-sm font-medium', creditColor)}>
                         {data.credits}
                     </span>
-                </Link>
+                </div>
             )}
 
             <div className="h-4 w-px shrink-0 bg-border" />

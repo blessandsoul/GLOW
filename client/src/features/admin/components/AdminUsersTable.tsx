@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { Input } from '@/components/ui/input';
@@ -97,54 +97,91 @@ function SkeletonRows(): React.ReactElement {
     );
 }
 
-function UserImagesRow({ userId }: { userId: string }): React.ReactElement {
+function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }): React.ReactElement | null {
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
-    const { images, pagination, isLoading } = useAdminUserImages(userId, page, IMAGES_LIMIT);
+    const { images, pagination, isLoading } = useAdminUserImages(isOpen ? userId : null, page, IMAGES_LIMIT);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [height, setHeight] = useState(0);
+    const [shouldRender, setShouldRender] = useState(isOpen);
+
+    useEffect(() => {
+        if (isOpen) {
+            setShouldRender(true);
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!contentRef.current) return;
+        const observer = new ResizeObserver(() => {
+            if (contentRef.current) {
+                setHeight(contentRef.current.scrollHeight);
+            }
+        });
+        observer.observe(contentRef.current);
+        return () => observer.disconnect();
+    }, [shouldRender]);
+
+    const handleTransitionEnd = useCallback(() => {
+        if (!isOpen) {
+            setShouldRender(false);
+            setPage(1);
+        }
+    }, [isOpen]);
+
+    if (!shouldRender) return null;
 
     return (
         <TableRow>
-            <TableCell colSpan={COL_COUNT} className="bg-muted/30 p-4">
-                {isLoading ? (
-                    <div className="flex gap-2">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                            <Skeleton key={i} className="h-16 w-16 rounded-md" />
-                        ))}
-                    </div>
-                ) : images.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t('admin.no_images')}</p>
-                ) : (
-                    <div className="space-y-3">
-                        <div className="flex flex-wrap gap-2">
-                            {images.map((img) => (
-                                <a
-                                    key={`${img.jobId}-${img.variantIndex}`}
-                                    href={getServerImageUrl(img.imageUrl)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group relative"
-                                >
-                                    <img
-                                        src={getServerImageUrl(img.imageUrl)}
-                                        alt=""
-                                        className="h-16 w-16 rounded-md object-cover transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50"
-                                        loading="lazy"
-                                    />
-                                </a>
-                            ))}
-                        </div>
-                        {pagination && pagination.hasNextPage && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setPage((p) => p + 1)}
-                                className="text-xs"
-                            >
-                                {t('admin.load_more')}
-                            </Button>
+            <TableCell colSpan={COL_COUNT} className="!p-0">
+                <div
+                    className="overflow-hidden transition-[max-height] duration-300 ease-out"
+                    style={{ maxHeight: isOpen ? height || 'none' : 0 }}
+                    onTransitionEnd={handleTransitionEnd}
+                >
+                    <div ref={contentRef} className="bg-muted/30 p-4">
+                        {isLoading ? (
+                            <div className="flex gap-2">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <Skeleton key={i} className="h-16 w-16 rounded-md" />
+                                ))}
+                            </div>
+                        ) : images.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">{t('admin.no_images')}</p>
+                        ) : (
+                            <div className="space-y-3">
+                                <div className="flex flex-wrap gap-2">
+                                    {images.map((img) => (
+                                        <a
+                                            key={`${img.jobId}-${img.variantIndex}`}
+                                            href={getServerImageUrl(img.imageUrl)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group relative"
+                                        >
+                                            <img
+                                                src={getServerImageUrl(img.imageUrl)}
+                                                alt=""
+                                                className="h-16 w-16 rounded-md object-cover transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50"
+                                                loading="lazy"
+                                            />
+                                        </a>
+                                    ))}
+                                </div>
+                                {pagination && pagination.hasNextPage && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => { e.stopPropagation(); setPage((p) => p + 1); }}
+                                        className="text-xs"
+                                    >
+                                        {t('admin.load_more')}
+                                    </Button>
+                                )}
+                            </div>
                         )}
                     </div>
-                )}
+                </div>
             </TableCell>
         </TableRow>
     );
@@ -269,9 +306,7 @@ export function AdminUsersTable(): React.ReactElement {
                                             {formatDate(user.createdAt)}
                                         </TableCell>
                                     </TableRow>
-                                    {expandedUserId === user.id && (
-                                        <UserImagesRow userId={user.id} />
-                                    )}
+                                    <UserImagesRow userId={user.id} isOpen={expandedUserId === user.id} />
                                 </React.Fragment>
                             ))
                         )}

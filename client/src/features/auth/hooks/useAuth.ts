@@ -29,7 +29,7 @@ export const useAuth = () => {
         try {
             const res = await authService.login(data);
             dispatch(setUser(res.user));
-            if (res.user.phone && !res.user.isPhoneVerified) {
+            if (!res.user.isPhoneVerified) {
                 router.push('/verify-phone');
                 return;
             }
@@ -105,6 +105,17 @@ export const useAuth = () => {
         }
     };
 
+    const setPhone = async (phone: string): Promise<string | null> => {
+        try {
+            const res = await authService.setPhone(phone);
+            sessionStorage.setItem('otp_request_id', res.requestId);
+            return res.requestId;
+        } catch (error) {
+            setVerifyError(error instanceof Error ? error : new Error('Failed to set phone'));
+            return null;
+        }
+    };
+
     return {
         user,
         isAuthenticated,
@@ -114,6 +125,7 @@ export const useAuth = () => {
         logout,
         verifyPhone,
         resendOtp,
+        setPhone,
         isLoggingIn,
         isRegistering,
         isVerifying,

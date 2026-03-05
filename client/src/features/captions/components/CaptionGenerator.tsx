@@ -39,10 +39,10 @@ export function CaptionGenerator({ jobId }: CaptionGeneratorProps): React.ReactE
     if (isGated && !IS_LAUNCH_MODE) {
         return (
             <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground" asChild>
-                <Link href={ROUTES.DASHBOARD_CREDITS}>
+                <span>
                     <Lock size={14} />
                     {t('ui.caption_pro')}
-                </Link>
+                </span>
             </Button>
         );
     }

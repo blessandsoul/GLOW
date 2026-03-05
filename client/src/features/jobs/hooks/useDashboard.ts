@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { jobService } from '../services/job.service';
 import { getErrorMessage } from '@/lib/utils/error';
@@ -46,8 +46,20 @@ export function useDashboardGallery(filters: { status?: JobStatus; limit?: numbe
         [data],
     );
 
-    // Auto-refresh while any job is still processing
+    // Auto-refresh while any job is still processing (max 5 minutes)
     const hasProcessing = jobs.some((j) => j.status === 'PROCESSING' || j.status === 'PENDING');
+    const [pollStartedAt, setPollStartedAt] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (hasProcessing && !pollStartedAt) {
+            setPollStartedAt(Date.now());
+        } else if (!hasProcessing) {
+            setPollStartedAt(null);
+        }
+    }, [hasProcessing, pollStartedAt]);
+
+    const isPollExpired = pollStartedAt !== null && Date.now() - pollStartedAt > 5 * 60 * 1000;
+
     useQuery({
         queryKey: ['jobs', 'gallery', 'poll-trigger', { limit, status }],
         queryFn: async () => {
@@ -55,7 +67,7 @@ export function useDashboardGallery(filters: { status?: JobStatus; limit?: numbe
             await queryClient.invalidateQueries({ queryKey: ['jobs', 'stats'] });
             return null;
         },
-        enabled: hasProcessing,
+        enabled: hasProcessing && !isPollExpired,
         refetchInterval: 3000,
         staleTime: 0,
     });

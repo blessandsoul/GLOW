@@ -40,7 +40,7 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                 store.dispatch(setUser(res.data.data));
                 // Redirect unverified users to phone verification (only if they have a phone)
                 const userData = res.data.data;
-                if (userData.phone && !userData.isPhoneVerified && typeof window !== 'undefined') {
+                if (!userData.isPhoneVerified && typeof window !== 'undefined') {
                     const currentPath = window.location.pathname;
                     const allowedUnverified = ['/verify-phone', '/login', '/register'];
                     if (!allowedUnverified.some(p => currentPath.startsWith(p))) {
@@ -83,7 +83,7 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                 store.dispatch(setUser(retryRes.data.data));
                 // Redirect unverified users to phone verification (only if they have a phone)
                 const retryUserData = retryRes.data.data;
-                if (retryUserData.phone && !retryUserData.isPhoneVerified && typeof window !== 'undefined') {
+                if (!retryUserData.isPhoneVerified && typeof window !== 'undefined') {
                     const currentPath = window.location.pathname;
                     const allowedUnverified = ['/verify-phone', '/login', '/register'];
                     if (!allowedUnverified.some(p => currentPath.startsWith(p))) {

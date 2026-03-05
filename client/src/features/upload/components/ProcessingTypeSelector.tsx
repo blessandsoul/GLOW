@@ -107,12 +107,10 @@ export function ProcessingTypeSelector({
                                 {description}
                             </span>
                         ) : (
-                            <Link
-                                href={ROUTES.DASHBOARD_CREDITS}
-                                className="text-[10px] font-medium text-primary hover:underline"
-                                onClick={(e) => e.stopPropagation()}
+                            <span
+                                className="text-[10px] font-medium text-muted-foreground"
                             >
-                                {t('ui.text_2rjryw')}</Link>
+                                {t('ui.text_2rjryw')}</span>
                         )}
                     </button>
                 );

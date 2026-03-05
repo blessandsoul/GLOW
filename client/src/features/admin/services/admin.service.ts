@@ -40,8 +40,8 @@ class AdminService {
         };
     }
 
-    async flushDailyLimits(): Promise<{ deletedKeys: number }> {
-        const { data } = await apiClient.post<ApiResponse<{ deletedKeys: number }>>(
+    async flushDailyLimits(): Promise<{ deleted: boolean }> {
+        const { data } = await apiClient.post<ApiResponse<{ deleted: boolean }>>(
             API_ENDPOINTS.ADMIN.FLUSH_DAILY_LIMITS,
         );
         return data.data;

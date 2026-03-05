@@ -604,4 +604,14 @@ export const jobsService = {
 
     return { batchId, jobs, creditsRemaining };
   },
+
+  async failStaleProcessingJobs(): Promise<void> {
+    const STALE_THRESHOLD_MINUTES = 5;
+    const threshold = new Date(Date.now() - STALE_THRESHOLD_MINUTES * 60 * 1000);
+    const count = await jobsRepo.failStaleJobs(threshold);
+    if (count > 0) {
+      logger.info({ count, thresholdMinutes: STALE_THRESHOLD_MINUTES },
+        'Marked stale PROCESSING jobs as FAILED on startup');
+    }
+  },
 };

@@ -20,6 +20,10 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
   }, controller.requestPasswordReset);
   app.post('/reset-password', controller.resetPassword);
+  app.post('/change-password/request-otp', {
+    preHandler: [authenticate],
+    config: { rateLimit: { max: 3, timeWindow: '15 minutes' } },
+  }, controller.changePasswordRequestOtp);
   app.post('/change-password', { preHandler: [authenticate] }, controller.changePassword);
   app.post('/verify-phone', { preHandler: [authenticate] }, controller.verifyPhone);
   // Prevent OTP/SMS flooding — 3 per IP per 15 min
@@ -27,4 +31,22 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     preHandler: [authenticate],
     config: { rateLimit: { max: 3, timeWindow: '15 minutes' } },
   }, controller.resendOtp);
+
+  // Phone-based password recovery (unauthenticated)
+  app.post('/recover-password/request', {
+    config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
+  }, controller.recoverPasswordRequest);
+  app.post('/recover-password', controller.recoverPassword);
+
+  // Google OAuth
+  app.get('/google', controller.googleRedirect);
+  app.get('/google/callback', {
+    config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
+  }, controller.googleCallback);
+
+  // Set phone (for Google users who don't have one yet)
+  app.post('/set-phone', {
+    preHandler: [authenticate],
+    config: { rateLimit: { max: 3, timeWindow: '15 minutes' } },
+  }, controller.setPhone);
 }

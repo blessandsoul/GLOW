@@ -24,9 +24,9 @@ export function createAdminController(adminService: AdminService) {
       reply.send(paginatedResponse('User images retrieved', images, page, limit, totalJobs));
     },
 
-    async flushDailyLimits(_request: FastifyRequest, reply: FastifyReply): Promise<void> {
-      const result = await adminService.flushDailyLimits();
-      reply.send(successResponse('Daily generation limits flushed', result));
+    async flushDailyLimits(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const result = await adminService.flushDailyLimits(request.user!.id);
+      reply.send(successResponse('Daily generation limit flushed', result));
     },
   };
 }

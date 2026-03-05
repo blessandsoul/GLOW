@@ -87,10 +87,9 @@ export default function HomePage(): React.ReactElement {
                         ) : isAuthenticated ? (
                             <div className="flex items-center gap-2">
                                 {!IS_LAUNCH_MODE && user !== null && user !== undefined && (
-                                    <Link
-                                        href={ROUTES.DASHBOARD_CREDITS}
+                                    <span
                                         className={cn(
-                                            'hidden items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums transition-opacity duration-150 hover:opacity-80 sm:inline-flex',
+                                            'hidden items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums sm:inline-flex',
                                             (user.credits ?? 0) >= 50
                                                 ? 'bg-warning/15 text-warning'
                                                 : (user.credits ?? 0) >= 10
@@ -100,7 +99,7 @@ export default function HomePage(): React.ReactElement {
                                     >
                                         <Coins size={11} weight="fill" />
                                         {user.credits ?? 0}
-                                    </Link>
+                                    </span>
                                 )}
                                 <Button size="sm" className="h-10 gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-6 text-sm font-semibold shadow-md shadow-primary/25 transition-all active:scale-[0.98]" asChild>
                                     <Link href={ROUTES.CREATE}>

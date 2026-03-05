@@ -12,6 +12,7 @@ export const USER_SELECT = {
   isActive: true,
   emailVerified: true,
   phoneVerified: true,
+  googleId: true,
   credits: true,
   createdAt: true,
   updatedAt: true,
@@ -29,12 +30,13 @@ export interface RawSelectedUser {
   isActive: boolean;
   emailVerified: boolean;
   phoneVerified: boolean;
+  googleId: string | null;
   credits: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export function mapUserToResponse(user: RawSelectedUser): {
+export interface UserResponse {
   id: string;
   email: string;
   phone: string | null;
@@ -46,12 +48,20 @@ export function mapUserToResponse(user: RawSelectedUser): {
   isActive: boolean;
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
+  hasPassword: boolean;
   credits: number;
   createdAt: Date;
   updatedAt: Date;
-} {
-  const { emailVerified, phoneVerified, ...rest } = user;
-  return { ...rest, isEmailVerified: emailVerified, isPhoneVerified: phoneVerified };
+}
+
+export function mapUserToResponse(user: RawSelectedUser & { hasPassword?: boolean }): UserResponse {
+  const { emailVerified, phoneVerified, googleId, hasPassword, ...rest } = user;
+  return {
+    ...rest,
+    isEmailVerified: emailVerified,
+    isPhoneVerified: phoneVerified,
+    hasPassword: hasPassword ?? true,
+  };
 }
 
 export const authRepo = {
@@ -195,6 +205,70 @@ export const authRepo = {
     return prisma.user.update({
       where: { id: userId },
       data: { otpRequestId },
+    });
+  },
+
+  async findUserByGoogleId(googleId: string) {
+    return prisma.user.findUnique({
+      where: { googleId },
+    });
+  },
+
+  async linkGoogleId(userId: string, googleId: string, avatar?: string | null) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        googleId,
+        ...(avatar ? { avatar } : {}),
+      },
+    });
+  },
+
+  async createGoogleUser(data: {
+    email: string;
+    googleId: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+  }) {
+    const baseSlug = `${data.firstName}${data.lastName}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+
+    let username = baseSlug || 'user';
+    let attempt = 0;
+    while (await prisma.user.findUnique({ where: { username }, select: { id: true } })) {
+      attempt++;
+      username = `${baseSlug || 'user'}${Math.floor(Math.random() * 9000) + 1000}`;
+    }
+
+    return prisma.user.create({
+      data: {
+        email: data.email,
+        password: null,
+        googleId: data.googleId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        avatar: data.avatar,
+        username,
+        emailVerified: true,
+      },
+      select: USER_SELECT,
+    });
+  },
+
+  async setUserPhone(userId: string, phone: string, otpRequestId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { phone, otpRequestId },
+      select: USER_SELECT,
+    });
+  },
+
+  async getUserPasswordStatus(userId: string) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
     });
   },
 };

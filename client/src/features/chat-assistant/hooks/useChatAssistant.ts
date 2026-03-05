@@ -93,12 +93,21 @@ export function useChatAssistant(currentPage?: string): ChatState & ChatActions 
     const sleepTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const hydrationDone = React.useRef(false);
+    const messagesRef = React.useRef(state.messages);
+    messagesRef.current = state.messages;
 
     // Initialize audio
     React.useEffect(() => {
         audioRef.current = new Audio(NOTIFICATION_SOUND_URL);
         audioRef.current.volume = 0.4;
-        return (): void => { audioRef.current = null; };
+        return (): void => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.src = '';
+                audioRef.current.load();
+                audioRef.current = null;
+            }
+        };
     }, []);
 
     const playNotification = React.useCallback((): void => {
@@ -251,7 +260,7 @@ export function useChatAssistant(currentPage?: string): ChatState & ChatActions 
             let wasFallback = false;
 
             try {
-                const history = state.messages
+                const history = messagesRef.current
                     .filter((m) => m.id !== 'welcome')
                     .map((m) => ({
                         role: m.role,
@@ -309,7 +318,6 @@ export function useChatAssistant(currentPage?: string): ChatState & ChatActions 
             findMockResponse,
             setCharacterState,
             wakeUp,
-            state.messages,
             language,
             currentPage,
             playNotification,
@@ -325,7 +333,7 @@ export function useChatAssistant(currentPage?: string): ChatState & ChatActions 
             }));
 
             try {
-                const history = state.messages
+                const history = messagesRef.current
                     .filter((m) => m.id !== 'welcome' && m.id !== messageId)
                     .map((m) => ({
                         role: m.role,
@@ -371,7 +379,7 @@ export function useChatAssistant(currentPage?: string): ChatState & ChatActions 
                 }));
             }
         },
-        [state.messages, language, currentPage, setCharacterState, playNotification]
+        [language, currentPage, setCharacterState, playNotification]
     );
 
     const giveFeedback = React.useCallback(

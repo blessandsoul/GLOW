@@ -12,7 +12,8 @@
     { "key": "portfolioId", "value": "" },
     { "key": "packageId", "value": "" },
     { "key": "username", "value": "" },
-    { "key": "otpRequestId", "value": "" }
+    { "key": "otpRequestId", "value": "" },
+    { "key": "recoveryToken", "value": "" }
   ],
   "item": [
     {
@@ -157,6 +158,59 @@
           }
         },
         {
+          "name": "Recover Password — Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/recover-password/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "recover-password", "request"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data) {",
+                  "    pm.collectionVariables.set('recoveryToken', res.data.recoveryToken);",
+                  "    pm.collectionVariables.set('otpRequestId', res.data.requestId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recover Password — Set New Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/recover-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "recover-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recoveryToken\": \"{{recoveryToken}}\",\n  \"requestId\": \"{{otpRequestId}}\",\n  \"code\": \"123456\",\n  \"password\": \"NewPass1234!\"\n}"
+            }
+          }
+        },
+        {
           "name": "Verify Phone",
           "request": {
             "method": "POST",
@@ -217,6 +271,57 @@
               }
             }
           ]
+        },
+        {
+          "name": "Google OAuth Redirect",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google?ref=",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "google"],
+              "query": [
+                { "key": "ref", "value": "", "description": "Optional referral code" }
+              ]
+            },
+            "description": "Redirects to Google OAuth consent screen. Open in browser, not Postman runner."
+          }
+        },
+        {
+          "name": "Set Phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/set-phone",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "set-phone"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+995568000865\"\n}"
+            },
+            "description": "Set phone number for Google users who registered without one. Sends OTP."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.requestId) {",
+                  "    pm.collectionVariables.set('otpRequestId', res.data.requestId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -237,6 +342,41 @@
           }
         },
         {
+          "name": "Change Password - Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password/request-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password", "request-otp"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Test1234!\",\n  \"newPassword\": \"NewPass1234!\"\n}"
+            },
+            "description": "Verifies current password (if user has one) and sends OTP to registered phone. For Google users, omit currentPassword."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.data && res.data.requestId) {",
+                  "    pm.collectionVariables.set('otpRequestId', res.data.requestId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Change Password",
           "request": {
             "method": "POST",
@@ -250,8 +390,9 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"Test1234!\",\n  \"newPassword\": \"NewPass1234!\"\n}"
-            }
+              "raw": "{\n  \"currentPassword\": \"Test1234!\",\n  \"newPassword\": \"NewPass1234!\",\n  \"otpRequestId\": \"{{otpRequestId}}\",\n  \"code\": \"123456\"\n}"
+            },
+            "description": "Changes password after OTP verification. For Google users setting a password, omit currentPassword."
           }
         }
       ]
@@ -279,14 +420,49 @@
           }
         },
         {
+          "name": "Delete Account Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me/delete-request-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "delete-request-otp"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('deleteOtpRequestId', res.data.requestId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
           "name": "Delete Me",
           "request": {
             "method": "DELETE",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/users/me",
               "host": ["{{baseUrl}}"],
               "path": ["users", "me"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"otpRequestId\": \"{{deleteOtpRequestId}}\",\n  \"code\": \"123456\"\n}"
             }
           }
         },
