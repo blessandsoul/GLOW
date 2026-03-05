@@ -1,7 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { FacebookLogo, InstagramLogo } from '@phosphor-icons/react';
 import { APP_NAME } from '@/lib/constants/app.constants';
+import { ROUTES } from '@/lib/constants/routes';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 const SOCIAL_LINKS = [
     {
@@ -17,6 +20,8 @@ const SOCIAL_LINKS = [
 ] as const;
 
 export function Footer(): React.ReactElement {
+    const { t } = useLanguage();
+
     return (
         <footer className="hidden border-t border-border/50 bg-background py-8 md:block">
             <div className="container mx-auto flex flex-col items-center gap-4 px-4 md:px-6 lg:px-8">
@@ -35,8 +40,22 @@ export function Footer(): React.ReactElement {
                     ))}
                 </div>
 
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Link href={ROUTES.TERMS} className="transition-colors hover:text-primary">
+                        {t('footer.terms')}
+                    </Link>
+                    <span className="text-border">|</span>
+                    <Link href={ROUTES.PRIVACY} className="transition-colors hover:text-primary">
+                        {t('footer.privacy')}
+                    </Link>
+                    <span className="text-border">|</span>
+                    <Link href={ROUTES.REFUND} className="transition-colors hover:text-primary">
+                        {t('footer.refund')}
+                    </Link>
+                </div>
+
                 <p className="text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+                    &copy; {new Date().getFullYear()} {APP_NAME}. {t('footer.all_rights')}
                 </p>
             </div>
         </footer>

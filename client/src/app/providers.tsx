@@ -42,7 +42,7 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                 const userData = res.data.data;
                 if (!userData.isPhoneVerified && typeof window !== 'undefined') {
                     const currentPath = window.location.pathname;
-                    const allowedUnverified = ['/verify-phone', '/login', '/register'];
+                    const allowedUnverified = ['/verify-phone', '/login', '/register', '/terms', '/privacy', '/refund'];
                     if (!allowedUnverified.some(p => currentPath.startsWith(p))) {
                         window.location.href = '/verify-phone';
                         return;
@@ -85,7 +85,7 @@ function AuthHydrator({ children }: { children: React.ReactNode }): React.ReactE
                 const retryUserData = retryRes.data.data;
                 if (!retryUserData.isPhoneVerified && typeof window !== 'undefined') {
                     const currentPath = window.location.pathname;
-                    const allowedUnverified = ['/verify-phone', '/login', '/register'];
+                    const allowedUnverified = ['/verify-phone', '/login', '/register', '/terms', '/privacy', '/refund'];
                     if (!allowedUnverified.some(p => currentPath.startsWith(p))) {
                         window.location.href = '/verify-phone';
                         return;

@@ -13,7 +13,8 @@
     "confirm_password_required": "Confirm your password",
     "passwords_mismatch": "Passwords do not match",
     "phone_required": "Phone number is required",
-    "phone_georgian": "Enter a valid Georgian number (9 digits)"
+    "phone_georgian": "Enter a valid Georgian number (9 digits)",
+    "agree_required": "You must agree to the terms to continue"
   },
   "header": {
     "logo": "Glow.GE",
@@ -144,7 +145,12 @@
     "recover_success": "Password reset successful! Please sign in.",
     "recover_back_to_login": "Back to sign in",
     "recover_back_to_otp": "Back to verification",
-    "recover_verified": "Phone verified successfully. Set your new password below."
+    "recover_verified": "Phone verified successfully. Set your new password below.",
+    "consent_text": "By registering, I accept the",
+    "consent_terms": "Terms of Service",
+    "consent_and": "and",
+    "consent_privacy": "Privacy Policy",
+    "consent_suffix": ", and consent to receiving informational and promotional messages from Glow.GE. You can unsubscribe at any time in settings."
   },
   "hero": {
     "badge": "Glow.GE AI Studio",
@@ -869,6 +875,18 @@
     "mute": "Mute sounds",
     "unmute": "Unmute sounds",
     "fallback_notice": "offline"
+  },
+  "legal": {
+    "terms_title": "Terms of Service",
+    "privacy_title": "Privacy Policy",
+    "refund_title": "Refund Policy",
+    "effective_date": "Effective date: March 5, 2026"
+  },
+  "footer": {
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "refund": "Refund Policy",
+    "all_rights": "All rights reserved."
   },
   "decorations": {
     "section_title": "Decorations",

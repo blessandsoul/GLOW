@@ -14,4 +14,7 @@ export const ROUTES = {
     PORTFOLIO_PUBLIC: (username: string) => `/specialist/${username}` as const,
     VERIFY_PHONE: '/verify-phone',
     ADMIN: '/admin',
+    TERMS: '/terms',
+    PRIVACY: '/privacy',
+    REFUND: '/refund',
 } as const;

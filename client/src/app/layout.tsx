@@ -111,7 +111,14 @@ export default function RootLayout({
         {process.env.NODE_ENV === 'development' && <Agentation />}
         {/* TOP.GE ASYNC COUNTER CODE */}
         <footer className="border-t border-border/50 bg-background py-4">
-          <div className="container mx-auto flex items-center justify-center px-4">
+          <div className="container mx-auto flex flex-col items-center gap-3 px-4">
+            <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+              <a href="/terms" className="transition-colors hover:text-primary">Terms</a>
+              <span className="text-border">|</span>
+              <a href="/privacy" className="transition-colors hover:text-primary">Privacy</a>
+              <span className="text-border">|</span>
+              <a href="/refund" className="transition-colors hover:text-primary">Refund</a>
+            </nav>
             <div id="top-ge-counter-container" data-site-id="118567"></div>
           </div>
         </footer>

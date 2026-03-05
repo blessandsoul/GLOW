@@ -9,10 +9,12 @@ import { Star, SpinnerGap, Gift } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '../hooks/useAuth';
 import { getErrorMessage } from '@/lib/utils/error';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { ROUTES } from '@/lib/constants/routes';
 import { Logo } from '@/components/layout/Logo';
 import { GoogleButton } from './GoogleButton';
 
@@ -23,6 +25,7 @@ type RegisterFormData = {
     phone: string;
     password: string;
     confirmPassword: string;
+    agreeToTerms: true;
 };
 
 export function RegisterForm(): React.ReactElement {
@@ -44,6 +47,7 @@ export function RegisterForm(): React.ReactElement {
                 .regex(/[a-z]/, t('validation.password_lower'))
                 .regex(/[0-9]/, t('validation.password_number')),
             confirmPassword: z.string().min(1, t('validation.confirm_password_required')),
+            agreeToTerms: z.literal(true, { error: t('validation.agree_required') }),
         })
         .refine((data) => data.password === data.confirmPassword, {
             message: t('validation.passwords_mismatch'),
@@ -53,9 +57,14 @@ export function RegisterForm(): React.ReactElement {
     const {
         register,
         handleSubmit,
+        setValue,
+        watch,
         formState: { errors },
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
+        defaultValues: {
+            agreeToTerms: true,
+        },
     });
 
     const onSubmit = (data: RegisterFormData): void => {
@@ -201,6 +210,31 @@ export function RegisterForm(): React.ReactElement {
                         />
                         {errors.confirmPassword && (
                             <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                            <Checkbox
+                                id="agreeToTerms"
+                                checked={watch('agreeToTerms')}
+                                onCheckedChange={(checked) => setValue('agreeToTerms', checked as true, { shouldValidate: true })}
+                                className="mt-0.5"
+                            />
+                            <label htmlFor="agreeToTerms" className="text-sm text-zinc-600 dark:text-zinc-400 leading-snug cursor-pointer">
+                                {t('auth.consent_text')}{' '}
+                                <Link href={ROUTES.TERMS} className="font-medium text-primary hover:text-primary/80 transition-colors" target="_blank">
+                                    {t('auth.consent_terms')}
+                                </Link>{' '}
+                                {t('auth.consent_and')}{' '}
+                                <Link href={ROUTES.PRIVACY} className="font-medium text-primary hover:text-primary/80 transition-colors" target="_blank">
+                                    {t('auth.consent_privacy')}
+                                </Link>
+                                {t('auth.consent_suffix')}
+                            </label>
+                        </div>
+                        {errors.agreeToTerms && (
+                            <p className="text-sm text-red-500">{errors.agreeToTerms.message}</p>
                         )}
                     </div>
 
