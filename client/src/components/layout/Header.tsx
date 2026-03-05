@@ -164,6 +164,7 @@ function NavDropdown({ group, pathname, t }: {
 
 type MobileMenuProps = {
     isAuthenticated: boolean;
+    userRole: string | undefined;
     pathname: string;
     logout: () => void;
     mounted: boolean;
@@ -172,7 +173,7 @@ type MobileMenuProps = {
     t: (key: string) => string;
 };
 
-function MobileMenu({ isAuthenticated, pathname, logout, mounted, resolvedTheme, toggleTheme, t }: MobileMenuProps): React.ReactElement {
+function MobileMenu({ isAuthenticated, userRole, pathname, logout, mounted, resolvedTheme, toggleTheme, t }: MobileMenuProps): React.ReactElement {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const { language, setLanguage } = useLanguage();
@@ -215,6 +216,24 @@ function MobileMenu({ isAuthenticated, pathname, logout, mounted, resolvedTheme,
 
             {open && (
                 <div className="absolute right-0 top-full z-50 mt-1.5 min-w-52 rounded-xl border border-border/50 bg-background/95 p-1.5 shadow-lg backdrop-blur-sm">
+                    {isAuthenticated && userRole === 'ADMIN' && (
+                        <>
+                            <Link
+                                href={ROUTES.ADMIN}
+                                onClick={() => setOpen(false)}
+                                className={cn(
+                                    'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150',
+                                    pathname.startsWith(ROUTES.ADMIN)
+                                        ? 'bg-primary/10 text-primary font-medium'
+                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                                )}
+                            >
+                                <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                                Admin
+                            </Link>
+                            <div className="my-1 h-px bg-border/50" />
+                        </>
+                    )}
                     {isAuthenticated && (
                         <>
                             <Link
@@ -449,6 +468,7 @@ export function Header(): React.ReactElement {
                     )}
                     <MobileMenu
                         isAuthenticated={isAuthenticated}
+                        userRole={user?.role}
                         pathname={pathname}
                         logout={logout}
                         mounted={mounted}

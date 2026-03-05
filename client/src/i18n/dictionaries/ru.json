@@ -122,7 +122,15 @@
     "resend_code": "Отправить код повторно",
     "resend_in": "Повторно через",
     "code_sent": "Код отправлен",
-    "phone_verified": "Телефон подтверждён"
+    "phone_verified": "Телефон подтверждён",
+    "or": "или",
+    "google_denied": "Вход через Google отменён",
+    "google_failed": "Не удалось войти через Google. Попробуйте ещё раз.",
+    "add_phone_title": "Добавьте номер телефона",
+    "add_phone_desc": "Для подтверждения аккаунта нам нужен ваш номер телефона",
+    "send_code": "Отправить код",
+    "sending_code": "Отправляем...",
+    "digit": "Цифра"
   },
   "hero": {
     "badge": "Glow.GE ИИ-Студия",
@@ -758,6 +766,10 @@
     "stat_jobs": "Всего работ",
     "stat_captions": "Всего подписей",
     "stat_subscriptions": "Подписки",
+    "stat_hd_upscales": "HD увеличения",
+    "col_hd_upscales": "HD",
+    "no_images": "Сгенерированных изображений пока нет",
+    "load_more": "Загрузить ещё",
     "unauthorized": "У вас нет доступа к этой странице."
   },
   "chat": {

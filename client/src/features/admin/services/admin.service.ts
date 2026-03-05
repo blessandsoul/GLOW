@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api/axios.config';
 import type { ApiResponse, PaginatedApiResponse, PaginationMeta } from '@/lib/api/api.types';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
-import type { AdminUser, AdminStats } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage } from '../types/admin.types';
 
 class AdminService {
     async getUsers(params?: {
@@ -24,6 +24,20 @@ class AdminService {
             API_ENDPOINTS.ADMIN.STATS,
         );
         return data.data;
+    }
+
+    async getUserImages(
+        userId: string,
+        params?: { page?: number; limit?: number },
+    ): Promise<{ items: AdminUserImage[]; pagination: PaginationMeta }> {
+        const { data } = await apiClient.get<PaginatedApiResponse<AdminUserImage>>(
+            API_ENDPOINTS.ADMIN.USER_IMAGES(userId),
+            { params },
+        );
+        return {
+            items: data.data.items,
+            pagination: data.data.pagination,
+        };
     }
 
     async flushDailyLimits(): Promise<{ deletedKeys: number }> {

@@ -11,6 +11,8 @@ export const API_ENDPOINTS = {
         CHANGE_PASSWORD: '/auth/change-password',
         VERIFY_PHONE: '/auth/verify-phone',
         RESEND_OTP: '/auth/resend-otp',
+        GOOGLE: '/auth/google',
+        SET_PHONE: '/auth/set-phone',
     },
     USERS: {
         ME: '/users/me',
@@ -77,6 +79,7 @@ export const API_ENDPOINTS = {
     },
     ADMIN: {
         USERS: '/admin/users',
+        USER_IMAGES: (userId: string) => `/admin/users/${userId}/images`,
         STATS: '/admin/stats',
         FLUSH_DAILY_LIMITS: '/admin/flush-daily-limits',
     },

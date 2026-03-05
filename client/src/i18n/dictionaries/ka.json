@@ -122,7 +122,15 @@
     "resend_code": "კოდის ხელახლა გაგზავნა",
     "resend_in": "ხელახლა გაგზავნა",
     "code_sent": "კოდი გაგზავნილია",
-    "phone_verified": "ტელეფონი დადასტურებულია"
+    "phone_verified": "ტელეფონი დადასტურებულია",
+    "or": "ან",
+    "google_denied": "Google-ით შესვლა გაუქმდა",
+    "google_failed": "Google-ით შესვლა ვერ მოხერხდა. სცადეთ თავიდან.",
+    "add_phone_title": "დაამატეთ ტელეფონის ნომერი",
+    "add_phone_desc": "ანგარიშის დასადასტურებლად გვჭირდება თქვენი ტელეფონის ნომერი",
+    "send_code": "კოდის გაგზავნა",
+    "sending_code": "იგზავნება...",
+    "digit": "ციფრი"
   },
   "hero": {
     "badge": "Glow.GE AI-სტუდია",
@@ -799,6 +807,10 @@
     "stat_jobs": "სულ სამუშაოები",
     "stat_captions": "სულ წარწერები",
     "stat_subscriptions": "გამოწერები",
+    "stat_hd_upscales": "HD გაზრდები",
+    "col_hd_upscales": "HD",
+    "no_images": "გენერირებული სურათები ჯერ არ არის",
+    "load_more": "მეტის ჩატვირთვა",
     "unauthorized": "თქვენ არ გაქვთ ამ გვერდზე წვდომის უფლება."
   },
   "chat": {

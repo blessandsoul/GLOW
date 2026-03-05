@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import type { AdminUser, AdminStats } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage } from '../types/admin.types';
 import type { PaginationMeta } from '@/lib/api/api.types';
 
 export function useAdminUsers(
@@ -47,6 +47,32 @@ export function useAdminStats(): {
     }, [error]);
 
     return { stats: data, isLoading };
+}
+
+export function useAdminUserImages(
+    userId: string | null,
+    page: number = 1,
+    limit: number = 12,
+): {
+    images: AdminUserImage[];
+    pagination: PaginationMeta | null;
+    isLoading: boolean;
+} {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['admin', 'user-images', userId, { page, limit }],
+        queryFn: () => adminService.getUserImages(userId!, { page, limit }),
+        enabled: !!userId,
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return {
+        images: data?.items ?? [],
+        pagination: data?.pagination ?? null,
+        isLoading,
+    };
 }
 
 export function useFlushDailyLimits(): {

@@ -122,7 +122,15 @@
     "resend_code": "Resend code",
     "resend_in": "Resend in",
     "code_sent": "Verification code sent",
-    "phone_verified": "Phone verified successfully"
+    "phone_verified": "Phone verified successfully",
+    "or": "or",
+    "google_denied": "Google sign-in was cancelled",
+    "google_failed": "Google sign-in failed. Please try again.",
+    "add_phone_title": "Add your phone number",
+    "add_phone_desc": "We need your phone number to verify your account",
+    "send_code": "Send verification code",
+    "sending_code": "Sending code...",
+    "digit": "Digit"
   },
   "hero": {
     "badge": "Glow.GE AI Studio",
@@ -762,6 +770,10 @@
     "stat_jobs": "Total Jobs",
     "stat_captions": "Total Captions",
     "stat_subscriptions": "Subscriptions",
+    "stat_hd_upscales": "HD Upscales",
+    "col_hd_upscales": "HD",
+    "no_images": "No generated images yet",
+    "load_more": "Load more",
     "unauthorized": "You don't have permission to access this page."
   },
   "chat": {

@@ -12,6 +12,7 @@ export interface AdminUser {
     plan: string;
     jobCount: number;
     captionCount: number;
+    hdUpscaleCount: number;
     createdAt: string;
     dailyUsage: { used: number; limit: number } | null;
 }
@@ -20,5 +21,13 @@ export interface AdminStats {
     totalUsers: number;
     totalJobs: number;
     totalCaptions: number;
+    totalHdUpscales: number;
     activeSubscriptions: Record<string, number>;
+}
+
+export interface AdminUserImage {
+    jobId: string;
+    imageUrl: string;
+    variantIndex: number;
+    createdAt: string;
 }

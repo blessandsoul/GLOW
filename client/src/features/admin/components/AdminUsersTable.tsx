@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { Input } from '@/components/ui/input';
@@ -15,11 +15,15 @@ import {
     TableRow,
     TableCell,
 } from '@/components/ui/table';
-import { useAdminUsers } from '../hooks/useAdmin';
+import { Button } from '@/components/ui/button';
+import { useAdminUsers, useAdminUserImages } from '../hooks/useAdmin';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
+import { getServerImageUrl } from '@/lib/utils/image';
 import type { AdminUser } from '../types/admin.types';
 
 const LIMIT = 10;
+const IMAGES_LIMIT = 12;
+const COL_COUNT = 9;
 
 function planVariant(plan: string): 'default' | 'secondary' | 'outline' {
     switch (plan) {
@@ -84,11 +88,65 @@ function SkeletonRows(): React.ReactElement {
                     <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-14 rounded-full" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                 </TableRow>
             ))}
         </>
+    );
+}
+
+function UserImagesRow({ userId }: { userId: string }): React.ReactElement {
+    const { t } = useLanguage();
+    const [page, setPage] = useState(1);
+    const { images, pagination, isLoading } = useAdminUserImages(userId, page, IMAGES_LIMIT);
+
+    return (
+        <TableRow>
+            <TableCell colSpan={COL_COUNT} className="bg-muted/30 p-4">
+                {isLoading ? (
+                    <div className="flex gap-2">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <Skeleton key={i} className="h-16 w-16 rounded-md" />
+                        ))}
+                    </div>
+                ) : images.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">{t('admin.no_images')}</p>
+                ) : (
+                    <div className="space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                            {images.map((img) => (
+                                <a
+                                    key={`${img.jobId}-${img.variantIndex}`}
+                                    href={getServerImageUrl(img.imageUrl)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group relative"
+                                >
+                                    <img
+                                        src={getServerImageUrl(img.imageUrl)}
+                                        alt=""
+                                        className="h-16 w-16 rounded-md object-cover transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50"
+                                        loading="lazy"
+                                    />
+                                </a>
+                            ))}
+                        </div>
+                        {pagination && pagination.hasNextPage && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setPage((p) => p + 1)}
+                                className="text-xs"
+                            >
+                                {t('admin.load_more')}
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </TableCell>
+        </TableRow>
     );
 }
 
@@ -102,6 +160,7 @@ export function AdminUsersTable(): React.ReactElement {
     const searchQuery = searchParams.get('search') ?? '';
 
     const [searchInput, setSearchInput] = useState(searchQuery);
+    const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
 
     const { users, pagination, isLoading } = useAdminUsers(page, LIMIT, searchQuery || undefined);
 
@@ -127,6 +186,10 @@ export function AdminUsersTable(): React.ReactElement {
         setSearchInput(e.target.value);
     }, []);
 
+    const toggleExpand = useCallback((userId: string) => {
+        setExpandedUserId((prev) => (prev === userId ? null : userId));
+    }, []);
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
@@ -148,6 +211,7 @@ export function AdminUsersTable(): React.ReactElement {
                             <TableHead>{t('admin.col_plan')}</TableHead>
                             <TableHead className="text-right">{t('admin.col_jobs')}</TableHead>
                             <TableHead className="text-right">{t('admin.col_captions')}</TableHead>
+                            <TableHead className="text-right">{t('admin.col_hd_upscales')}</TableHead>
                             <TableHead className="text-right">
                                 {IS_LAUNCH_MODE ? t('admin.col_daily_usage') : t('admin.col_credits')}
                             </TableHead>
@@ -160,44 +224,55 @@ export function AdminUsersTable(): React.ReactElement {
                             <SkeletonRows />
                         ) : users.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
+                                <TableCell colSpan={COL_COUNT} className="h-32 text-center text-muted-foreground">
                                     {t('admin.no_users')}
                                 </TableCell>
                             </TableRow>
                         ) : (
                             users.map((user) => (
-                                <TableRow key={user.id}>
-                                    <TableCell>
-                                        <UserAvatar user={user} />
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {user.email}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant={planVariant(user.plan)}>
-                                            {user.plan}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right tabular-nums">
-                                        {user.jobCount}
-                                    </TableCell>
-                                    <TableCell className="text-right tabular-nums">
-                                        {user.captionCount}
-                                    </TableCell>
-                                    <TableCell className="text-right tabular-nums">
-                                        {IS_LAUNCH_MODE && user.dailyUsage
-                                            ? `${user.dailyUsage.used}/${user.dailyUsage.limit}`
-                                            : user.credits}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant={user.isActive ? 'secondary' : 'outline'}>
-                                            {user.isActive ? t('admin.status_active') : t('admin.status_inactive')}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {formatDate(user.createdAt)}
-                                    </TableCell>
-                                </TableRow>
+                                <React.Fragment key={user.id}>
+                                    <TableRow
+                                        className="cursor-pointer transition-colors hover:bg-muted/30"
+                                        onClick={() => toggleExpand(user.id)}
+                                    >
+                                        <TableCell>
+                                            <UserAvatar user={user} />
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground">
+                                            {user.email}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={planVariant(user.plan)}>
+                                                {user.plan}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right tabular-nums">
+                                            {user.jobCount}
+                                        </TableCell>
+                                        <TableCell className="text-right tabular-nums">
+                                            {user.captionCount}
+                                        </TableCell>
+                                        <TableCell className="text-right tabular-nums">
+                                            {user.hdUpscaleCount}
+                                        </TableCell>
+                                        <TableCell className="text-right tabular-nums">
+                                            {IS_LAUNCH_MODE && user.dailyUsage
+                                                ? `${user.dailyUsage.used}/${user.dailyUsage.limit}`
+                                                : user.credits}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={user.isActive ? 'secondary' : 'outline'}>
+                                                {user.isActive ? t('admin.status_active') : t('admin.status_inactive')}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground">
+                                            {formatDate(user.createdAt)}
+                                        </TableCell>
+                                    </TableRow>
+                                    {expandedUserId === user.id && (
+                                        <UserImagesRow userId={user.id} />
+                                    )}
+                                </React.Fragment>
                             ))
                         )}
                     </TableBody>

@@ -1,5 +1,5 @@
 import { prisma } from '@/libs/prisma.js';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 function buildSearchFilter(search?: string): Prisma.UserWhereInput {
   if (!search) return {};
@@ -123,14 +123,14 @@ export const adminRepo = {
   async findUserImages(userId: string, page: number, limit: number) {
     const [jobs, totalJobs] = await Promise.all([
       prisma.job.findMany({
-        where: { userId, status: 'DONE', results: { not: null } },
+        where: { userId, status: 'DONE', results: { not: Prisma.DbNull } },
         select: { id: true, results: true, createdAt: true },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
       prisma.job.count({
-        where: { userId, status: 'DONE', results: { not: null } },
+        where: { userId, status: 'DONE', results: { not: Prisma.DbNull } },
       }),
     ]);
 
