@@ -19,7 +19,7 @@
   "header": {
     "logo": "Glow.GE",
     "ai_studio": "AI Studio",
-    "free_photos": "5 free photos",
+    "free_photos": "5 free photos daily",
     "login": "Login",
     "start": "Get Started",
     "master": "Master",
@@ -108,7 +108,7 @@
     "demo_login": "Demo login",
     "demo_desc": "Sign in as a master with test data",
     "create_account_title": "Create account",
-    "free_photos_desc": "5 free photos on registration",
+    "free_photos_desc": "5 free photos every day",
     "referral_invited": "You've been invited! You'll get +1 credit on registration.",
     "firstname": "First name",
     "lastname": "Last name",
@@ -378,7 +378,7 @@
     "text_sornbq": "7-day free trial",
     "text_bhlg4q": "One-click cancellation",
     "text_muqjdk": "No hidden fees",
-    "text_here8d": "5 free photos — no credit card needed",
+    "text_here8d": "5 free photos daily — no credit card needed",
     "text_45r5b5": "Simple plans without surprises",
     "text_300cko": "Start 7-day free trial",
     "text_35oqj6": "Start for free",
@@ -839,7 +839,12 @@
     "col_latest_upload": "Latest Upload",
     "no_portfolios": "No users with portfolios yet",
     "no_portfolio_items": "No portfolio items",
-    "unpublished": "Draft"
+    "unpublished": "Draft",
+    "decoration_pool_title": "Decoration Ideas Pool",
+    "decoration_pool_total": "total",
+    "decoration_pool_refresh": "Refresh",
+    "decoration_pool_replenish": "Generate more",
+    "decoration_pool_replenishing": "Generating..."
   },
   "chat": {
     "title": "Glow Assistant",

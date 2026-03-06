@@ -94,6 +94,8 @@ export const API_ENDPOINTS = {
     },
     DECORATIONS: {
         SUGGEST: '/decorations/suggest',
+        POOL_STATUS: '/decorations/pool-status',
+        REPLENISH: '/decorations/replenish',
     },
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',

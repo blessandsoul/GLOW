@@ -19,7 +19,7 @@
   "header": {
     "logo": "Glow.GE",
     "ai_studio": "AI Studio",
-    "free_photos": "5 фото бесплатно",
+    "free_photos": "5 фото бесплатно каждый день",
     "login": "Войти",
     "start": "Начать",
     "master": "Мастер",
@@ -108,7 +108,7 @@
     "demo_login": "Демо-вход",
     "demo_desc": "Войти как мастер с тестовыми данными",
     "create_account_title": "Создать аккаунт",
-    "free_photos_desc": "5 фото бесплатно при регистрации",
+    "free_photos_desc": "5 фото бесплатно каждый день",
     "referral_invited": "Вас пригласили! Вы получите +1 кредит при регистрации.",
     "firstname": "Имя",
     "lastname": "Фамилия",
@@ -374,7 +374,7 @@
     "text_sornbq": "7 дней пробного периода",
     "text_bhlg4q": "Отмена в один клик",
     "text_muqjdk": "Без скрытых платежей",
-    "text_here8d": "5 фото бесплатно — кредитная карта не нужна",
+    "text_here8d": "5 фото бесплатно каждый день — кредитная карта не нужна",
     "text_45r5b5": "Простые тарифы без сюрпризов",
     "text_300cko": "Начать 7-дневный пробный период",
     "text_35oqj6": "Начать бесплатно",
@@ -835,7 +835,12 @@
     "col_latest_upload": "Последняя загрузка",
     "no_portfolios": "Пользователей с портфолио пока нет",
     "no_portfolio_items": "Нет элементов портфолио",
-    "unpublished": "Черновик"
+    "unpublished": "Черновик",
+    "decoration_pool_title": "Пул идей для декораций",
+    "decoration_pool_total": "всего",
+    "decoration_pool_refresh": "Обновить",
+    "decoration_pool_replenish": "Сгенерировать ещё",
+    "decoration_pool_replenishing": "Генерация..."
   },
   "chat": {
     "title": "Glow Assistant",
