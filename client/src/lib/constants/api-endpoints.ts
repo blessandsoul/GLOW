@@ -100,6 +100,9 @@ export const API_ENDPOINTS = {
         POOL_STATUS: '/decorations/pool-status',
         REPLENISH: '/decorations/replenish',
     },
+    MASTERS: {
+        FEATURED: '/masters/featured',
+    },
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',
         SERVICE_CATEGORIES: '/catalog/service-categories',

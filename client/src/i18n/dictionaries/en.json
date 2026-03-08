@@ -162,8 +162,9 @@
       "nail",
       "makeup"
     ],
-    "description": "Forget hours spent in editors. Upload your work photo, and our neural network will create a magazine-quality retouch in 5 seconds, preserving natural skin texture.",
+    "description": "Upload your work photo, and our neural network will create a magazine-quality retouch in 5 seconds. 5 free photos every day.",
     "btn_start": "Start for free",
+    "daily_free_note": "5 free photos every day — no card needed",
     "stats_title": "Professionals' choice",
     "stats_desc": "Over 50,000 processed photos",
     "stats_label_photos": "photos",
@@ -903,6 +904,13 @@
     "privacy": "Privacy Policy",
     "refund": "Refund Policy",
     "all_rights": "All rights reserved."
+  },
+  "masters": {
+    "section_title": "Our Masters",
+    "section_subtitle": "Professionals on Glow.GE",
+    "scroll_left": "Scroll left",
+    "scroll_right": "Scroll right",
+    "view_portfolio": "View portfolio"
   },
   "decorations": {
     "section_title": "Decorations",

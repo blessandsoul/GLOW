@@ -16,6 +16,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { HeroEditorial } from '@/features/landing/components/HeroEditorial';
 import { HeroStats } from '@/features/landing/components/HeroStats';
 import { HeroCards } from '@/features/landing/components/HeroCards';
+import { FeaturedMasters } from '@/features/masters/components/FeaturedMasters';
 import { ROUTES } from '@/lib/constants/routes';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
@@ -73,7 +74,7 @@ export default function HomePage(): React.ReactElement {
                             <div className="hidden items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-3 py-1.5 shadow-sm sm:flex">
                                 <Diamond size={14} weight="fill" className="text-primary" />
                                 <span className="text-xs font-semibold text-primary">
-                                    {IS_LAUNCH_MODE ? '5 უფასო / დღეში' : t('header.free_photos')}
+                                    {t('header.free_photos')}
                                 </span>
                             </div>
                         )}
@@ -182,7 +183,7 @@ export default function HomePage(): React.ReactElement {
                                     <Diamond size={14} weight="fill" />
                                 </motion.span>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                                    {IS_LAUNCH_MODE ? '5 უფასო / დღეში' : t('header.free_photos')}
+                                    {t('header.free_photos')}
                                 </span>
                             </motion.div>
 
@@ -265,6 +266,9 @@ export default function HomePage(): React.ReactElement {
                         </motion.div>
                     </div>
                 </div>
+
+                {/* ── Featured Masters ── */}
+                <FeaturedMasters />
 
                 {/* ── How It Works Section ── */}
                 <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 mt-12 mb-20 relative z-20">
