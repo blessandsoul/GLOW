@@ -44,6 +44,8 @@ export const API_ENDPOINTS = {
     FILTERS: {
         LIST: '/filters',
         SUGGEST_VARIABLES: '/filters/suggest-variables',
+        VARIABLE_POOL_STATUS: '/filters/variable-pool-status',
+        REPLENISH_VARIABLES: '/filters/replenish-variables',
     },
     UPLOAD: '/upload',
     JOBS: {

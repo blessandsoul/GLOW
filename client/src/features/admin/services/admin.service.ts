@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api/axios.config';
 import type { ApiResponse, PaginatedApiResponse, PaginationMeta } from '@/lib/api/api.types';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
-import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus, VariablePoolStatus } from '../types/admin.types';
 
 class AdminService {
     async getUsers(params?: {
@@ -84,6 +84,17 @@ class AdminService {
 
     async replenishDecorationPool(): Promise<void> {
         await apiClient.post(API_ENDPOINTS.DECORATIONS.REPLENISH);
+    }
+
+    async getVariablePoolStatus(): Promise<VariablePoolStatus> {
+        const { data } = await apiClient.get<ApiResponse<VariablePoolStatus>>(
+            API_ENDPOINTS.FILTERS.VARIABLE_POOL_STATUS,
+        );
+        return data.data;
+    }
+
+    async replenishVariablePool(): Promise<void> {
+        await apiClient.post(API_ENDPOINTS.FILTERS.REPLENISH_VARIABLES);
     }
 }
 

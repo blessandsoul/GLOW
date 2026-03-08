@@ -846,7 +846,8 @@
     "decoration_pool_total": "total",
     "decoration_pool_refresh": "Refresh",
     "decoration_pool_replenish": "Generate more",
-    "decoration_pool_replenishing": "Generating..."
+    "decoration_pool_replenishing": "Generating...",
+    "variable_pool_title": "Variable Ideas Pool"
   },
   "chat": {
     "title": "Glow Assistant",

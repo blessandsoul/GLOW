@@ -9,6 +9,7 @@ import { AdminStatsCards } from '@/features/admin/components/AdminStatsCards';
 import { AdminUsersTable } from '@/features/admin/components/AdminUsersTable';
 import { AdminPortfoliosTable } from '@/features/admin/components/AdminPortfoliosTable';
 import { AdminDecorationPool } from '@/features/admin/components/AdminDecorationPool';
+import { AdminVariablePool } from '@/features/admin/components/AdminVariablePool';
 import { ROUTES } from '@/lib/constants/routes';
 
 function AdminPageContent(): React.ReactElement {
@@ -39,6 +40,8 @@ function AdminPageContent(): React.ReactElement {
             <AdminStatsCards stats={stats} isLoading={statsLoading} />
 
             <AdminDecorationPool />
+
+            <AdminVariablePool />
 
             <Suspense>
                 <AdminUsersTable />

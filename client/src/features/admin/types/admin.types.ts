@@ -64,3 +64,12 @@ export interface AdminPortfolioItem {
     sortOrder: number;
     createdAt: string;
 }
+
+export interface VariablePoolCount {
+    variableId: string;
+    count: number;
+}
+
+export interface VariablePoolStatus {
+    counts: VariablePoolCount[];
+}

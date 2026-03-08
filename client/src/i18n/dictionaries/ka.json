@@ -883,7 +883,8 @@
     "decoration_pool_total": "სულ",
     "decoration_pool_refresh": "განახლება",
     "decoration_pool_replenish": "მეტის გენერაცია",
-    "decoration_pool_replenishing": "გენერაცია..."
+    "decoration_pool_replenishing": "გენერაცია...",
+    "variable_pool_title": "ვარიაბლების იდეების პული"
   },
   "chat": {
     "title": "Glow ასისტენტი",

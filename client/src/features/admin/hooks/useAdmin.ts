@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus, VariablePoolStatus } from '../types/admin.types';
 import type { PaginationMeta } from '@/lib/api/api.types';
 
 export function useAdminUsers(
@@ -169,9 +169,46 @@ export function useReplenishDecorationPool(): {
         mutationFn: () => adminService.replenishDecorationPool(),
         onSuccess: () => {
             toast.success('Decoration pool replenishment started');
-            // Refetch pool status after a short delay to show updated counts
             setTimeout(() => {
                 queryClient.invalidateQueries({ queryKey: ['admin', 'decoration-pool'] });
+            }, 3000);
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
+    });
+
+    return { replenish: mutate, isPending };
+}
+
+export function useVariablePoolStatus(): {
+    pool: VariablePoolStatus | undefined;
+    isLoading: boolean;
+    refetch: () => void;
+} {
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['admin', 'variable-pool'],
+        queryFn: () => adminService.getVariablePoolStatus(),
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return { pool: data, isLoading, refetch };
+}
+
+export function useReplenishVariablePool(): {
+    replenish: () => void;
+    isPending: boolean;
+} {
+    const queryClient = useQueryClient();
+    const { mutate, isPending } = useMutation({
+        mutationFn: () => adminService.replenishVariablePool(),
+        onSuccess: () => {
+            toast.success('Variable pool replenishment started');
+            setTimeout(() => {
+                queryClient.invalidateQueries({ queryKey: ['admin', 'variable-pool'] });
             }, 3000);
         },
         onError: (error) => {

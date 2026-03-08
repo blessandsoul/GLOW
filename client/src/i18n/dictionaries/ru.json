@@ -842,7 +842,8 @@
     "decoration_pool_total": "всего",
     "decoration_pool_refresh": "Обновить",
     "decoration_pool_replenish": "Сгенерировать ещё",
-    "decoration_pool_replenishing": "Генерация..."
+    "decoration_pool_replenishing": "Генерация...",
+    "variable_pool_title": "Пул идей для переменных"
   },
   "chat": {
     "title": "Glow Assistant",
