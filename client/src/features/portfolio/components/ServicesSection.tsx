@@ -34,7 +34,7 @@ export function ServicesSection({ form, updateField }: ServicesSectionProps): Re
     }, [form.services, updateField]);
 
     const handleServiceChange = useCallback(
-        (index: number, field: keyof ServiceItem, value: string | number): void => {
+        (index: number, field: keyof ServiceItem, value: string | number | boolean): void => {
             updateField('services', form.services.map((s, i) =>
                 i === index ? { ...s, [field]: value } : s
             ));

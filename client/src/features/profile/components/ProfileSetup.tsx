@@ -103,6 +103,7 @@ export function ProfileSetup(): React.ReactElement {
                     name: s.name,
                     price: s.price,
                     priceType: (s as ServiceItem).priceType ?? 'fixed',
+                    startingFrom: (s as ServiceItem).startingFrom ?? false,
                     category: (s as ServiceItem).category ?? 'other',
                 })),
             });
