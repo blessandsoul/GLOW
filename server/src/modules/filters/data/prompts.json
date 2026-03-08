@@ -17,6 +17,15 @@
       "icon": "Sparkle",
       "count": 9,
       "sortOrder": 1
+    },
+    {
+      "id": "prism",
+      "label_ka": "ვარცხნილობა",
+      "label_ru": "ПРИЧЁСКИ",
+      "label_en": "HAIRSTYLES",
+      "icon": "Scissors",
+      "count": 1,
+      "sortOrder": 2
     }
   ],
   "subcategories": [],
@@ -2148,6 +2157,560 @@
               "label_en": "Highlighter",
               "label_ru": "Хайлайтер",
               "label_ka": "ჰაილაითერი"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prism-master-hair",
+      "categoryId": "prism",
+      "name_en": "Hair Transformation",
+      "name_ru": "Смена причёски",
+      "name_ka": "ვარცხნილობის ცვლილება",
+      "description_en": "Change hairstyle, color, and length while preserving everything else",
+      "description_ru": "Смена причёски, цвета и длины волос с сохранением всего остального",
+      "description_ka": "ვარცხნილობის, ფერის და სიგრძის შეცვლა, ყველაფერ დანარჩენის შენარჩუნებით",
+      "previewUrl": "/filters/prism/hair.webp",
+      "prompt": "Edit the uploaded photo — hair transformation only. PRESERVE ABSOLUTELY: Face identity 100% identical — facial structure, bone structure, jawline, chin, proportions, age, expression completely unchanged. Eyes: shape, color, irises, pupils, eyelids unchanged. Eyelashes: exact original length, curl, thickness, direction, density — zero modification. Eyebrows: exact original shape, color, direction, arch, thickness — zero modification. Nose shape and size unchanged. Lips: shape, size, color, texture unchanged. Skin tone, skin color, color temperature unchanged. Makeup: if any present, keep pixel-identical. Body shape, proportions, clothing, accessories, jewelry, pose unchanged. Ears unchanged. Neck and shoulders unchanged. Background, environment, camera angle, framing, crop unchanged. Lighting direction, shadows, contrast unchanged. SKIN: [SKIN_RETOUCH_LEVEL]. HAIR TRANSFORMATION — replace ONLY the hair on the head with the following: Style: [HAIR_STYLE]. Color: [HAIR_COLOR]. Length: [HAIR_LENGTH]. Texture and finish: [HAIR_TEXTURE]. The new hair MUST look completely natural on this specific person — matching their skin tone, face shape, head shape, and ear position. Hairline must blend seamlessly with the forehead. Hair must have realistic individual strand detail, natural light interaction, proper shadows where hair meets face and neck. If the person is wearing a hat, headband, or hair accessory, keep the accessory and adapt the hair around it naturally. Hair must have proper volume, weight, and movement appropriate to the chosen style. No wig-like appearance — the hair must look grown, not placed. [EXTRAS]. BACKGROUND: [BACKGROUND]. QUALITY: Preserve original lighting direction, shadows, contrast. Preserve original color correction and white balance. No filters added. Ultra-photorealistic result. Sharp focus. 8K quality. Original dimensions — do not crop or resize.",
+      "sortOrder": 0,
+      "variables": [
+        {
+          "id": "HAIR_STYLE",
+          "type": "select",
+          "label_en": "Hairstyle",
+          "label_ru": "Причёска",
+          "label_ka": "ვარცხნილობა",
+          "required": true,
+          "default": "long-layers",
+          "options": [
+            {
+              "id": "long-layers",
+              "value": "Long layered haircut with face-framing layers, soft movement, graduated lengths blending naturally from shorter at the face to longer at the back",
+              "label_en": "Long Layers",
+              "label_ru": "Длинные слои",
+              "label_ka": "გრძელი ფენები"
+            },
+            {
+              "id": "bob",
+              "value": "Classic chin-length bob cut — clean straight lines, even length all around, slight inward curl at the ends, polished and structured",
+              "label_en": "Classic Bob",
+              "label_ru": "Классическое каре",
+              "label_ka": "კლასიკური კარე"
+            },
+            {
+              "id": "french-bob",
+              "value": "Short French bob just below the ears with subtle lip-length curtain bangs, textured and slightly tousled, effortlessly chic Parisian look",
+              "label_en": "French Bob",
+              "label_ru": "Французское каре",
+              "label_ka": "ფრანგული კარე"
+            },
+            {
+              "id": "lob",
+              "value": "Long bob (lob) cut falling between chin and collarbone, blunt ends with minimal layering, modern and versatile",
+              "label_en": "Long Bob (Lob)",
+              "label_ru": "Удлинённое каре",
+              "label_ka": "მოგრძელებული კარე"
+            },
+            {
+              "id": "pixie",
+              "value": "Short pixie cut with longer textured top swept to one side, cropped close at the sides and nape, bold and feminine",
+              "label_en": "Pixie Cut",
+              "label_ru": "Пикси",
+              "label_ka": "პიქსი"
+            },
+            {
+              "id": "wolf-cut",
+              "value": "Shaggy wolf cut with heavy layers, curtain bangs, choppy textured ends, voluminous crown with wispy thin ends — 70s rock-inspired",
+              "label_en": "Wolf Cut",
+              "label_ru": "Вулф-кат",
+              "label_ka": "ვოლფ-კატი"
+            },
+            {
+              "id": "butterfly",
+              "value": "Butterfly cut with dramatic face-framing shorter layers on top blending into longer lengths below, voluminous bouncy movement, blown-out finish",
+              "label_en": "Butterfly Cut",
+              "label_ru": "Баттерфляй",
+              "label_ka": "ბატერფლაი"
+            },
+            {
+              "id": "shag",
+              "value": "Modern shag haircut with lots of choppy layers throughout, piece-y textured bangs, lived-in messy volume, effortless rock-and-roll feel",
+              "label_en": "Shag",
+              "label_ru": "Шэг",
+              "label_ka": "შეგი"
+            },
+            {
+              "id": "blunt-cut",
+              "value": "Perfectly blunt straight cut with zero layering — sharp clean edge, sleek and geometric, editorial precision",
+              "label_en": "Blunt Cut",
+              "label_ru": "Прямой срез",
+              "label_ka": "სწორი ჭრა"
+            },
+            {
+              "id": "curtain-bangs",
+              "value": "Face-framing curtain bangs parted in the center, feathered and tapered at the sides, blending into the length naturally — Bardot-inspired",
+              "label_en": "Curtain Bangs",
+              "label_ru": "Шторка",
+              "label_ka": "ფარდის ბანგი"
+            },
+            {
+              "id": "beach-waves",
+              "value": "Loose tousled beach waves with natural-looking bends and movement, sun-kissed casual texture, effortless vacation hair",
+              "label_en": "Beach Waves",
+              "label_ru": "Пляжные волны",
+              "label_ka": "ზღვის ტალღები"
+            },
+            {
+              "id": "straight-blowout",
+              "value": "Salon-perfect straight blowout — sleek, shiny, smooth, bouncy ends with slight inward curve, mirror-like shine, professional finish",
+              "label_en": "Straight Blowout",
+              "label_ru": "Гладкая укладка",
+              "label_ka": "გლუვი უკლადკა"
+            },
+            {
+              "id": "updo",
+              "value": "Elegant updo with hair swept up and twisted into a sophisticated chignon or French twist, face-framing tendrils left loose, formal and refined",
+              "label_en": "Elegant Updo",
+              "label_ru": "Элегантная причёска",
+              "label_ka": "ელეგანტური ვარცხნილობა"
+            },
+            {
+              "id": "ponytail",
+              "value": "Sleek high ponytail pulled tight and smooth, no flyaways, straight and flowing tail with mirror-like shine, supermodel runway look",
+              "label_en": "Sleek Ponytail",
+              "label_ru": "Гладкий хвост",
+              "label_ka": "გლუვი კუდი"
+            },
+            {
+              "id": "braids",
+              "value": "Two loose romantic braids framing the face, slightly undone textured weave with soft wisps pulled free, bohemian and feminine",
+              "label_en": "Braids",
+              "label_ru": "Косы",
+              "label_ka": "ნაწნავი"
+            },
+            {
+              "id": "messy-bun",
+              "value": "Effortless messy bun with loose face-framing pieces, slightly undone and tousled, casual chic with visible hair texture and soft flyaways",
+              "label_en": "Messy Bun",
+              "label_ru": "Небрежный пучок",
+              "label_ka": "უხეში ფუნთუშა"
+            },
+            {
+              "id": "side-part",
+              "value": "Deep dramatic side part with hair swept heavily to one side, old Hollywood glamour, smooth and voluminous wave on the heavy side",
+              "label_en": "Deep Side Part",
+              "label_ru": "Глубокий боковой пробор",
+              "label_ka": "ღრმა გვერდითი გაყოფა"
+            },
+            {
+              "id": "middle-part",
+              "value": "Clean center middle part with hair falling equally on both sides, sleek and symmetric, modern minimalist aesthetic",
+              "label_en": "Middle Part",
+              "label_ru": "Прямой пробор",
+              "label_ka": "ცენტრალური გაყოფა"
+            },
+            {
+              "id": "bangs-straight",
+              "value": "Full straight-across bangs cut just above the eyebrows, dense and blunt, paired with straight flowing hair below — bold and graphic",
+              "label_en": "Straight Bangs",
+              "label_ru": "Прямая чёлка",
+              "label_ka": "სწორი ბანგი"
+            },
+            {
+              "id": "hollywood-waves",
+              "value": "Classic Old Hollywood finger waves — deep S-shaped waves sculpted close to the head, ultra-glossy, glamorous and retro with vintage elegance",
+              "label_en": "Hollywood Waves",
+              "label_ru": "Голливудские волны",
+              "label_ka": "ჰოლივუდის ტალღები"
+            }
+          ]
+        },
+        {
+          "id": "HAIR_COLOR",
+          "type": "select",
+          "label_en": "Hair Color",
+          "label_ru": "Цвет волос",
+          "label_ka": "თმის ფერი",
+          "required": true,
+          "default": "chocolate-brown",
+          "options": [
+            {
+              "id": "platinum-blonde",
+              "value": "Bright platinum blonde — icy cool-toned white-blonde with no warm undertones, even color from root to tip, editorial high-fashion blonde",
+              "label_en": "Platinum Blonde",
+              "label_ru": "Платиновый блонд",
+              "label_ka": "პლატინის ქერა"
+            },
+            {
+              "id": "honey-blonde",
+              "value": "Warm honey blonde — rich golden-toned medium blonde, sun-warmed and dimensional, natural-looking warmth throughout",
+              "label_en": "Honey Blonde",
+              "label_ru": "Медовый блонд",
+              "label_ka": "თაფლის ქერა"
+            },
+            {
+              "id": "ash-blonde",
+              "value": "Cool ash blonde — smoky grey-toned blonde with zero warmth, modern Scandinavian feel, muted and sophisticated",
+              "label_en": "Ash Blonde",
+              "label_ru": "Пепельный блонд",
+              "label_ka": "ნაცრისფერი ქერა"
+            },
+            {
+              "id": "strawberry-blonde",
+              "value": "Strawberry blonde — delicate blend of warm golden blonde with subtle peachy-pink copper tones, rare and romantic natural color",
+              "label_en": "Strawberry Blonde",
+              "label_ru": "Клубничный блонд",
+              "label_ka": "მარწყვის ქერა"
+            },
+            {
+              "id": "light-brown",
+              "value": "Light brown — warm chestnut-leaning brown, natural and sun-kissed, the universal flattering brunette shade",
+              "label_en": "Light Brown",
+              "label_ru": "Светло-русый",
+              "label_ka": "ღია ყავისფერი"
+            },
+            {
+              "id": "chocolate-brown",
+              "value": "Rich chocolate brown — deep warm brown with red-brown undertones, glossy and luxurious like melted dark chocolate",
+              "label_en": "Chocolate Brown",
+              "label_ru": "Шоколадный",
+              "label_ka": "შოკოლადი"
+            },
+            {
+              "id": "dark-brown",
+              "value": "Dark brown — deep espresso brown, nearly black but with visible warm brown dimension in the light, classic and elegant",
+              "label_en": "Dark Brown",
+              "label_ru": "Тёмно-каштановый",
+              "label_ka": "მუქი ყავისფერი"
+            },
+            {
+              "id": "jet-black",
+              "value": "Jet black — true deep black with blue-cool reflections under light, dramatic high-contrast, striking and bold",
+              "label_en": "Jet Black",
+              "label_ru": "Чёрный",
+              "label_ka": "შავი"
+            },
+            {
+              "id": "auburn",
+              "value": "Auburn — rich reddish-brown with warm copper undertones, autumnal and sophisticated, natural-looking red-brown",
+              "label_en": "Auburn",
+              "label_ru": "Каштановый",
+              "label_ka": "წაბლისფერი"
+            },
+            {
+              "id": "copper-red",
+              "value": "Vibrant copper red — bright warm metallic red-orange, fiery and eye-catching, like polished copper in sunlight",
+              "label_en": "Copper Red",
+              "label_ru": "Медный",
+              "label_ka": "სპილენძის წითელი"
+            },
+            {
+              "id": "burgundy",
+              "value": "Deep burgundy — rich wine-red with purple undertones, dark and dramatic, luxurious deep jewel tone",
+              "label_en": "Burgundy",
+              "label_ru": "Бургунди",
+              "label_ka": "ბურგუნდი"
+            },
+            {
+              "id": "rose-gold-hair",
+              "value": "Rose gold — soft metallic pink-gold blend, warm and iridescent, trendy and feminine, subtle enough to look natural",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "silver-grey",
+              "value": "Silver grey — cool-toned metallic silver-grey, even and intentional, modern and editorial, not aged but deliberately styled",
+              "label_en": "Silver Grey",
+              "label_ru": "Серебристо-серый",
+              "label_ka": "ვერცხლისფერი ნაცრისფერი"
+            },
+            {
+              "id": "caramel-highlights",
+              "value": "Base dark brown with caramel blonde highlights — warm golden-toned ribbons of lighter color woven through, sun-kissed dimensional balayage effect",
+              "label_en": "Caramel Highlights",
+              "label_ru": "Карамельное мелирование",
+              "label_ka": "კარამელის ჰაილაითი"
+            },
+            {
+              "id": "balayage-brunette",
+              "value": "Brunette balayage — dark brown roots transitioning to warm honey-brown mid-lengths and light golden-brown ends, hand-painted natural gradient",
+              "label_en": "Balayage Brunette",
+              "label_ru": "Балаяж брюнет",
+              "label_ka": "ბალაიაჟი ბრუნეტი"
+            },
+            {
+              "id": "ombre-dark-light",
+              "value": "Ombre from dark roots to light ends — deep dark brown at the roots melting into warm blonde at the ends, dramatic gradient transition",
+              "label_en": "Ombre Dark to Light",
+              "label_ru": "Омбре тёмный-светлый",
+              "label_ka": "ომბრე მუქიდან ნათელზე"
+            },
+            {
+              "id": "pastel-pink",
+              "value": "Pastel pink — soft baby pink throughout, even pastel tone from root to tip, fantasy editorial color, cotton-candy delicate",
+              "label_en": "Pastel Pink",
+              "label_ru": "Пастельный розовый",
+              "label_ka": "პასტელური ვარდისფერი"
+            },
+            {
+              "id": "lavender",
+              "value": "Lavender — soft muted purple-lilac tone, dreamy and ethereal, cool-toned pastel purple, fantasy editorial color",
+              "label_en": "Lavender",
+              "label_ru": "Лавандовый",
+              "label_ka": "ლავანდა"
+            },
+            {
+              "id": "natural-red",
+              "value": "Natural ginger red — warm true-red with golden undertones, realistic natural redhead color, freckle-compatible, Irish-inspired",
+              "label_en": "Natural Red",
+              "label_ru": "Натуральный рыжий",
+              "label_ka": "ბუნებრივი წითელი"
+            },
+            {
+              "id": "bronde",
+              "value": "Bronde — perfect blend halfway between brunette and blonde, warm dimensional color that shifts between light brown and dark blonde in different lighting",
+              "label_en": "Bronde",
+              "label_ru": "Бронд",
+              "label_ka": "ბრონდი"
+            }
+          ]
+        },
+        {
+          "id": "HAIR_LENGTH",
+          "type": "select",
+          "label_en": "Length",
+          "label_ru": "Длина",
+          "label_ka": "სიგრძე",
+          "required": true,
+          "default": "medium",
+          "options": [
+            {
+              "id": "short",
+              "value": "Short length — hair ending above the chin, close to the head, cropped and neat",
+              "label_en": "Short",
+              "label_ru": "Короткие",
+              "label_ka": "მოკლე"
+            },
+            {
+              "id": "medium",
+              "value": "Medium length — hair falling between chin and shoulders, versatile mid-length",
+              "label_en": "Medium",
+              "label_ru": "Средние",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "long",
+              "value": "Long length — hair reaching past the shoulders to mid-back, flowing and full",
+              "label_en": "Long",
+              "label_ru": "Длинные",
+              "label_ka": "გრძელი"
+            },
+            {
+              "id": "extra-long",
+              "value": "Extra long length — hair reaching to the waist or beyond, dramatic length with full body and movement",
+              "label_en": "Extra Long",
+              "label_ru": "Очень длинные",
+              "label_ka": "ძალიან გრძელი"
+            }
+          ]
+        },
+        {
+          "id": "HAIR_TEXTURE",
+          "type": "select",
+          "label_en": "Texture",
+          "label_ru": "Текстура",
+          "label_ka": "ტექსტურა",
+          "required": true,
+          "default": "natural-waves",
+          "options": [
+            {
+              "id": "sleek-straight",
+              "value": "Sleek perfectly straight hair — smooth, flat, mirror-shine, no wave or bend, salon-blowout finish, each strand aligned",
+              "label_en": "Sleek Straight",
+              "label_ru": "Гладкие прямые",
+              "label_ka": "გლუვი სწორი"
+            },
+            {
+              "id": "natural-waves",
+              "value": "Natural soft waves — gentle S-shaped bends, organic and lived-in, not overly styled, realistic effortless texture",
+              "label_en": "Natural Waves",
+              "label_ru": "Естественные волны",
+              "label_ka": "ბუნებრივი ტალღები"
+            },
+            {
+              "id": "loose-curls",
+              "value": "Loose romantic curls — large barrel-sized spiral curls with bounce and movement, soft and touchable, not tight ringlets",
+              "label_en": "Loose Curls",
+              "label_ru": "Лёгкие кудри",
+              "label_ka": "თავისუფალი ხვეულები"
+            },
+            {
+              "id": "tight-curls",
+              "value": "Tight defined curls — smaller springy spiral curls with defined coil pattern, voluminous and structured, natural curl texture",
+              "label_en": "Tight Curls",
+              "label_ru": "Тугие кудри",
+              "label_ka": "მჭიდრო ხვეულები"
+            },
+            {
+              "id": "voluminous-blowout",
+              "value": "Voluminous bouncy blowout — maximum root lift, big round-brush body, ends flipped outward or inward, salon-fresh dramatic volume",
+              "label_en": "Voluminous Blowout",
+              "label_ru": "Объёмная укладка",
+              "label_ka": "მოცულობითი უკლადკა"
+            },
+            {
+              "id": "wet-look",
+              "value": "Wet-look finish — slicked and glossy as if freshly out of water or styled with gel, high shine, sculpted and editorial",
+              "label_en": "Wet Look",
+              "label_ru": "Эффект мокрых волос",
+              "label_ka": "სველი ეფექტი"
+            }
+          ]
+        },
+        {
+          "id": "BACKGROUND",
+          "type": "select",
+          "label_en": "Background",
+          "label_ru": "Фон",
+          "label_ka": "ფონი",
+          "required": true,
+          "default": "white-studio",
+          "options": [
+            {
+              "id": "white-studio",
+              "value": "Clean solid white studio background — bright, airy, professional",
+              "label_en": "White Studio",
+              "label_ru": "Белая студия",
+              "label_ka": "თეთრი სტუდია"
+            },
+            {
+              "id": "black",
+              "value": "Solid deep black background — dramatic high-contrast editorial",
+              "label_en": "Black",
+              "label_ru": "Чёрный",
+              "label_ka": "შავი"
+            },
+            {
+              "id": "rose-gold",
+              "value": "Soft gradient from deep rose-gold to warm nude — luxury cosmetic brand aesthetic. Subtle bokeh light particles floating in the background, warm and romantic",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "dusty-rose",
+              "value": "Muted dusty rose background with grey undertone — editorial, high-fashion, ash-pink studio backdrop",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "value": "Soft luminous pearl-white gradient with subtle warm undertone — clean, glowing, airy. Faint dewy mist effect in the background creating depth. Premium skincare campaign feel — pure, fresh, radiant",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "value": "Deep velvet black with subtle warm amber light spill from behind the model — creating elegant rim separation. Faint golden dust particles floating in the background, barely visible. Luxury lash brand campaign feel",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "value": "Rich deep chocolate-to-caramel gradient with warm golden bokeh highlights scattered softly — luxury hair salon campaign aesthetic",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
+            },
+            {
+              "id": "floral",
+              "value": "Soft out-of-focus floral background with warm blush tones and scattered petals — romantic beauty campaign feel",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            }
+          ]
+        },
+        {
+          "id": "SKIN_RETOUCH_LEVEL",
+          "type": "select",
+          "label_en": "Skin Retouch",
+          "label_ru": "Ретушь кожи",
+          "label_ka": "კანის რეტუში",
+          "required": true,
+          "default": "medium",
+          "options": [
+            {
+              "id": "light",
+              "value": "Ultra-detailed natural texture — visible pores, microtexture, natural imperfections preserved. Remove only minor blemishes (acne, redness). Even skin tone. No smoothing, no airbrushing",
+              "label_en": "Light",
+              "label_ru": "Лёгкая",
+              "label_ka": "მსუბუქი"
+            },
+            {
+              "id": "medium",
+              "value": "Ultra-detailed natural texture — visible pores preserved. Remove minor blemishes. Radiant healthy glow, hydrated dewy finish. No smoothing, no airbrushing",
+              "label_en": "Medium",
+              "label_ru": "Средняя",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "full",
+              "value": "Ultra-detailed natural texture — visible pores, microtexture, natural imperfections preserved. Retain natural texture with visible pores, remove only minor blemishes (acne, redness). Radiant healthy glow, hydrated dewy finish. High-shine editorial glow. No smoothing, no airbrushing. Subtle natural freckles preserved if present",
+              "label_en": "Full Editorial",
+              "label_ru": "Полная",
+              "label_ka": "სრული"
+            }
+          ]
+        },
+        {
+          "id": "EXTRAS",
+          "type": "multi-select",
+          "label_en": "Extra Effects",
+          "label_ru": "Доп. эффекты",
+          "label_ka": "დამატებითი ეფექტები",
+          "required": false,
+          "default": [],
+          "options": [
+            {
+              "id": "wet-skin",
+              "value": "Add wet dewy skin effect on face — glistening highlights, fresh hydrated look",
+              "label_en": "Wet Skin",
+              "label_ru": "Влажная кожа",
+              "label_ka": "სველი კანი"
+            },
+            {
+              "id": "freckles",
+              "value": "Add soft natural freckles across nose and cheeks — delicate, barely noticeable, photorealistic",
+              "label_en": "Freckles",
+              "label_ru": "Веснушки",
+              "label_ka": "ჭორფლები"
+            },
+            {
+              "id": "rim-light",
+              "value": "Add rim light from behind — golden separation light on hair and shoulders for depth",
+              "label_en": "Rim Light",
+              "label_ru": "Контровой свет",
+              "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "value": "Add subtle highlighter effect on cheekbone tops, nose tip, and cupid's bow — editorial luminous finish",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
+            },
+            {
+              "id": "hair-shine",
+              "value": "Add extra glossy mirror-like shine to the hair — luxurious salon-fresh reflection and light play on every strand",
+              "label_en": "Hair Shine Boost",
+              "label_ru": "Блеск волос",
+              "label_ka": "თმის ბზინვარება"
             }
           ]
         }

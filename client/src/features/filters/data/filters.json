@@ -19,6 +19,16 @@
       "count": 9,
       "sortOrder": 1,
       "coverUrl": "/filters/obsidian/obsidian-cover.png"
+    },
+    {
+      "id": "prism",
+      "label_ka": "ვარცხნილობა",
+      "label_ru": "ПРИЧЁСКИ",
+      "label_en": "HAIRSTYLES",
+      "icon": "Scissors",
+      "count": 1,
+      "sortOrder": 2,
+      "coverUrl": "/filters/prism/prism-cover.png"
     }
   ],
   "subcategories": [],
@@ -1976,6 +1986,493 @@
               "label_en": "Highlighter",
               "label_ru": "Хайлайтер",
               "label_ka": "ჰაილაითერი"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prism-master-hair",
+      "categoryId": "prism",
+      "name_en": "Hair Transformation",
+      "name_ru": "Смена причёски",
+      "name_ka": "ვარცხნილობის ცვლილება",
+      "description_en": "Change hairstyle, color, and length while preserving everything else",
+      "description_ru": "Смена причёски, цвета и длины волос с сохранением всего остального",
+      "description_ka": "ვარცხნილობის, ფერის და სიგრძის შეცვლა, ყველაფერ დანარჩენის შენარჩუნებით",
+      "previewUrl": "/filters/prism/hair.webp",
+      "sortOrder": 0,
+      "variables": [
+        {
+          "id": "HAIR_STYLE",
+          "type": "select",
+          "label_en": "Hairstyle",
+          "label_ru": "Причёска",
+          "label_ka": "ვარცხნილობა",
+          "required": true,
+          "default": "long-layers",
+          "options": [
+            {
+              "id": "long-layers",
+              "label_en": "Long Layers",
+              "label_ru": "Длинные слои",
+              "label_ka": "გრძელი ფენები"
+            },
+            {
+              "id": "bob",
+              "label_en": "Classic Bob",
+              "label_ru": "Классическое каре",
+              "label_ka": "კლასიკური კარე"
+            },
+            {
+              "id": "french-bob",
+              "label_en": "French Bob",
+              "label_ru": "Французское каре",
+              "label_ka": "ფრანგული კარე"
+            },
+            {
+              "id": "lob",
+              "label_en": "Long Bob (Lob)",
+              "label_ru": "Удлинённое каре",
+              "label_ka": "მოგრძელებული კარე"
+            },
+            {
+              "id": "pixie",
+              "label_en": "Pixie Cut",
+              "label_ru": "Пикси",
+              "label_ka": "პიქსი"
+            },
+            {
+              "id": "wolf-cut",
+              "label_en": "Wolf Cut",
+              "label_ru": "Вулф-кат",
+              "label_ka": "ვოლფ-კატი"
+            },
+            {
+              "id": "butterfly",
+              "label_en": "Butterfly Cut",
+              "label_ru": "Баттерфляй",
+              "label_ka": "ბატერფლაი"
+            },
+            {
+              "id": "shag",
+              "label_en": "Shag",
+              "label_ru": "Шэг",
+              "label_ka": "შეგი"
+            },
+            {
+              "id": "blunt-cut",
+              "label_en": "Blunt Cut",
+              "label_ru": "Прямой срез",
+              "label_ka": "სწორი ჭრა"
+            },
+            {
+              "id": "curtain-bangs",
+              "label_en": "Curtain Bangs",
+              "label_ru": "Шторка",
+              "label_ka": "ფარდის ბანგი"
+            },
+            {
+              "id": "beach-waves",
+              "label_en": "Beach Waves",
+              "label_ru": "Пляжные волны",
+              "label_ka": "ზღვის ტალღები"
+            },
+            {
+              "id": "straight-blowout",
+              "label_en": "Straight Blowout",
+              "label_ru": "Гладкая укладка",
+              "label_ka": "გლუვი უკლადკა"
+            },
+            {
+              "id": "updo",
+              "label_en": "Elegant Updo",
+              "label_ru": "Элегантная причёска",
+              "label_ka": "ელეგანტური ვარცხნილობა"
+            },
+            {
+              "id": "ponytail",
+              "label_en": "Sleek Ponytail",
+              "label_ru": "Гладкий хвост",
+              "label_ka": "გლუვი კუდი"
+            },
+            {
+              "id": "braids",
+              "label_en": "Braids",
+              "label_ru": "Косы",
+              "label_ka": "ნაწნავი"
+            },
+            {
+              "id": "messy-bun",
+              "label_en": "Messy Bun",
+              "label_ru": "Небрежный пучок",
+              "label_ka": "უხეში ფუნთუშა"
+            },
+            {
+              "id": "side-part",
+              "label_en": "Deep Side Part",
+              "label_ru": "Глубокий боковой пробор",
+              "label_ka": "ღრმა გვერდითი გაყოფა"
+            },
+            {
+              "id": "middle-part",
+              "label_en": "Middle Part",
+              "label_ru": "Прямой пробор",
+              "label_ka": "ცენტრალური გაყოფა"
+            },
+            {
+              "id": "bangs-straight",
+              "label_en": "Straight Bangs",
+              "label_ru": "Прямая чёлка",
+              "label_ka": "სწორი ბანგი"
+            },
+            {
+              "id": "hollywood-waves",
+              "label_en": "Hollywood Waves",
+              "label_ru": "Голливудские волны",
+              "label_ka": "ჰოლივუდის ტალღები"
+            }
+          ]
+        },
+        {
+          "id": "HAIR_COLOR",
+          "type": "select",
+          "label_en": "Hair Color",
+          "label_ru": "Цвет волос",
+          "label_ka": "თმის ფერი",
+          "required": true,
+          "default": "chocolate-brown",
+          "options": [
+            {
+              "id": "platinum-blonde",
+              "label_en": "Platinum Blonde",
+              "label_ru": "Платиновый блонд",
+              "label_ka": "პლატინის ქერა"
+            },
+            {
+              "id": "honey-blonde",
+              "label_en": "Honey Blonde",
+              "label_ru": "Медовый блонд",
+              "label_ka": "თაფლის ქერა"
+            },
+            {
+              "id": "ash-blonde",
+              "label_en": "Ash Blonde",
+              "label_ru": "Пепельный блонд",
+              "label_ka": "ნაცრისფერი ქერა"
+            },
+            {
+              "id": "strawberry-blonde",
+              "label_en": "Strawberry Blonde",
+              "label_ru": "Клубничный блонд",
+              "label_ka": "მარწყვის ქერა"
+            },
+            {
+              "id": "light-brown",
+              "label_en": "Light Brown",
+              "label_ru": "Светло-русый",
+              "label_ka": "ღია ყავისფერი"
+            },
+            {
+              "id": "chocolate-brown",
+              "label_en": "Chocolate Brown",
+              "label_ru": "Шоколадный",
+              "label_ka": "შოკოლადი"
+            },
+            {
+              "id": "dark-brown",
+              "label_en": "Dark Brown",
+              "label_ru": "Тёмно-каштановый",
+              "label_ka": "მუქი ყავისფერი"
+            },
+            {
+              "id": "jet-black",
+              "label_en": "Jet Black",
+              "label_ru": "Чёрный",
+              "label_ka": "შავი"
+            },
+            {
+              "id": "auburn",
+              "label_en": "Auburn",
+              "label_ru": "Каштановый",
+              "label_ka": "წაბლისფერი"
+            },
+            {
+              "id": "copper-red",
+              "label_en": "Copper Red",
+              "label_ru": "Медный",
+              "label_ka": "სპილენძის წითელი"
+            },
+            {
+              "id": "burgundy",
+              "label_en": "Burgundy",
+              "label_ru": "Бургунди",
+              "label_ka": "ბურგუნდი"
+            },
+            {
+              "id": "rose-gold-hair",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "silver-grey",
+              "label_en": "Silver Grey",
+              "label_ru": "Серебристо-серый",
+              "label_ka": "ვერცხლისფერი ნაცრისფერი"
+            },
+            {
+              "id": "caramel-highlights",
+              "label_en": "Caramel Highlights",
+              "label_ru": "Карамельное мелирование",
+              "label_ka": "კარამელის ჰაილაითი"
+            },
+            {
+              "id": "balayage-brunette",
+              "label_en": "Balayage Brunette",
+              "label_ru": "Балаяж брюнет",
+              "label_ka": "ბალაიაჟი ბრუნეტი"
+            },
+            {
+              "id": "ombre-dark-light",
+              "label_en": "Ombre Dark to Light",
+              "label_ru": "Омбре тёмный-светлый",
+              "label_ka": "ომბრე მუქიდან ნათელზე"
+            },
+            {
+              "id": "pastel-pink",
+              "label_en": "Pastel Pink",
+              "label_ru": "Пастельный розовый",
+              "label_ka": "პასტელური ვარდისფერი"
+            },
+            {
+              "id": "lavender",
+              "label_en": "Lavender",
+              "label_ru": "Лавандовый",
+              "label_ka": "ლავანდა"
+            },
+            {
+              "id": "natural-red",
+              "label_en": "Natural Red",
+              "label_ru": "Натуральный рыжий",
+              "label_ka": "ბუნებრივი წითელი"
+            },
+            {
+              "id": "bronde",
+              "label_en": "Bronde",
+              "label_ru": "Бронд",
+              "label_ka": "ბრონდი"
+            }
+          ]
+        },
+        {
+          "id": "HAIR_LENGTH",
+          "type": "select",
+          "label_en": "Length",
+          "label_ru": "Длина",
+          "label_ka": "სიგრძე",
+          "required": true,
+          "default": "medium",
+          "options": [
+            {
+              "id": "short",
+              "label_en": "Short",
+              "label_ru": "Короткие",
+              "label_ka": "მოკლე"
+            },
+            {
+              "id": "medium",
+              "label_en": "Medium",
+              "label_ru": "Средние",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "long",
+              "label_en": "Long",
+              "label_ru": "Длинные",
+              "label_ka": "გრძელი"
+            },
+            {
+              "id": "extra-long",
+              "label_en": "Extra Long",
+              "label_ru": "Очень длинные",
+              "label_ka": "ძალიან გრძელი"
+            }
+          ]
+        },
+        {
+          "id": "HAIR_TEXTURE",
+          "type": "select",
+          "label_en": "Texture",
+          "label_ru": "Текстура",
+          "label_ka": "ტექსტურა",
+          "required": true,
+          "default": "natural-waves",
+          "options": [
+            {
+              "id": "sleek-straight",
+              "label_en": "Sleek Straight",
+              "label_ru": "Гладкие прямые",
+              "label_ka": "გლუვი სწორი"
+            },
+            {
+              "id": "natural-waves",
+              "label_en": "Natural Waves",
+              "label_ru": "Естественные волны",
+              "label_ka": "ბუნებრივი ტალღები"
+            },
+            {
+              "id": "loose-curls",
+              "label_en": "Loose Curls",
+              "label_ru": "Лёгкие кудри",
+              "label_ka": "თავისუფალი ხვეულები"
+            },
+            {
+              "id": "tight-curls",
+              "label_en": "Tight Curls",
+              "label_ru": "Тугие кудри",
+              "label_ka": "მჭიდრო ხვეულები"
+            },
+            {
+              "id": "voluminous-blowout",
+              "label_en": "Voluminous Blowout",
+              "label_ru": "Объёмная укладка",
+              "label_ka": "მოცულობითი უკლადკა"
+            },
+            {
+              "id": "wet-look",
+              "label_en": "Wet Look",
+              "label_ru": "Эффект мокрых волос",
+              "label_ka": "სველი ეფექტი"
+            }
+          ]
+        },
+        {
+          "id": "BACKGROUND",
+          "type": "select",
+          "label_en": "Background",
+          "label_ru": "Фон",
+          "label_ka": "ფონი",
+          "required": true,
+          "default": "white-studio",
+          "options": [
+            {
+              "id": "white-studio",
+              "label_en": "White Studio",
+              "label_ru": "Белая студия",
+              "label_ka": "თეთრი სტუდია"
+            },
+            {
+              "id": "black",
+              "label_en": "Black",
+              "label_ru": "Чёрный",
+              "label_ka": "შავი"
+            },
+            {
+              "id": "rose-gold",
+              "label_en": "Rose Gold",
+              "label_ru": "Розовое золото",
+              "label_ka": "ვარდისფერი ოქრო"
+            },
+            {
+              "id": "dusty-rose",
+              "label_en": "Dusty Rose",
+              "label_ru": "Пыльная роза",
+              "label_ka": "მტვრიანი ვარდი"
+            },
+            {
+              "id": "pearl-white",
+              "label_en": "Pearl White",
+              "label_ru": "Жемчужный",
+              "label_ka": "მარგალიტისფერი"
+            },
+            {
+              "id": "amber-velvet",
+              "label_en": "Amber Velvet",
+              "label_ru": "Янтарный бархат",
+              "label_ka": "ქარვისფერი ხავერდი"
+            },
+            {
+              "id": "chocolate",
+              "label_en": "Chocolate Gold",
+              "label_ru": "Шоколад + золото",
+              "label_ka": "შოკოლადი + ოქრო"
+            },
+            {
+              "id": "floral",
+              "label_en": "Floral Bokeh",
+              "label_ru": "Цветочный боке",
+              "label_ka": "ყვავილები"
+            }
+          ]
+        },
+        {
+          "id": "SKIN_RETOUCH_LEVEL",
+          "type": "select",
+          "label_en": "Skin Retouch",
+          "label_ru": "Ретушь кожи",
+          "label_ka": "კანის რეტუში",
+          "required": true,
+          "default": "medium",
+          "options": [
+            {
+              "id": "light",
+              "label_en": "Light",
+              "label_ru": "Лёгкая",
+              "label_ka": "მსუბუქი"
+            },
+            {
+              "id": "medium",
+              "label_en": "Medium",
+              "label_ru": "Средняя",
+              "label_ka": "საშუალო"
+            },
+            {
+              "id": "full",
+              "label_en": "Full Editorial",
+              "label_ru": "Полная",
+              "label_ka": "სრული"
+            }
+          ]
+        },
+        {
+          "id": "EXTRAS",
+          "type": "multi-select",
+          "label_en": "Extra Effects",
+          "label_ru": "Доп. эффекты",
+          "label_ka": "დამატებითი ეფექტები",
+          "required": false,
+          "default": [],
+          "options": [
+            {
+              "id": "wet-skin",
+              "label_en": "Wet Skin",
+              "label_ru": "Влажная кожа",
+              "label_ka": "სველი კანი"
+            },
+            {
+              "id": "freckles",
+              "label_en": "Freckles",
+              "label_ru": "Веснушки",
+              "label_ka": "ჭორფლები"
+            },
+            {
+              "id": "rim-light",
+              "label_en": "Rim Light",
+              "label_ru": "Контровой свет",
+              "label_ka": "კონტრშუქი"
+            },
+            {
+              "id": "highlighter",
+              "label_en": "Highlighter",
+              "label_ru": "Хайлайтер",
+              "label_ka": "ჰაილაითერი"
+            },
+            {
+              "id": "hair-shine",
+              "label_en": "Hair Shine Boost",
+              "label_ru": "Блеск волос",
+              "label_ka": "თმის ბზინვარება"
             }
           ]
         }

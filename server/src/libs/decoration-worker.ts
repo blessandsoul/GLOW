@@ -2,6 +2,7 @@ import { Queue, Worker } from 'bullmq';
 import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import { decorationsService } from '@/modules/decorations/decorations.service.js';
+import { filtersService } from '@/modules/filters/filters.service.js';
 
 // Parse REDIS_URL into connection options for BullMQ
 function parseRedisUrl(redisUrl: string): { host: string; port: number; password?: string; username?: string } {
@@ -30,6 +31,9 @@ export const decorationWorker = new Worker<Record<string, never>, void, string>(
   async () => {
     await decorationsService.replenishAllNiches();
     logger.info('Decoration replenishment cycle completed');
+
+    await filtersService.replenishAllVariables();
+    logger.info('Variable suggestion replenishment cycle completed');
   },
   { connection },
 );

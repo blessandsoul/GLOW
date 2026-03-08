@@ -390,3 +390,20 @@ model DecorationSuggestion {
   @@index([niche])
   @@map("decoration_suggestions")
 }
+
+// ─────────────────────────────────────────────
+// Pre-generated AI Variable Suggestions
+// ─────────────────────────────────────────────
+
+model VariableSuggestion {
+  id          String   @id @default(uuid())
+  variableId  String   @map("variable_id") @db.VarChar(50)
+  labelEn     String   @map("label_en") @db.VarChar(80)
+  labelRu     String   @map("label_ru") @db.VarChar(80)
+  labelKa     String   @map("label_ka") @db.VarChar(80)
+  promptValue String   @map("prompt_value") @db.VarChar(250)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([variableId])
+  @@map("variable_suggestions")
+}
