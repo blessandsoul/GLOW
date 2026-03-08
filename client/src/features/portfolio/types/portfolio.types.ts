@@ -36,7 +36,7 @@ export interface PublicPortfolioData {
     telegram: string | null;
     city: string | null;
     niche: string | null;
-    services: { name: string; price: number; priceType?: 'fixed' | 'hourly' }[];
+    services: { name: string; price: number; priceType?: 'fixed' | 'hourly'; startingFrom?: boolean }[];
     items: PortfolioItem[];
     reviews: PublicReview[];
     reviewsCount: number;

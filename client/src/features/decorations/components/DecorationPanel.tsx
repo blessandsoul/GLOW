@@ -228,7 +228,6 @@ function DecorationPanelInner({
                     type="text"
                     value={customText}
                     onChange={(e) => onCustomTextChange(e.target.value)}
-                    maxLength={100}
                     placeholder={t('decorations.custom_placeholder')}
                     className={cn(
                         'w-full rounded-xl px-3 py-2',

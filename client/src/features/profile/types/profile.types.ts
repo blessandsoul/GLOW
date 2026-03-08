@@ -19,6 +19,7 @@ export interface ServiceItem {
     name: string;
     price: number;
     priceType: PriceType;
+    startingFrom: boolean;
     category: string;
 }
 

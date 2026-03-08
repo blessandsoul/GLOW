@@ -24,6 +24,7 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [priceType, setPriceType] = useState<PriceType>('fixed');
+    const [startingFrom, setStartingFrom] = useState(false);
     const [open, setOpen] = useState(false);
     const justSelected = useRef(false);
 
@@ -31,7 +32,7 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
 
     const handleSubmit = (): void => {
         if (!selectedCategory || !name.trim()) return;
-        onAdd({ category: selectedCategory, name: name.trim(), price: Number(price) || 0, priceType });
+        onAdd({ category: selectedCategory, name: name.trim(), price: Number(price) || 0, priceType, startingFrom });
     };
 
     return (
@@ -168,6 +169,15 @@ export function AddServicePanel({ onAdd, onCancel }: AddServicePanelProps): Reac
                             </button>
                         </div>
                     </div>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            checked={startingFrom}
+                            onChange={(e) => setStartingFrom(e.target.checked)}
+                            className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                        />
+                        <span className="text-xs text-muted-foreground">{t('ui.text_svc_starting_from')}</span>
+                    </label>
                 </div>
             )}
 

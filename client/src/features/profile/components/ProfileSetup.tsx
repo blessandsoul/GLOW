@@ -126,7 +126,7 @@ export function ProfileSetup(): React.ReactElement {
     }, []);
 
     const handleServiceChange = useCallback(
-        (index: number, field: keyof ServiceItem, value: string | number): void => {
+        (index: number, field: keyof ServiceItem, value: string | number | boolean): void => {
             setForm((prev) => ({
                 ...prev,
                 services: prev.services.map((s, i) =>

@@ -447,6 +447,7 @@
     "text_svc_price_type": "Тип цены",
     "text_svc_fixed": "Фиксированная",
     "text_svc_hourly": "Почасовая",
+    "text_svc_starting_from": "от",
     "text_svc_add": "Добавить",
     "text_svc_cancel": "Отмена",
     "text_svc_added": "Услуг добавлено",

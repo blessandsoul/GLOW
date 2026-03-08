@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowSquareOut, Eye } from '@phosphor-icons/react';
+import { Eye } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/store/hooks';
 import { ROUTES } from '@/lib/constants/routes';
@@ -21,8 +21,8 @@ export function PublicProfileCard(): React.ReactElement {
                     <p className="text-sm font-semibold text-foreground">Public profile</p>
                 </div>
                 <Button variant="outline" size="sm" asChild className="gap-1.5 cursor-pointer">
-                    <Link href={publicUrl} target="_blank" rel="noopener noreferrer">
-                        <ArrowSquareOut size={14} />
+                    <Link href={publicUrl}>
+                        <Eye size={14} />
                         View
                     </Link>
                 </Button>

@@ -451,6 +451,7 @@
     "text_svc_price_type": "Price type",
     "text_svc_fixed": "Fixed",
     "text_svc_hourly": "Hourly",
+    "text_svc_starting_from": "Starting from",
     "text_svc_add": "Add",
     "text_svc_cancel": "Cancel",
     "text_svc_added": "services added",

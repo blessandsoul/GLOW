@@ -16,7 +16,7 @@ interface ServiceRowProps {
     index: number;
     showLabels: boolean;
     onRemove: (index: number) => void;
-    onChange: (index: number, field: keyof ServiceItem, value: string | number) => void;
+    onChange: (index: number, field: keyof ServiceItem, value: string | number | boolean) => void;
 }
 
 export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowProps): React.ReactElement {
@@ -139,6 +139,15 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                         {t('ui.text_svc_hourly')}
                     </button>
                 </div>
+                <label className="flex items-center gap-2 cursor-pointer select-none sm:ml-auto">
+                    <input
+                        type="checkbox"
+                        checked={service.startingFrom ?? false}
+                        onChange={(e) => onChange(index, 'startingFrom', e.target.checked)}
+                        className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                    />
+                    <span className="text-xs text-muted-foreground">{t('ui.text_svc_starting_from')}</span>
+                </label>
             </div>
         </div>
     );

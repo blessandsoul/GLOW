@@ -2,9 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
-import { MapPin, InstagramLogo, ChatCircle, PaperPlaneTilt } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { MapPin, InstagramLogo, ChatCircle, PaperPlaneTilt, ArrowLeft } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppSelector } from '@/store/hooks';
 import { usePublicPortfolio } from '../hooks/usePortfolio';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
@@ -16,6 +18,9 @@ interface PublicPortfolioProps {
 
 export function PublicPortfolio({ username }: PublicPortfolioProps): React.ReactElement {
     const { t } = useLanguage();
+    const router = useRouter();
+    const user = useAppSelector((s) => s.auth.user);
+    const isOwnProfile = user?.username === username;
     const { portfolio, isLoading, isError } = usePublicPortfolio(username);
     const [lightboxIndex, setLightboxIndex] = useState(-1);
 
@@ -61,6 +66,19 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
 
     return (
         <div className="mx-auto max-w-3xl space-y-10 px-4 py-10">
+            {/* Back button (own profile preview) */}
+            {isOwnProfile && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
+                    onClick={() => router.back()}
+                >
+                    <ArrowLeft size={16} />
+                    {t('ui.text_gmmtbc')}
+                </Button>
+            )}
+
             {/* Profile header */}
             <div className="flex flex-col items-center gap-4 text-center">
                 {portfolio.avatar ? (
@@ -146,6 +164,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                             >
                                 <span className="text-sm text-foreground">{service.name}</span>
                                 <span className="text-sm font-semibold text-foreground">
+                                    {service.startingFrom && <span className="text-xs font-normal text-muted-foreground mr-1">{t('ui.text_svc_starting_from')}</span>}
                                     {service.price} ₾{service.priceType === 'hourly' ? ' / საათი' : ''}
                                 </span>
                             </div>
