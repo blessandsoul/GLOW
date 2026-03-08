@@ -107,4 +107,7 @@ export const API_ENDPOINTS = {
         SPECIALITIES: '/catalog/specialities',
         SERVICE_CATEGORIES: '/catalog/service-categories',
     },
+    NOTIFICATIONS: {
+        REPORT: '/notifications/report',
+    },
 } as const;

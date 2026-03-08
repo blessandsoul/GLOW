@@ -31,6 +31,7 @@ import { decorationsRoutes } from '@/modules/decorations/decorations.routes.js';
 import { catalogRoutes } from '@/modules/catalog/catalog.routes.js';
 import { imagesRoutes } from '@/modules/images/images.routes.js';
 import { mastersRoutes } from '@/modules/masters/masters.routes.js';
+import { notificationsRoutes } from '@/modules/notifications/notifications.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -175,6 +176,7 @@ export async function buildApp() {
   await app.register(catalogRoutes, { prefix: '/api/v1/catalog' });
   await app.register(imagesRoutes, { prefix: '/api/v1/images' });
   await app.register(mastersRoutes, { prefix: '/api/v1/masters' });
+  await app.register(notificationsRoutes, { prefix: '/api/v1/notifications' });
 
   return app;
 }

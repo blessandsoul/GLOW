@@ -77,6 +77,7 @@ export function useMyPortfolio(): {
         mutationFn: (file: File) => portfolioService.uploadImage(file),
         onSuccess: () => {
             toast.success(t('system.sys_ykzsc6'));
+            toast.info(t('portfolio.consent_notice'), { duration: 6000 });
         },
         onError: (err) => {
             toast.error(getErrorMessage(err));

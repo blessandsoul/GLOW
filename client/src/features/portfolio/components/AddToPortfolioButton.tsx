@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Images, CheckCircle, SpinnerGap } from '@phosphor-icons/react';
+import { Images, CheckCircle, SpinnerGap, Info } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
@@ -86,6 +86,12 @@ export function AddToPortfolioButton({ jobId, imageUrl }: AddToPortfolioButtonPr
                                 placeholder={t('portfolio.title_placeholder')}
                                 maxLength={200}
                             />
+                        </div>
+                        <div className="flex items-start gap-2 rounded-lg bg-info/10 p-2.5">
+                            <Info size={14} weight="fill" className="mt-0.5 shrink-0 text-info" />
+                            <p className="text-xs leading-relaxed text-muted-foreground">
+                                {t('portfolio.consent_notice')}
+                            </p>
                         </div>
                         <Button
                             onClick={handleAdd}

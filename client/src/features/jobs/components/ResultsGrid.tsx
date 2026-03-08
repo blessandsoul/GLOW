@@ -3,13 +3,12 @@
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import {
-    DownloadSimple, Sparkle, WarningCircle,
+    DownloadSimple, WarningCircle,
     LinkSimple, Stamp, MagnifyingGlassPlus,
     SlidersHorizontal, GridFour, ArrowsOut,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { CaptionGenerator } from '@/features/captions/components/CaptionGenerator';
 import { WatermarkOverlay } from '@/features/branding/components/WatermarkPreview';
@@ -17,6 +16,7 @@ import { useBranding } from '@/features/branding/hooks/useBranding';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
 import { ImageLightbox } from '@/features/portfolio/components/ImageLightbox';
 import { ImageCompare } from '@/components/ui/ImageCompare';
+import { GenerationProgress } from './GenerationProgress';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -126,20 +126,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
 
     if (job.status === 'PENDING' || job.status === 'PROCESSING') {
         return (
-            <div className="flex w-full flex-col items-center gap-6 py-8">
-                <div className="flex flex-col items-center gap-3">
-                    <div className="rounded-full bg-primary/10 p-4">
-                        <Sparkle size={32} className="animate-pulse text-primary" />
-                    </div>
-                    <div className="text-center">
-                        <p className="text-base font-semibold text-foreground">{t('ui.text_c0yn6g')}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{t('ui.text_wyqnkc')}</p>
-                    </div>
-                </div>
-                <div className="flex w-full max-w-sm justify-center">
-                    <Skeleton className="aspect-3/4 w-full rounded-xl" />
-                </div>
-            </div>
+            <GenerationProgress originalUrl={job.originalUrl} jobId={job.id} />
         );
     }
 

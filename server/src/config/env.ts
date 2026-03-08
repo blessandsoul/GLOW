@@ -67,6 +67,10 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().min(1).default(''),
   GOOGLE_CLIENT_SECRET: z.string().min(1).default(''),
   GOOGLE_CALLBACK_URL: z.string().url().default('http://localhost:4000/api/v1/auth/google/callback'),
+
+  // Telegram notifications (problem reports)
+  TELEGRAM_BOT_TOKEN: z.string().default(''),
+  TELEGRAM_CHAT_ID: z.string().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);

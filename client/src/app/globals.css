@@ -256,6 +256,18 @@
   }
 }
 
+/* ── Generation progress shimmer ──────────────────────────────────────────── */
+@keyframes gen-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-shimmer {
+    animation: gen-shimmer 2s ease-in-out infinite;
+  }
+}
+
 /* ── Auth page entrance (@starting-style for reliable DOM-insert animation) ── */
 .auth-entrance {
   opacity: 1;
