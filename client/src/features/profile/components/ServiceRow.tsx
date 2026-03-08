@@ -139,15 +139,28 @@ export function ServiceRow({ service, index, onRemove, onChange }: ServiceRowPro
                         {t('ui.text_svc_hourly')}
                     </button>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer select-none sm:ml-auto">
-                    <input
-                        type="checkbox"
-                        checked={service.startingFrom ?? false}
-                        onChange={(e) => onChange(index, 'startingFrom', e.target.checked)}
-                        className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
-                    />
-                    <span className="text-xs text-muted-foreground">{t('ui.text_svc_starting_from')}</span>
-                </label>
+                <button
+                    type="button"
+                    onClick={() => onChange(index, 'startingFrom', !(service.startingFrom ?? false))}
+                    className={cn(
+                        'inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-all duration-150 cursor-pointer select-none sm:ml-auto',
+                        (service.startingFrom ?? false)
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5'
+                    )}
+                >
+                    <span className={cn(
+                        'flex h-4 w-4 items-center justify-center rounded-md transition-colors duration-150',
+                        (service.startingFrom ?? false) ? 'bg-primary-foreground/20' : 'bg-muted'
+                    )}>
+                        {(service.startingFrom ?? false) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-primary-foreground">
+                                <path d="M2 5.5L4 7.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        )}
+                    </span>
+                    {t('ui.text_svc_starting_from')}
+                </button>
             </div>
         </div>
     );
