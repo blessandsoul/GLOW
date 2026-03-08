@@ -162,9 +162,9 @@ function DecorationPanelInner({
                     className={cn(
                         'shrink-0 rounded-full px-3 py-1.5',
                         'text-[10px] font-medium',
-                        'border border-dashed border-primary/30',
-                        'text-primary/70 bg-primary/5',
-                        'hover:bg-primary/10 hover:border-primary/50',
+                        'border border-primary',
+                        'text-primary-foreground bg-primary',
+                        'hover:bg-primary/90',
                         'transition-all duration-150 active:scale-[0.96]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
                         'disabled:opacity-50 disabled:cursor-wait',

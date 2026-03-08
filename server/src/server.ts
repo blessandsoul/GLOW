@@ -5,6 +5,7 @@ import { prisma, disconnectPrisma } from '@/libs/prisma.js';
 import { connectRedis, disconnectRedis } from '@/libs/redis.js';
 import { emailWorker } from '@/libs/queue.js';
 import { subscriptionWorker, startSubscriptionRenewalSchedule } from '@/libs/subscription-worker.js';
+import { decorationWorker, startDecorationReplenishmentSchedule } from '@/libs/decoration-worker.js';
 import { jobsService } from '@/modules/jobs/jobs.service.js';
 
 async function main(): Promise<void> {
@@ -14,6 +15,7 @@ async function main(): Promise<void> {
   app.addHook('onClose', async () => {
     await emailWorker.close();
     await subscriptionWorker.close();
+    await decorationWorker.close();
   });
 
   // Connect Database
@@ -46,6 +48,10 @@ async function main(): Promise<void> {
 
     startSubscriptionRenewalSchedule().catch((err) => {
       logger.warn({ err }, 'Failed to start subscription renewal schedule');
+    });
+
+    startDecorationReplenishmentSchedule().catch((err) => {
+      logger.warn({ err }, 'Failed to start decoration replenishment schedule');
     });
   }
 

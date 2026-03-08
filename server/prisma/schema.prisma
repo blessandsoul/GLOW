@@ -373,3 +373,20 @@ model HdUpscaleLog {
   @@index([jobId])
   @@map("hd_upscale_logs")
 }
+
+// ─────────────────────────────────────────────
+// Pre-generated AI Decoration Suggestions
+// ─────────────────────────────────────────────
+
+model DecorationSuggestion {
+  id          String   @id @default(uuid())
+  niche       String   @db.VarChar(20)
+  labelEn     String   @map("label_en") @db.VarChar(80)
+  labelRu     String   @map("label_ru") @db.VarChar(80)
+  labelKa     String   @map("label_ka") @db.VarChar(80)
+  promptValue String   @map("prompt_value") @db.VarChar(150)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([niche])
+  @@map("decoration_suggestions")
+}

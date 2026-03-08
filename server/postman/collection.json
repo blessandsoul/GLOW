@@ -1108,6 +1108,56 @@
       ]
     },
     {
+      "name": "Decorations",
+      "description": "AI-generated decoration suggestions for showcase pages.",
+      "item": [
+        {
+          "name": "Suggest",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/decorations/suggest",
+              "host": ["{{baseUrl}}"],
+              "path": ["decorations", "suggest"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"niche\": \"hair\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Pool Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/decorations/pool-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["decorations", "pool-status"]
+            },
+            "description": "Get current decoration suggestion pool counts per niche"
+          }
+        },
+        {
+          "name": "Replenish",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/decorations/replenish",
+              "host": ["{{baseUrl}}"],
+              "path": ["decorations", "replenish"]
+            },
+            "description": "Trigger manual replenishment of decoration suggestion pools (admin only)"
+          }
+        }
+      ]
+    },
+    {
       "name": "Health",
       "description": "Server health check.",
       "item": [

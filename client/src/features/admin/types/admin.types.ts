@@ -46,6 +46,15 @@ export interface AdminPortfolioUser {
     latestItemDate: string | null;
 }
 
+export interface DecorationPoolNicheCount {
+    niche: string;
+    count: number;
+}
+
+export interface DecorationPoolStatus {
+    counts: DecorationPoolNicheCount[];
+}
+
 export interface AdminPortfolioItem {
     id: string;
     imageUrl: string;

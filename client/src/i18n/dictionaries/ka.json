@@ -19,7 +19,7 @@
   "header": {
     "logo": "Glow.GE",
     "ai_studio": "AI სტუდია",
-    "free_photos": "5 ფოტო უფასოდ",
+    "free_photos": "5 ფოტო უფასოდ ყოველდღე",
     "login": "შესვლა",
     "start": "დაწყება",
     "master": "ოსტატი",
@@ -108,7 +108,7 @@
     "demo_login": "დემო-შესვლა",
     "demo_desc": "შესვლა როგორც ოსტატი ტესტური მონაცემებით",
     "create_account_title": "ანგარიშის შექმნა",
-    "free_photos_desc": "5 ფოტო უფასოდ რეგისტრაციისას",
+    "free_photos_desc": "5 ფოტო უფასოდ ყოველდღე",
     "referral_invited": "თქვენ მოგიწვიეს! რეგისტრაციისას მიიღებთ +1 კრედიტს.",
     "firstname": "სახელი",
     "lastname": "გვარი",
@@ -378,7 +378,7 @@
     "text_sornbq": "7 დღიანი საცდელი პერიოდი",
     "text_bhlg4q": "გაუქმება ერთი კლიკით",
     "text_muqjdk": "ფარული გადასახადების გარეშე",
-    "text_here8d": "5 ფოტო უფასოდ — საბანკო ბარათი არ არის საჭირო",
+    "text_here8d": "5 ფოტო უფასოდ ყოველდღე — საბანკო ბარათი არ არის საჭირო",
     "text_45r5b5": "მარტივი ტარიფები სიურპრიზების გარეშე",
     "text_300cko": "7 დღიანი საცდელი პერიოდის დაწყება",
     "text_35oqj6": "უფასოდ დაწყება",
@@ -877,7 +877,12 @@
     "col_latest_upload": "ბოლო ატვირთვა",
     "no_portfolios": "პორტფოლიოს მქონე მომხმარებლები ჯერ არ არის",
     "no_portfolio_items": "პორტფოლიოს ელემენტები არ არის",
-    "unpublished": "მონახაზი"
+    "unpublished": "მონახაზი",
+    "decoration_pool_title": "დეკორაციის იდეების პული",
+    "decoration_pool_total": "სულ",
+    "decoration_pool_refresh": "განახლება",
+    "decoration_pool_replenish": "მეტის გენერაცია",
+    "decoration_pool_replenishing": "გენერაცია..."
   },
   "chat": {
     "title": "Glow ასისტენტი",

@@ -97,9 +97,42 @@ function SkeletonRows(): React.ReactElement {
     );
 }
 
+function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }): React.ReactElement {
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent): void => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleKey);
+        return () => document.removeEventListener('keydown', handleKey);
+    }, [onClose]);
+
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={onClose}
+        >
+            <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-4 right-4 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                aria-label="Close"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <img
+                src={src}
+                alt=""
+                className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+            />
+        </div>
+    );
+}
+
 function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }): React.ReactElement | null {
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
     const { images, pagination, isLoading } = useAdminUserImages(isOpen ? userId : null, page, IMAGES_LIMIT);
 
     const jobGroups = useMemo(() => {
@@ -174,9 +207,9 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
                                             <div className="flex items-start gap-1.5">
                                                 {/* Before */}
                                                 <div className="flex flex-col items-center gap-1">
-                                                    <a href={getServerImageUrl(group.originalUrl)} target="_blank" rel="noopener noreferrer" className="group relative">
+                                                    <button type="button" onClick={(e) => { e.stopPropagation(); setLightboxSrc(getServerImageUrl(group.originalUrl)); }} className="group relative cursor-zoom-in">
                                                         <img src={getThumbUrl(group.originalUrl, 128)} alt="" className="h-16 w-16 rounded-md object-cover ring-1 ring-border/50 transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50" loading="lazy" />
-                                                    </a>
+                                                    </button>
                                                     <span className="text-[10px] text-muted-foreground">Before</span>
                                                 </div>
 
@@ -188,9 +221,9 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
                                                 {/* After(s) */}
                                                 {group.results.map((img) => (
                                                     <div key={img.variantIndex} className="flex flex-col items-center gap-1">
-                                                        <a href={getServerImageUrl(img.imageUrl)} target="_blank" rel="noopener noreferrer" className="group relative">
+                                                        <button type="button" onClick={(e) => { e.stopPropagation(); setLightboxSrc(getServerImageUrl(img.imageUrl)); }} className="group relative cursor-zoom-in">
                                                             <img src={getThumbUrl(img.imageUrl, 128)} alt="" className="h-16 w-16 rounded-md object-cover ring-1 ring-border/50 transition-all duration-200 group-hover:ring-2 group-hover:ring-primary/50" loading="lazy" />
-                                                        </a>
+                                                        </button>
                                                         <span className="text-[10px] text-muted-foreground">After</span>
                                                     </div>
                                                 ))}
@@ -225,6 +258,7 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
                     </div>
                 </div>
             </TableCell>
+            {lightboxSrc && <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
         </TableRow>
     );
 }

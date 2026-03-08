@@ -1,11 +1,11 @@
 'use client';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus } from '../types/admin.types';
 import type { PaginationMeta } from '@/lib/api/api.types';
 
 export function useAdminUsers(
@@ -141,4 +141,43 @@ export function useAdminPortfolioItems(
         pagination: data?.pagination ?? null,
         isLoading,
     };
+}
+
+export function useDecorationPoolStatus(): {
+    pool: DecorationPoolStatus | undefined;
+    isLoading: boolean;
+    refetch: () => void;
+} {
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['admin', 'decoration-pool'],
+        queryFn: () => adminService.getDecorationPoolStatus(),
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return { pool: data, isLoading, refetch };
+}
+
+export function useReplenishDecorationPool(): {
+    replenish: () => void;
+    isPending: boolean;
+} {
+    const queryClient = useQueryClient();
+    const { mutate, isPending } = useMutation({
+        mutationFn: () => adminService.replenishDecorationPool(),
+        onSuccess: () => {
+            toast.success('Decoration pool replenishment started');
+            // Refetch pool status after a short delay to show updated counts
+            setTimeout(() => {
+                queryClient.invalidateQueries({ queryKey: ['admin', 'decoration-pool'] });
+            }, 3000);
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
+    });
+
+    return { replenish: mutate, isPending };
 }
