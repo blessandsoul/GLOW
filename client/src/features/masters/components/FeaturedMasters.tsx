@@ -20,7 +20,7 @@ export function FeaturedMasters(): React.ReactElement | null {
 
     const scroll = useCallback((direction: 'left' | 'right'): void => {
         if (!scrollRef.current) return;
-        const cardWidth = 280;
+        const cardWidth = 260;
         const gap = 16;
         const scrollAmount = (cardWidth + gap) * 2;
         scrollRef.current.scrollBy({
@@ -81,7 +81,7 @@ export function FeaturedMasters(): React.ReactElement | null {
             {/* Scrollable cards */}
             <div
                 ref={scrollRef}
-                className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
+                className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {showSkeletons
@@ -122,7 +122,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
         >
             <Link
                 href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
-                className="group flex w-[260px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
+                className="group flex w-55 sm:w-65 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
             >
                 {/* Image grid — 2x2 mosaic */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
@@ -237,7 +237,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
 
 function MasterCardSkeleton(): React.ReactElement {
     return (
-        <div className="w-[260px] shrink-0 snap-start overflow-hidden rounded-2xl border border-border/50 bg-card">
+        <div className="w-55 sm:w-65 shrink-0 snap-start overflow-hidden rounded-2xl border border-border/50 bg-card">
             <Skeleton className="aspect-[4/3] w-full rounded-none" />
             <div className="flex items-center gap-3 p-3.5">
                 <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
