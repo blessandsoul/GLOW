@@ -81,7 +81,7 @@ export function FeaturedMasters(): React.ReactElement | null {
             {/* Scrollable cards */}
             <div
                 ref={scrollRef}
-                className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
+                className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {showSkeletons
