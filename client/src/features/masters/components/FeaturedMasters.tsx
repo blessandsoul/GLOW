@@ -14,8 +14,9 @@ import { cn } from '@/lib/utils';
 
 export function FeaturedMasters(): React.ReactElement | null {
     const { t } = useLanguage();
-    const { masters, isLoading } = useFeaturedMasters();
+    const { masters, isLoading, isSuccess } = useFeaturedMasters();
     const scrollRef = useRef<HTMLDivElement>(null);
+    const showSkeletons = isLoading || (!isSuccess && masters.length === 0);
 
     const scroll = useCallback((direction: 'left' | 'right'): void => {
         if (!scrollRef.current) return;
@@ -28,7 +29,8 @@ export function FeaturedMasters(): React.ReactElement | null {
         });
     }, []);
 
-    if (!isLoading && masters.length === 0) return null;
+    // Only hide when API successfully returned 0 masters
+    if (isSuccess && masters.length === 0) return null;
 
     return (
         <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 mt-4 mb-16 relative z-20">
@@ -82,7 +84,7 @@ export function FeaturedMasters(): React.ReactElement | null {
                 className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-                {isLoading
+                {showSkeletons
                     ? Array.from({ length: 5 }).map((_, i) => (
                         <MasterCardSkeleton key={i} />
                     ))

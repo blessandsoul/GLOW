@@ -13,13 +13,15 @@ export function useFeaturedMasters(): {
     masters: FeaturedMaster[];
     isLoading: boolean;
     isError: boolean;
+    isSuccess: boolean;
 } {
-    const { data: masters = [], isLoading, isError } = useQuery({
+    const { data: masters = [], isLoading, isError, isSuccess } = useQuery({
         queryKey: mastersKeys.featured(),
         queryFn: () => mastersService.getFeatured(12),
         staleTime: 10 * 60 * 1000,
         gcTime: 30 * 60 * 1000,
+        retry: 1,
     });
 
-    return { masters, isLoading, isError };
+    return { masters, isLoading, isError, isSuccess };
 }

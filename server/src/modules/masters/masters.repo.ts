@@ -9,10 +9,10 @@ export const mastersRepo = {
   async findFeaturedMasters(limit: number = 12) {
     const masters = await prisma.user.findMany({
       where: {
-        role: 'MASTER',
         isActive: true,
         deletedAt: null,
         username: { not: null },
+        masterProfile: { isNot: null },
         portfolioItems: {
           some: { isPublished: true },
         },
