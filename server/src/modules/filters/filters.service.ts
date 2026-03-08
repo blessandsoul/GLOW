@@ -452,8 +452,9 @@ Return ONLY a JSON array, no other text:
     for (const variableId of VALID_VARIABLE_IDS) {
       const currentCount = await filtersRepo.countByVariable(variableId);
 
-      // Always add a fresh batch to grow the pool diversity
-      const batchSize = currentCount < VAR_MIN_POOL_THRESHOLD ? VAR_POOL_TARGET : VAR_REPLENISH_BATCH;
+      // Fill up to target, or add a small batch if already at target to grow diversity
+      const deficit = VAR_POOL_TARGET - currentCount;
+      const batchSize = deficit > 0 ? deficit : VAR_REPLENISH_BATCH;
 
       logger.info({ variableId, currentCount, adding: batchSize }, 'Replenishing variable pool');
       const inserted = await this.generateVariableBatch(variableId, batchSize);

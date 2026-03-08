@@ -271,6 +271,7 @@ function VariableSelector({
     const isMulti = variable.type === 'multi-select';
     const selectedIds = isMulti ? (Array.isArray(value) ? value : []) : [];
     const selectedId = isMulti ? '' : (typeof value === 'string' ? value : '');
+    const hasImageOptions = variable.options.some(o => o.previewUrl);
 
     const handleAiSelect = useCallback((suggestion: GeneratedVariableOption) => {
         if (isMulti) {
@@ -285,44 +286,119 @@ function VariableSelector({
             <span className="text-[10px] font-semibold text-foreground/80">
                 {localized(variable, 'label', language)}
             </span>
-            <div className="flex flex-wrap gap-1.5">
-                {variable.options.map((option) => {
-                    const isSelected = isMulti
-                        ? selectedIds.includes(option.id)
-                        : selectedId === option.id;
-                    const label = localized(option, 'label', language);
-                    const isNone = option.id === 'none';
 
-                    return (
-                        <button
-                            key={option.id}
-                            type="button"
-                            onClick={() => {
-                                if (isMulti) {
-                                    onMultiSelectToggle(variable.id, option.id);
-                                } else {
-                                    onSelectChange(variable.id, option.id);
-                                }
-                            }}
-                            className={cn(
-                                'shrink-0 rounded-full px-3 py-1.5',
-                                'text-[10px] font-medium',
-                                'transition-all duration-150 active:scale-[0.96]',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-                                isSelected
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : isNone
-                                        ? 'bg-muted/30 text-muted-foreground/70 hover:bg-muted/50 border border-border/30'
-                                        : 'bg-muted/50 text-muted-foreground hover:bg-muted border border-border/40',
-                            )}
-                        >
-                            {label}
-                        </button>
-                    );
-                })}
+            {hasImageOptions ? (
+                /* ── Image grid for options with previewUrl ── */
+                <div className="grid grid-cols-4 gap-1.5">
+                    {variable.options.map((option) => {
+                        const isSelected = isMulti
+                            ? selectedIds.includes(option.id)
+                            : selectedId === option.id;
+                        const label = localized(option, 'label', language);
 
-                {/* Generate new ideas button */}
-                {showGenerate && (
+                        return (
+                            <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => {
+                                    if (isMulti) {
+                                        onMultiSelectToggle(variable.id, option.id);
+                                    } else {
+                                        onSelectChange(variable.id, option.id);
+                                    }
+                                }}
+                                className={cn(
+                                    'group relative flex flex-col overflow-hidden rounded-xl',
+                                    'transition-all duration-200 active:scale-[0.96]',
+                                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                    isSelected
+                                        ? 'ring-2 ring-primary shadow-md'
+                                        : 'ring-1 ring-border/40 hover:ring-border',
+                                )}
+                            >
+                                <div className="relative aspect-3/4 w-full overflow-hidden">
+                                    {option.previewUrl ? (
+                                        <Image
+                                            src={option.previewUrl}
+                                            alt={label}
+                                            fill
+                                            sizes="(max-width: 768px) 22vw, 80px"
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex h-full w-full items-center justify-center bg-muted/30">
+                                            <Sparkle size={14} className="text-muted-foreground/30" weight="fill" />
+                                        </div>
+                                    )}
+                                    {/* Selected checkmark */}
+                                    {isSelected && (
+                                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary shadow-sm">
+                                                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                                    <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className={cn(
+                                    'px-1 py-1.5 text-center',
+                                    isSelected ? 'bg-primary/10' : 'bg-card',
+                                )}>
+                                    <span className={cn(
+                                        'text-[9px] font-medium leading-tight line-clamp-2',
+                                        isSelected ? 'text-primary' : 'text-muted-foreground',
+                                    )}>
+                                        {label}
+                                    </span>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+            ) : (
+                /* ── Text pills for regular options ── */
+                <div className="flex flex-wrap gap-1.5">
+                    {variable.options.map((option) => {
+                        const isSelected = isMulti
+                            ? selectedIds.includes(option.id)
+                            : selectedId === option.id;
+                        const label = localized(option, 'label', language);
+                        const isNone = option.id === 'none';
+
+                        return (
+                            <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => {
+                                    if (isMulti) {
+                                        onMultiSelectToggle(variable.id, option.id);
+                                    } else {
+                                        onSelectChange(variable.id, option.id);
+                                    }
+                                }}
+                                className={cn(
+                                    'shrink-0 rounded-full px-3 py-1.5',
+                                    'text-[10px] font-medium',
+                                    'transition-all duration-150 active:scale-[0.96]',
+                                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                    isSelected
+                                        ? 'bg-primary text-primary-foreground shadow-sm'
+                                        : isNone
+                                            ? 'bg-muted/30 text-muted-foreground/70 hover:bg-muted/50 border border-border/30'
+                                            : 'bg-muted/50 text-muted-foreground hover:bg-muted border border-border/40',
+                                )}
+                            >
+                                {label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Generate new ideas button */}
+            {showGenerate && (
+                <div className="flex">
                     <button
                         type="button"
                         onClick={onGenerate}
@@ -347,8 +423,8 @@ function VariableSelector({
                             </span>
                         )}
                     </button>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* AI-generated suggestions */}
             {aiSuggestions.length > 0 && (

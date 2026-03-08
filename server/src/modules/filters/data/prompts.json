@@ -2189,140 +2189,160 @@
               "value": "Long layered haircut with face-framing layers, soft movement, graduated lengths blending naturally from shorter at the face to longer at the back",
               "label_en": "Long Layers",
               "label_ru": "Длинные слои",
-              "label_ka": "გრძელი ფენები"
+              "label_ka": "გრძელი ფენები",
+              "previewUrl": "/filters/prism/long-layers.webp"
             },
             {
               "id": "bob",
               "value": "Classic chin-length bob cut — clean straight lines, even length all around, slight inward curl at the ends, polished and structured",
               "label_en": "Classic Bob",
               "label_ru": "Классическое каре",
-              "label_ka": "კლასიკური კარე"
+              "label_ka": "კლასიკური კარე",
+              "previewUrl": "/filters/prism/bob.webp"
             },
             {
               "id": "french-bob",
               "value": "Short French bob just below the ears with subtle lip-length curtain bangs, textured and slightly tousled, effortlessly chic Parisian look",
               "label_en": "French Bob",
               "label_ru": "Французское каре",
-              "label_ka": "ფრანგული კარე"
+              "label_ka": "ფრანგული კარე",
+              "previewUrl": "/filters/prism/french-bob.webp"
             },
             {
               "id": "lob",
               "value": "Long bob (lob) cut falling between chin and collarbone, blunt ends with minimal layering, modern and versatile",
               "label_en": "Long Bob (Lob)",
               "label_ru": "Удлинённое каре",
-              "label_ka": "მოგრძელებული კარე"
+              "label_ka": "მოგრძელებული კარე",
+              "previewUrl": "/filters/prism/lob.webp"
             },
             {
               "id": "pixie",
               "value": "Short pixie cut with longer textured top swept to one side, cropped close at the sides and nape, bold and feminine",
               "label_en": "Pixie Cut",
               "label_ru": "Пикси",
-              "label_ka": "პიქსი"
+              "label_ka": "პიქსი",
+              "previewUrl": "/filters/prism/pixie.webp"
             },
             {
               "id": "wolf-cut",
               "value": "Shaggy wolf cut with heavy layers, curtain bangs, choppy textured ends, voluminous crown with wispy thin ends — 70s rock-inspired",
               "label_en": "Wolf Cut",
               "label_ru": "Вулф-кат",
-              "label_ka": "ვოლფ-კატი"
+              "label_ka": "ვოლფ-კატი",
+              "previewUrl": "/filters/prism/wolf-cut.webp"
             },
             {
               "id": "butterfly",
               "value": "Butterfly cut with dramatic face-framing shorter layers on top blending into longer lengths below, voluminous bouncy movement, blown-out finish",
               "label_en": "Butterfly Cut",
               "label_ru": "Баттерфляй",
-              "label_ka": "ბატერფლაი"
+              "label_ka": "ბატერფლაი",
+              "previewUrl": "/filters/prism/butterfly.webp"
             },
             {
               "id": "shag",
               "value": "Modern shag haircut with lots of choppy layers throughout, piece-y textured bangs, lived-in messy volume, effortless rock-and-roll feel",
               "label_en": "Shag",
               "label_ru": "Шэг",
-              "label_ka": "შეგი"
+              "label_ka": "შეგი",
+              "previewUrl": "/filters/prism/shag.webp"
             },
             {
               "id": "blunt-cut",
               "value": "Perfectly blunt straight cut with zero layering — sharp clean edge, sleek and geometric, editorial precision",
               "label_en": "Blunt Cut",
               "label_ru": "Прямой срез",
-              "label_ka": "სწორი ჭრა"
+              "label_ka": "სწორი ჭრა",
+              "previewUrl": "/filters/prism/blunt-cut.webp"
             },
             {
               "id": "curtain-bangs",
               "value": "Face-framing curtain bangs parted in the center, feathered and tapered at the sides, blending into the length naturally — Bardot-inspired",
               "label_en": "Curtain Bangs",
               "label_ru": "Шторка",
-              "label_ka": "ფარდის ბანგი"
+              "label_ka": "ფარდის ბანგი",
+              "previewUrl": "/filters/prism/curtain-bangs.webp"
             },
             {
               "id": "beach-waves",
               "value": "Loose tousled beach waves with natural-looking bends and movement, sun-kissed casual texture, effortless vacation hair",
               "label_en": "Beach Waves",
               "label_ru": "Пляжные волны",
-              "label_ka": "ზღვის ტალღები"
+              "label_ka": "ზღვის ტალღები",
+              "previewUrl": "/filters/prism/beach-waves.webp"
             },
             {
               "id": "straight-blowout",
               "value": "Salon-perfect straight blowout — sleek, shiny, smooth, bouncy ends with slight inward curve, mirror-like shine, professional finish",
               "label_en": "Straight Blowout",
               "label_ru": "Гладкая укладка",
-              "label_ka": "გლუვი უკლადკა"
+              "label_ka": "გლუვი უკლადკა",
+              "previewUrl": "/filters/prism/straight-blowout.webp"
             },
             {
               "id": "updo",
               "value": "Elegant updo with hair swept up and twisted into a sophisticated chignon or French twist, face-framing tendrils left loose, formal and refined",
               "label_en": "Elegant Updo",
               "label_ru": "Элегантная причёска",
-              "label_ka": "ელეგანტური ვარცხნილობა"
+              "label_ka": "ელეგანტური ვარცხნილობა",
+              "previewUrl": "/filters/prism/updo.webp"
             },
             {
               "id": "ponytail",
               "value": "Sleek high ponytail pulled tight and smooth, no flyaways, straight and flowing tail with mirror-like shine, supermodel runway look",
               "label_en": "Sleek Ponytail",
               "label_ru": "Гладкий хвост",
-              "label_ka": "გლუვი კუდი"
+              "label_ka": "გლუვი კუდი",
+              "previewUrl": "/filters/prism/ponytail.webp"
             },
             {
               "id": "braids",
               "value": "Two loose romantic braids framing the face, slightly undone textured weave with soft wisps pulled free, bohemian and feminine",
               "label_en": "Braids",
               "label_ru": "Косы",
-              "label_ka": "ნაწნავი"
+              "label_ka": "ნაწნავი",
+              "previewUrl": "/filters/prism/braids.webp"
             },
             {
               "id": "messy-bun",
               "value": "Effortless messy bun with loose face-framing pieces, slightly undone and tousled, casual chic with visible hair texture and soft flyaways",
               "label_en": "Messy Bun",
               "label_ru": "Небрежный пучок",
-              "label_ka": "უხეში ფუნთუშა"
+              "label_ka": "უხეში ფუნთუშა",
+              "previewUrl": "/filters/prism/messy-bun.webp"
             },
             {
               "id": "side-part",
               "value": "Deep dramatic side part with hair swept heavily to one side, old Hollywood glamour, smooth and voluminous wave on the heavy side",
               "label_en": "Deep Side Part",
               "label_ru": "Глубокий боковой пробор",
-              "label_ka": "ღრმა გვერდითი გაყოფა"
+              "label_ka": "ღრმა გვერდითი გაყოფა",
+              "previewUrl": "/filters/prism/side-part.webp"
             },
             {
               "id": "middle-part",
               "value": "Clean center middle part with hair falling equally on both sides, sleek and symmetric, modern minimalist aesthetic",
               "label_en": "Middle Part",
               "label_ru": "Прямой пробор",
-              "label_ka": "ცენტრალური გაყოფა"
+              "label_ka": "ცენტრალური გაყოფა",
+              "previewUrl": "/filters/prism/middle-part.webp"
             },
             {
               "id": "bangs-straight",
               "value": "Full straight-across bangs cut just above the eyebrows, dense and blunt, paired with straight flowing hair below — bold and graphic",
               "label_en": "Straight Bangs",
               "label_ru": "Прямая чёлка",
-              "label_ka": "სწორი ბანგი"
+              "label_ka": "სწორი ბანგი",
+              "previewUrl": "/filters/prism/bangs-straight.webp"
             },
             {
               "id": "hollywood-waves",
               "value": "Classic Old Hollywood finger waves — deep S-shaped waves sculpted close to the head, ultra-glossy, glamorous and retro with vintage elegance",
               "label_en": "Hollywood Waves",
               "label_ru": "Голливудские волны",
-              "label_ka": "ჰოლივუდის ტალღები"
+              "label_ka": "ჰოლივუდის ტალღები",
+              "previewUrl": "/filters/prism/hollywood-waves.webp"
             }
           ]
         },

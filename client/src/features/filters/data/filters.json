@@ -2016,121 +2016,141 @@
               "id": "long-layers",
               "label_en": "Long Layers",
               "label_ru": "Длинные слои",
-              "label_ka": "გრძელი ფენები"
+              "label_ka": "გრძელი ფენები",
+              "previewUrl": "/filters/prism/long-layers.webp"
             },
             {
               "id": "bob",
               "label_en": "Classic Bob",
               "label_ru": "Классическое каре",
-              "label_ka": "კლასიკური კარე"
+              "label_ka": "კლასიკური კარე",
+              "previewUrl": "/filters/prism/bob.webp"
             },
             {
               "id": "french-bob",
               "label_en": "French Bob",
               "label_ru": "Французское каре",
-              "label_ka": "ფრანგული კარე"
+              "label_ka": "ფრანგული კარე",
+              "previewUrl": "/filters/prism/french-bob.webp"
             },
             {
               "id": "lob",
               "label_en": "Long Bob (Lob)",
               "label_ru": "Удлинённое каре",
-              "label_ka": "მოგრძელებული კარე"
+              "label_ka": "მოგრძელებული კარე",
+              "previewUrl": "/filters/prism/lob.webp"
             },
             {
               "id": "pixie",
               "label_en": "Pixie Cut",
               "label_ru": "Пикси",
-              "label_ka": "პიქსი"
+              "label_ka": "პიქსი",
+              "previewUrl": "/filters/prism/pixie.webp"
             },
             {
               "id": "wolf-cut",
               "label_en": "Wolf Cut",
               "label_ru": "Вулф-кат",
-              "label_ka": "ვოლფ-კატი"
+              "label_ka": "ვოლფ-კატი",
+              "previewUrl": "/filters/prism/wolf-cut.webp"
             },
             {
               "id": "butterfly",
               "label_en": "Butterfly Cut",
               "label_ru": "Баттерфляй",
-              "label_ka": "ბატერფლაი"
+              "label_ka": "ბატერფლაი",
+              "previewUrl": "/filters/prism/butterfly.webp"
             },
             {
               "id": "shag",
               "label_en": "Shag",
               "label_ru": "Шэг",
-              "label_ka": "შეგი"
+              "label_ka": "შეგი",
+              "previewUrl": "/filters/prism/shag.webp"
             },
             {
               "id": "blunt-cut",
               "label_en": "Blunt Cut",
               "label_ru": "Прямой срез",
-              "label_ka": "სწორი ჭრა"
+              "label_ka": "სწორი ჭრა",
+              "previewUrl": "/filters/prism/blunt-cut.webp"
             },
             {
               "id": "curtain-bangs",
               "label_en": "Curtain Bangs",
               "label_ru": "Шторка",
-              "label_ka": "ფარდის ბანგი"
+              "label_ka": "ფარდის ბანგი",
+              "previewUrl": "/filters/prism/curtain-bangs.webp"
             },
             {
               "id": "beach-waves",
               "label_en": "Beach Waves",
               "label_ru": "Пляжные волны",
-              "label_ka": "ზღვის ტალღები"
+              "label_ka": "ზღვის ტალღები",
+              "previewUrl": "/filters/prism/beach-waves.webp"
             },
             {
               "id": "straight-blowout",
               "label_en": "Straight Blowout",
               "label_ru": "Гладкая укладка",
-              "label_ka": "გლუვი უკლადკა"
+              "label_ka": "გლუვი უკლადკა",
+              "previewUrl": "/filters/prism/straight-blowout.webp"
             },
             {
               "id": "updo",
               "label_en": "Elegant Updo",
               "label_ru": "Элегантная причёска",
-              "label_ka": "ელეგანტური ვარცხნილობა"
+              "label_ka": "ელეგანტური ვარცხნილობა",
+              "previewUrl": "/filters/prism/updo.webp"
             },
             {
               "id": "ponytail",
               "label_en": "Sleek Ponytail",
               "label_ru": "Гладкий хвост",
-              "label_ka": "გლუვი კუდი"
+              "label_ka": "გლუვი კუდი",
+              "previewUrl": "/filters/prism/ponytail.webp"
             },
             {
               "id": "braids",
               "label_en": "Braids",
               "label_ru": "Косы",
-              "label_ka": "ნაწნავი"
+              "label_ka": "ნაწნავი",
+              "previewUrl": "/filters/prism/braids.webp"
             },
             {
               "id": "messy-bun",
               "label_en": "Messy Bun",
               "label_ru": "Небрежный пучок",
-              "label_ka": "უხეში ფუნთუშა"
+              "label_ka": "უხეში ფუნთუშა",
+              "previewUrl": "/filters/prism/messy-bun.webp"
             },
             {
               "id": "side-part",
               "label_en": "Deep Side Part",
               "label_ru": "Глубокий боковой пробор",
-              "label_ka": "ღრმა გვერდითი გაყოფა"
+              "label_ka": "ღრმა გვერდითი გაყოფა",
+              "previewUrl": "/filters/prism/side-part.webp"
             },
             {
               "id": "middle-part",
               "label_en": "Middle Part",
               "label_ru": "Прямой пробор",
-              "label_ka": "ცენტრალური გაყოფა"
+              "label_ka": "ცენტრალური გაყოფა",
+              "previewUrl": "/filters/prism/middle-part.webp"
             },
             {
               "id": "bangs-straight",
               "label_en": "Straight Bangs",
               "label_ru": "Прямая чёлка",
-              "label_ka": "სწორი ბანგი"
+              "label_ka": "სწორი ბანგი",
+              "previewUrl": "/filters/prism/bangs-straight.webp"
             },
             {
               "id": "hollywood-waves",
               "label_en": "Hollywood Waves",
               "label_ru": "Голливудские волны",
-              "label_ka": "ჰოლივუდის ტალღები"
+              "label_ka": "ჰოლივუდის ტალღები",
+              "previewUrl": "/filters/prism/hollywood-waves.webp"
             }
           ]
         },

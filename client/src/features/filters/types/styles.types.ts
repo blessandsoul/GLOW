@@ -53,6 +53,7 @@ export interface VariableOption {
   label_en: string;
   label_ru: string;
   label_ka: string;
+  previewUrl?: string;
 }
 
 export interface PromptVariable {
