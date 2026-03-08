@@ -1,14 +1,18 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
-import { Sparkle, ArrowLeft, Lightning } from '@phosphor-icons/react';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { Sparkle, ArrowLeft, Lightning, CircleNotch } from '@phosphor-icons/react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { localized } from '@/i18n/config';
+import { getErrorMessage } from '@/lib/utils/error';
 import type { SupportedLanguage } from '@/i18n/config';
 import type { MasterPrompt, PromptVariable, PromptVariableValues } from '../types/styles.types';
 import { DecorationPanel } from '@/features/decorations/components/DecorationPanel';
 import { getNicheFromMasterPrompt } from '@/features/decorations/data/decorations';
+import { filtersService } from '../services/filters.service';
+import type { GeneratedVariableOption } from '../services/filters.service';
 
 interface PromptConfiguratorProps {
     masterPrompt: MasterPrompt;
@@ -46,6 +50,10 @@ function PromptConfiguratorInner({
     onDecorationPlacementChange,
 }: PromptConfiguratorProps): React.ReactElement {
 
+    // AI suggestions state per variable
+    const [aiSuggestions, setAiSuggestions] = useState<Record<string, GeneratedVariableOption[]>>({});
+    const [generatingVars, setGeneratingVars] = useState<Set<string>>(new Set());
+
     const handleSelectChange = useCallback((variableId: string, optionId: string) => {
         onVariablesChange({ ...variables, [variableId]: optionId });
     }, [variables, onVariablesChange]);
@@ -66,6 +74,31 @@ function PromptConfiguratorInner({
         onVariablesChange(defaults);
         onQuickGenerate?.();
     }, [masterPrompt, onVariablesChange, onQuickGenerate]);
+
+    const handleGenerate = useCallback(async (variable: PromptVariable) => {
+        setGeneratingVars(prev => new Set(prev).add(variable.id));
+        try {
+            const existingOptions = variable.options
+                .filter(o => o.id !== 'none')
+                .map(o => localized(o, 'label', 'en'));
+
+            const suggestions = await filtersService.suggestVariableOptions({
+                variableId: variable.id,
+                variableLabel: variable.label_en,
+                masterPromptId: masterPrompt.id,
+                existingOptions,
+            });
+            setAiSuggestions(prev => ({ ...prev, [variable.id]: suggestions }));
+        } catch (err) {
+            toast.error(getErrorMessage(err));
+        } finally {
+            setGeneratingVars(prev => {
+                const next = new Set(prev);
+                next.delete(variable.id);
+                return next;
+            });
+        }
+    }, [masterPrompt.id]);
 
     // Resolve current value for each variable (use default if not set)
     const resolvedVariables = useMemo(() => {
@@ -165,6 +198,11 @@ function PromptConfiguratorInner({
                         onSelectChange={handleSelectChange}
                         onMultiSelectToggle={handleMultiSelectToggle}
                         language={language}
+                        showGenerate={variable.id !== 'SKIN_RETOUCH_LEVEL'}
+                        isGenerating={generatingVars.has(variable.id)}
+                        onGenerate={() => handleGenerate(variable)}
+                        aiSuggestions={aiSuggestions[variable.id] ?? []}
+                        t={t}
                     />
                 ))}
             </div>
@@ -211,6 +249,11 @@ interface VariableSelectorProps {
     onSelectChange: (variableId: string, optionId: string) => void;
     onMultiSelectToggle: (variableId: string, optionId: string) => void;
     language: SupportedLanguage;
+    showGenerate?: boolean;
+    isGenerating: boolean;
+    onGenerate: () => void;
+    aiSuggestions: GeneratedVariableOption[];
+    t: (key: string) => string;
 }
 
 function VariableSelector({
@@ -219,10 +262,23 @@ function VariableSelector({
     onSelectChange,
     onMultiSelectToggle,
     language,
+    showGenerate = true,
+    isGenerating,
+    onGenerate,
+    aiSuggestions,
+    t,
 }: VariableSelectorProps): React.ReactElement {
     const isMulti = variable.type === 'multi-select';
     const selectedIds = isMulti ? (Array.isArray(value) ? value : []) : [];
     const selectedId = isMulti ? '' : (typeof value === 'string' ? value : '');
+
+    const handleAiSelect = useCallback((suggestion: GeneratedVariableOption) => {
+        if (isMulti) {
+            onMultiSelectToggle(variable.id, suggestion.promptValue);
+        } else {
+            onSelectChange(variable.id, suggestion.promptValue);
+        }
+    }, [variable.id, isMulti, onSelectChange, onMultiSelectToggle]);
 
     return (
         <div className="flex flex-col gap-1.5">
@@ -235,7 +291,6 @@ function VariableSelector({
                         ? selectedIds.includes(option.id)
                         : selectedId === option.id;
                     const label = localized(option, 'label', language);
-                    // Skip "none" options that are empty/no-effect
                     const isNone = option.id === 'none';
 
                     return (
@@ -265,7 +320,72 @@ function VariableSelector({
                         </button>
                     );
                 })}
+
+                {/* Generate new ideas button */}
+                {showGenerate && (
+                    <button
+                        type="button"
+                        onClick={onGenerate}
+                        disabled={isGenerating}
+                        className={cn(
+                            'shrink-0 rounded-full px-3 py-1.5',
+                            'text-[10px] font-medium',
+                            'border border-primary',
+                            'text-primary-foreground bg-primary',
+                            'hover:bg-primary/90',
+                            'transition-all duration-150 active:scale-[0.96]',
+                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                            'disabled:opacity-50 disabled:cursor-wait',
+                        )}
+                    >
+                        {isGenerating ? (
+                            <CircleNotch size={12} className="animate-spin" />
+                        ) : (
+                            <span className="flex items-center gap-1">
+                                <Sparkle size={10} weight="fill" />
+                                {t('upload.shuffle')}
+                            </span>
+                        )}
+                    </button>
+                )}
             </div>
+
+            {/* AI-generated suggestions */}
+            {aiSuggestions.length > 0 && (
+                <div className="flex flex-col gap-1.5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200">
+                    <span className="text-[9px] font-medium text-muted-foreground/50 uppercase tracking-wider">
+                        {t('decorations.ai_suggestions')}
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                        {aiSuggestions.map((suggestion, index) => {
+                            const isSelected = isMulti
+                                ? selectedIds.includes(suggestion.promptValue)
+                                : selectedId === suggestion.promptValue;
+                            const label = language === 'ka' ? suggestion.label_ka
+                                : language === 'ru' ? suggestion.label_ru
+                                : suggestion.label_en;
+                            return (
+                                <button
+                                    key={`ai-${index}`}
+                                    type="button"
+                                    onClick={() => handleAiSelect(suggestion)}
+                                    className={cn(
+                                        'shrink-0 rounded-full px-3 py-1.5',
+                                        'text-[10px] font-medium',
+                                        'transition-all duration-150 active:scale-[0.96]',
+                                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                                        isSelected
+                                            ? 'bg-primary text-primary-foreground shadow-sm'
+                                            : 'bg-primary/5 text-primary/70 hover:bg-primary/10 border border-primary/20',
+                                    )}
+                                >
+                                    {label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
