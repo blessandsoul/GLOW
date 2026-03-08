@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import {
     MagicWand, Package, ArrowsLeftRight, ArrowRight,
@@ -101,6 +101,7 @@ export function EditorView({
     onDecorationCustomTextChange,
     onDecorationPlacementChange,
 }: EditorViewProps): React.ReactElement {
+    const stylesPanelRef = useRef<HTMLDivElement>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
 
@@ -154,11 +155,14 @@ export function EditorView({
             defaults[v.id] = v.default;
         }
         setPromptVariables(defaults);
+        // Reset scroll to top so configurator starts at the top
+        stylesPanelRef.current?.scrollTo({ top: 0, behavior: 'instant' });
     }, [setSelectedMasterPrompt, setSelectedStyle, setPromptVariables]);
 
     const handleMasterPromptBack = useCallback(() => {
         setSelectedMasterPrompt(null);
         setPromptVariables({});
+        stylesPanelRef.current?.scrollTo({ top: 0, behavior: 'instant' });
     }, [setSelectedMasterPrompt, setPromptVariables]);
 
     const handleStyleSelect = useCallback((style: Style) => {
@@ -374,7 +378,7 @@ export function EditorView({
             </div>
 
             {/* ──── Full styles panel: desktop only, order-1 ──── */}
-            <div className="hidden md:flex md:order-1 md:flex-1 md:flex-col md:gap-5 md:overflow-y-auto md:border-r md:border-border/30 md:p-6 [scrollbar-width:thin]">
+            <div ref={stylesPanelRef} className="hidden md:flex md:order-1 md:flex-1 md:flex-col md:gap-5 md:overflow-y-auto md:border-r md:border-border/30 md:p-6 [scrollbar-width:thin]">
                 {/* Header + mode selector */}
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5">
