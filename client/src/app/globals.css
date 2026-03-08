@@ -262,9 +262,31 @@
   100% { transform: translateX(100%); }
 }
 
+/* ── Results reveal (loading → done transition) ─────────────────────────── */
+@keyframes results-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-shimmer {
     animation: gen-shimmer 2s ease-in-out infinite;
+  }
+
+  .animate-results-reveal {
+    animation: results-reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 

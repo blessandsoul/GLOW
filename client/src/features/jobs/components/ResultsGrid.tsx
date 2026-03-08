@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import {
     DownloadSimple, WarningCircle,
@@ -67,6 +67,21 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
     const [isUpscaling, setIsUpscaling] = useState(false);
     const [hdImageUrl, setHdImageUrl] = useState<string | null>(null);
+
+    // ── Reveal transition: detect PROCESSING → DONE ──
+    const prevStatusRef = useRef(job.status);
+    const [isRevealing, setIsRevealing] = useState(false);
+
+    useEffect(() => {
+        const prev = prevStatusRef.current;
+        prevStatusRef.current = job.status;
+
+        if ((prev === 'PENDING' || prev === 'PROCESSING') && job.status === 'DONE') {
+            setIsRevealing(true);
+            const timer = setTimeout(() => setIsRevealing(false), 800);
+            return () => clearTimeout(timer);
+        }
+    }, [job.status]);
 
     const openLightbox = useCallback((index: number) => {
         setLightboxInitialIndex(index);
@@ -147,7 +162,10 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
     const brandingVisible = hasBranding && showBranding;
 
     return (
-        <div className="flex w-full flex-col gap-3 py-2">
+        <div className={cn(
+            'flex w-full flex-col gap-3 py-2',
+            isRevealing && 'motion-safe:animate-results-reveal',
+        )}>
             {/* Branding toggle */}
             {hasBranding && (
                 <div className="flex items-center justify-end">
