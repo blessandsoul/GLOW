@@ -82,7 +82,7 @@ export const reviewsRepo = {
 
   async masterExists(masterId: string): Promise<boolean> {
     const user = await prisma.user.findFirst({
-      where: { id: masterId, role: 'MASTER', isActive: true, deletedAt: null },
+      where: { id: masterId, isActive: true, deletedAt: null, masterProfile: { isNot: null } },
       select: { id: true },
     });
     return user !== null;
