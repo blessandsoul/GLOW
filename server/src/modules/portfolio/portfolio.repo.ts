@@ -56,7 +56,7 @@ export const portfolioRepo = {
     });
   },
 
-  async update(id: string, data: UpdatePortfolioItemInput) {
+  async update(id: string, data: UpdatePortfolioItemInput & { imageUrl?: string }) {
     return prisma.portfolioItem.update({
       where: { id },
       data,

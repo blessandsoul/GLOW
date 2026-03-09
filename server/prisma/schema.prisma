@@ -43,6 +43,7 @@ model User {
   brandingProfile  BrandingProfile?
   masterProfile    MasterProfile?
   reviews          Review[]         @relation("masterReviews")
+  writtenReviews   Review[]         @relation("userReviews")
   portfolioItems   PortfolioItem[]
   scheduledPosts   ScheduledPost[]
   subscription     Subscription?
@@ -164,18 +165,23 @@ model BrandingProfile {
 
 model Review {
   id         String   @id @default(uuid())
-  jobId      String
+  jobId      String?
   masterId   String
+  userId     String?
   rating     Int
   text       String?  @db.Text
   clientName String?
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  job    Job  @relation(fields: [jobId], references: [id])
-  master User @relation("masterReviews", fields: [masterId], references: [id])
+  job    Job?  @relation(fields: [jobId], references: [id])
+  master User  @relation("masterReviews", fields: [masterId], references: [id])
+  user   User? @relation("userReviews", fields: [userId], references: [id])
 
+  @@unique([userId, masterId])
   @@index([masterId])
   @@index([jobId])
+  @@index([userId])
   @@map("reviews")
 }
 

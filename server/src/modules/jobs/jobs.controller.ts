@@ -1,5 +1,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, ListResultsQuerySchema, BatchSettingsSchema, BulkDeleteSchema, PrepareHDQuerySchema } from './jobs.schemas.js';
+import { JobIdParamSchema, DownloadQuerySchema, ListJobsQuerySchema, ListResultsQuerySchema, BatchSettingsSchema, BulkDeleteSchema, PrepareHDQuerySchema, ReplaceResultQuerySchema } from './jobs.schemas.js';
+import { validateImage, processImage, uploadFile } from '../../libs/storage.js';
+import type { StorageFile } from '../../libs/storage.js';
 import { jobsService } from './jobs.service.js';
 import { BadRequestError } from '../../shared/errors/errors.js';
 import { isLaunchMode, getDailyUsage } from '../../libs/launch-mode.js';
@@ -139,6 +141,30 @@ export const jobsController = {
     }
     const usage = await getDailyUsage(user.id);
     await reply.send(successResponse('Daily usage', usage));
+  },
+
+  async replaceResult(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { jobId } = JobIdParamSchema.parse(request.params);
+    const { variant } = ReplaceResultQuerySchema.parse(request.query);
+    const user = request.user as JwtPayload;
+
+    const data = await request.file();
+    if (!data) {
+      throw new BadRequestError('No file uploaded', 'NO_FILE');
+    }
+
+    let file: StorageFile = {
+      buffer: await data.toBuffer(),
+      filename: data.filename,
+      mimetype: data.mimetype,
+    };
+
+    validateImage(file, 10 * 1024 * 1024);
+    file = await processImage(file);
+
+    const imageUrl = await uploadFile(file, 'results');
+    const result = await jobsService.replaceResult(jobId, variant, user.id, imageUrl);
+    await reply.send(successResponse('Result image replaced', result));
   },
 
   async createBatch(request: FastifyRequest, reply: FastifyReply): Promise<void> {

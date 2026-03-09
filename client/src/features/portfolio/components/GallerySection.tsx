@@ -10,7 +10,7 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { GalleryImagePicker } from './GalleryImagePicker';
 import { ImageEditor } from '@/components/common/ImageEditor';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getServerImageUrl, base64ToFile } from '@/lib/utils/image';
 import type { PortfolioItem, PortfolioItemFormData } from '../types/portfolio.types';
 import type { JobResultImage } from '../types/builder.types';
 
@@ -26,6 +26,7 @@ interface GallerySectionProps {
     isUploading: boolean;
     onUpdate: (params: { id: string; data: Partial<PortfolioItemFormData> }) => Promise<void>;
     onDelete: (id: string) => Promise<void>;
+    onReplaceImage: (id: string, file: File) => Promise<void>;
 }
 
 export function GallerySection({
@@ -38,11 +39,13 @@ export function GallerySection({
     isUploading,
     onUpdate,
     onDelete,
+    onReplaceImage,
 }: GallerySectionProps): React.ReactElement {
     const { t } = useLanguage();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [pickerOpen, setPickerOpen] = useState(false);
-    const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
+    const [editingItem, setEditingItem] = useState<{ id: string; imageUrl: string } | null>(null);
+    const [isSavingEdit, setIsSavingEdit] = useState(false);
     const publishedCount = items.filter((i) => i.isPublished).length;
     const availableToAdd = jobResults.filter((img) => !portfolioImageUrls.has(img.imageUrl)).length;
 
@@ -65,14 +68,18 @@ export function GallerySection({
         await onUpload(file);
     };
 
-    const handleEditorSave = (editedImageObject: { imageBase64?: string }): void => {
-        if (!editedImageObject.imageBase64) return;
-        const link = document.createElement('a');
-        link.href = editedImageObject.imageBase64;
-        link.download = `glowge-edited-${Date.now()}.png`;
-        link.click();
-        toast.success(t('ui.image_saved'));
-        setEditingImageUrl(null);
+    const handleEditorSave = async (editedImageObject: { imageBase64?: string }): Promise<void> => {
+        if (!editedImageObject.imageBase64 || !editingItem) return;
+        setIsSavingEdit(true);
+        try {
+            const file = base64ToFile(editedImageObject.imageBase64, `glowge-edited-${Date.now()}.png`);
+            await onReplaceImage(editingItem.id, file);
+            setEditingItem(null);
+        } catch {
+            toast.error(t('ui.image_save_failed'));
+        } finally {
+            setIsSavingEdit(false);
+        }
     };
 
     const triggerUpload = (): void => {
@@ -161,7 +168,7 @@ export function GallerySection({
                                     <div className="flex gap-1.5">
                                         <button
                                             type="button"
-                                            onClick={() => setEditingImageUrl(item.imageUrl)}
+                                            onClick={() => setEditingItem({ id: item.id, imageUrl: item.imageUrl })}
                                             className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-primary/70 sm:h-7 sm:w-7"
                                             aria-label={t('ui.edit_image')}
                                         >
@@ -239,11 +246,11 @@ export function GallerySection({
             )}
 
             {/* Image editor */}
-            {editingImageUrl && (
+            {editingItem && (
                 <ImageEditor
-                    source={getServerImageUrl(editingImageUrl)}
+                    source={getServerImageUrl(editingItem.imageUrl)}
                     open
-                    onClose={() => setEditingImageUrl(null)}
+                    onClose={() => setEditingItem(null)}
                     onSave={handleEditorSave}
                 />
             )}

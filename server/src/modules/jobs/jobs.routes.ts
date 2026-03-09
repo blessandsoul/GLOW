@@ -44,6 +44,13 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
     jobsController.prepareHD,
   );
 
+  // Replace edited result image (authenticated)
+  app.post(
+    '/:jobId/replace-result',
+    { preHandler: [authenticate, requirePhoneVerified] },
+    jobsController.replaceResult,
+  );
+
   // Delete single job (authenticated)
   app.delete('/:jobId', { preHandler: [authenticate, requirePhoneVerified] }, jobsController.delete);
 }

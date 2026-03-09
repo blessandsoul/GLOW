@@ -8,6 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/common/Pagination';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     Table,
     TableHeader,
     TableBody,
@@ -21,7 +28,8 @@ import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import type { AdminUser } from '../types/admin.types';
 
-const LIMIT = 10;
+const DEFAULT_LIMIT = 50;
+const LIMIT_OPTIONS = [50, 250, 500, 1000] as const;
 const IMAGES_LIMIT = 12;
 const COL_COUNT = 9;
 
@@ -129,7 +137,7 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }): 
     );
 }
 
-function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }): React.ReactElement | null {
+function UserImagesRow({ userId, phone, isOpen }: { userId: string; phone: string | null; isOpen: boolean }): React.ReactElement | null {
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -191,6 +199,12 @@ function UserImagesRow({ userId, isOpen }: { userId: string; isOpen: boolean }):
                     onTransitionEnd={handleTransitionEnd}
                 >
                     <div ref={contentRef} className="bg-muted/30 p-4">
+                        {phone && (
+                            <div className="mb-3 flex items-center gap-2 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span className="font-medium text-foreground">{phone}</span>
+                            </div>
+                        )}
                         {isLoading ? (
                             <div className="flex gap-2">
                                 {Array.from({ length: 6 }).map((_, i) => (
@@ -271,11 +285,20 @@ export function AdminUsersTable(): React.ReactElement {
 
     const page = Number(searchParams.get('page') ?? '1');
     const searchQuery = searchParams.get('search') ?? '';
+    const limitParam = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
+    const limit = LIMIT_OPTIONS.includes(limitParam as typeof LIMIT_OPTIONS[number]) ? limitParam : DEFAULT_LIMIT;
 
     const [searchInput, setSearchInput] = useState(searchQuery);
     const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
 
-    const { users, pagination, isLoading } = useAdminUsers(page, LIMIT, searchQuery || undefined);
+    const { users, pagination, isLoading } = useAdminUsers(page, limit, searchQuery || undefined);
+
+    const handleLimitChange = useCallback((value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('limit', value);
+        params.set('page', '1');
+        router.push(`${pathname}?${params.toString()}`);
+    }, [searchParams, pathname, router]);
 
     // Debounced search — update URL after 400ms
     useEffect(() => {
@@ -307,12 +330,26 @@ export function AdminUsersTable(): React.ReactElement {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <h2 className="text-lg font-semibold">{t('admin.users_title')}</h2>
-                <Input
-                    placeholder={t('admin.search_placeholder')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="max-w-xs"
-                />
+                <div className="flex items-center gap-3">
+                    <Select value={String(limit)} onValueChange={handleLimitChange}>
+                        <SelectTrigger className="w-25">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {LIMIT_OPTIONS.map((opt) => (
+                                <SelectItem key={opt} value={String(opt)}>
+                                    {opt === 1000 ? t('admin.all') : opt}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Input
+                        placeholder={t('admin.search_placeholder')}
+                        value={searchInput}
+                        onChange={handleSearchChange}
+                        className="max-w-xs"
+                    />
+                </div>
             </div>
 
             <div className="rounded-xl border border-border/50 bg-card">
@@ -382,7 +419,7 @@ export function AdminUsersTable(): React.ReactElement {
                                             {formatDate(user.createdAt)}
                                         </TableCell>
                                     </TableRow>
-                                    <UserImagesRow userId={user.id} isOpen={expandedUserId === user.id} />
+                                    <UserImagesRow userId={user.id} phone={user.phone} isOpen={expandedUserId === user.id} />
                                 </React.Fragment>
                             ))
                         )}

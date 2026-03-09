@@ -70,6 +70,23 @@ export function createPortfolioService() {
       return portfolioRepo.update(itemId, input);
     },
 
+    async replaceImage(userId: string, itemId: string, newImageUrl: string) {
+      const item = await portfolioRepo.findById(itemId);
+      if (!item) {
+        throw new NotFoundError('Portfolio item not found', 'PORTFOLIO_ITEM_NOT_FOUND');
+      }
+      if (item.userId !== userId) {
+        throw new ForbiddenError('You do not own this portfolio item', 'NOT_OWNER');
+      }
+
+      // Delete old file if it was a portfolio upload
+      if (item.imageUrl.startsWith('/uploads/portfolio/')) {
+        await deleteFile(item.imageUrl);
+      }
+
+      return portfolioRepo.update(itemId, { imageUrl: newImageUrl });
+    },
+
     async deleteItem(userId: string, itemId: string) {
       const item = await portfolioRepo.findById(itemId);
       if (!item) {
@@ -116,6 +133,7 @@ export function createPortfolioService() {
       ]);
 
       return {
+        masterId: user.id,
         username: user.username,
         displayName: branding?.displayName ?? `${user.firstName} ${user.lastName}`,
         avatar: user.avatar,

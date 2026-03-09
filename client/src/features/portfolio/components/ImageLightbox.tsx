@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { ImageEditor } from '@/components/common/ImageEditor';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getServerImageUrl, base64ToFile } from '@/lib/utils/image';
 
 interface LightboxImage {
     imageUrl: string;
@@ -21,9 +21,10 @@ interface ImageLightboxProps {
     open: boolean;
     onClose: () => void;
     editable?: boolean;
+    onSaveEdited?: (imageIndex: number, file: File) => Promise<void>;
 }
 
-export function ImageLightbox({ images, initialIndex, open, onClose, editable = true }: ImageLightboxProps): React.ReactElement | null {
+export function ImageLightbox({ images, initialIndex, open, onClose, editable = true, onSaveEdited }: ImageLightboxProps): React.ReactElement | null {
     const { t } = useLanguage();
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [editorOpen, setEditorOpen] = useState(false);
@@ -101,15 +102,27 @@ export function ImageLightbox({ images, initialIndex, open, onClose, editable = 
         setTranslateX(0);
     }, [goNext, goPrev]);
 
-    const handleEditorSave = useCallback((editedImageObject: { imageBase64?: string }) => {
+    const handleEditorSave = useCallback(async (editedImageObject: { imageBase64?: string }) => {
         if (!editedImageObject.imageBase64) return;
-        const link = document.createElement('a');
-        link.href = editedImageObject.imageBase64;
-        link.download = `glowge-edited-${Date.now()}.png`;
-        link.click();
-        toast.success(t('ui.image_saved'));
+
+        if (onSaveEdited) {
+            try {
+                const file = base64ToFile(editedImageObject.imageBase64, `glowge-edited-${Date.now()}.png`);
+                await onSaveEdited(currentIndex, file);
+                toast.success(t('ui.image_saved'));
+            } catch {
+                toast.error(t('ui.image_save_failed'));
+            }
+        } else {
+            // Fallback: download locally
+            const link = document.createElement('a');
+            link.href = editedImageObject.imageBase64;
+            link.download = `glowge-edited-${Date.now()}.png`;
+            link.click();
+            toast.success(t('ui.image_saved'));
+        }
         setEditorOpen(false);
-    }, [t]);
+    }, [t, onSaveEdited, currentIndex]);
 
     if (!open || images.length === 0) return null;
 

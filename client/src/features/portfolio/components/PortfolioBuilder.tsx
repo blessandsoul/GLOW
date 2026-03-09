@@ -68,6 +68,7 @@ export function PortfolioBuilder(): React.ReactElement {
         isUploading,
         updateItem,
         deleteItem,
+        replaceImage,
         progress,
         activeSection,
         scrollToSection,
@@ -152,6 +153,7 @@ export function PortfolioBuilder(): React.ReactElement {
                             isUploading={isUploading}
                             onUpdate={updateItem}
                             onDelete={deleteItem}
+                            onReplaceImage={replaceImage}
                         />
                     </section>
 

@@ -12,6 +12,7 @@ import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { ImageLightbox } from './ImageLightbox';
 import { ReviewsSection } from './ReviewsSection';
+import { ReviewForm } from '@/features/reviews/components/ReviewForm';
 
 interface PublicPortfolioProps {
     username: string;
@@ -230,6 +231,9 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                 averageRating={portfolio.averageRating}
                 reviewsCount={portfolio.reviewsCount}
             />
+
+            {/* Leave a review */}
+            <ReviewForm masterId={portfolio.masterId} />
 
             {/* Footer */}
             <div className="text-center">

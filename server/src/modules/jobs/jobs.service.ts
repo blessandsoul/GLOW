@@ -428,6 +428,36 @@ export const jobsService = {
     return { url: hdUrl };
   },
 
+  async replaceResult(
+    jobId: string,
+    variantIndex: number,
+    userId: string,
+    newImageUrl: string,
+  ): Promise<{ id: string; status: string; results: string[] }> {
+    const job = await jobsRepo.findById(jobId);
+    if (!job) {
+      throw new NotFoundError('Job not found', 'JOB_NOT_FOUND');
+    }
+    if (job.userId !== userId) {
+      throw new ForbiddenError('Access denied', 'JOB_FORBIDDEN');
+    }
+    if (job.status !== 'DONE') {
+      throw new ForbiddenError('Job processing not complete', 'JOB_NOT_READY');
+    }
+
+    const results = (job.results as string[] | null) ?? [];
+    if (variantIndex < 0 || variantIndex >= results.length) {
+      throw new NotFoundError('Result variant not found', 'VARIANT_NOT_FOUND');
+    }
+
+    // Replace the variant URL
+    const updatedResults = [...results];
+    updatedResults[variantIndex] = newImageUrl;
+
+    const updated = await jobsRepo.updateJob(jobId, { status: 'DONE', results: updatedResults });
+    return { id: updated.id, status: updated.status, results: updatedResults };
+  },
+
   async getResultImages(userId: string): Promise<{ jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[]> {
     const jobs = await jobsRepo.findDoneResultsByUserId(userId);
     const images: { jobId: string; imageUrl: string; variantIndex: number; createdAt: Date }[] = [];

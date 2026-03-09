@@ -32,7 +32,7 @@ setInterval(() => {
 }, 5 * 60_000);
 
 export const notificationsService = {
-  async reportProblem(phone: string, clientIp: string, jobId?: string): Promise<void> {
+  async reportProblem(phone: string, message: string, clientIp: string, jobId?: string): Promise<void> {
     checkRateLimit(clientIp);
 
     const botToken = env.TELEGRAM_BOT_TOKEN;
@@ -44,7 +44,7 @@ export const notificationsService = {
     }
 
     const jobLine = jobId ? `\n📋 Job ID: \`${jobId}\`` : '';
-    const text = `🚨 *Problem Report*\n\n📱 Phone: \`${phone}\`${jobLine}\n🌐 IP: \`${clientIp}\`\n🕐 ${new Date().toISOString()}`;
+    const text = `🚨 *Problem Report*\n\n💬 ${message}\n\n📱 Phone: \`${phone}\`${jobLine}\n🌐 IP: \`${clientIp}\`\n🕐 ${new Date().toISOString()}`;
 
     try {
       const url = `https://api.telegram.org/bot${botToken}/sendMessage`;

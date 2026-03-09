@@ -12,6 +12,7 @@ export async function portfolioRoutes(app: FastifyInstance): Promise<void> {
   app.post('/', { preHandler: [authenticate, requirePhoneVerified] }, controller.create);
   app.post('/upload', { preHandler: [authenticate, requirePhoneVerified] }, controller.upload);
   app.patch('/reorder', { preHandler: [authenticate, requirePhoneVerified] }, controller.reorder);
+  app.post('/:id/replace-image', { preHandler: [authenticate, requirePhoneVerified] }, controller.replaceImage);
   app.patch('/:id', { preHandler: [authenticate, requirePhoneVerified] }, controller.update);
   app.delete('/:id', { preHandler: [authenticate, requirePhoneVerified] }, controller.remove);
 

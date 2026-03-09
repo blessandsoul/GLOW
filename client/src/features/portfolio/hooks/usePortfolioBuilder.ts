@@ -19,7 +19,7 @@ export function usePortfolioBuilder() {
     const { profile, isLoading: isProfileLoading } = useProfile();
 
     // Portfolio items
-    const { items, isLoading: isPortfolioLoading, addItem, uploadImage, isUploading, updateItem, deleteItem } = useMyPortfolio();
+    const { items, isLoading: isPortfolioLoading, addItem, uploadImage, isUploading, updateItem, deleteItem, replaceImage } = useMyPortfolio();
 
     // Job results for image picker
     const { results: jobResults, isLoading: isResultsLoading } = useJobResults();
@@ -71,6 +71,7 @@ export function usePortfolioBuilder() {
         isUploading,
         updateItem,
         deleteItem,
+        replaceImage,
         progress,
         activeSection,
         scrollToSection,

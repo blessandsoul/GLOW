@@ -37,3 +37,7 @@ export const ListResultsQuerySchema = z.object({
 export const PrepareHDQuerySchema = z.object({
   variant: z.coerce.number().int().min(0).default(0),
 });
+
+export const ReplaceResultQuerySchema = z.object({
+  variant: z.coerce.number().int().min(0).default(0),
+});

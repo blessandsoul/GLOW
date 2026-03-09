@@ -39,6 +39,7 @@ export function createAdminService() {
         lastName: user.lastName,
         username: user.username,
         avatar: user.avatar,
+        phone: user.phone,
         role: user.role,
         isActive: user.isActive,
         isEmailVerified: user.emailVerified,

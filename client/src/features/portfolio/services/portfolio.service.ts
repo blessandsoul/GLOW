@@ -46,6 +46,18 @@ class PortfolioService {
         return data.data;
     }
 
+    async replaceImage(id: string, file: File): Promise<PortfolioItem> {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const { data } = await apiClient.post<ApiResponse<PortfolioItem>>(
+            API_ENDPOINTS.PORTFOLIO.REPLACE_IMAGE(id),
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } },
+        );
+        return data.data;
+    }
+
     async reorderItems(payload: ReorderPayload): Promise<PortfolioItem[]> {
         const { data } = await apiClient.patch<ApiResponse<PortfolioItem[]>>(
             API_ENDPOINTS.PORTFOLIO.REORDER,

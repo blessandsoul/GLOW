@@ -5,10 +5,10 @@ import { successResponse } from '@shared/responses/successResponse.js';
 
 export const notificationsController = {
   async reportProblem(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-    const { phone, jobId } = ReportProblemSchema.parse(request.body);
+    const { phone, message, jobId } = ReportProblemSchema.parse(request.body);
     const clientIp = request.ip;
 
-    await notificationsService.reportProblem(phone, clientIp, jobId);
+    await notificationsService.reportProblem(phone, message, clientIp, jobId);
 
     await reply.send(successResponse('Report submitted successfully', null));
   },

@@ -77,6 +77,18 @@ class JobService {
         return data.data;
     }
 
+    async replaceResult(jobId: string, variant: number, file: File): Promise<{ id: string; status: string; results: string[] }> {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const { data } = await apiClient.post<ApiResponse<{ id: string; status: string; results: string[] }>>(
+            API_ENDPOINTS.JOBS.REPLACE_RESULT(jobId, variant),
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } },
+        );
+        return data.data;
+    }
+
     async deleteJob(id: string): Promise<void> {
         await apiClient.delete(API_ENDPOINTS.JOBS.DELETE(id));
     }

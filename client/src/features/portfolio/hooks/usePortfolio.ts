@@ -23,6 +23,8 @@ export function useMyPortfolio(): {
     updateItem: (params: { id: string; data: Partial<PortfolioItemFormData> }) => Promise<void>;
     deleteItem: (id: string) => Promise<void>;
     isDeleting: boolean;
+    replaceImage: (id: string, file: File) => Promise<void>;
+    isReplacingImage: boolean;
 } {
     const { t } = useLanguage();
     const queryClient = useQueryClient();
@@ -113,6 +115,20 @@ export function useMyPortfolio(): {
         },
     });
 
+    const replaceImageMutation = useMutation({
+        mutationFn: ({ id, file }: { id: string; file: File }) =>
+            portfolioService.replaceImage(id, file),
+        onSuccess: () => {
+            toast.success(t('ui.image_saved'));
+        },
+        onError: (err) => {
+            toast.error(getErrorMessage(err));
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: portfolioKeys.me() });
+        },
+    });
+
     const deleteMutation = useMutation({
         mutationFn: (id: string) => portfolioService.deleteItem(id),
         onMutate: async (id) => {
@@ -155,6 +171,10 @@ export function useMyPortfolio(): {
         await deleteMutation.mutateAsync(id);
     };
 
+    const replaceImage = async (id: string, file: File): Promise<void> => {
+        await replaceImageMutation.mutateAsync({ id, file });
+    };
+
     return {
         items,
         isLoading,
@@ -165,6 +185,8 @@ export function useMyPortfolio(): {
         updateItem,
         deleteItem,
         isDeleting: deleteMutation.isPending,
+        replaceImage,
+        isReplacingImage: replaceImageMutation.isPending,
     };
 }
 

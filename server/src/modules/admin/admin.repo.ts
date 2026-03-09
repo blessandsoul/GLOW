@@ -32,6 +32,7 @@ export const adminRepo = {
         role: true,
         isActive: true,
         emailVerified: true,
+        phone: true,
         credits: true,
         createdAt: true,
         subscription: { select: { plan: true } },

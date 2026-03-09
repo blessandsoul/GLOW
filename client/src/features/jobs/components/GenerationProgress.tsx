@@ -27,17 +27,21 @@ function ReportForm({ jobId }: { jobId?: string }): React.ReactElement {
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const [phone, setPhone] = useState('');
+    const [message, setMessage] = useState('');
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
 
+    const canSubmit = phone.trim().length > 0 && message.trim().length >= 3;
+
     const handleSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        if (!phone.trim() || sending) return;
+        if (!canSubmit || sending) return;
 
         setSending(true);
         try {
             await apiClient.post(API_ENDPOINTS.NOTIFICATIONS.REPORT, {
                 phone: phone.trim(),
+                message: message.trim(),
                 ...(jobId ? { jobId } : {}),
             });
             setSent(true);
@@ -47,7 +51,7 @@ function ReportForm({ jobId }: { jobId?: string }): React.ReactElement {
         } finally {
             setSending(false);
         }
-    }, [phone, sending, jobId, t]);
+    }, [canSubmit, phone, message, sending, jobId, t]);
 
     if (sent) {
         return (
@@ -75,6 +79,19 @@ function ReportForm({ jobId }: { jobId?: string }): React.ReactElement {
         <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-2">
             <p className="text-xs font-medium text-foreground">{t('ui.gen_report_title')}</p>
             <p className="text-[11px] text-muted-foreground">{t('ui.gen_report_desc')}</p>
+            <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={t('ui.gen_report_message')}
+                rows={3}
+                className={cn(
+                    'w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-xs',
+                    'placeholder:text-muted-foreground/60',
+                    'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50',
+                    'transition-all duration-200',
+                )}
+                autoFocus
+            />
             <div className="flex gap-2">
                 <input
                     type="tel"
@@ -87,11 +104,10 @@ function ReportForm({ jobId }: { jobId?: string }): React.ReactElement {
                         'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50',
                         'transition-all duration-200',
                     )}
-                    autoFocus
                 />
                 <button
                     type="submit"
-                    disabled={!phone.trim() || sending}
+                    disabled={!canSubmit || sending}
                     className={cn(
                         'flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-xs font-semibold text-primary-foreground',
                         'transition-all duration-200 active:scale-[0.97]',

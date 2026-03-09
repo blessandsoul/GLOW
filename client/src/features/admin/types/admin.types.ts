@@ -5,6 +5,7 @@ export interface AdminUser {
     lastName: string;
     username: string | null;
     avatar: string | null;
+    phone: string | null;
     role: string;
     isActive: boolean;
     isEmailVerified: boolean;

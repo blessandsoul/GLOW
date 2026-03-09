@@ -55,6 +55,27 @@ export function createPortfolioController(portfolioService: PortfolioService) {
       reply.status(201).send(successResponse('Image uploaded', item));
     },
 
+    async replaceImage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const { id } = PortfolioItemIdSchema.parse(request.params);
+      const data = await request.file();
+      if (!data) {
+        throw new BadRequestError('No file uploaded', 'NO_FILE');
+      }
+
+      let file: StorageFile = {
+        buffer: await data.toBuffer(),
+        filename: data.filename,
+        mimetype: data.mimetype,
+      };
+
+      validateImage(file, 10 * 1024 * 1024);
+      file = await processImage(file);
+
+      const imageUrl = await uploadFile(file, 'portfolio');
+      const item = await portfolioService.replaceImage(request.user!.id, id, imageUrl);
+      reply.send(successResponse('Image replaced', item));
+    },
+
     async update(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const { id } = PortfolioItemIdSchema.parse(request.params);
       const input = UpdatePortfolioItemSchema.parse(request.body);

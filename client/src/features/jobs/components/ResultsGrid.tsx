@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import {
     DownloadSimple, WarningCircle,
@@ -21,7 +22,8 @@ import { ImageEditor } from '@/components/common/ImageEditor';
 import { GenerationProgress } from './GenerationProgress';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getServerImageUrl, base64ToFile } from '@/lib/utils/image';
+import { jobService } from '../services/job.service';
 
 interface ResultsGridProps {
     job: Job;
@@ -58,6 +60,7 @@ function ShareButton({ jobId }: { jobId: string }): React.ReactElement {
 // ─── Main ResultsGrid ─────────────────────────────────────────────────────────
 export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDelete }: ResultsGridProps): React.ReactElement {
     const { t } = useLanguage();
+    const queryClient = useQueryClient();
     const { profile: brandingProfile } = useBranding();
 
     const hasBranding = !!(isAuthenticated && brandingProfile?.isActive &&
@@ -133,15 +136,23 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDel
         }
     }, [job.id, selectedAfterIdx, t]);
 
-    const handleEditorSave = useCallback((editedImageObject: { imageBase64?: string }) => {
+    const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+    const handleEditorSave = useCallback(async (editedImageObject: { imageBase64?: string }) => {
         if (!editedImageObject.imageBase64) return;
-        const link = document.createElement('a');
-        link.href = editedImageObject.imageBase64;
-        link.download = `glowge-edited-${Date.now()}.png`;
-        link.click();
-        toast.success(t('ui.image_saved'));
-        setEditorOpen(false);
-    }, [t]);
+        setIsSavingEdit(true);
+        try {
+            const file = base64ToFile(editedImageObject.imageBase64, `glowge-edited-${Date.now()}.png`);
+            await jobService.replaceResult(job.id, selectedAfterIdx, file);
+            toast.success(t('ui.image_saved'));
+            setEditorOpen(false);
+            await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+        } catch {
+            toast.error(t('ui.image_save_failed'));
+        } finally {
+            setIsSavingEdit(false);
+        }
+    }, [t, job.id, selectedAfterIdx]);
 
     // Build lightbox images array: [Before, After]
     // NOTE: This useMemo MUST be before any early returns to maintain consistent hook ordering
@@ -457,6 +468,13 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDel
                     initialIndex={lightboxInitialIndex}
                     open={lightboxOpen}
                     onClose={() => setLightboxOpen(false)}
+                    onSaveEdited={async (imageIndex, file) => {
+                        // Only save if editing the "After" image (index 1)
+                        if (imageIndex === 1) {
+                            await jobService.replaceResult(job.id, selectedAfterIdx, file);
+                            await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+                        }
+                    }}
                 />
             )}
 

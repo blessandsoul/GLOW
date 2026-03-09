@@ -34,6 +34,7 @@ export const API_ENDPOINTS = {
         UPLOAD: '/portfolio/upload',
         REORDER: '/portfolio/reorder',
         UPDATE: (id: string) => `/portfolio/${id}`,
+        REPLACE_IMAGE: (id: string) => `/portfolio/${id}/replace-image`,
         DELETE: (id: string) => `/portfolio/${id}`,
         PUBLIC: (username: string) => `/portfolio/public/${username}`,
     },
@@ -56,6 +57,7 @@ export const API_ENDPOINTS = {
         BATCH: '/jobs/batch',
         DOWNLOAD: (id: string, variant: number, upscale?: boolean) => `/jobs/${id}/download?variant=${variant}${upscale ? '&upscale=1' : ''}`,
         PREPARE_HD: (id: string, variant: number) => `/jobs/${id}/prepare-hd?variant=${variant}`,
+        REPLACE_RESULT: (id: string, variant: number) => `/jobs/${id}/replace-result?variant=${variant}`,
         DELETE: (id: string) => `/jobs/${id}`,
         BULK_DELETE: '/jobs/bulk',
         STATS: '/jobs/stats',
@@ -110,5 +112,12 @@ export const API_ENDPOINTS = {
     },
     NOTIFICATIONS: {
         REPORT: '/notifications/report',
+    },
+    REVIEWS: {
+        CREATE: '/reviews',
+        BY_MASTER: (masterId: string) => `/reviews/master/${masterId}`,
+        MY_REVIEW: (masterId: string) => `/reviews/my/${masterId}`,
+        UPDATE: (reviewId: string) => `/reviews/${reviewId}`,
+        DELETE: (reviewId: string) => `/reviews/${reviewId}`,
     },
 } as const;
