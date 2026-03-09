@@ -3,8 +3,12 @@
 import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, ArrowRight, CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { motion } from 'motion/react';
+import {
+    MapPin, ArrowRight, CaretLeft, CaretRight,
+    Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle, SquaresFour,
+} from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFeaturedMasters } from '../hooks/useFeaturedMasters';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
@@ -13,13 +17,13 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
-const NICHE_ICONS: Record<string, string> = {
-    lashes: '✦',
-    nails: '💅',
-    brows: '✧',
-    makeup: '💄',
-    hair: '✂',
-    skincare: '✿',
+const NICHE_META: Record<string, { icon: Icon }> = {
+    lashes:   { icon: Eye },
+    nails:    { icon: HandPalm },
+    brows:    { icon: Eye },
+    makeup:   { icon: PaintBrush },
+    hair:     { icon: Scissors },
+    skincare: { icon: Drop },
 };
 
 export function FeaturedMasters(): React.ReactElement | null {
@@ -48,7 +52,6 @@ export function FeaturedMasters(): React.ReactElement | null {
         }
     }, []);
 
-    // Only hide when API successfully returned 0 masters and no filter is active
     if (isSuccess && masters.length === 0 && !selectedNiche) return null;
 
     return (
@@ -77,7 +80,6 @@ export function FeaturedMasters(): React.ReactElement | null {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* View all link */}
                     <Link
                         href={ROUTES.MASTERS}
                         className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-200"
@@ -86,7 +88,6 @@ export function FeaturedMasters(): React.ReactElement | null {
                         <ArrowRight size={14} weight="bold" />
                     </Link>
 
-                    {/* Desktop scroll controls */}
                     <div className="hidden sm:flex items-center gap-2 ml-4">
                         <button
                             type="button"
@@ -108,38 +109,35 @@ export function FeaturedMasters(): React.ReactElement | null {
                 </div>
             </div>
 
-            {/* Category filter tabs */}
+            {/* Category filter chips */}
             {specialities.length > 0 && (
-                <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    <button
-                        type="button"
+                <motion.div
+                    className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    initial={{ opacity: 0, y: 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.15 }}
+                >
+                    <NicheChip
+                        isActive={!selectedNiche}
                         onClick={() => handleNicheChange(undefined)}
-                        className={cn(
-                            'shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
-                            !selectedNiche
-                                ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
-                                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
-                        )}
-                    >
-                        {t('masters.all_categories')}
-                    </button>
-                    {specialities.map((spec) => (
-                        <button
-                            key={spec.slug}
-                            type="button"
-                            onClick={() => handleNicheChange(spec.slug)}
-                            className={cn(
-                                'shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
-                                selectedNiche === spec.slug
-                                    ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
-                                    : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
-                            )}
-                        >
-                            <span className="text-xs">{NICHE_ICONS[spec.slug] ?? '✦'}</span>
-                            {spec.label}
-                        </button>
-                    ))}
-                </div>
+                        icon={SquaresFour}
+                        label={t('masters.all_categories')}
+                    />
+                    {specialities.map((spec) => {
+                        const meta = NICHE_META[spec.slug];
+                        return (
+                            <NicheChip
+                                key={spec.slug}
+                                isActive={selectedNiche === spec.slug}
+                                onClick={() => handleNicheChange(spec.slug)}
+                                icon={meta?.icon ?? Sparkle}
+                                label={spec.label}
+                            />
+                        );
+                    })}
+                </motion.div>
             )}
 
             {/* Scrollable cards */}
@@ -148,17 +146,25 @@ export function FeaturedMasters(): React.ReactElement | null {
                 className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-                {showSkeletons
-                    ? Array.from({ length: 5 }).map((_, i) => (
-                        <MasterCardSkeleton key={i} />
-                    ))
-                    : masters.length === 0 ? (
-                        <div className="flex w-full items-center justify-center py-12">
-                            <p className="text-sm text-muted-foreground">{t('masters.no_results')}</p>
-                        </div>
-                    ) : masters.map((master, index) => (
-                        <MasterCard key={master.username} master={master} index={index} />
-                    ))}
+                <AnimatePresence mode="popLayout">
+                    {showSkeletons
+                        ? Array.from({ length: 5 }).map((_, i) => (
+                            <MasterCardSkeleton key={`sk-${i}`} />
+                        ))
+                        : masters.length === 0 ? (
+                            <motion.div
+                                key="empty"
+                                className="flex w-full items-center justify-center py-12"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                <p className="text-sm text-muted-foreground">{t('masters.no_results')}</p>
+                            </motion.div>
+                        ) : masters.map((master, index) => (
+                            <MasterCard key={master.username} master={master} index={index} />
+                        ))}
+                </AnimatePresence>
             </div>
 
             {/* Mobile view all link */}
@@ -174,6 +180,35 @@ export function FeaturedMasters(): React.ReactElement | null {
         </section>
     );
 }
+
+// ─── Niche Chip ──────────────────────────────────────────────────────────────
+
+interface NicheChipProps {
+    isActive: boolean;
+    onClick: () => void;
+    icon: Icon;
+    label: string;
+}
+
+function NicheChip({ isActive, onClick, icon: IconComponent, label }: NicheChipProps): React.ReactElement {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={cn(
+                'shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-medium transition-all duration-200 cursor-pointer border',
+                isActive
+                    ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20'
+                    : 'bg-card text-muted-foreground border-border/60 hover:border-border hover:text-foreground hover:shadow-sm',
+            )}
+        >
+            <IconComponent size={15} weight={isActive ? 'fill' : 'regular'} />
+            {label}
+        </button>
+    );
+}
+
+// ─── Master Card ─────────────────────────────────────────────────────────────
 
 interface MasterCardProps {
     master: {
@@ -202,7 +237,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                 href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
                 className="group flex w-55 sm:w-65 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
             >
-                {/* Image grid — 2x2 mosaic */}
+                {/* Image grid */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
                     {images.length >= 4 ? (
                         <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px">
@@ -253,7 +288,6 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                         </div>
                     )}
 
-                    {/* Total items badge */}
                     {master.totalItems > 4 && (
                         <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
                             +{master.totalItems - 4}
@@ -263,7 +297,6 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
 
                 {/* Master info */}
                 <div className="flex items-center gap-3 p-3.5">
-                    {/* Avatar */}
                     {master.avatar ? (
                         <Image
                             src={getServerImageUrl(master.avatar)}
@@ -301,7 +334,6 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                         </div>
                     </div>
 
-                    {/* Arrow */}
                     <ArrowRight
                         size={14}
                         weight="bold"

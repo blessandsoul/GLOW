@@ -4,8 +4,13 @@ import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { MapPin, ArrowRight, MagnifyingGlass, FunnelSimple, X, CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { motion } from 'motion/react';
+import {
+    MapPin, ArrowRight, MagnifyingGlass, X, CaretLeft, CaretRight,
+    Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle, SquaresFour,
+    SlidersHorizontal, UsersFour,
+} from '@phosphor-icons/react';
+import type { Icon } from '@phosphor-icons/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMastersCatalog } from '../hooks/useMastersCatalog';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
@@ -15,13 +20,13 @@ import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 
-const NICHE_ICONS: Record<string, string> = {
-    lashes: '✦',
-    nails: '💅',
-    brows: '✧',
-    makeup: '💄',
-    hair: '✂',
-    skincare: '✿',
+const NICHE_META: Record<string, { icon: Icon }> = {
+    lashes:   { icon: Eye },
+    nails:    { icon: HandPalm },
+    brows:    { icon: Eye },
+    makeup:   { icon: PaintBrush },
+    hair:     { icon: Scissors },
+    skincare: { icon: Drop },
 };
 
 export function MastersCatalog(): React.ReactElement {
@@ -30,7 +35,6 @@ export function MastersCatalog(): React.ReactElement {
     const searchParams = useSearchParams();
     const { specialities } = useSpecialities();
 
-    // Read initial state from URL
     const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '');
     const [selectedNiche, setSelectedNiche] = useState<string | undefined>(searchParams.get('niche') ?? undefined);
     const [city, setCity] = useState(searchParams.get('city') ?? '');
@@ -39,7 +43,6 @@ export function MastersCatalog(): React.ReactElement {
     const debouncedSearch = useDebounce(searchInput, 400);
     const debouncedCity = useDebounce(city, 400);
 
-    // Sync filters to URL
     useEffect(() => {
         const params = new URLSearchParams();
         if (debouncedSearch) params.set('search', debouncedSearch);
@@ -81,6 +84,7 @@ export function MastersCatalog(): React.ReactElement {
     }, []);
 
     const hasActiveFilters = !!debouncedSearch || !!selectedNiche || !!debouncedCity;
+    const activeFilterCount = [debouncedSearch, selectedNiche, debouncedCity].filter(Boolean).length;
 
     return (
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
@@ -99,123 +103,131 @@ export function MastersCatalog(): React.ReactElement {
                 </p>
             </motion.div>
 
-            {/* Search & City filters */}
+            {/* Filter bar */}
             <motion.div
-                className="flex flex-col sm:flex-row gap-3 mb-6"
+                className="rounded-2xl border border-border/60 bg-card p-4 mb-8 shadow-sm"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
             >
-                {/* Search input */}
-                <div className="relative flex-1">
-                    <MagnifyingGlass
-                        size={18}
-                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                    />
-                    <input
-                        type="text"
-                        value={searchInput}
-                        onChange={(e) => handleSearchChange(e.target.value)}
-                        placeholder={t('catalog.search_placeholder')}
-                        className="h-11 w-full rounded-xl border border-border/60 bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/60 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30"
-                    />
-                    {searchInput && (
-                        <button
-                            type="button"
-                            onClick={() => handleSearchChange('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        >
-                            <X size={14} />
-                        </button>
-                    )}
-                </div>
-
-                {/* City input */}
-                <div className="relative sm:w-56">
-                    <MapPin
-                        size={18}
-                        weight="fill"
-                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                    />
-                    <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => handleCityChange(e.target.value)}
-                        placeholder={t('catalog.city_placeholder')}
-                        className="h-11 w-full rounded-xl border border-border/60 bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/60 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30"
-                    />
-                    {city && (
-                        <button
-                            type="button"
-                            onClick={() => handleCityChange('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        >
-                            <X size={14} />
-                        </button>
-                    )}
-                </div>
-
-                {/* Clear filters button */}
-                {hasActiveFilters && (
-                    <button
-                        type="button"
-                        onClick={clearFilters}
-                        className="inline-flex h-11 items-center gap-2 rounded-xl border border-border/60 bg-card px-4 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-border transition-all duration-200 cursor-pointer shrink-0"
-                    >
-                        <FunnelSimple size={16} />
-                        {t('catalog.clear_filters')}
-                    </button>
-                )}
-            </motion.div>
-
-            {/* Category tabs */}
-            <motion.div
-                className="flex gap-2 mb-8 overflow-x-auto pb-1 scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.15 }}
-            >
-                <button
-                    type="button"
-                    onClick={() => handleNicheChange(undefined)}
-                    className={cn(
-                        'shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
-                        !selectedNiche
-                            ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
-                            : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
-                    )}
-                >
-                    {t('masters.all_categories')}
-                </button>
-                {specialities.map((spec) => (
-                    <button
-                        key={spec.slug}
-                        type="button"
-                        onClick={() => handleNicheChange(spec.slug)}
-                        className={cn(
-                            'shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
-                            selectedNiche === spec.slug
-                                ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
-                                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+                {/* Search + City row */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    {/* Search */}
+                    <div className="relative flex-1">
+                        <MagnifyingGlass
+                            size={18}
+                            weight="regular"
+                            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70 pointer-events-none"
+                        />
+                        <input
+                            type="text"
+                            value={searchInput}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            placeholder={t('catalog.search_placeholder')}
+                            className="h-11 w-full rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/30"
+                        />
+                        {searchInput && (
+                            <button
+                                type="button"
+                                onClick={() => handleSearchChange('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all cursor-pointer"
+                            >
+                                <X size={12} weight="bold" />
+                            </button>
                         )}
-                    >
-                        <span className="text-xs">{NICHE_ICONS[spec.slug] ?? '✦'}</span>
-                        {spec.label}
-                    </button>
-                ))}
+                    </div>
+
+                    {/* City */}
+                    <div className="relative sm:w-52">
+                        <MapPin
+                            size={18}
+                            weight="fill"
+                            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70 pointer-events-none"
+                        />
+                        <input
+                            type="text"
+                            value={city}
+                            onChange={(e) => handleCityChange(e.target.value)}
+                            placeholder={t('catalog.city_placeholder')}
+                            className="h-11 w-full rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/30"
+                        />
+                        {city && (
+                            <button
+                                type="button"
+                                onClick={() => handleCityChange('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all cursor-pointer"
+                            >
+                                <X size={12} weight="bold" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Clear all */}
+                    <AnimatePresence>
+                        {hasActiveFilters && (
+                            <motion.button
+                                type="button"
+                                onClick={clearFilters}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.15 }}
+                                className="inline-flex h-11 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-200 cursor-pointer shrink-0"
+                            >
+                                <SlidersHorizontal size={15} weight="regular" />
+                                {t('catalog.clear_filters')}
+                                <span className="flex h-5 min-w-5 items-center justify-center rounded-md bg-destructive/15 px-1 text-[11px] font-semibold tabular-nums">
+                                    {activeFilterCount}
+                                </span>
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Category chips */}
+                <div
+                    className="flex gap-2 mt-4 pt-4 border-t border-border/40 overflow-x-auto scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    <NicheChip
+                        isActive={!selectedNiche}
+                        onClick={() => handleNicheChange(undefined)}
+                        icon={SquaresFour}
+                        label={t('masters.all_categories')}
+                    />
+                    {specialities.map((spec) => {
+                        const meta = NICHE_META[spec.slug];
+                        return (
+                            <NicheChip
+                                key={spec.slug}
+                                isActive={selectedNiche === spec.slug}
+                                onClick={() => handleNicheChange(spec.slug)}
+                                icon={meta?.icon ?? Sparkle}
+                                label={spec.label}
+                            />
+                        );
+                    })}
+                </div>
             </motion.div>
 
-            {/* Results count */}
+            {/* Results bar */}
             {pagination && !isLoading && (
-                <div className="flex items-center justify-between mb-6">
-                    <p className="text-sm text-muted-foreground">
-                        {t('catalog.results_count').replace('{{count}}', String(pagination.totalItems))}
-                    </p>
+                <motion.div
+                    className="flex items-center justify-between mb-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <div className="flex items-center gap-2">
+                        <UsersFour size={16} weight="regular" className="text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground tabular-nums">
+                            {t('catalog.results_count').replace('{{count}}', String(pagination.totalItems))}
+                        </p>
+                    </div>
                     {isFetching && (
                         <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                     )}
-                </div>
+                </motion.div>
             )}
 
             {/* Masters grid */}
@@ -237,13 +249,40 @@ export function MastersCatalog(): React.ReactElement {
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-                <Pagination
+                <PaginationBar
                     page={pagination.page}
                     totalPages={pagination.totalPages}
                     onPageChange={setPage}
                 />
             )}
         </div>
+    );
+}
+
+// ─── Niche Chip ──────────────────────────────────────────────────────────────
+
+interface NicheChipProps {
+    isActive: boolean;
+    onClick: () => void;
+    icon: Icon;
+    label: string;
+}
+
+function NicheChip({ isActive, onClick, icon: IconComponent, label }: NicheChipProps): React.ReactElement {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={cn(
+                'shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-medium transition-all duration-200 cursor-pointer border',
+                isActive
+                    ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20'
+                    : 'bg-background text-muted-foreground border-border/50 hover:border-border hover:text-foreground hover:shadow-sm',
+            )}
+        >
+            <IconComponent size={15} weight={isActive ? 'fill' : 'regular'} />
+            {label}
+        </button>
     );
 }
 
@@ -275,7 +314,6 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                 href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
             >
-                {/* Image grid — 2x2 mosaic */}
                 <div className="relative aspect-4/3 overflow-hidden bg-muted/30">
                     {images.length >= 4 ? (
                         <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px">
@@ -326,7 +364,6 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                         </div>
                     )}
 
-                    {/* Total items badge */}
                     {master.totalItems > 4 && (
                         <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
                             +{master.totalItems - 4}
@@ -334,7 +371,6 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                     )}
                 </div>
 
-                {/* Master info */}
                 <div className="flex items-center gap-3 p-3.5">
                     {master.avatar ? (
                         <Image
@@ -386,13 +422,13 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
 
 // ─── Pagination ──────────────────────────────────────────────────────────────
 
-interface PaginationProps {
+interface PaginationBarProps {
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
 }
 
-function Pagination({ page, totalPages, onPageChange }: PaginationProps): React.ReactElement {
+function PaginationBar({ page, totalPages, onPageChange }: PaginationBarProps): React.ReactElement {
     const { t } = useLanguage();
 
     return (
