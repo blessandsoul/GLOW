@@ -1,11 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Plus, Sparkle, WarningCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useJobPolling } from '@/features/jobs/hooks/useJobPolling';
+import { useDeleteJob } from '@/features/jobs/hooks/useDashboard';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
@@ -22,13 +34,24 @@ interface ResultsPageClientProps {
 
 export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.ReactElement {
     const { t } = useLanguage();
+    const router = useRouter();
     const { isAuthenticated } = useAuth();
     const isBA = jobId.startsWith('ba-');
 
     const { job: polledJob, error: pollingError } = useJobPolling(jobId);
     const { job: baJob } = useBeforeAfter();
+    const { mutate: deleteJob } = useDeleteJob();
 
     const [retouchUrl, setRetouchUrl] = useState<string | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+    const handleConfirmDelete = useCallback((): void => {
+        if (deleteTarget) {
+            deleteJob(deleteTarget);
+            setDeleteTarget(null);
+            router.push(ROUTES.DASHBOARD);
+        }
+    }, [deleteTarget, deleteJob, router]);
 
     const handleDownload = async (url: string, id: string, variantIndex: number, branded: boolean = false, upscale: boolean = false): Promise<void> => {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
@@ -113,10 +136,30 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
                 isAuthenticated={isAuthenticated}
                 setRetouchUrl={setRetouchUrl}
                 handleDownload={handleDownload}
+                onDelete={setDeleteTarget}
             />
             {(polledJob.status === 'DONE' || polledJob.status === 'FAILED') && (
                 <CreateNewBar t={t} />
             )}
+
+            {/* Delete confirmation dialog */}
+            <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>{t('dashboard.delete_confirm_title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('dashboard.delete_confirm_desc')}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>{t('dashboard.cancel')}</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleConfirmDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            {t('dashboard.delete_btn')}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </ResultsPageShell>
     );
 }

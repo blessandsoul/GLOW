@@ -8,6 +8,7 @@ interface ResultsViewProps {
     isAuthenticated: boolean;
     setRetouchUrl: (url: string | null) => void;
     handleDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean, upscale?: boolean) => Promise<void>;
+    onDelete?: (jobId: string) => void;
 }
 
 export function ResultsView({
@@ -15,6 +16,7 @@ export function ResultsView({
     isAuthenticated,
     setRetouchUrl,
     handleDownload,
+    onDelete,
 }: ResultsViewProps): React.ReactElement {
     return (
         <div className="flex w-full flex-col gap-4 overflow-y-auto px-3 py-3 md:p-6 [scrollbar-width:thin]">
@@ -23,6 +25,7 @@ export function ResultsView({
                 isAuthenticated={isAuthenticated}
                 onDownload={handleDownload}
                 onRetouch={setRetouchUrl}
+                onDelete={onDelete}
             />
         </div>
     );

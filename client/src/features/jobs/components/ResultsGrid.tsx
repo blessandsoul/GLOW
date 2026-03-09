@@ -6,7 +6,7 @@ import {
     DownloadSimple, WarningCircle,
     LinkSimple, Stamp, MagnifyingGlassPlus,
     SlidersHorizontal, GridFour, ArrowsOut,
-    PencilSimple,
+    PencilSimple, Trash,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,7 @@ interface ResultsGridProps {
     isAuthenticated: boolean;
     onDownload: (url: string, jobId: string, variantIndex: number, branded?: boolean, upscale?: boolean) => void;
     onRetouch?: (url: string) => void;
+    onDelete?: (jobId: string) => void;
 }
 
 // ─── Share link helper ────────────────────────────────────────────────────────
@@ -55,7 +56,7 @@ function ShareButton({ jobId }: { jobId: string }): React.ReactElement {
 }
 
 // ─── Main ResultsGrid ─────────────────────────────────────────────────────────
-export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: ResultsGridProps): React.ReactElement {
+export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDelete }: ResultsGridProps): React.ReactElement {
     const { t } = useLanguage();
     const { profile: brandingProfile } = useBranding();
 
@@ -435,6 +436,17 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                         </Button>
                     )}
                     <CaptionGenerator jobId={job.id} />
+                    {onDelete && (
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            className="w-full gap-1.5 text-xs h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => onDelete(job.id)}
+                        >
+                            <Trash size={13} />
+                            {t('dashboard.delete_btn')}
+                        </Button>
+                    )}
                 </div>
             )}
 

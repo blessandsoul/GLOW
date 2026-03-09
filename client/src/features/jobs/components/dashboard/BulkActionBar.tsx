@@ -44,7 +44,7 @@ export function BulkActionBar({
                     className="shrink-0 gap-1.5 min-h-[40px] sm:min-h-0"
                 >
                     <Trash size={16} />
-                    <span className="hidden sm:inline">{t('dashboard.delete_btn')}</span>
+                    {t('dashboard.delete_btn')}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={onCancel} className="shrink-0 min-h-[40px] sm:min-h-0">
                     <X size={16} />

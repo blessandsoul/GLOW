@@ -127,6 +127,18 @@ function GalleryCardInner({
                 </div>
             </div>
 
+            {/* Mobile delete button (DONE jobs, always visible on mobile) */}
+            {isDone && (
+                <button
+                    type="button"
+                    onClick={stopAndCall(onDelete)}
+                    className="absolute right-1.5 bottom-10 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors duration-150 active:bg-destructive/40 md:hidden"
+                    aria-label={t('dashboard.delete_btn')}
+                >
+                    <Trash size={15} />
+                </button>
+            )}
+
             {/* Hover overlay with action buttons (DONE jobs, desktop) */}
             {isDone && (
                 <div className="absolute inset-0 hidden items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:flex">
