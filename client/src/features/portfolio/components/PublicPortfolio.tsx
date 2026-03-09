@@ -235,6 +235,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                 initialIndex={lightboxIndex}
                 open={lightboxIndex >= 0}
                 onClose={handleCloseLightbox}
+                editable={isOwnProfile}
             />
         </div>
     );

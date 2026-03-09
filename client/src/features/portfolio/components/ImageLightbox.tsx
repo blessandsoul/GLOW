@@ -20,9 +20,10 @@ interface ImageLightboxProps {
     initialIndex: number;
     open: boolean;
     onClose: () => void;
+    editable?: boolean;
 }
 
-export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLightboxProps): React.ReactElement | null {
+export function ImageLightbox({ images, initialIndex, open, onClose, editable = true }: ImageLightboxProps): React.ReactElement | null {
     const { t } = useLanguage();
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [editorOpen, setEditorOpen] = useState(false);
@@ -125,14 +126,16 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
         >
             {/* Top-right actions */}
             <div className="absolute right-3 top-3 z-10 flex gap-2">
-                <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setEditorOpen(true); }}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20"
-                    aria-label={t('ui.edit_image')}
-                >
-                    <PencilSimple size={20} className="text-white" />
-                </button>
+                {editable && (
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setEditorOpen(true); }}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20"
+                        aria-label={t('ui.edit_image')}
+                    >
+                        <PencilSimple size={20} className="text-white" />
+                    </button>
+                )}
                 <button
                     type="button"
                     onClick={onClose}

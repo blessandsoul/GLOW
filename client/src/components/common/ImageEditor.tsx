@@ -1,8 +1,18 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
+
+// Filerobot internally references global `React` and `ReactDOM` (legacy pattern).
+// React 19 with automatic JSX runtime doesn't expose these globals, so we polyfill them.
+if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).React = React;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).ReactDOM = ReactDOM;
+}
 
 // Dynamic import to avoid SSR issues with canvas/konva
 const FilerobotImageEditor = dynamic(
