@@ -102,6 +102,7 @@ export const API_ENDPOINTS = {
     },
     MASTERS: {
         FEATURED: '/masters/featured',
+        CATALOG: '/masters/catalog',
     },
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',

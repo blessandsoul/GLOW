@@ -921,7 +921,22 @@
     "section_subtitle": "Профессионалы на Glow.GE",
     "scroll_left": "Влево",
     "scroll_right": "Вправо",
-    "view_portfolio": "Смотреть портфолио"
+    "view_portfolio": "Смотреть портфолио",
+    "view_all": "Смотреть все",
+    "all_categories": "Все",
+    "no_results": "Мастера не найдены в этой категории"
+  },
+  "catalog": {
+    "title": "Найти мастера",
+    "subtitle": "Найдите идеального специалиста для вас",
+    "search_placeholder": "Поиск по имени...",
+    "city_placeholder": "Город",
+    "clear_filters": "Сбросить фильтры",
+    "results_count": "Найдено мастеров: {{count}}",
+    "prev_page": "Предыдущая страница",
+    "next_page": "Следующая страница",
+    "empty_title": "Мастера не найдены",
+    "empty_description": "Попробуйте изменить запрос или фильтры"
   },
   "decorations": {
     "section_title": "Декорации",

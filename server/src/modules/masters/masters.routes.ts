@@ -6,6 +6,7 @@ export async function mastersRoutes(app: FastifyInstance): Promise<void> {
   const mastersService = createMastersService();
   const controller = createMastersController(mastersService);
 
-  // Public route — no auth required
+  // Public routes — no auth required
   app.get('/featured', controller.getFeatured);
+  app.get('/catalog', controller.getCatalog);
 }

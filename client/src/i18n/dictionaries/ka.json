@@ -962,7 +962,22 @@
     "section_subtitle": "პროფესიონალები Glow.GE-ზე",
     "scroll_left": "მარცხნივ",
     "scroll_right": "მარჯვნივ",
-    "view_portfolio": "პორტფოლიოს ნახვა"
+    "view_portfolio": "პორტფოლიოს ნახვა",
+    "view_all": "ყველას ნახვა",
+    "all_categories": "ყველა",
+    "no_results": "ამ კატეგორიაში ოსტატები ვერ მოიძებნა"
+  },
+  "catalog": {
+    "title": "იპოვე ოსტატი",
+    "subtitle": "მოძებნე სილამაზის პროფესიონალი შენთვის",
+    "search_placeholder": "ძიება სახელით...",
+    "city_placeholder": "ქალაქი",
+    "clear_filters": "ფილტრების გასუფთავება",
+    "results_count": "ნაპოვნია {{count}} ოსტატი",
+    "prev_page": "წინა გვერდი",
+    "next_page": "შემდეგი გვერდი",
+    "empty_title": "ოსტატები ვერ მოიძებნა",
+    "empty_description": "სცადეთ საძიებო სიტყვის ან ფილტრების შეცვლა"
   },
   "decorations": {
     "section_title": "დეკორაციები",

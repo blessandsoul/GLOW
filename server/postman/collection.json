@@ -1226,6 +1226,47 @@
           }
         }
       ]
+    },
+    {
+      "name": "Masters (Public)",
+      "description": "Public masters catalog and featured masters endpoints.",
+      "item": [
+        {
+          "name": "Featured Masters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/masters/featured?limit=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["masters", "featured"],
+              "query": [
+                { "key": "limit", "value": "12", "description": "Max number of masters to return (1-30, default 12)" },
+                { "key": "niche", "value": "", "description": "Filter by speciality slug (e.g. lashes, nails, brows)", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Catalog Masters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/masters/catalog?page=1&limit=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["masters", "catalog"],
+              "query": [
+                { "key": "page", "value": "1", "description": "Page number (min 1)" },
+                { "key": "limit", "value": "12", "description": "Items per page (1-100, default 12)" },
+                { "key": "niche", "value": "", "description": "Filter by speciality slug", "disabled": true },
+                { "key": "city", "value": "", "description": "Filter by city (partial match)", "disabled": true },
+                { "key": "search", "value": "", "description": "Search by name", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

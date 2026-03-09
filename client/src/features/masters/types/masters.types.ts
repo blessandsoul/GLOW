@@ -13,3 +13,11 @@ export interface FeaturedMaster {
     portfolioImages: FeaturedMasterImage[];
     totalItems: number;
 }
+
+export interface CatalogFilters {
+    niche?: string;
+    city?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+}

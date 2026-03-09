@@ -925,7 +925,22 @@
     "section_subtitle": "Professionals on Glow.GE",
     "scroll_left": "Scroll left",
     "scroll_right": "Scroll right",
-    "view_portfolio": "View portfolio"
+    "view_portfolio": "View portfolio",
+    "view_all": "View all",
+    "all_categories": "All",
+    "no_results": "No masters found in this category"
+  },
+  "catalog": {
+    "title": "Find a Master",
+    "subtitle": "Browse beauty professionals and find the perfect specialist for you",
+    "search_placeholder": "Search by name...",
+    "city_placeholder": "City",
+    "clear_filters": "Clear filters",
+    "results_count": "{{count}} masters found",
+    "prev_page": "Previous page",
+    "next_page": "Next page",
+    "empty_title": "No masters found",
+    "empty_description": "Try adjusting your search or filters to find what you're looking for"
   },
   "decorations": {
     "section_title": "Decorations",

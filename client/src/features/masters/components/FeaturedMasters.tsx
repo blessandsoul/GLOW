@@ -1,20 +1,32 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, ArrowRight, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFeaturedMasters } from '../hooks/useFeaturedMasters';
+import { useSpecialities } from '@/features/profile/hooks/useCatalog';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
+const NICHE_ICONS: Record<string, string> = {
+    lashes: '✦',
+    nails: '💅',
+    brows: '✧',
+    makeup: '💄',
+    hair: '✂',
+    skincare: '✿',
+};
+
 export function FeaturedMasters(): React.ReactElement | null {
     const { t } = useLanguage();
-    const { masters, isLoading, isSuccess } = useFeaturedMasters();
+    const [selectedNiche, setSelectedNiche] = useState<string | undefined>(undefined);
+    const { specialities } = useSpecialities();
+    const { masters, isLoading, isSuccess } = useFeaturedMasters(selectedNiche);
     const scrollRef = useRef<HTMLDivElement>(null);
     const showSkeletons = isLoading || (!isSuccess && masters.length === 0);
 
@@ -29,13 +41,20 @@ export function FeaturedMasters(): React.ReactElement | null {
         });
     }, []);
 
-    // Only hide when API successfully returned 0 masters
-    if (isSuccess && masters.length === 0) return null;
+    const handleNicheChange = useCallback((niche: string | undefined): void => {
+        setSelectedNiche(niche);
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        }
+    }, []);
+
+    // Only hide when API successfully returned 0 masters and no filter is active
+    if (isSuccess && masters.length === 0 && !selectedNiche) return null;
 
     return (
         <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 mt-4 mb-16 relative z-20">
             {/* Section header */}
-            <div className="flex items-end justify-between mb-8">
+            <div className="flex items-end justify-between mb-6">
                 <div>
                     <motion.h2
                         className="text-2xl font-semibold tracking-tight text-foreground"
@@ -57,26 +76,71 @@ export function FeaturedMasters(): React.ReactElement | null {
                     </motion.p>
                 </div>
 
-                {/* Desktop scroll controls */}
-                <div className="hidden sm:flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={() => scroll('left')}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-card text-muted-foreground transition-all duration-200 hover:border-border hover:text-foreground hover:shadow-sm active:scale-95 cursor-pointer"
-                        aria-label={t('masters.scroll_left')}
+                <div className="flex items-center gap-2">
+                    {/* View all link */}
+                    <Link
+                        href={ROUTES.MASTERS}
+                        className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-200"
                     >
-                        <CaretLeft size={16} weight="bold" />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => scroll('right')}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-card text-muted-foreground transition-all duration-200 hover:border-border hover:text-foreground hover:shadow-sm active:scale-95 cursor-pointer"
-                        aria-label={t('masters.scroll_right')}
-                    >
-                        <CaretRight size={16} weight="bold" />
-                    </button>
+                        {t('masters.view_all')}
+                        <ArrowRight size={14} weight="bold" />
+                    </Link>
+
+                    {/* Desktop scroll controls */}
+                    <div className="hidden sm:flex items-center gap-2 ml-4">
+                        <button
+                            type="button"
+                            onClick={() => scroll('left')}
+                            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-card text-muted-foreground transition-all duration-200 hover:border-border hover:text-foreground hover:shadow-sm active:scale-95 cursor-pointer"
+                            aria-label={t('masters.scroll_left')}
+                        >
+                            <CaretLeft size={16} weight="bold" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => scroll('right')}
+                            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-card text-muted-foreground transition-all duration-200 hover:border-border hover:text-foreground hover:shadow-sm active:scale-95 cursor-pointer"
+                            aria-label={t('masters.scroll_right')}
+                        >
+                            <CaretRight size={16} weight="bold" />
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {/* Category filter tabs */}
+            {specialities.length > 0 && (
+                <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <button
+                        type="button"
+                        onClick={() => handleNicheChange(undefined)}
+                        className={cn(
+                            'shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
+                            !selectedNiche
+                                ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
+                                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+                        )}
+                    >
+                        {t('masters.all_categories')}
+                    </button>
+                    {specialities.map((spec) => (
+                        <button
+                            key={spec.slug}
+                            type="button"
+                            onClick={() => handleNicheChange(spec.slug)}
+                            className={cn(
+                                'shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
+                                selectedNiche === spec.slug
+                                    ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
+                                    : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+                            )}
+                        >
+                            <span className="text-xs">{NICHE_ICONS[spec.slug] ?? '✦'}</span>
+                            {spec.label}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Scrollable cards */}
             <div
@@ -88,9 +152,24 @@ export function FeaturedMasters(): React.ReactElement | null {
                     ? Array.from({ length: 5 }).map((_, i) => (
                         <MasterCardSkeleton key={i} />
                     ))
-                    : masters.map((master, index) => (
+                    : masters.length === 0 ? (
+                        <div className="flex w-full items-center justify-center py-12">
+                            <p className="text-sm text-muted-foreground">{t('masters.no_results')}</p>
+                        </div>
+                    ) : masters.map((master, index) => (
                         <MasterCard key={master.username} master={master} index={index} />
                     ))}
+            </div>
+
+            {/* Mobile view all link */}
+            <div className="flex sm:hidden justify-center mt-2">
+                <Link
+                    href={ROUTES.MASTERS}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-200"
+                >
+                    {t('masters.view_all')}
+                    <ArrowRight size={14} weight="bold" />
+                </Link>
             </div>
         </section>
     );
@@ -110,7 +189,6 @@ interface MasterCardProps {
 }
 
 function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
-    const { t } = useLanguage();
     const images = master.portfolioImages;
 
     return (
