@@ -2,7 +2,9 @@ import { adminRepo } from './admin.repo.js';
 import { isLaunchMode, getDailyUsage } from '../../libs/launch-mode.js';
 import { redis } from '../../libs/redis.js';
 import { logger } from '../../libs/logger.js';
-import type { AdminUsersQuery, AdminPortfoliosQuery } from './admin.schemas.js';
+import { sendBulkSms } from '../../libs/otp.js';
+import { BadRequestError } from '../../shared/errors/errors.js';
+import type { AdminUsersQuery, AdminPortfoliosQuery, BulkSmsBody } from './admin.schemas.js';
 
 export function createAdminService() {
   return {
@@ -101,6 +103,43 @@ export function createAdminService() {
 
     async getPortfolioItems(userId: string, page: number, limit: number) {
       return adminRepo.findPortfolioItems(userId, page, limit);
+    },
+
+    async getVerifiedPhoneCount(): Promise<{ count: number }> {
+      const count = await adminRepo.countVerifiedPhoneUsers();
+      return { count };
+    },
+
+    async sendBulkSmsToUsers(data: BulkSmsBody): Promise<{
+      totalRecipients: number;
+      totalSent: number;
+      totalFailed: number;
+      errors: string[];
+    }> {
+      let recipients: string[];
+
+      if (data.mode === 'all') {
+        recipients = await adminRepo.getVerifiedPhoneNumbers();
+        if (recipients.length === 0) {
+          throw new BadRequestError('No users with verified phone numbers', 'NO_VERIFIED_PHONES');
+        }
+      } else {
+        recipients = data.phoneNumbers!;
+      }
+
+      const result = await sendBulkSms(recipients, data.message);
+
+      logger.info({
+        mode: data.mode,
+        totalRecipients: recipients.length,
+        totalSent: result.totalSent,
+        totalFailed: result.totalFailed,
+      }, 'Admin bulk SMS sent');
+
+      return {
+        totalRecipients: recipients.length,
+        ...result,
+      };
     },
   };
 }

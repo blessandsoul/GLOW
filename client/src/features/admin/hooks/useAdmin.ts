@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus, VariablePoolStatus } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus, VariablePoolStatus, BulkSmsRequest } from '../types/admin.types';
 import type { PaginationMeta } from '@/lib/api/api.types';
 
 export function useAdminUsers(
@@ -217,4 +217,44 @@ export function useReplenishVariablePool(): {
     });
 
     return { replenish: mutate, isPending };
+}
+
+export function useVerifiedPhoneCount(): {
+    count: number | undefined;
+    isLoading: boolean;
+} {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['admin', 'sms', 'verified-count'],
+        queryFn: () => adminService.getVerifiedPhoneCount(),
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return { count: data?.count, isLoading };
+}
+
+export function useSendBulkSms(onSuccess?: () => void): {
+    send: (body: BulkSmsRequest) => void;
+    isPending: boolean;
+} {
+    const { mutate, isPending } = useMutation({
+        mutationFn: (body: BulkSmsRequest) => adminService.sendBulkSms(body),
+        onSuccess: (result) => {
+            if (result.totalFailed > 0) {
+                toast.warning(
+                    `Sent to ${result.totalSent} of ${result.totalRecipients}. ${result.totalFailed} failed.`,
+                );
+            } else {
+                toast.success(`SMS sent to ${result.totalSent} recipients`);
+            }
+            onSuccess?.();
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
+    });
+
+    return { send: mutate, isPending };
 }

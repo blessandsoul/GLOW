@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api/axios.config';
 import type { ApiResponse, PaginatedApiResponse, PaginationMeta } from '@/lib/api/api.types';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
-import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus, VariablePoolStatus } from '../types/admin.types';
+import type { AdminUser, AdminStats, AdminUserImage, AdminPortfolioUser, AdminPortfolioItem, DecorationPoolStatus, VariablePoolStatus, BulkSmsRequest, BulkSmsResult, VerifiedPhoneCount } from '../types/admin.types';
 
 class AdminService {
     async getUsers(params?: {
@@ -95,6 +95,21 @@ class AdminService {
 
     async replenishVariablePool(): Promise<void> {
         await apiClient.post(API_ENDPOINTS.FILTERS.REPLENISH_VARIABLES);
+    }
+
+    async getVerifiedPhoneCount(): Promise<VerifiedPhoneCount> {
+        const { data } = await apiClient.get<ApiResponse<VerifiedPhoneCount>>(
+            API_ENDPOINTS.ADMIN.SMS_VERIFIED_COUNT,
+        );
+        return data.data;
+    }
+
+    async sendBulkSms(body: BulkSmsRequest): Promise<BulkSmsResult> {
+        const { data } = await apiClient.post<ApiResponse<BulkSmsResult>>(
+            API_ENDPOINTS.ADMIN.SMS_SEND_BULK,
+            body,
+        );
+        return data.data;
     }
 }
 

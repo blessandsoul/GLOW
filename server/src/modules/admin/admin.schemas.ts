@@ -39,3 +39,17 @@ export const portfolioItemsQuerySchema = z.object({
 
 export type PortfolioItemsParams = z.infer<typeof portfolioItemsParamsSchema>;
 export type PortfolioItemsQuery = z.infer<typeof portfolioItemsQuerySchema>;
+
+export const BulkSmsBodySchema = z.object({
+  message: z.string().min(1, 'Message is required').max(800, 'Message too long'),
+  mode: z.enum(['all', 'custom']),
+  phoneNumbers: z
+    .array(z.string().regex(/^(\+?995)?\d{9}$/, 'Invalid Georgian phone format'))
+    .max(10000, 'Too many phone numbers')
+    .optional(),
+}).refine(
+  (data) => data.mode === 'all' || (data.phoneNumbers && data.phoneNumbers.length > 0),
+  { message: 'Phone numbers are required in custom mode', path: ['phoneNumbers'] },
+);
+
+export type BulkSmsBody = z.infer<typeof BulkSmsBodySchema>;

@@ -93,6 +93,8 @@ export const API_ENDPOINTS = {
         FLUSH_DAILY_LIMITS: '/admin/flush-daily-limits',
         PORTFOLIOS: '/admin/portfolios',
         PORTFOLIO_ITEMS: (userId: string) => `/admin/portfolios/${userId}/items`,
+        SMS_VERIFIED_COUNT: '/admin/sms/verified-count',
+        SMS_SEND_BULK: '/admin/sms/send-bulk',
     },
     CHAT: {
         MESSAGE: '/chat/message',

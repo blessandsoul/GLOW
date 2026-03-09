@@ -919,7 +919,22 @@
     "decoration_pool_refresh": "განახლება",
     "decoration_pool_replenish": "მეტის გენერაცია",
     "decoration_pool_replenishing": "გენერაცია...",
-    "variable_pool_title": "ვარიაბლების იდეების პული"
+    "variable_pool_title": "ვარიაბლების იდეების პული",
+    "sms_title": "მასობრივი SMS",
+    "sms_mode_all": "ყველა ვერიფიცირებული",
+    "sms_mode_custom": "ნომრების მითითება",
+    "sms_verified_count": "ვერიფიცირებული ნომერი",
+    "sms_message_placeholder": "შეიყვანეთ შეტყობინება...",
+    "sms_phones_placeholder": "995XXXXXXXXX, 995XXXXXXXXX, ...",
+    "sms_phones_hint": "შეიყვანეთ ნომრები მძიმით გამოყოფილი (995XXXXXXXXX)",
+    "sms_char_count": "სიმბოლო",
+    "sms_send_btn": "გაგზავნა",
+    "sms_send_btn_recipients": "მიმღებს",
+    "sms_sending": "იგზავნება...",
+    "sms_confirm_title": "გაგზავნა SMS?",
+    "sms_confirm_desc": "SMS გაეგზავნება",
+    "sms_confirm_send": "SMS გაგზავნა",
+    "sms_confirm_cancel": "გაუქმება"
   },
   "chat": {
     "title": "Glow ასისტენტი",

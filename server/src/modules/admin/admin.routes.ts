@@ -15,4 +15,6 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
   app.post('/flush-daily-limits', { preHandler: adminGuard }, controller.flushDailyLimits);
   app.get('/portfolios', { preHandler: adminGuard }, controller.getPortfolioUsers);
   app.get('/portfolios/:userId/items', { preHandler: adminGuard }, controller.getPortfolioItems);
+  app.get('/sms/verified-count', { preHandler: adminGuard }, controller.getVerifiedPhoneCount);
+  app.post('/sms/send-bulk', { preHandler: adminGuard }, controller.sendBulkSms);
 }

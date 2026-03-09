@@ -24,7 +24,10 @@ export function middleware(request: NextRequest): NextResponse {
 
     const isAuthPath = authPaths.some((path) => pathname.startsWith(path));
 
-    if (isAuthPath && (token || session)) {
+    // Only redirect away from auth pages if a valid access token exists.
+    // The session cookie alone is not enough — it may be stale after the
+    // refresh token expired, and client-side cleanup hasn't run yet.
+    if (isAuthPath && token) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 

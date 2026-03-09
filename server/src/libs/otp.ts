@@ -19,7 +19,7 @@ function formatPhone(phoneNumber: string): string {
   return phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber;
 }
 
-async function gosmsPost<T>(path: string, body: Record<string, string>): Promise<T> {
+async function gosmsPost<T>(path: string, body: Record<string, unknown>): Promise<T> {
   const response = await fetch(`${GOSMS_BASE_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -70,6 +70,62 @@ function handleGoSmsError(error: unknown, context: 'send' | 'verify'): never {
     context === 'send' ? 'Failed to send verification code' : 'Failed to verify code',
     context === 'send' ? 'OTP_SEND_FAILED' : 'OTP_VERIFY_FAILED',
   );
+}
+
+interface GoSmsBulkResponse {
+  success: boolean;
+  message?: string;
+  sent?: number;
+  failed?: number;
+  errors?: string[];
+}
+
+const BULK_BATCH_SIZE = 1000;
+
+/**
+ * Send an SMS to multiple phone numbers via gosms.ge bulk endpoint.
+ * Batches into groups of 1000 (API limit per request).
+ */
+export async function sendBulkSms(
+  phoneNumbers: string[],
+  message: string,
+): Promise<{ totalSent: number; totalFailed: number; errors: string[] }> {
+  const formatted = phoneNumbers.map(formatPhone);
+  let totalSent = 0;
+  let totalFailed = 0;
+  const errors: string[] = [];
+
+  for (let i = 0; i < formatted.length; i += BULK_BATCH_SIZE) {
+    const batch = formatted.slice(i, i + BULK_BATCH_SIZE);
+    const batchIndex = Math.floor(i / BULK_BATCH_SIZE) + 1;
+
+    try {
+      const response = await gosmsPost<GoSmsBulkResponse>('/api/sendbulk', {
+        api_key: env.OTP_API_KEY,
+        from: 'GLOW',
+        to: batch,
+        text: message,
+      });
+
+      const sent = response.sent ?? batch.length;
+      const failed = response.failed ?? 0;
+      totalSent += sent;
+      totalFailed += failed;
+
+      if (response.errors) {
+        errors.push(...response.errors);
+      }
+
+      logger.info({ batchIndex, batchSize: batch.length, sent, failed }, 'Bulk SMS batch sent');
+    } catch (error) {
+      totalFailed += batch.length;
+      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      errors.push(`Batch ${batchIndex} failed: ${errMsg}`);
+      logger.error({ batchIndex, batchSize: batch.length, err: error }, 'Bulk SMS batch failed');
+    }
+  }
+
+  return { totalSent, totalFailed, errors };
 }
 
 /**

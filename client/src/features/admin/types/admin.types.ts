@@ -74,3 +74,22 @@ export interface VariablePoolCount {
 export interface VariablePoolStatus {
     counts: VariablePoolCount[];
 }
+
+export type BulkSmsMode = 'all' | 'custom';
+
+export interface BulkSmsRequest {
+    message: string;
+    mode: BulkSmsMode;
+    phoneNumbers?: string[];
+}
+
+export interface BulkSmsResult {
+    totalRecipients: number;
+    totalSent: number;
+    totalFailed: number;
+    errors: string[];
+}
+
+export interface VerifiedPhoneCount {
+    count: number;
+}

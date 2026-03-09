@@ -878,7 +878,22 @@
     "decoration_pool_refresh": "Обновить",
     "decoration_pool_replenish": "Сгенерировать ещё",
     "decoration_pool_replenishing": "Генерация...",
-    "variable_pool_title": "Пул идей для переменных"
+    "variable_pool_title": "Пул идей для переменных",
+    "sms_title": "Массовая SMS-рассылка",
+    "sms_mode_all": "Все верифицированные",
+    "sms_mode_custom": "Указать номера",
+    "sms_verified_count": "верифицированных номеров",
+    "sms_message_placeholder": "Введите сообщение...",
+    "sms_phones_placeholder": "995XXXXXXXXX, 995XXXXXXXXX, ...",
+    "sms_phones_hint": "Введите номера через запятую (формат: 995XXXXXXXXX)",
+    "sms_char_count": "символов",
+    "sms_send_btn": "Отправить",
+    "sms_send_btn_recipients": "получателям",
+    "sms_sending": "Отправка...",
+    "sms_confirm_title": "Отправить SMS?",
+    "sms_confirm_desc": "SMS будет отправлено",
+    "sms_confirm_send": "Отправить SMS",
+    "sms_confirm_cancel": "Отмена"
   },
   "chat": {
     "title": "Glow Assistant",
