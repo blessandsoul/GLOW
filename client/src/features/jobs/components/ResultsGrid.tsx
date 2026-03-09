@@ -6,6 +6,7 @@ import {
     DownloadSimple, WarningCircle,
     LinkSimple, Stamp, MagnifyingGlassPlus,
     SlidersHorizontal, GridFour, ArrowsOut,
+    PencilSimple,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import { useBranding } from '@/features/branding/hooks/useBranding';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
 import { ImageLightbox } from '@/features/portfolio/components/ImageLightbox';
 import { ImageCompare } from '@/components/ui/ImageCompare';
+import { ImageEditor } from '@/components/common/ImageEditor';
 import { GenerationProgress } from './GenerationProgress';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
@@ -67,6 +69,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
     const [isUpscaling, setIsUpscaling] = useState(false);
     const [hdImageUrl, setHdImageUrl] = useState<string | null>(null);
+    const [editorOpen, setEditorOpen] = useState(false);
 
     // ── Reveal transition: detect PROCESSING → DONE ──
     const prevStatusRef = useRef(job.status);
@@ -128,6 +131,16 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
             setIsUpscaling(false);
         }
     }, [job.id, selectedAfterIdx, t]);
+
+    const handleEditorSave = useCallback((editedImageObject: { imageBase64?: string }) => {
+        if (!editedImageObject.imageBase64) return;
+        const link = document.createElement('a');
+        link.href = editedImageObject.imageBase64;
+        link.download = `glowge-edited-${Date.now()}.png`;
+        link.click();
+        toast.success(t('ui.image_saved'));
+        setEditorOpen(false);
+    }, [t]);
 
     // Build lightbox images array: [Before, After]
     // NOTE: This useMemo MUST be before any early returns to maintain consistent hook ordering
@@ -357,6 +370,15 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                         </div>
                     )}
 
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full gap-1.5 text-xs h-9"
+                        onClick={() => setEditorOpen(true)}
+                    >
+                        <PencilSimple size={13} />
+                        {t('ui.edit_image')}
+                    </Button>
                     {hasBranding && (
                         <Button
                             size="sm"
@@ -425,6 +447,14 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch }: Res
                     onClose={() => setLightboxOpen(false)}
                 />
             )}
+
+            {/* Image editor */}
+            <ImageEditor
+                source={getServerImageUrl(afterImageUrl)}
+                open={editorOpen}
+                onClose={() => setEditorOpen(false)}
+                onSave={handleEditorSave}
+            />
         </div>
     );
 }

@@ -469,6 +469,8 @@
     "share_copy_failed": "Could not copy",
     "share_btn": "Share",
     "download_btn": "Download",
+    "edit_image": "Edit",
+    "image_saved": "Image saved",
     "download_hd": "Download HD",
     "enhance_to_hd": "Enhance to HD",
     "upscaling": "Upscaling...",

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Eye, EyeSlash, Trash, Plus, Images, UploadSimple, SpinnerGap } from '@phosphor-icons/react';
+import { Eye, EyeSlash, Trash, Plus, Images, UploadSimple, SpinnerGap, PencilSimple } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,6 +9,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { GalleryImagePicker } from './GalleryImagePicker';
+import { ImageEditor } from '@/components/common/ImageEditor';
 import { getServerImageUrl } from '@/lib/utils/image';
 import type { PortfolioItem, PortfolioItemFormData } from '../types/portfolio.types';
 import type { JobResultImage } from '../types/builder.types';
@@ -41,6 +42,7 @@ export function GallerySection({
     const { t } = useLanguage();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
     const publishedCount = items.filter((i) => i.isPublished).length;
     const availableToAdd = jobResults.filter((img) => !portfolioImageUrls.has(img.imageUrl)).length;
 
@@ -61,6 +63,16 @@ export function GallerySection({
         }
 
         await onUpload(file);
+    };
+
+    const handleEditorSave = (editedImageObject: { imageBase64?: string }): void => {
+        if (!editedImageObject.imageBase64) return;
+        const link = document.createElement('a');
+        link.href = editedImageObject.imageBase64;
+        link.download = `glowge-edited-${Date.now()}.png`;
+        link.click();
+        toast.success(t('ui.image_saved'));
+        setEditingImageUrl(null);
     };
 
     const triggerUpload = (): void => {
@@ -149,6 +161,14 @@ export function GallerySection({
                                     <div className="flex gap-1.5">
                                         <button
                                             type="button"
+                                            onClick={() => setEditingImageUrl(item.imageUrl)}
+                                            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-primary/70 sm:h-7 sm:w-7"
+                                            aria-label={t('ui.edit_image')}
+                                        >
+                                            <PencilSimple size={14} />
+                                        </button>
+                                        <button
+                                            type="button"
                                             onClick={() => onUpdate({ id: item.id, data: { isPublished: !item.isPublished } })}
                                             className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60 sm:h-7 sm:w-7"
                                             aria-label={item.isPublished ? t('portfolio.hide_portfolio') : t('portfolio.show_portfolio')}
@@ -216,6 +236,16 @@ export function GallerySection({
                         </p>
                     </button>
                 </div>
+            )}
+
+            {/* Image editor */}
+            {editingImageUrl && (
+                <ImageEditor
+                    source={getServerImageUrl(editingImageUrl)}
+                    open
+                    onClose={() => setEditingImageUrl(null)}
+                    onSave={handleEditorSave}
+                />
             )}
 
             {/* Image picker drawer */}

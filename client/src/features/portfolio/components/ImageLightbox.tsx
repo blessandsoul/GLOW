@@ -3,7 +3,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { X, CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { X, CaretLeft, CaretRight, PencilSimple } from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { ImageEditor } from '@/components/common/ImageEditor';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { getServerImageUrl } from '@/lib/utils/image';
 
@@ -20,7 +23,9 @@ interface ImageLightboxProps {
 }
 
 export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLightboxProps): React.ReactElement | null {
+    const { t } = useLanguage();
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
+    const [editorOpen, setEditorOpen] = useState(false);
     const touchStartX = useRef(0);
     const touchDeltaX = useRef(0);
     const touchStartY = useRef(0);
@@ -95,6 +100,16 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
         setTranslateX(0);
     }, [goNext, goPrev]);
 
+    const handleEditorSave = useCallback((editedImageObject: { imageBase64?: string }) => {
+        if (!editedImageObject.imageBase64) return;
+        const link = document.createElement('a');
+        link.href = editedImageObject.imageBase64;
+        link.download = `glowge-edited-${Date.now()}.png`;
+        link.click();
+        toast.success(t('ui.image_saved'));
+        setEditorOpen(false);
+    }, [t]);
+
     if (!open || images.length === 0) return null;
 
     const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
@@ -108,15 +123,25 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
             aria-modal="true"
             aria-label="Image viewer"
         >
-            {/* Close button */}
-            <button
-                type="button"
-                onClick={onClose}
-                className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20"
-                aria-label="Close"
-            >
-                <X size={20} className="text-white" />
-            </button>
+            {/* Top-right actions */}
+            <div className="absolute right-3 top-3 z-10 flex gap-2">
+                <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setEditorOpen(true); }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20"
+                    aria-label={t('ui.edit_image')}
+                >
+                    <PencilSimple size={20} className="text-white" />
+                </button>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20"
+                    aria-label="Close"
+                >
+                    <X size={20} className="text-white" />
+                </button>
+            </div>
 
             {/* Counter */}
             <div className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 backdrop-blur-sm">
@@ -199,6 +224,14 @@ export function ImageLightbox({ images, initialIndex, open, onClose }: ImageLigh
                     ))}
                 </div>
             )}
+
+            {/* Image editor */}
+            <ImageEditor
+                source={getServerImageUrl(current.imageUrl)}
+                open={editorOpen}
+                onClose={() => setEditorOpen(false)}
+                onSave={handleEditorSave}
+            />
         </div>,
         document.body,
     );

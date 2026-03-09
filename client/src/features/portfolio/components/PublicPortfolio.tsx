@@ -11,6 +11,7 @@ import { usePublicPortfolio } from '../hooks/usePortfolio';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { ImageLightbox } from './ImageLightbox';
+import { ReviewsSection } from './ReviewsSection';
 
 interface PublicPortfolioProps {
     username: string;
@@ -112,7 +113,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                 )}
 
                 {/* Social links */}
-                {(portfolio.instagram || portfolio.whatsapp || portfolio.telegram) && <div className="flex gap-2">
+                {(portfolio.instagram || portfolio.whatsapp || portfolio.telegram) && <div className="flex flex-wrap justify-center gap-2">
                     {portfolio.instagram && (
                         <Button variant="outline" size="sm" className="gap-1.5" asChild>
                             <a
@@ -210,6 +211,13 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     </div>
                 )}
             </section>
+
+            {/* Reviews */}
+            <ReviewsSection
+                reviews={portfolio.reviews}
+                averageRating={portfolio.averageRating}
+                reviewsCount={portfolio.reviewsCount}
+            />
 
             {/* Footer */}
             <div className="text-center">
