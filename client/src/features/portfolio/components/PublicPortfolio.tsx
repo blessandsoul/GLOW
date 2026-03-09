@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { MapPin, InstagramLogo, ChatCircle, PaperPlaneTilt, ArrowLeft } from '@phosphor-icons/react';
+import { MapPin, InstagramLogo, ChatCircle, PaperPlaneTilt, ArrowLeft, Star } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppSelector } from '@/store/hooks';
@@ -98,12 +98,24 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                 )}
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
-                    {portfolio.city && (
-                        <p className="mt-1 flex items-center justify-center gap-1 text-sm text-muted-foreground">
-                            <MapPin size={14} />
-                            {portfolio.city}
-                        </p>
-                    )}
+                    <div className="mt-1 flex items-center justify-center gap-2">
+                        {portfolio.city && (
+                            <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <MapPin size={14} />
+                                {portfolio.city}
+                            </span>
+                        )}
+                        {portfolio.reviewsCount > 0 && (
+                            <>
+                                {portfolio.city && <span className="text-border">·</span>}
+                                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                                    <Star size={14} weight="fill" className="text-warning" />
+                                    <span className="font-medium text-foreground">{portfolio.averageRating.toFixed(1)}</span>
+                                    ({portfolio.reviewsCount})
+                                </span>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {portfolio.bio && (

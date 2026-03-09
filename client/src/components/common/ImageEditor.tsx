@@ -51,12 +51,16 @@ export function ImageEditor({ source, open, onClose, onSave }: ImageEditorProps)
         [onSave],
     );
 
+    // Skip the "Save as" modal — directly trigger onSave with default settings
+    const handleBeforeSave = useCallback(() => false as const, []);
+
     if (!open || typeof window === 'undefined') return null;
 
     return createPortal(
         <div className="fixed inset-0 z-100 flex flex-col bg-background">
             <FilerobotImageEditor
                 source={source}
+                onBeforeSave={handleBeforeSave}
                 onSave={handleSave}
                 onClose={onClose}
                 annotationsCommon={{
@@ -136,6 +140,7 @@ export function ImageEditor({ source, open, onClose, onSave }: ImageEditorProps)
                 defaultToolId={DEFAULT_TOOL}
                 savingPixelRatio={4}
                 previewPixelRatio={2}
+                defaultSavedImageName={`glowge-edited-${Date.now()}`}
                 defaultSavedImageQuality={0.92}
                 defaultSavedImageType="png"
                 closeAfterSave
