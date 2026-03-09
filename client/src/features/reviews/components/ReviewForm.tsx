@@ -129,7 +129,6 @@ export function ReviewForm({ masterId }: ReviewFormProps): React.ReactElement | 
             <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3.5">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-foreground">{t('portfolio.review_your_rating')}</p>
                         <div className="flex items-center gap-0.5">
                             {Array.from({ length: 5 }).map((_, i) => (
                                 <Star
@@ -195,9 +194,8 @@ export function ReviewForm({ masterId }: ReviewFormProps): React.ReactElement | 
 
     return (
         <div className="rounded-xl border border-border/50 bg-card px-4 py-4 space-y-3">
-            <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-foreground">{t('portfolio.review_your_rating')}</p>
-                {isEditing && (
+            {isEditing && (
+                <div className="flex justify-end">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -206,8 +204,8 @@ export function ReviewForm({ masterId }: ReviewFormProps): React.ReactElement | 
                     >
                         ✕
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
             <StarRatingInput value={rating} onChange={setRating} />
             <textarea
                 value={text}

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Star, UserCircle } from '@phosphor-icons/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { PublicReview } from '../types/portfolio.types';
@@ -70,12 +71,18 @@ export function ReviewsSection({ reviews, averageRating, reviewsCount }: Reviews
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                                        <UserCircle size={20} className="text-muted-foreground" weight="fill" />
-                                    </div>
+                                    {review.user?.avatar ? (
+                                        <div className="relative h-8 w-8 overflow-hidden rounded-full">
+                                            <Image src={review.user.avatar} alt="" fill className="object-cover" />
+                                        </div>
+                                    ) : (
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                                            <UserCircle size={20} className="text-muted-foreground" weight="fill" />
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="text-sm font-medium text-foreground">
-                                            {review.clientName || t('portfolio.anonymous')}
+                                            {review.user ? `${review.user.firstName} ${review.user.lastName}` : t('portfolio.anonymous')}
                                         </p>
                                         <StarRating rating={review.rating} />
                                     </div>

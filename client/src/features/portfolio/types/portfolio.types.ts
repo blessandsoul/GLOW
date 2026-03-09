@@ -22,8 +22,12 @@ export interface PublicReview {
     id: string;
     rating: number;
     text: string | null;
-    clientName: string | null;
     createdAt: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        avatar: string | null;
+    } | null;
 }
 
 export interface PublicPortfolioData {

@@ -147,8 +147,14 @@ export const portfolioRepo = {
         id: true,
         rating: true,
         text: true,
-        clientName: true,
         createdAt: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       take: 20,
