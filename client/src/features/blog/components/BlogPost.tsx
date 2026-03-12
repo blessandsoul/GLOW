@@ -6,7 +6,7 @@ import { ChevronRightIcon, HomeIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { TableOfContents } from './TableOfContents'
-import { getBlogPath } from '../lib/utils'
+import { getBlogPath, formatBlogDate } from '../lib/utils'
 
 import type { BlogPost as BlogPostType, BlogLocale } from '../types'
 
@@ -64,12 +64,13 @@ export function BlogPost({ post, locale, translations }: BlogPostProps): React.R
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
           {post.tags.map((tag) => (
-            <span
+            <Link
               key={tag}
-              className="rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+              href={`${getBlogPath(locale)}?tag=${encodeURIComponent(tag)}`}
+              className="rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors duration-200"
             >
               {tag}
-            </span>
+            </Link>
           ))}
         </div>
 
@@ -81,17 +82,8 @@ export function BlogPost({ post, locale, translations }: BlogPostProps): React.R
         {/* Meta */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <time dateTime={post.date}>
-            {new Date(post.date).toLocaleDateString(
-              locale === 'ka' ? 'ka-GE' : locale === 'ru' ? 'ru-RU' : 'en-US',
-              { year: 'numeric', month: 'long', day: 'numeric' },
-            )}
+            {formatBlogDate(post.date, locale)}
           </time>
-          {post.readTime && (
-            <>
-              <span className="text-border">|</span>
-              <span>{post.readTime}</span>
-            </>
-          )}
         </div>
       </motion.header>
 
@@ -183,12 +175,13 @@ export function BlogPost({ post, locale, translations }: BlogPostProps): React.R
       >
         <div className="flex flex-wrap items-center gap-2">
           {post.tags.map((tag) => (
-            <span
+            <Link
               key={tag}
-              className="rounded-full px-3 py-1 text-xs font-medium bg-secondary text-secondary-foreground"
+              href={`${getBlogPath(locale)}?tag=${encodeURIComponent(tag)}`}
+              className="rounded-full px-3 py-1 text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors duration-200"
             >
               #{tag}
-            </span>
+            </Link>
           ))}
         </div>
 
