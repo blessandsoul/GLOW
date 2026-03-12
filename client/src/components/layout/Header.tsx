@@ -9,6 +9,7 @@ import {
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
     CaretDown, Plus, ShieldCheck, ArrowsClockwise,
+    Article,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef } from 'react';
@@ -344,6 +345,18 @@ export function Header(): React.ReactElement {
                             </Button>
                         </>
                     )}
+                    <Link
+                        href={ROUTES.BLOG}
+                        className={cn(
+                            'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                            pathname.startsWith(ROUTES.BLOG)
+                                ? 'bg-primary/10 text-primary font-medium'
+                                : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                        )}
+                    >
+                        <Article size={15} weight={pathname.startsWith(ROUTES.BLOG) ? 'fill' : 'regular'} />
+                        {t('nav.blog')}
+                    </Link>
                     <LanguageSwitcher />
                     <Button
                         variant="ghost"

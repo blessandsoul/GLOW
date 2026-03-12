@@ -13,6 +13,7 @@ export const ROUTES = {
     SHOWCASE: (jobId: string) => `/showcase/${jobId}` as const,
     PORTFOLIO_PUBLIC: (username: string) => `/specialist/${username}` as const,
     MASTERS: '/masters',
+    BLOG: '/blog',
     VERIFY_PHONE: '/verify-phone',
     ADMIN: '/admin',
     TERMS: '/terms',

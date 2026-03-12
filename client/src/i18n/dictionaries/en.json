@@ -37,7 +37,8 @@
     "cat_studio": "Studio",
     "cat_business": "Business",
     "cat_account": "Account",
-    "cat_plans": "Plans"
+    "cat_plans": "Plans",
+    "blog": "Blog"
   },
   "dashboard": {
     "credits_btn": "Buy credits",
@@ -94,6 +95,12 @@
     "step2_desc": "Our AI perfects lighting, skin & details",
     "step3_title": "Download & Share",
     "step3_desc": "Get your magazine-quality result instantly"
+  },
+  "blog_section": {
+    "title": "Blog",
+    "subtitle": "News and useful tips",
+    "view_all": "View all",
+    "read_more": "Read more"
   },
   "auth": {
     "login": "Sign in",

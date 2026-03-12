@@ -1,6 +1,4 @@
 import { Logo } from '@/components/layout/Logo';
-import { Footer } from '@/components/layout/Footer';
-
 export default function PublicLayout({
     children,
 }: {
@@ -14,7 +12,6 @@ export default function PublicLayout({
                 </div>
             </header>
             <main className="flex-1">{children}</main>
-            <Footer />
         </div>
     );
 }

@@ -17,6 +17,7 @@ import { HeroEditorial } from '@/features/landing/components/HeroEditorial';
 import { HeroStats } from '@/features/landing/components/HeroStats';
 import { HeroCards } from '@/features/landing/components/HeroCards';
 import { FeaturedMasters } from '@/features/masters/components/FeaturedMasters';
+import { HomeBlogSection } from '@/features/blog/components/HomeBlogSection';
 import { ROUTES } from '@/lib/constants/routes';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
@@ -78,6 +79,13 @@ export default function HomePage(): React.ReactElement {
                                 </span>
                             </div>
                         )}
+
+                        <Link
+                            href={ROUTES.BLOG}
+                            className="hidden sm:flex items-center text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors duration-200"
+                        >
+                            {t('nav.blog')}
+                        </Link>
 
                         <ThemeToggle />
 
@@ -269,6 +277,9 @@ export default function HomePage(): React.ReactElement {
 
                 {/* ── Featured Masters ── */}
                 <FeaturedMasters />
+
+                {/* ── Blog Preview ── */}
+                <HomeBlogSection />
 
                 {/* ── How It Works Section ── */}
                 <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 mt-12 mb-20 relative z-20">

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { getBlogPath } from '../lib/utils'
+import { getBlogPath, formatBlogDate } from '../lib/utils'
 
 import type { BlogPost, BlogLocale } from '../types'
 
@@ -42,10 +42,7 @@ export function RelatedPosts({ posts, locale, label }: RelatedPostsProps): React
                 dateTime={post.date}
                 className="text-xs text-muted-foreground/60 mt-1"
               >
-                {new Date(post.date).toLocaleDateString(
-                  locale === 'ka' ? 'ka-GE' : locale === 'ru' ? 'ru-RU' : 'en-US',
-                  { month: 'short', day: 'numeric', year: 'numeric' },
-                )}
+                {formatBlogDate(post.date, locale)}
               </time>
             </div>
           </Link>
