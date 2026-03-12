@@ -882,7 +882,22 @@
     "decoration_pool_refresh": "Refresh",
     "decoration_pool_replenish": "Generate more",
     "decoration_pool_replenishing": "Generating...",
-    "variable_pool_title": "Variable Ideas Pool"
+    "variable_pool_title": "Variable Ideas Pool",
+    "sms_title": "Bulk SMS",
+    "sms_mode_all": "All verified users",
+    "sms_mode_custom": "Custom numbers",
+    "sms_verified_count": "verified phone numbers",
+    "sms_message_placeholder": "Type your message...",
+    "sms_phones_placeholder": "995XXXXXXXXX, 995XXXXXXXXX, ...",
+    "sms_phones_hint": "Enter comma-separated Georgian phone numbers (995XXXXXXXXX)",
+    "sms_char_count": "characters",
+    "sms_send_btn": "Send to",
+    "sms_send_btn_recipients": "recipients",
+    "sms_sending": "Sending...",
+    "sms_confirm_title": "Send SMS?",
+    "sms_confirm_desc": "This will send an SMS to",
+    "sms_confirm_send": "Send SMS",
+    "sms_confirm_cancel": "Cancel"
   },
   "chat": {
     "title": "Glow Assistant",

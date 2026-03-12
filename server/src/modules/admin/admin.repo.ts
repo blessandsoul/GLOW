@@ -121,6 +121,20 @@ export const adminRepo = {
     return { totalUsers, totalJobs, totalCaptions, totalHdUpscales, activeSubscriptions };
   },
 
+  async countVerifiedPhoneUsers(): Promise<number> {
+    return prisma.user.count({
+      where: { deletedAt: null, phoneVerified: true, phone: { not: null } },
+    });
+  },
+
+  async getVerifiedPhoneNumbers(): Promise<string[]> {
+    const users = await prisma.user.findMany({
+      where: { deletedAt: null, phoneVerified: true, phone: { not: null } },
+      select: { phone: true },
+    });
+    return users.map((u) => u.phone!);
+  },
+
   async findUserImages(userId: string, page: number, limit: number) {
     const [jobs, totalJobs] = await Promise.all([
       prisma.job.findMany({

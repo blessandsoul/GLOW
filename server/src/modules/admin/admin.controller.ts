@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { AdminUsersQuerySchema, userImagesParamsSchema, userImagesQuerySchema, AdminPortfoliosQuerySchema, portfolioItemsParamsSchema, portfolioItemsQuerySchema } from './admin.schemas.js';
+import { AdminUsersQuerySchema, userImagesParamsSchema, userImagesQuerySchema, AdminPortfoliosQuerySchema, portfolioItemsParamsSchema, portfolioItemsQuerySchema, BulkSmsBodySchema } from './admin.schemas.js';
 import { successResponse } from '@/shared/responses/successResponse.js';
 import { paginatedResponse } from '@/shared/responses/paginatedResponse.js';
 import type { AdminService } from './admin.service.js';
@@ -40,6 +40,17 @@ export function createAdminController(adminService: AdminService) {
       const { page, limit } = portfolioItemsQuerySchema.parse(request.query);
       const { items, totalItems } = await adminService.getPortfolioItems(userId, page, limit);
       reply.send(paginatedResponse('Portfolio items retrieved', items, page, limit, totalItems));
+    },
+
+    async getVerifiedPhoneCount(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const data = await adminService.getVerifiedPhoneCount();
+      reply.send(successResponse('Verified phone count retrieved', data));
+    },
+
+    async sendBulkSms(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const body = BulkSmsBodySchema.parse(request.body);
+      const result = await adminService.sendBulkSmsToUsers(body);
+      reply.send(successResponse('Bulk SMS sent', result));
     },
   };
 }
