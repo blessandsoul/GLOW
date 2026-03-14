@@ -16,7 +16,17 @@ export interface StorageFile {
   mimetype: string;
 }
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'] as const;
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+  'image/avif',
+  'image/gif',
+  'image/bmp',
+  'image/tiff',
+] as const;
 type AllowedImageType = (typeof ALLOWED_IMAGE_TYPES)[number];
 
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -65,9 +75,10 @@ export function getFileUrl(relativePath: string): string {
  * Convert HEIC/HEIF images to JPEG. Pass-through for other formats.
  */
 export async function processImage(file: StorageFile): Promise<StorageFile> {
-  if (file.mimetype === 'image/heic' || file.mimetype === 'image/heif') {
+  const convertTypes = ['image/heic', 'image/heif', 'image/avif', 'image/bmp', 'image/tiff', 'image/gif'];
+  if (convertTypes.includes(file.mimetype)) {
     const buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
-    const filename = file.filename.replace(/\.hei[cf]$/i, '.jpg');
+    const filename = file.filename.replace(/\.[^.]+$/, '.jpg');
     return { buffer, filename, mimetype: 'image/jpeg' };
   }
   return file;
@@ -82,7 +93,7 @@ export function validateImage(
 ): void {
   if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype as AllowedImageType)) {
     throw new BadRequestError(
-      'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC, HEIF',
+      'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC, HEIF, AVIF, GIF, BMP, TIFF',
       'INVALID_FILE_TYPE',
     );
   }
