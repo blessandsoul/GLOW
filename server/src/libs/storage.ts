@@ -29,7 +29,33 @@ const ALLOWED_IMAGE_TYPES = [
 ] as const;
 type AllowedImageType = (typeof ALLOWED_IMAGE_TYPES)[number];
 
+const EXTENSION_TO_MIME: Record<string, AllowedImageType> = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.heic': 'image/heic',
+  '.heif': 'image/heif',
+  '.avif': 'image/avif',
+  '.gif': 'image/gif',
+  '.bmp': 'image/bmp',
+  '.tiff': 'image/tiff',
+  '.tif': 'image/tiff',
+};
+
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+/**
+ * Resolve MIME type from file, falling back to extension when MIME is missing/generic
+ * (common on iOS Safari uploads).
+ */
+function resolveImageMime(file: StorageFile): string {
+  if (ALLOWED_IMAGE_TYPES.includes(file.mimetype as AllowedImageType)) {
+    return file.mimetype;
+  }
+  const ext = extname(file.filename).toLowerCase();
+  return EXTENSION_TO_MIME[ext] || file.mimetype;
+}
 
 // ── Storage API ──
 
@@ -75,6 +101,11 @@ export function getFileUrl(relativePath: string): string {
  * Convert HEIC/HEIF images to JPEG. Pass-through for other formats.
  */
 export async function processImage(file: StorageFile): Promise<StorageFile> {
+  const mime = resolveImageMime(file);
+  // Update mimetype in case it was resolved from extension
+  if (mime !== file.mimetype) {
+    file = { ...file, mimetype: mime };
+  }
   const convertTypes = ['image/heic', 'image/heif', 'image/avif', 'image/bmp', 'image/tiff', 'image/gif'];
   if (convertTypes.includes(file.mimetype)) {
     const buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
@@ -91,7 +122,8 @@ export function validateImage(
   file: StorageFile,
   maxSize: number = DEFAULT_MAX_SIZE,
 ): void {
-  if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype as AllowedImageType)) {
+  const resolvedMime = resolveImageMime(file);
+  if (!ALLOWED_IMAGE_TYPES.includes(resolvedMime as AllowedImageType)) {
     throw new BadRequestError(
       'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC, HEIF, AVIF, GIF, BMP, TIFF',
       'INVALID_FILE_TYPE',

@@ -24,7 +24,14 @@ interface BatchUploadZoneProps {
 }
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif', 'image/gif', 'image/bmp', 'image/tiff'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif', '.avif', '.gif', '.bmp', '.tiff', '.tif'];
 const MAX_FILES = 10;
+
+function isAllowedImage(file: File): boolean {
+    if (ALLOWED_TYPES.includes(file.type)) return true;
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    return ALLOWED_EXTENSIONS.includes(ext);
+}
 
 export function BatchUploadZone({ onBatchComplete, isProUser }: BatchUploadZoneProps): React.ReactElement {
     const { t } = useLanguage();
@@ -39,7 +46,7 @@ export function BatchUploadZone({ onBatchComplete, isProUser }: BatchUploadZoneP
       const slots = MAX_FILES - files.length;
       if (slots <= 0) return;
       const valid = Array.from(newFiles)
-        .filter((f) => ALLOWED_TYPES.includes(f.type))
+        .filter((f) => isAllowedImage(f))
         .slice(0, slots);
       if (valid.length < Array.from(newFiles).length) {
         toast.error(t('ui.text_67ffvw'));

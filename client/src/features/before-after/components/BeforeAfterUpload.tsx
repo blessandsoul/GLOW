@@ -14,10 +14,17 @@ interface BeforeAfterUploadProps {
 }
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif', 'image/gif', 'image/bmp', 'image/tiff'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif', '.avif', '.gif', '.bmp', '.tiff', '.tif'];
 const MAX_SIZE = 10 * 1024 * 1024;
 
+function isAllowedImage(file: File): boolean {
+    if (ALLOWED_TYPES.includes(file.type)) return true;
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    return ALLOWED_EXTENSIONS.includes(ext);
+}
+
 function validateFile(file: File): boolean {
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!isAllowedImage(file)) {
         toast.error('system.sys_lbrevv');
         return false;
     }

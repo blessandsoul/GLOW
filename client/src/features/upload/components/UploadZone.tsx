@@ -16,7 +16,15 @@ interface UploadZoneProps {
 }
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif', 'image/gif', 'image/bmp', 'image/tiff'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif', '.avif', '.gif', '.bmp', '.tiff', '.tif'];
 const MAX_SIZE = 10 * 1024 * 1024;
+
+function isAllowedImage(file: File): boolean {
+    if (ALLOWED_TYPES.includes(file.type)) return true;
+    // iOS Safari often sends empty MIME type for HEIC — fallback to extension
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    return ALLOWED_EXTENSIONS.includes(ext);
+}
 
 export function UploadZone({ onFileSelect, isLoading, className, hideGenerateButton, onPendingFileChange }: UploadZoneProps): React.ReactElement {
     const { t } = useLanguage();
@@ -33,7 +41,7 @@ export function UploadZone({ onFileSelect, isLoading, className, hideGenerateBut
 
     const handleFile = useCallback(
         (file: File) => {
-            if (!ALLOWED_TYPES.includes(file.type)) {
+            if (!isAllowedImage(file)) {
                 toast.error(t('ui.text_xw337b'));
                 return;
             }
