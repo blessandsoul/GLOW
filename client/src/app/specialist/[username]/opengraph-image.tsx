@@ -49,9 +49,27 @@ async function fetchPortfolio(username: string): Promise<PortfolioResponse['data
     }
 }
 
-function starString(rating: number): string {
+function RatingDots({ rating }: { rating: number }): React.ReactElement {
     const full = Math.round(rating);
-    return '\u2605'.repeat(full) + '\u2606'.repeat(5 - full);
+    const dots: React.ReactElement[] = [];
+    for (let i = 0; i < 5; i++) {
+        dots.push(
+            <div
+                key={i}
+                style={{
+                    width: '14px',
+                    height: '14px',
+                    borderRadius: '50%',
+                    background: i < full ? '#F0C060' : '#E5E5EA',
+                }}
+            />,
+        );
+    }
+    return (
+        <div style={{ display: 'flex', gap: '4px' }}>
+            {dots}
+        </div>
+    );
 }
 
 export default async function OGImage({
@@ -73,7 +91,6 @@ export default async function OGImage({
                         alignItems: 'center',
                         justifyContent: 'center',
                         background: '#FAFAF8',
-                        fontFamily: 'Inter, Helvetica Neue, Arial, sans-serif',
                         fontSize: '32px',
                         color: '#666',
                     }}
@@ -92,7 +109,8 @@ export default async function OGImage({
         .map((i) => fullUrl(i.imageUrl))
         .filter((u): u is string => !!u);
 
-    const subtitle = [portfolio.niche, portfolio.city].filter(Boolean).join(' \u00b7 ');
+    const subtitleParts = [portfolio.niche, portfolio.city].filter(Boolean);
+    const publishedCount = portfolio.items.filter((i) => i.isPublished).length;
 
     return new ImageResponse(
         (
@@ -104,36 +122,9 @@ export default async function OGImage({
                     background: '#FAFAF8',
                     position: 'relative',
                     overflow: 'hidden',
-                    fontFamily: 'Inter, Helvetica Neue, Arial, sans-serif',
                 }}
             >
-                {/* Background gradient orbs */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '-80px',
-                        left: '-80px',
-                        width: '400px',
-                        height: '400px',
-                        borderRadius: '50%',
-                        background:
-                            'radial-gradient(circle, rgba(180,144,245,0.10) 0%, transparent 70%)',
-                    }}
-                />
-                <div
-                    style={{
-                        position: 'absolute',
-                        bottom: '-60px',
-                        right: '-60px',
-                        width: '350px',
-                        height: '350px',
-                        borderRadius: '50%',
-                        background:
-                            'radial-gradient(circle, rgba(240,192,96,0.08) 0%, transparent 70%)',
-                    }}
-                />
-
-                {/* Left panel — specialist info */}
+                {/* Left panel */}
                 <div
                     style={{
                         display: 'flex',
@@ -183,6 +174,7 @@ export default async function OGImage({
                     {/* Name */}
                     <div
                         style={{
+                            display: 'flex',
                             fontSize: '36px',
                             fontWeight: 800,
                             color: '#1C1C1E',
@@ -194,18 +186,18 @@ export default async function OGImage({
                         {portfolio.displayName}
                     </div>
 
-                    {/* Subtitle (niche · city) */}
-                    {subtitle && (
+                    {/* Subtitle */}
+                    {subtitleParts.length > 0 && (
                         <div
                             style={{
+                                display: 'flex',
                                 fontSize: '18px',
                                 fontWeight: 500,
                                 color: '#8E8E93',
                                 marginBottom: '16px',
-                                letterSpacing: '0.01em',
                             }}
                         >
-                            {subtitle}
+                            {subtitleParts.join(' / ')}
                         </div>
                     )}
 
@@ -215,41 +207,37 @@ export default async function OGImage({
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
+                                gap: '10px',
                                 marginBottom: '20px',
                             }}
                         >
-                            <span
+                            <RatingDots rating={portfolio.averageRating} />
+                            <div
                                 style={{
-                                    fontSize: '20px',
-                                    color: '#F0C060',
-                                    letterSpacing: '2px',
-                                }}
-                            >
-                                {starString(portfolio.averageRating)}
-                            </span>
-                            <span
-                                style={{
+                                    display: 'flex',
                                     fontSize: '16px',
                                     color: '#8E8E93',
                                     fontWeight: 500,
                                 }}
                             >
                                 {portfolio.averageRating.toFixed(1)} ({portfolio.reviewsCount})
-                            </span>
+                            </div>
                         </div>
                     )}
 
-                    {/* Services count */}
-                    {portfolio.services.length > 0 && (
+                    {/* Stats */}
+                    {(portfolio.services.length > 0 || publishedCount > 0) && (
                         <div
                             style={{
+                                display: 'flex',
                                 fontSize: '15px',
                                 color: '#AEAEB2',
                                 fontWeight: 500,
                             }}
                         >
-                            {portfolio.services.length} services {'\u00b7'} {portfolio.items.filter((i) => i.isPublished).length} portfolio photos
+                            {portfolio.services.length > 0 ? `${portfolio.services.length} services` : ''}
+                            {portfolio.services.length > 0 && publishedCount > 0 ? ' / ' : ''}
+                            {publishedCount > 0 ? `${publishedCount} photos` : ''}
                         </div>
                     )}
 
@@ -262,8 +250,9 @@ export default async function OGImage({
                             paddingTop: '24px',
                         }}
                     >
-                        <span
+                        <div
                             style={{
+                                display: 'flex',
                                 fontSize: '22px',
                                 fontWeight: 900,
                                 color: '#1C1C1E',
@@ -271,9 +260,10 @@ export default async function OGImage({
                             }}
                         >
                             GLOW
-                        </span>
-                        <span
+                        </div>
+                        <div
                             style={{
+                                display: 'flex',
                                 fontSize: '13px',
                                 fontWeight: 700,
                                 color: '#B490F5',
@@ -282,7 +272,7 @@ export default async function OGImage({
                             }}
                         >
                             .GE
-                        </span>
+                        </div>
                     </div>
                 </div>
 
