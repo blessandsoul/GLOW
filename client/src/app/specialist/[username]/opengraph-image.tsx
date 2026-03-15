@@ -7,16 +7,25 @@ export const contentType = 'image/png';
 const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
 
-const NOTO_SANS_GEORGIAN_URL =
-    'https://fonts.gstatic.com/s/notosansgeorgian/v46/PlIaFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zWn-8YDB09HFNdpvnzFj-f5WK0OQV.woff';
+// Noto Sans — supports Latin, Cyrillic, Georgian
+const NOTO_SANS_REGULAR =
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans@latest/latin-400-normal.ttf';
+const NOTO_SANS_BOLD =
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans@latest/latin-700-normal.ttf';
+const NOTO_SANS_GEORGIAN =
+    'https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-georgian@latest/georgian-400-normal.ttf';
 
 async function loadFonts(): Promise<{ name: string; data: ArrayBuffer; style: 'normal'; weight: 400 | 700 }[]> {
     try {
-        const [georgianRegular] = await Promise.all([
-            fetch(NOTO_SANS_GEORGIAN_URL).then((r) => r.arrayBuffer()),
+        const [regular, bold, georgian] = await Promise.all([
+            fetch(NOTO_SANS_REGULAR).then((r) => r.arrayBuffer()),
+            fetch(NOTO_SANS_BOLD).then((r) => r.arrayBuffer()),
+            fetch(NOTO_SANS_GEORGIAN).then((r) => r.arrayBuffer()),
         ]);
         return [
-            { name: 'Noto Sans Georgian', data: georgianRegular, style: 'normal' as const, weight: 400 as const },
+            { name: 'Noto Sans', data: regular, style: 'normal' as const, weight: 400 as const },
+            { name: 'Noto Sans', data: bold, style: 'normal' as const, weight: 700 as const },
+            { name: 'Noto Sans Georgian', data: georgian, style: 'normal' as const, weight: 400 as const },
         ];
     } catch {
         return [];
@@ -65,27 +74,13 @@ async function fetchPortfolio(username: string): Promise<PortfolioResponse['data
     }
 }
 
-function RatingDots({ rating }: { rating: number }): React.ReactElement {
-    const full = Math.round(rating);
-    const dots: React.ReactElement[] = [];
-    for (let i = 0; i < 5; i++) {
-        dots.push(
-            <div
-                key={i}
-                style={{
-                    width: '14px',
-                    height: '14px',
-                    borderRadius: '50%',
-                    background: i < full ? '#F0C060' : '#E5E5EA',
-                }}
-            />,
-        );
-    }
-    return (
-        <div style={{ display: 'flex', gap: '4px' }}>
-            {dots}
-        </div>
-    );
+function pluralize(n: number, one: string, few: string, many: string): string {
+    const abs = Math.abs(n) % 100;
+    const lastDigit = abs % 10;
+    if (abs > 10 && abs < 20) return `${n} ${many}`;
+    if (lastDigit > 1 && lastDigit < 5) return `${n} ${few}`;
+    if (lastDigit === 1) return `${n} ${one}`;
+    return `${n} ${many}`;
 }
 
 export default async function OGImage({
@@ -99,6 +94,8 @@ export default async function OGImage({
         loadFonts(),
     ]);
 
+    const fontFamily = 'Noto Sans, Noto Sans Georgian, sans-serif';
+
     if (!portfolio) {
         return new ImageResponse(
             (
@@ -110,6 +107,7 @@ export default async function OGImage({
                         alignItems: 'center',
                         justifyContent: 'center',
                         background: '#FAFAF8',
+                        fontFamily,
                         fontSize: '32px',
                         color: '#666',
                     }}
@@ -131,6 +129,13 @@ export default async function OGImage({
     const subtitleParts = [portfolio.niche, portfolio.city].filter(Boolean);
     const publishedCount = portfolio.items.filter((i) => i.isPublished).length;
 
+    const servicesText = portfolio.services.length > 0
+        ? pluralize(portfolio.services.length, 'услуга', 'услуги', 'услуг')
+        : '';
+    const photosText = publishedCount > 0
+        ? pluralize(publishedCount, 'фото', 'фото', 'фото')
+        : '';
+
     return new ImageResponse(
         (
             <div
@@ -139,7 +144,7 @@ export default async function OGImage({
                     height: '100%',
                     display: 'flex',
                     background: '#FAFAF8',
-                    fontFamily: 'Noto Sans Georgian, sans-serif',
+                    fontFamily,
                     position: 'relative',
                     overflow: 'hidden',
                 }}
@@ -196,9 +201,8 @@ export default async function OGImage({
                         style={{
                             display: 'flex',
                             fontSize: '36px',
-                            fontWeight: 800,
+                            fontWeight: 700,
                             color: '#1C1C1E',
-                            letterSpacing: '-0.02em',
                             lineHeight: 1.1,
                             marginBottom: '8px',
                         }}
@@ -212,7 +216,7 @@ export default async function OGImage({
                             style={{
                                 display: 'flex',
                                 fontSize: '18px',
-                                fontWeight: 500,
+                                fontWeight: 400,
                                 color: '#8E8E93',
                                 marginBottom: '16px',
                             }}
@@ -227,17 +231,28 @@ export default async function OGImage({
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
+                                gap: '6px',
                                 marginBottom: '20px',
                             }}
                         >
-                            <RatingDots rating={portfolio.averageRating} />
+                            {Array.from({ length: 5 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        width: '14px',
+                                        height: '14px',
+                                        borderRadius: '50%',
+                                        background: i < Math.round(portfolio.averageRating) ? '#F0C060' : '#E5E5EA',
+                                    }}
+                                />
+                            ))}
                             <div
                                 style={{
                                     display: 'flex',
                                     fontSize: '16px',
                                     color: '#8E8E93',
-                                    fontWeight: 500,
+                                    fontWeight: 400,
+                                    marginLeft: '4px',
                                 }}
                             >
                                 {portfolio.averageRating.toFixed(1)} ({portfolio.reviewsCount})
@@ -246,18 +261,16 @@ export default async function OGImage({
                     )}
 
                     {/* Stats */}
-                    {(portfolio.services.length > 0 || publishedCount > 0) && (
+                    {(servicesText || photosText) && (
                         <div
                             style={{
                                 display: 'flex',
                                 fontSize: '15px',
                                 color: '#AEAEB2',
-                                fontWeight: 500,
+                                fontWeight: 400,
                             }}
                         >
-                            {portfolio.services.length > 0 ? `${portfolio.services.length} services` : ''}
-                            {portfolio.services.length > 0 && publishedCount > 0 ? ' / ' : ''}
-                            {publishedCount > 0 ? `${publishedCount} photos` : ''}
+                            {[servicesText, photosText].filter(Boolean).join(' / ')}
                         </div>
                     )}
 
@@ -274,9 +287,8 @@ export default async function OGImage({
                             style={{
                                 display: 'flex',
                                 fontSize: '22px',
-                                fontWeight: 900,
+                                fontWeight: 700,
                                 color: '#1C1C1E',
-                                letterSpacing: '-0.03em',
                             }}
                         >
                             GLOW
@@ -308,7 +320,6 @@ export default async function OGImage({
                             zIndex: 1,
                         }}
                     >
-                        {/* Main large photo */}
                         <div
                             style={{
                                 display: 'flex',
@@ -329,7 +340,6 @@ export default async function OGImage({
                             />
                         </div>
 
-                        {/* Secondary photos stacked */}
                         {photos.length > 1 && (
                             <div
                                 style={{
@@ -380,6 +390,6 @@ export default async function OGImage({
                 />
             </div>
         ),
-        { ...size },
+        { ...size, fonts },
     );
 }
