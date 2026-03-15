@@ -53,17 +53,10 @@ function ensureCoverImage(post: Partial<BlogPost>): Partial<BlogPost> {
   }
 
   if (!post.coverImage) {
-    const staticCovers = [
-      '/images/blog-covers/1.jpg',
-      '/images/blog-covers/2.jpg',
-      '/images/blog-covers/3.jpg',
-    ]
-
-    const seed = post.slug || post.title || 'default'
-    const hash = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    const index = hash % staticCovers.length
-
-    post.coverImage = staticCovers[index]
+    const title = encodeURIComponent((post.title || 'Blog Post').slice(0, 100))
+    const date = post.date || ''
+    const tags = (post.tags || []).slice(0, 3).join(',')
+    post.coverImage = `/api/og?title=${title}&date=${date}&tags=${encodeURIComponent(tags)}`
   }
 
   if (!post.coverCredit && post.slug) {
