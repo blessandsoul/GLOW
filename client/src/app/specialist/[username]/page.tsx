@@ -50,11 +50,11 @@ export async function generateMetadata({ params }: PortfolioPublicPageProps): Pr
             ? `★ ${portfolio.averageRating.toFixed(1)} (${portfolio.reviewsCount})`
             : null,
         portfolio.services.length > 0
-            ? `${portfolio.services.length} services`
+            ? `${portfolio.services.length} სერვისი`
             : null,
     ]
         .filter(Boolean)
-        .join(' · ') || 'Beauty specialist on Glow.GE';
+        .join(' · ') || 'სილამაზის სპეციალისტი Glow.GE-ზე';
 
     const avatarUrl = getFullImageUrl(portfolio.avatar);
 
