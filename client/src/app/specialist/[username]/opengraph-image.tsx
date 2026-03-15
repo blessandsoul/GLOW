@@ -1,9 +1,5 @@
 import { ImageResponse } from 'next/og';
 
-import type { PublicPortfolioData } from '@/features/portfolio/types/portfolio.types';
-import type { ApiResponse } from '@/lib/api/api.types';
-
-export const runtime = 'edge';
 export const alt = 'Specialist on Glow.GE';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -11,23 +7,42 @@ export const contentType = 'image/png';
 const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
 
-function fullUrl(path: string | null): string | null {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
+function getOrigin(): string {
     try {
-        return `${new URL(API_BASE).origin}${path}`;
+        return new URL(API_BASE).origin;
     } catch {
-        return null;
+        return 'http://localhost:4000';
     }
 }
 
-async function fetchPortfolio(username: string): Promise<PublicPortfolioData | null> {
+function fullUrl(path: string | null): string | null {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${getOrigin()}${path}`;
+}
+
+interface PortfolioResponse {
+    success: boolean;
+    data: {
+        displayName: string;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        niche: string | null;
+        averageRating: number;
+        reviewsCount: number;
+        services: { name: string }[];
+        items: { imageUrl: string; isPublished: boolean }[];
+    };
+}
+
+async function fetchPortfolio(username: string): Promise<PortfolioResponse['data'] | null> {
     try {
         const res = await fetch(`${API_BASE}/portfolio/public/${username}`, {
             next: { revalidate: 60 },
         });
         if (!res.ok) return null;
-        const json = (await res.json()) as ApiResponse<PublicPortfolioData>;
+        const json = (await res.json()) as PortfolioResponse;
         return json.data;
     } catch {
         return null;
@@ -36,7 +51,7 @@ async function fetchPortfolio(username: string): Promise<PublicPortfolioData | n
 
 function starString(rating: number): string {
     const full = Math.round(rating);
-    return '★'.repeat(full) + '☆'.repeat(5 - full);
+    return '\u2605'.repeat(full) + '\u2606'.repeat(5 - full);
 }
 
 export default async function OGImage({
@@ -77,7 +92,7 @@ export default async function OGImage({
         .map((i) => fullUrl(i.imageUrl))
         .filter((u): u is string => !!u);
 
-    const subtitle = [portfolio.niche, portfolio.city].filter(Boolean).join(' · ');
+    const subtitle = [portfolio.niche, portfolio.city].filter(Boolean).join(' \u00b7 ');
 
     return new ImageResponse(
         (
@@ -234,7 +249,7 @@ export default async function OGImage({
                                 fontWeight: 500,
                             }}
                         >
-                            {portfolio.services.length} services · {portfolio.items.filter((i) => i.isPublished).length} portfolio photos
+                            {portfolio.services.length} services {'\u00b7'} {portfolio.items.filter((i) => i.isPublished).length} portfolio photos
                         </div>
                     )}
 
