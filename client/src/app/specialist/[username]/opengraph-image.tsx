@@ -154,7 +154,7 @@ export default async function OGImage({
                         display: 'flex',
                         flexDirection: 'column',
                         padding: '40px 44px',
-                        width: photos.length > 0 ? '500px' : '100%',
+                        width: photos.length > 0 ? '620px' : '100%',
                         position: 'relative',
                         zIndex: 1,
                     }}
@@ -453,13 +453,12 @@ export default async function OGImage({
                     </div>
                 </div>
 
-                {/* Right panel — portfolio photos */}
+                {/* Right panel — single hero photo */}
                 {photos.length > 0 && (
                     <div
                         style={{
                             display: 'flex',
                             flex: 1,
-                            gap: '8px',
                             padding: '32px 32px 32px 0',
                             position: 'relative',
                             zIndex: 1,
@@ -468,14 +467,14 @@ export default async function OGImage({
                         <div
                             style={{
                                 display: 'flex',
-                                flex: 2,
+                                width: '100%',
                                 borderRadius: '16px',
                                 overflow: 'hidden',
                             }}
                         >
                             <img
                                 src={photos[0]}
-                                width={460}
+                                width={400}
                                 height={566}
                                 style={{
                                     width: '100%',
@@ -484,40 +483,6 @@ export default async function OGImage({
                                 }}
                             />
                         </div>
-
-                        {photos.length > 1 && (
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    flex: 1,
-                                    gap: '8px',
-                                }}
-                            >
-                                {photos.slice(1, 3).map((url, idx) => (
-                                    <div
-                                        key={idx}
-                                        style={{
-                                            display: 'flex',
-                                            flex: 1,
-                                            borderRadius: '16px',
-                                            overflow: 'hidden',
-                                        }}
-                                    >
-                                        <img
-                                            src={url}
-                                            width={230}
-                                            height={275}
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover',
-                                            }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 )}
 
