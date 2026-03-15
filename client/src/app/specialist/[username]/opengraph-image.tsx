@@ -108,7 +108,7 @@ export default async function OGImage({
                         justifyContent: 'center',
                         background: '#FAFAF8',
                         fontFamily,
-                        fontSize: '32px',
+                        fontSize: '36px',
                         color: '#666',
                     }}
                 >
@@ -122,18 +122,12 @@ export default async function OGImage({
     const avatarUrl = fullUrl(portfolio.avatar);
     const photos = portfolio.items
         .filter((i) => i.isPublished && i.imageUrl)
-        .slice(0, 3)
+        .slice(0, 1)
         .map((i) => fullUrl(i.imageUrl))
         .filter((u): u is string => !!u);
 
     const publishedCount = portfolio.items.filter((i) => i.isPublished).length;
     const topServices = portfolio.services.slice(0, 3);
-
-    // Social icons text
-    const socials: string[] = [];
-    if (portfolio.instagram) socials.push(`@${portfolio.instagram.replace('@', '')}`);
-    if (portfolio.telegram) socials.push('Telegram');
-    if (portfolio.whatsapp) socials.push('WhatsApp');
 
     return new ImageResponse(
         (
@@ -148,34 +142,34 @@ export default async function OGImage({
                     overflow: 'hidden',
                 }}
             >
-                {/* Left panel */}
+                {/* Left panel — info */}
                 <div
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        padding: '40px 44px',
-                        width: photos.length > 0 ? '750px' : '100%',
+                        padding: '48px 52px',
+                        width: photos.length > 0 ? '780px' : '100%',
                         position: 'relative',
                         zIndex: 1,
                     }}
                 >
-                    {/* Top row: avatar + name */}
+                    {/* Avatar + Name row */}
                     <div
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '16px',
-                            marginBottom: '16px',
+                            gap: '20px',
+                            marginBottom: '20px',
                         }}
                     >
                         {avatarUrl ? (
                             <img
                                 src={avatarUrl}
-                                width={72}
-                                height={72}
+                                width={88}
+                                height={88}
                                 style={{
-                                    width: '72px',
-                                    height: '72px',
+                                    width: '88px',
+                                    height: '88px',
                                     borderRadius: '50%',
                                     objectFit: 'cover',
                                     border: '3px solid rgba(180,144,245,0.3)',
@@ -184,14 +178,14 @@ export default async function OGImage({
                         ) : (
                             <div
                                 style={{
-                                    width: '72px',
-                                    height: '72px',
+                                    width: '88px',
+                                    height: '88px',
                                     borderRadius: '50%',
                                     background: 'linear-gradient(135deg, #B490F5 0%, #D7A4CC 100%)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '32px',
+                                    fontSize: '38px',
                                     fontWeight: 700,
                                     color: '#fff',
                                 }}
@@ -208,7 +202,7 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '28px',
+                                    fontSize: '36px',
                                     fontWeight: 700,
                                     color: '#1C1C1E',
                                     lineHeight: 1.2,
@@ -220,10 +214,10 @@ export default async function OGImage({
                                 <div
                                     style={{
                                         display: 'flex',
-                                        fontSize: '15px',
+                                        fontSize: '20px',
                                         fontWeight: 400,
                                         color: '#8E8E93',
-                                        marginTop: '2px',
+                                        marginTop: '4px',
                                     }}
                                 >
                                     {[portfolio.niche, portfolio.city].filter(Boolean).join(' / ')}
@@ -238,16 +232,16 @@ export default async function OGImage({
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '6px',
-                                marginBottom: '12px',
+                                gap: '8px',
+                                marginBottom: '16px',
                             }}
                         >
                             {Array.from({ length: 5 }).map((_, i) => (
                                 <div
                                     key={i}
                                     style={{
-                                        width: '16px',
-                                        height: '16px',
+                                        width: '20px',
+                                        height: '20px',
                                         borderRadius: '50%',
                                         background: i < Math.round(portfolio.averageRating) ? '#F0C060' : '#E5E5EA',
                                     }}
@@ -256,10 +250,10 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '18px',
-                                    color: '#8E8E93',
+                                    fontSize: '22px',
+                                    color: '#636366',
                                     fontWeight: 400,
-                                    marginLeft: '6px',
+                                    marginLeft: '8px',
                                 }}
                             >
                                 {portfolio.averageRating.toFixed(1)} ({portfolio.reviewsCount} შეფასება)
@@ -272,16 +266,16 @@ export default async function OGImage({
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '15px',
+                                fontSize: '18px',
                                 fontWeight: 400,
                                 color: '#636366',
                                 lineHeight: 1.5,
-                                marginBottom: '14px',
+                                marginBottom: '18px',
                                 overflow: 'hidden',
-                                maxHeight: '46px',
+                                maxHeight: '56px',
                             }}
                         >
-                            {portfolio.bio.length > 100 ? `${portfolio.bio.slice(0, 100)}...` : portfolio.bio}
+                            {portfolio.bio.length > 80 ? `${portfolio.bio.slice(0, 80)}...` : portfolio.bio}
                         </div>
                     )}
 
@@ -291,14 +285,14 @@ export default async function OGImage({
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '6px',
-                                marginBottom: '14px',
+                                gap: '8px',
+                                marginBottom: '18px',
                             }}
                         >
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '17px',
+                                    fontSize: '20px',
                                     fontWeight: 700,
                                     color: '#1C1C1E',
                                     marginBottom: '4px',
@@ -313,11 +307,11 @@ export default async function OGImage({
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        fontSize: '16px',
+                                        fontSize: '20px',
                                         color: '#48484A',
-                                        padding: '8px 14px',
+                                        padding: '10px 16px',
                                         background: '#F2F2F7',
-                                        borderRadius: '8px',
+                                        borderRadius: '10px',
                                     }}
                                 >
                                     <div style={{ display: 'flex' }}>
@@ -338,7 +332,7 @@ export default async function OGImage({
                                 <div
                                     style={{
                                         display: 'flex',
-                                        fontSize: '12px',
+                                        fontSize: '16px',
                                         color: '#AEAEB2',
                                     }}
                                 >
@@ -352,8 +346,8 @@ export default async function OGImage({
                     <div
                         style={{
                             display: 'flex',
-                            gap: '16px',
-                            marginBottom: '12px',
+                            gap: '24px',
+                            marginBottom: '8px',
                         }}
                     >
                         {publishedCount > 0 && (
@@ -361,16 +355,16 @@ export default async function OGImage({
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '4px',
-                                    fontSize: '15px',
+                                    gap: '8px',
+                                    fontSize: '18px',
                                     color: '#8E8E93',
                                 }}
                             >
                                 <div
                                     style={{
                                         display: 'flex',
-                                        width: '8px',
-                                        height: '8px',
+                                        width: '10px',
+                                        height: '10px',
                                         borderRadius: '50%',
                                         background: '#B490F5',
                                     }}
@@ -385,16 +379,16 @@ export default async function OGImage({
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '4px',
-                                    fontSize: '15px',
+                                    gap: '8px',
+                                    fontSize: '18px',
                                     color: '#8E8E93',
                                 }}
                             >
                                 <div
                                     style={{
                                         display: 'flex',
-                                        width: '8px',
-                                        height: '8px',
+                                        width: '10px',
+                                        height: '10px',
                                         borderRadius: '50%',
                                         background: '#F0C060',
                                     }}
@@ -405,20 +399,6 @@ export default async function OGImage({
                             </div>
                         )}
                     </div>
-
-                    {/* Socials */}
-                    {socials.length > 0 && (
-                        <div
-                            style={{
-                                display: 'flex',
-                                fontSize: '12px',
-                                color: '#AEAEB2',
-                                marginBottom: '8px',
-                            }}
-                        >
-                            {socials.join(' / ')}
-                        </div>
-                    )}
 
                     {/* Brand — pushed to bottom */}
                     <div
@@ -431,7 +411,7 @@ export default async function OGImage({
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '20px',
+                                fontSize: '26px',
                                 fontWeight: 700,
                                 color: '#1C1C1E',
                             }}
@@ -441,11 +421,11 @@ export default async function OGImage({
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '12px',
+                                fontSize: '15px',
                                 fontWeight: 700,
                                 color: '#B490F5',
                                 marginLeft: '2px',
-                                marginBottom: '5px',
+                                marginBottom: '6px',
                             }}
                         >
                             .GE
