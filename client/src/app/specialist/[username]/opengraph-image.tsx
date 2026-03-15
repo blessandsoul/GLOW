@@ -7,6 +7,22 @@ export const contentType = 'image/png';
 const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
 
+const NOTO_SANS_GEORGIAN_URL =
+    'https://fonts.gstatic.com/s/notosansgeorgian/v46/PlIaFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zWn-8YDB09HFNdpvnzFj-f5WK0OQV.woff';
+
+async function loadFonts(): Promise<{ name: string; data: ArrayBuffer; style: 'normal'; weight: 400 | 700 }[]> {
+    try {
+        const [georgianRegular] = await Promise.all([
+            fetch(NOTO_SANS_GEORGIAN_URL).then((r) => r.arrayBuffer()),
+        ]);
+        return [
+            { name: 'Noto Sans Georgian', data: georgianRegular, style: 'normal' as const, weight: 400 as const },
+        ];
+    } catch {
+        return [];
+    }
+}
+
 function getOrigin(): string {
     try {
         return new URL(API_BASE).origin;
@@ -78,7 +94,10 @@ export default async function OGImage({
     params: Promise<{ username: string }>;
 }): Promise<ImageResponse> {
     const { username } = await params;
-    const portfolio = await fetchPortfolio(username);
+    const [portfolio, fonts] = await Promise.all([
+        fetchPortfolio(username),
+        loadFonts(),
+    ]);
 
     if (!portfolio) {
         return new ImageResponse(
@@ -98,7 +117,7 @@ export default async function OGImage({
                     Specialist not found
                 </div>
             ),
-            { ...size },
+            { ...size, fonts },
         );
     }
 
@@ -120,6 +139,7 @@ export default async function OGImage({
                     height: '100%',
                     display: 'flex',
                     background: '#FAFAF8',
+                    fontFamily: 'Noto Sans Georgian, sans-serif',
                     position: 'relative',
                     overflow: 'hidden',
                 }}
