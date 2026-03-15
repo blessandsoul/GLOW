@@ -154,7 +154,7 @@ export default async function OGImage({
                         display: 'flex',
                         flexDirection: 'column',
                         padding: '40px 44px',
-                        width: photos.length > 0 ? '620px' : '100%',
+                        width: photos.length > 0 ? '750px' : '100%',
                         position: 'relative',
                         zIndex: 1,
                     }}
@@ -246,8 +246,8 @@ export default async function OGImage({
                                 <div
                                     key={i}
                                     style={{
-                                        width: '12px',
-                                        height: '12px',
+                                        width: '16px',
+                                        height: '16px',
                                         borderRadius: '50%',
                                         background: i < Math.round(portfolio.averageRating) ? '#F0C060' : '#E5E5EA',
                                     }}
@@ -256,13 +256,13 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '14px',
+                                    fontSize: '18px',
                                     color: '#8E8E93',
                                     fontWeight: 400,
-                                    marginLeft: '4px',
+                                    marginLeft: '6px',
                                 }}
                             >
-                                {portfolio.averageRating.toFixed(1)} ({portfolio.reviewsCount} {portfolio.reviewsCount === 1 ? 'შეფასება' : 'შეფასება'})
+                                {portfolio.averageRating.toFixed(1)} ({portfolio.reviewsCount} შეფასება)
                             </div>
                         </div>
                     )}
@@ -272,13 +272,13 @@ export default async function OGImage({
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '13px',
+                                fontSize: '15px',
                                 fontWeight: 400,
                                 color: '#636366',
                                 lineHeight: 1.5,
                                 marginBottom: '14px',
                                 overflow: 'hidden',
-                                maxHeight: '40px',
+                                maxHeight: '46px',
                             }}
                         >
                             {portfolio.bio.length > 100 ? `${portfolio.bio.slice(0, 100)}...` : portfolio.bio}
@@ -298,10 +298,10 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '13px',
+                                    fontSize: '17px',
                                     fontWeight: 700,
                                     color: '#1C1C1E',
-                                    marginBottom: '2px',
+                                    marginBottom: '4px',
                                 }}
                             >
                                 სერვისები
@@ -313,11 +313,11 @@ export default async function OGImage({
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        fontSize: '13px',
+                                        fontSize: '16px',
                                         color: '#48484A',
-                                        padding: '4px 10px',
+                                        padding: '8px 14px',
                                         background: '#F2F2F7',
-                                        borderRadius: '6px',
+                                        borderRadius: '8px',
                                     }}
                                 >
                                     <div style={{ display: 'flex' }}>
@@ -362,7 +362,7 @@ export default async function OGImage({
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '4px',
-                                    fontSize: '13px',
+                                    fontSize: '15px',
                                     color: '#8E8E93',
                                 }}
                             >
@@ -386,7 +386,7 @@ export default async function OGImage({
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '4px',
-                                    fontSize: '13px',
+                                    fontSize: '15px',
                                     color: '#8E8E93',
                                 }}
                             >
