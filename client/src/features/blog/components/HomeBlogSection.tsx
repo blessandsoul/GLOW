@@ -6,8 +6,9 @@ import Image from 'next/image'
 import { ArrowRight } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
-import { ROUTES } from '@/lib/constants/routes'
 import { useLanguage } from '@/i18n/hooks/useLanguage'
+import { getBlogPath } from '../lib/utils'
+import type { BlogLocale } from '../types'
 
 interface BlogPreview {
   id: string
@@ -45,7 +46,7 @@ export function HomeBlogSection(): React.ReactElement | null {
           </p>
         </div>
         <Link
-          href={ROUTES.BLOG}
+          href={getBlogPath(language as BlogLocale)}
           className="group hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:gap-2.5 transition-all duration-200"
         >
           {t('blog_section.view_all')}
@@ -64,7 +65,7 @@ export function HomeBlogSection(): React.ReactElement | null {
             transition={{ duration: 0.4, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
           >
             <Link
-              href={`${ROUTES.BLOG}/${post.slug}`}
+              href={getBlogPath(language as BlogLocale, post.slug)}
               className={cn(
                 'group relative flex flex-col h-full rounded-2xl',
                 'border border-border/40 bg-card/60 backdrop-blur-md',
@@ -120,7 +121,7 @@ export function HomeBlogSection(): React.ReactElement | null {
       {/* Mobile view all */}
       <div className="mt-6 flex justify-center sm:hidden">
         <Link
-          href={ROUTES.BLOG}
+          href={getBlogPath(language as BlogLocale)}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary"
         >
           {t('blog_section.view_all')}

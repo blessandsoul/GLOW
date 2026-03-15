@@ -127,7 +127,7 @@ export default async function OGImage({
         .filter((u): u is string => !!u);
 
     const publishedCount = portfolio.items.filter((i) => i.isPublished).length;
-    const topServices = portfolio.services.slice(0, 3);
+    const topServices = portfolio.services.slice(0, 4);
 
     return new ImageResponse(
         (
@@ -142,34 +142,34 @@ export default async function OGImage({
                     overflow: 'hidden',
                 }}
             >
-                {/* Left panel — info */}
+                {/* Left panel */}
                 <div
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        padding: '48px 52px',
-                        width: photos.length > 0 ? '780px' : '100%',
+                        padding: '44px 48px 40px',
+                        width: photos.length > 0 ? '800px' : '100%',
                         position: 'relative',
                         zIndex: 1,
                     }}
                 >
-                    {/* Avatar + Name row */}
+                    {/* Avatar + Name */}
                     <div
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '20px',
-                            marginBottom: '20px',
+                            marginBottom: '18px',
                         }}
                     >
                         {avatarUrl ? (
                             <img
                                 src={avatarUrl}
-                                width={88}
-                                height={88}
+                                width={96}
+                                height={96}
                                 style={{
-                                    width: '88px',
-                                    height: '88px',
+                                    width: '96px',
+                                    height: '96px',
                                     borderRadius: '50%',
                                     objectFit: 'cover',
                                     border: '3px solid rgba(180,144,245,0.3)',
@@ -178,14 +178,14 @@ export default async function OGImage({
                         ) : (
                             <div
                                 style={{
-                                    width: '88px',
-                                    height: '88px',
+                                    width: '96px',
+                                    height: '96px',
                                     borderRadius: '50%',
                                     background: 'linear-gradient(135deg, #B490F5 0%, #D7A4CC 100%)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '38px',
+                                    fontSize: '42px',
                                     fontWeight: 700,
                                     color: '#fff',
                                 }}
@@ -202,10 +202,10 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '36px',
+                                    fontSize: '42px',
                                     fontWeight: 700,
                                     color: '#1C1C1E',
-                                    lineHeight: 1.2,
+                                    lineHeight: 1.1,
                                 }}
                             >
                                 {portfolio.displayName}
@@ -214,10 +214,10 @@ export default async function OGImage({
                                 <div
                                     style={{
                                         display: 'flex',
-                                        fontSize: '20px',
+                                        fontSize: '22px',
                                         fontWeight: 400,
                                         color: '#8E8E93',
-                                        marginTop: '4px',
+                                        marginTop: '6px',
                                     }}
                                 >
                                     {[portfolio.niche, portfolio.city].filter(Boolean).join(' / ')}
@@ -240,8 +240,8 @@ export default async function OGImage({
                                 <div
                                     key={i}
                                     style={{
-                                        width: '20px',
-                                        height: '20px',
+                                        width: '22px',
+                                        height: '22px',
                                         borderRadius: '50%',
                                         background: i < Math.round(portfolio.averageRating) ? '#F0C060' : '#E5E5EA',
                                     }}
@@ -250,7 +250,7 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '22px',
+                                    fontSize: '24px',
                                     color: '#636366',
                                     fontWeight: 400,
                                     marginLeft: '8px',
@@ -266,16 +266,14 @@ export default async function OGImage({
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '18px',
+                                fontSize: '20px',
                                 fontWeight: 400,
                                 color: '#636366',
-                                lineHeight: 1.5,
+                                lineHeight: 1.4,
                                 marginBottom: '18px',
-                                overflow: 'hidden',
-                                maxHeight: '56px',
                             }}
                         >
-                            {portfolio.bio.length > 80 ? `${portfolio.bio.slice(0, 80)}...` : portfolio.bio}
+                            {portfolio.bio.length > 70 ? `${portfolio.bio.slice(0, 70)}...` : portfolio.bio}
                         </div>
                     )}
 
@@ -286,16 +284,15 @@ export default async function OGImage({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '8px',
-                                marginBottom: '18px',
                             }}
                         >
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '20px',
+                                    fontSize: '22px',
                                     fontWeight: 700,
                                     color: '#1C1C1E',
-                                    marginBottom: '4px',
+                                    marginBottom: '2px',
                                 }}
                             >
                                 სერვისები
@@ -307,11 +304,11 @@ export default async function OGImage({
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        fontSize: '20px',
+                                        fontSize: '22px',
                                         color: '#48484A',
-                                        padding: '10px 16px',
+                                        padding: '12px 18px',
                                         background: '#F2F2F7',
-                                        borderRadius: '10px',
+                                        borderRadius: '12px',
                                     }}
                                 >
                                     <div style={{ display: 'flex' }}>
@@ -328,118 +325,128 @@ export default async function OGImage({
                                     </div>
                                 </div>
                             ))}
-                            {portfolio.services.length > 3 && (
+                            {portfolio.services.length > 4 && (
                                 <div
                                     style={{
                                         display: 'flex',
-                                        fontSize: '16px',
+                                        fontSize: '18px',
                                         color: '#AEAEB2',
+                                        marginTop: '2px',
                                     }}
                                 >
-                                    +{portfolio.services.length - 3} სხვა სერვისი
+                                    +{portfolio.services.length - 4} სხვა სერვისი
                                 </div>
                             )}
                         </div>
                     )}
 
-                    {/* Stats row */}
+                    {/* Bottom row: stats + brand */}
                     <div
                         style={{
                             display: 'flex',
-                            gap: '24px',
-                            marginBottom: '8px',
-                        }}
-                    >
-                        {publishedCount > 0 && (
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    fontSize: '18px',
-                                    color: '#8E8E93',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        width: '10px',
-                                        height: '10px',
-                                        borderRadius: '50%',
-                                        background: '#B490F5',
-                                    }}
-                                />
-                                <div style={{ display: 'flex' }}>
-                                    {publishedCount} ფოტო
-                                </div>
-                            </div>
-                        )}
-                        {portfolio.services.length > 0 && (
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    fontSize: '18px',
-                                    color: '#8E8E93',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        width: '10px',
-                                        height: '10px',
-                                        borderRadius: '50%',
-                                        background: '#F0C060',
-                                    }}
-                                />
-                                <div style={{ display: 'flex' }}>
-                                    {portfolio.services.length} სერვისი
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Brand — pushed to bottom */}
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'baseline',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-end',
                             marginTop: 'auto',
+                            paddingTop: '12px',
                         }}
                     >
+                        {/* Stats */}
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '26px',
-                                fontWeight: 700,
-                                color: '#1C1C1E',
+                                gap: '24px',
                             }}
                         >
-                            GLOW
+                            {publishedCount > 0 && (
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        fontSize: '20px',
+                                        color: '#8E8E93',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            width: '12px',
+                                            height: '12px',
+                                            borderRadius: '50%',
+                                            background: '#B490F5',
+                                        }}
+                                    />
+                                    <div style={{ display: 'flex' }}>
+                                        {publishedCount} ფოტო
+                                    </div>
+                                </div>
+                            )}
+                            {portfolio.services.length > 0 && (
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        fontSize: '20px',
+                                        color: '#8E8E93',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            width: '12px',
+                                            height: '12px',
+                                            borderRadius: '50%',
+                                            background: '#F0C060',
+                                        }}
+                                    />
+                                    <div style={{ display: 'flex' }}>
+                                        {portfolio.services.length} სერვისი
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
+                        {/* Brand */}
                         <div
                             style={{
                                 display: 'flex',
-                                fontSize: '15px',
-                                fontWeight: 700,
-                                color: '#B490F5',
-                                marginLeft: '2px',
-                                marginBottom: '6px',
+                                alignItems: 'baseline',
                             }}
                         >
-                            .GE
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    fontSize: '28px',
+                                    fontWeight: 700,
+                                    color: '#1C1C1E',
+                                }}
+                            >
+                                GLOW
+                            </div>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    fontSize: '16px',
+                                    fontWeight: 700,
+                                    color: '#B490F5',
+                                    marginLeft: '2px',
+                                    marginBottom: '6px',
+                                }}
+                            >
+                                .GE
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right panel — single hero photo */}
+                {/* Right panel — hero photo */}
                 {photos.length > 0 && (
                     <div
                         style={{
                             display: 'flex',
                             flex: 1,
-                            padding: '32px 32px 32px 0',
+                            padding: '24px 24px 24px 0',
                             position: 'relative',
                             zIndex: 1,
                         }}
@@ -455,7 +462,7 @@ export default async function OGImage({
                             <img
                                 src={photos[0]}
                                 width={400}
-                                height={566}
+                                height={582}
                                 style={{
                                     width: '100%',
                                     height: '100%',

@@ -74,7 +74,13 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
-                    onClick={() => router.back()}
+                    onClick={() => {
+                        if (window.history.length > 1) {
+                            router.back();
+                        } else {
+                            router.push('/dashboard/portfolio');
+                        }
+                    }}
                 >
                     <ArrowLeft size={16} />
                     {t('ui.text_gmmtbc')}
