@@ -19,6 +19,12 @@ const MASTER_SELECT = {
     select: {
       city: true,
       niche: true,
+      verificationStatus: true,
+      isCertified: true,
+      isHygieneVerified: true,
+      isQualityProducts: true,
+      isTopRated: true,
+      experienceYears: true,
     },
   },
   brandingProfile: {
@@ -85,7 +91,16 @@ function mapMaster(m: {
   firstName: string;
   lastName: string;
   avatar: string | null;
-  masterProfile: { city: string | null; niche: string | null } | null;
+  masterProfile: {
+    city: string | null;
+    niche: string | null;
+    verificationStatus: string;
+    isCertified: boolean;
+    isHygieneVerified: boolean;
+    isQualityProducts: boolean;
+    isTopRated: boolean;
+    experienceYears: number | null;
+  } | null;
   brandingProfile: { displayName: string | null } | null;
   portfolioItems: { id: string; imageUrl: string; title: string | null }[];
   _count: { portfolioItems: number };
@@ -96,6 +111,14 @@ function mapMaster(m: {
     avatar: m.avatar,
     city: m.masterProfile?.city ?? null,
     niche: m.masterProfile?.niche ?? null,
+    isVerified: m.masterProfile?.verificationStatus === 'VERIFIED',
+    badges: {
+      isCertified: m.masterProfile?.isCertified ?? false,
+      isHygieneVerified: m.masterProfile?.isHygieneVerified ?? false,
+      isQualityProducts: m.masterProfile?.isQualityProducts ?? false,
+      isTopRated: m.masterProfile?.isTopRated ?? false,
+    },
+    experienceYears: m.masterProfile?.experienceYears ?? null,
     portfolioImages: m.portfolioItems.map((item) => ({
       id: item.id,
       imageUrl: item.imageUrl,
@@ -112,7 +135,15 @@ export const mastersRepo = {
    * Optionally filters by niche (speciality).
    */
   async findFeaturedMasters(limit: number = 12, niche?: string) {
-    const where = buildWhere({ niche });
+    const baseWhere = buildWhere({ niche });
+
+    // Featured: only verified masters
+    const masterProfileFilter = niche
+      ? { is: { niche, verificationStatus: 'VERIFIED' } }
+      : { is: { verificationStatus: 'VERIFIED' } };
+
+    const where = { ...baseWhere, masterProfile: masterProfileFilter };
+
     const masters = await prisma.user.findMany({
       where,
       select: MASTER_SELECT,
