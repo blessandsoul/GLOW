@@ -53,13 +53,13 @@ export function HeroSearch(): React.ReactElement {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="w-full max-w-2xl"
         >
-            <div className="flex flex-col sm:flex-row items-stretch gap-3 rounded-2xl border border-border/60 bg-card/80 p-4 shadow-lg backdrop-blur-sm">
+            <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 rounded-2xl border border-border/60 bg-card/80 p-4 shadow-lg backdrop-blur-sm">
                 {/* Niche select */}
                 <Popover open={nicheOpen} onOpenChange={setNicheOpen}>
                     <PopoverTrigger asChild>
                         <button
                             type="button"
-                            className="relative flex h-11 w-full flex-1 min-w-0 items-center gap-2 rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm font-medium text-left outline-none transition-all duration-200 hover:border-border focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/30"
+                            className="relative flex h-11 w-full sm:flex-1 min-w-0 items-center gap-2 rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm font-medium text-left outline-none transition-all duration-200 hover:border-border focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/30"
                         >
                             <MagnifyingGlass size={16} weight="bold" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                             <span className={cn('truncate', !selectedNicheLabel && 'text-muted-foreground')}>
@@ -100,7 +100,7 @@ export function HeroSearch(): React.ReactElement {
                     <PopoverTrigger asChild>
                         <button
                             type="button"
-                            className="relative flex h-11 w-full flex-1 min-w-0 items-center gap-1.5 rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm font-medium text-left outline-none transition-all duration-200 hover:border-border focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/30"
+                            className="relative flex h-11 w-full sm:flex-1 min-w-0 items-center gap-1.5 rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm font-medium text-left outline-none transition-all duration-200 hover:border-border focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/30"
                         >
                             <MapPin size={16} weight="bold" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                             {cities.length === 0 ? (
