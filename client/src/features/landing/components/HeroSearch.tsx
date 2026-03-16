@@ -59,7 +59,7 @@ export function HeroSearch(): React.ReactElement {
                     <PopoverTrigger asChild>
                         <button
                             type="button"
-                            className="relative flex h-11 w-full flex-1 min-w-0 items-center gap-2 rounded-xl bg-muted/50 pl-10 pr-9 text-sm font-medium text-left outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-primary/30"
+                            className="relative flex h-9 sm:h-11 w-full flex-1 min-w-0 items-center gap-2 rounded-xl bg-muted/50 pl-10 pr-9 text-sm font-medium text-left outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-primary/30"
                         >
                             <MagnifyingGlass size={16} weight="bold" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                             <span className={cn('truncate', !selectedNicheLabel && 'text-muted-foreground')}>
@@ -100,7 +100,7 @@ export function HeroSearch(): React.ReactElement {
                     <PopoverTrigger asChild>
                         <button
                             type="button"
-                            className="relative flex h-11 w-full flex-1 min-w-0 items-center gap-1.5 rounded-xl bg-muted/50 pl-10 pr-9 text-sm font-medium text-left outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-primary/30"
+                            className="relative flex h-9 sm:h-11 w-full flex-1 min-w-0 items-center gap-1.5 rounded-xl bg-muted/50 pl-10 pr-9 text-sm font-medium text-left outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-primary/30"
                         >
                             <MapPin size={16} weight="bold" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                             {cities.length === 0 ? (
@@ -165,7 +165,7 @@ export function HeroSearch(): React.ReactElement {
                 <button
                     type="button"
                     onClick={handleSearch}
-                    className="h-11 shrink-0 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-all duration-200 hover:bg-primary/90 hover:-translate-y-px active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+                    className="h-9 sm:h-11 shrink-0 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-all duration-200 hover:bg-primary/90 hover:-translate-y-px active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
                 >
                     {t('landing.search_btn')}
                 </button>
