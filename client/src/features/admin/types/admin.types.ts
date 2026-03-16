@@ -16,6 +16,11 @@ export interface AdminUser {
     hdUpscaleCount: number;
     createdAt: string;
     dailyUsage: { used: number; limit: number } | null;
+    verificationStatus: string;
+    isCertified: boolean;
+    isHygieneVerified: boolean;
+    isQualityProducts: boolean;
+    isTopRated: boolean;
 }
 
 export interface AdminStats {

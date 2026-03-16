@@ -35,6 +35,15 @@ export const adminRepo = {
         phone: true,
         credits: true,
         createdAt: true,
+        masterProfile: {
+          select: {
+            verificationStatus: true,
+            isCertified: true,
+            isHygieneVerified: true,
+            isQualityProducts: true,
+            isTopRated: true,
+          },
+        },
         subscription: { select: { plan: true } },
         _count: { select: { jobs: true } },
       },

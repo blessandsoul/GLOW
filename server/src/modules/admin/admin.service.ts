@@ -52,6 +52,11 @@ export function createAdminService() {
         hdUpscaleCount: hdUpscaleCounts[user.id] ?? 0,
         createdAt: user.createdAt,
         dailyUsage: dailyUsageMap[user.id] ?? null,
+        verificationStatus: user.masterProfile?.verificationStatus ?? 'NONE',
+        isCertified: user.masterProfile?.isCertified ?? false,
+        isHygieneVerified: user.masterProfile?.isHygieneVerified ?? false,
+        isQualityProducts: user.masterProfile?.isQualityProducts ?? false,
+        isTopRated: user.masterProfile?.isTopRated ?? false,
       }));
 
       return { items, totalItems };

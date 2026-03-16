@@ -23,8 +23,11 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { ShieldCheck, CheckCircle, XCircle, SpinnerGap, Certificate, FirstAid, Diamond } from '@phosphor-icons/react';
 import { useAdminUsers, useAdminUserImages } from '../hooks/useAdmin';
+import { useAdminReviewVerification, useAdminSetBadge } from '@/features/verification/hooks/useVerification';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
+import { cn } from '@/lib/utils';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import type { AdminUser } from '../types/admin.types';
 
@@ -137,7 +140,85 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }): 
     );
 }
 
-function UserImagesRow({ userId, phone, isOpen }: { userId: string; phone: string | null; isOpen: boolean }): React.ReactElement | null {
+function UserVerificationActions({ user }: { user: AdminUser }): React.ReactElement {
+    const { review, isPending: isReviewing } = useAdminReviewVerification();
+    const { setBadge, isPending: isUpdatingBadge } = useAdminSetBadge();
+    const [rejectReason, setRejectReason] = useState('');
+    const [showReject, setShowReject] = useState(false);
+    const isVerified = user.verificationStatus === 'VERIFIED';
+
+    return (
+        <div className="space-y-3 rounded-lg border border-border/50 bg-card p-3">
+            <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className="text-primary" />
+                <span className="text-xs font-semibold text-foreground">Verification</span>
+                <span className={cn(
+                    'ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium',
+                    isVerified && 'bg-success/15 text-success',
+                    user.verificationStatus === 'PENDING' && 'bg-warning/15 text-warning',
+                    user.verificationStatus === 'REJECTED' && 'bg-destructive/15 text-destructive',
+                    user.verificationStatus === 'NONE' && 'bg-muted text-muted-foreground',
+                )}>
+                    {user.verificationStatus}
+                </span>
+            </div>
+
+            {!isVerified && (
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button size="sm" variant="outline" className="gap-1.5 border-success/30 text-success hover:bg-success/10" disabled={isReviewing}
+                        onClick={(e) => { e.stopPropagation(); review({ userId: user.id, approved: true }); }}>
+                        {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : <CheckCircle size={12} />}
+                        Verify
+                    </Button>
+                    {!showReject ? (
+                        <Button size="sm" variant="outline" className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10"
+                            onClick={(e) => { e.stopPropagation(); setShowReject(true); }}>
+                            <XCircle size={12} /> Reject
+                        </Button>
+                    ) : (
+                        <div className="flex w-full items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                            <input value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Rejection reason..."
+                                className="flex-1 rounded-md border border-input bg-transparent px-2 py-1 text-xs" />
+                            <Button size="sm" variant="destructive" disabled={!rejectReason.trim() || isReviewing}
+                                onClick={() => review({ userId: user.id, approved: false, rejectionReason: rejectReason })}>
+                                {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : 'Confirm'}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {isVerified && (
+                <Button size="sm" variant="outline" className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10" disabled={isReviewing}
+                    onClick={(e) => { e.stopPropagation(); review({ userId: user.id, approved: false, rejectionReason: 'Revoked by admin' }); }}>
+                    {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : <XCircle size={12} />}
+                    Revoke Verification
+                </Button>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+                {[
+                    { badge: 'isCertified' as const, icon: Certificate, label: 'Certified', active: user.isCertified },
+                    { badge: 'isHygieneVerified' as const, icon: FirstAid, label: 'Hygiene', active: user.isHygieneVerified },
+                    { badge: 'isQualityProducts' as const, icon: Diamond, label: 'Quality Products', active: user.isQualityProducts },
+                ].map(({ badge, icon: Icon, label, active }) => (
+                    <button key={badge} type="button" disabled={isUpdatingBadge}
+                        onClick={(e) => { e.stopPropagation(); setBadge({ userId: user.id, badge, value: !active }); }}
+                        className={cn(
+                            'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors duration-150',
+                            active ? 'bg-primary/15 text-primary ring-1 ring-primary/30' : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                            isUpdatingBadge && 'opacity-50 cursor-not-allowed',
+                        )}>
+                        <Icon size={12} weight={active ? 'fill' : 'regular'} />
+                        {label}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function UserImagesRow({ userId, phone, user, isOpen }: { userId: string; phone: string | null; user: AdminUser; isOpen: boolean }): React.ReactElement | null {
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -198,7 +279,8 @@ function UserImagesRow({ userId, phone, isOpen }: { userId: string; phone: strin
                     style={{ maxHeight: isOpen ? height || 'none' : 0 }}
                     onTransitionEnd={handleTransitionEnd}
                 >
-                    <div ref={contentRef} className="bg-muted/30 p-4">
+                    <div ref={contentRef} className="bg-muted/30 p-4 space-y-4">
+                        <UserVerificationActions user={user} />
                         {phone && (
                             <div className="mb-3 flex items-center gap-2 text-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -419,7 +501,7 @@ export function AdminUsersTable(): React.ReactElement {
                                             {formatDate(user.createdAt)}
                                         </TableCell>
                                     </TableRow>
-                                    <UserImagesRow userId={user.id} phone={user.phone} isOpen={expandedUserId === user.id} />
+                                    <UserImagesRow userId={user.id} phone={user.phone} user={user} isOpen={expandedUserId === user.id} />
                                 </React.Fragment>
                             ))
                         )}
