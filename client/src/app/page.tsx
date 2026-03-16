@@ -176,10 +176,10 @@ export default function HomePage(): React.ReactElement {
                         {/* Search bar */}
                         <HeroSearch />
 
-                        {/* Stats */}
-                        <div className="mt-8 flex justify-center">
+                        {/* Stats — hidden for now, uncomment when needed */}
+                        {/* <div className="mt-8 flex justify-center">
                             <HeroStats />
-                        </div>
+                        </div> */}
                     </div>
                 </section>
 
