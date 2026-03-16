@@ -1,20 +1,50 @@
 import type { MetadataRoute } from 'next';
-import { getPosts } from '@/features/blog/lib/api';
+
+import { getAllPosts } from '@/features/blog/lib/mdx';
 
 import type { BlogLocale } from '@/features/blog/types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://glow.ge';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
 
 const LOCALES: BlogLocale[] = ['ka', 'en', 'ru'];
 
+interface CatalogMaster {
+  username: string;
+  updatedAt?: string;
+}
+
+async function fetchMasters(): Promise<CatalogMaster[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/masters/catalog?limit=100`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data?.items ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // regenerate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static pages
+  // ── Static pages ──────────────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
+    },
+    {
+      url: `${BASE_URL}/masters`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     {
       url: `${BASE_URL}/login`,
@@ -28,7 +58,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.3,
     },
-    // Blog index pages
+    {
+      url: `${BASE_URL}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    {
+      url: `${BASE_URL}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    {
+      url: `${BASE_URL}/refund`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    // Blog index with alternates
     {
       url: `${BASE_URL}/blog`,
       lastModified: new Date(),
@@ -44,19 +92,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Blog posts — collect from all locales, dedupe by slug
+  // ── Blog posts ────────────────────────────────────────────────
   const slugsSeen = new Set<string>();
   const blogPages: MetadataRoute.Sitemap = [];
 
   for (const locale of LOCALES) {
-    const posts = await getPosts(locale);
+    const posts = getAllPosts(locale, ['slug', 'date']);
     for (const post of posts) {
-      if (slugsSeen.has(post.slug)) continue;
+      if (!post.slug || slugsSeen.has(post.slug)) continue;
       slugsSeen.add(post.slug);
 
       blogPages.push({
         url: `${BASE_URL}/blog/${post.slug}`,
-        lastModified: new Date(post.date),
+        lastModified: post.date ? new Date(post.date) : new Date(),
         changeFrequency: 'monthly',
         priority: 0.8,
         alternates: {
@@ -70,5 +118,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  return [...staticPages, ...blogPages];
+  // ── Masters (specialist profiles) ─────────────────────────────
+  const masters = await fetchMasters();
+  const masterPages: MetadataRoute.Sitemap = masters
+    .filter((m) => m.username)
+    .map((master) => ({
+      url: `${BASE_URL}/specialist/${master.username}`,
+      lastModified: master.updatedAt
+        ? new Date(master.updatedAt)
+        : new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+
+  return [...staticPages, ...blogPages, ...masterPages];
 }
