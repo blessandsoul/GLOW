@@ -11,6 +11,7 @@ import { AdminPortfoliosTable } from '@/features/admin/components/AdminPortfolio
 import { AdminBulkSms } from '@/features/admin/components/AdminBulkSms';
 import { AdminDecorationPool } from '@/features/admin/components/AdminDecorationPool';
 import { AdminVariablePool } from '@/features/admin/components/AdminVariablePool';
+import { AdminVerificationQueue } from '@/features/admin/components/AdminVerificationQueue';
 import { ROUTES } from '@/lib/constants/routes';
 
 function AdminPageContent(): React.ReactElement {
@@ -39,6 +40,8 @@ function AdminPageContent(): React.ReactElement {
             <h1 className="text-2xl font-semibold tracking-tight">{t('admin.title')}</h1>
 
             <AdminStatsCards stats={stats} isLoading={statsLoading} />
+
+            <AdminVerificationQueue />
 
             <AdminDecorationPool />
 
