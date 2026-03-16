@@ -1367,6 +1367,212 @@
           }
         }
       ]
+    },
+    {
+      "name": "Verification",
+      "description": "Master verification flow and admin review endpoints.",
+      "item": [
+        {
+          "name": "Get Verification State",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/state",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "state"]
+            }
+          }
+        },
+        {
+          "name": "Request Verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/verification/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "request"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"experienceYears\": 5\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            }
+          }
+        },
+        {
+          "name": "Upload ID Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/upload-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "upload-id"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "ID document image (JPEG, PNG, or WebP, max 5MB)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Certificate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/upload-certificate",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "upload-certificate"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Professional certificate image (JPEG, PNG, or WebP, max 5MB)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Hygiene Photos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/upload-hygiene",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "upload-hygiene"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": [],
+                  "description": "Hygiene workspace photos — multiple files allowed (JPEG, PNG, or WebP, max 5MB each)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Quality Products Photos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/upload-quality-products",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "upload-quality-products"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": [],
+                  "description": "Quality products photos — multiple files allowed (JPEG, PNG, or WebP, max 5MB each)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin — Get Pending Verifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/admin/pending?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "admin", "pending"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin — Get All Verifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/verification/admin/all?page=1&limit=10&status=PENDING",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "admin", "all"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "PENDING" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin — Review Verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/verification/admin/{{userId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "admin", "{{userId}}", "review"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"approve\"\n}\n\n// To reject:\n// {\n//   \"action\": \"reject\",\n//   \"rejectionReason\": \"ID document is not readable\"\n// }",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            }
+          }
+        },
+        {
+          "name": "Admin — Set Badge",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/verification/admin/{{userId}}/badge",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "admin", "{{userId}}", "badge"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"badge\": \"isCertified\",\n  \"granted\": true\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }
