@@ -3,6 +3,7 @@
 import { SealCheck, Certificate, FirstAid, Diamond, Star } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { MasterBadges } from '../types/masters.types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,40 +49,41 @@ function BadgeItem({ icon: IconComponent, label, colorClass, size }: BadgeItemPr
 // ─── Master Badges Row ────────────────────────────────────────────────────────
 
 export function MasterBadgesRow({ isVerified, badges, size = 'sm' }: MasterBadgesRowProps): React.ReactElement | null {
+    const { t } = useLanguage();
     const activeBadges: { icon: Icon; label: string; colorClass: string }[] = [];
 
     if (isVerified) {
         activeBadges.push({
             icon: SealCheck,
-            label: 'Identity verified by Glow.GE',
+            label: t('masters.badge_verified'),
             colorClass: 'bg-primary/15 text-primary',
         });
     }
     if (badges?.isCertified) {
         activeBadges.push({
             icon: Certificate,
-            label: 'Has a professional certificate',
+            label: t('masters.badge_certified'),
             colorClass: 'bg-primary/15 text-primary',
         });
     }
     if (badges?.isHygieneVerified) {
         activeBadges.push({
             icon: FirstAid,
-            label: 'Workspace hygiene verified by Glow.GE',
+            label: t('masters.badge_hygiene'),
             colorClass: 'bg-success/15 text-success',
         });
     }
     if (badges?.isQualityProducts) {
         activeBadges.push({
             icon: Diamond,
-            label: 'Uses verified quality products',
+            label: t('masters.badge_quality_products'),
             colorClass: 'bg-info/15 text-info',
         });
     }
     if (badges?.isTopRated) {
         activeBadges.push({
             icon: Star,
-            label: 'Top rated: 4.5+ with 10+ reviews',
+            label: t('masters.badge_top_rated'),
             colorClass: 'bg-warning/15 text-warning',
         });
     }

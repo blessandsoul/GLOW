@@ -969,7 +969,12 @@
     "view_portfolio": "View portfolio",
     "view_all": "View all",
     "all_categories": "All",
-    "no_results": "No masters found in this category"
+    "no_results": "No masters found in this category",
+    "badge_verified": "Identity verified by Glow.GE",
+    "badge_certified": "Has a professional certificate",
+    "badge_hygiene": "Workspace hygiene verified by Glow.GE",
+    "badge_quality_products": "Uses verified quality products",
+    "badge_top_rated": "Top rated: 4.5+ with 10+ reviews"
   },
   "catalog": {
     "title": "Find a Master",

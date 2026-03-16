@@ -54,17 +54,20 @@ function formatDate(dateString: string): string {
 
 function UserAvatar({ user }: { user: AdminUser }): React.ReactElement {
     const initials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
+    const [imgError, setImgError] = useState(false);
+    const avatarUrl = user.avatar ? getServerImageUrl(user.avatar) : null;
 
     return (
         <div className="flex items-center gap-3">
-            {user.avatar ? (
+            {avatarUrl && !imgError ? (
                 <img
-                    src={user.avatar}
+                    src={avatarUrl}
                     alt=""
                     className="h-8 w-8 rounded-full object-cover"
+                    onError={() => setImgError(true)}
                 />
             ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                     {initials}
                 </div>
             )}
