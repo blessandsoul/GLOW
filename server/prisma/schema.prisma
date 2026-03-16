@@ -203,8 +203,28 @@ model MasterProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Verification
+  verificationStatus  String    @default("NONE")  // NONE, PENDING, VERIFIED, REJECTED
+  idDocumentUrl       String?   @db.VarChar(1000)
+  rejectionReason     String?   @db.VarChar(500)
+  verifiedAt          DateTime?
+  verifiedBy          String?
+
+  // Tier 2 badges
+  certificateUrl      String?   @db.VarChar(1000)
+  hygienePicsUrl      Json?
+  qualityProductsUrl  Json?
+  experienceYears     Int?
+
+  // Badge statuses (admin-approved)
+  isCertified         Boolean @default(false)
+  isHygieneVerified   Boolean @default(false)
+  isQualityProducts   Boolean @default(false)
+  isTopRated          Boolean @default(false)  // Auto-set when 4.5+ avg, 10+ reviews
+
   user User @relation(fields: [userId], references: [id])
 
+  @@index([verificationStatus])
   @@map("master_profiles")
 }
 
