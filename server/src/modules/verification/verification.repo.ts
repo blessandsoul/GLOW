@@ -151,7 +151,9 @@ export const verificationRepo = {
 
   async findAllVerificationRequests(page: number, limit: number, status?: string) {
     const skip = (page - 1) * limit;
-    const where = status ? { verificationStatus: status } : {};
+    const where = status
+      ? { verificationStatus: status }
+      : { verificationStatus: { not: 'NONE' } };
 
     const [items, totalItems] = await Promise.all([
       prisma.masterProfile.findMany({

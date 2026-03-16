@@ -135,14 +135,20 @@ export const mastersRepo = {
    * Optionally filters by niche (speciality).
    */
   async findFeaturedMasters(limit: number = 12, niche?: string) {
-    const baseWhere = buildWhere({ niche });
-
-    // Featured: only verified masters
-    const masterProfileFilter = niche
-      ? { is: { niche, verificationStatus: 'VERIFIED' } }
-      : { is: { verificationStatus: 'VERIFIED' } };
-
-    const where = { ...baseWhere, masterProfile: masterProfileFilter };
+    const where: Prisma.UserWhereInput = {
+      isActive: true,
+      deletedAt: null,
+      username: { not: null },
+      masterProfile: {
+        is: {
+          verificationStatus: 'VERIFIED',
+          ...(niche ? { niche } : {}),
+        },
+      },
+      portfolioItems: {
+        some: { isPublished: true },
+      },
+    };
 
     const masters = await prisma.user.findMany({
       where,
