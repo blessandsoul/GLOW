@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Briefcase, UsersThree, SignOut } from '@phosphor-icons/react';
 import { PersonalInfoSection } from '@/features/profile/components/ProfileSetup';
 import { AccountStatus } from '@/features/profile/components/AccountStatus';
+import { VerificationSection } from '@/features/verification/components/VerificationSection';
 import { ChangePassword } from '@/features/profile/components/ChangePassword';
 import { DeleteAccount } from '@/features/profile/components/DeleteAccount';
 import { ROUTES } from '@/lib/constants/routes';
@@ -45,7 +46,10 @@ export default function ProfilePage(): React.ReactElement {
             {/* 1. Account status — role, email, member since */}
             <AccountStatus />
 
-            {/* 2. Personal info — avatar, name */}
+            {/* 2. Verification status (masters only) */}
+            <VerificationSection />
+
+            {/* 3. Personal info — avatar, name */}
             <PersonalInfoSection />
 
             {/* 3. Portfolio CTA */}
