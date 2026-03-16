@@ -118,7 +118,7 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                         variant="outline"
                         className="gap-1.5 border-success/30 text-success hover:bg-success/10"
                         disabled={isReviewing}
-                        onClick={(e) => { e.stopPropagation(); review({ userId: user.userId, action: 'approve' }); }}
+                        onClick={(e) => { e.stopPropagation(); review({ userId: user.userId, approved: true }); }}
                     >
                         {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : <CheckCircle size={12} />}
                         Approve
@@ -145,7 +145,7 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                                 size="sm"
                                 variant="destructive"
                                 disabled={!rejectReason.trim() || isReviewing}
-                                onClick={() => review({ userId: user.userId, action: 'reject', rejectionReason: rejectReason })}
+                                onClick={() => review({ userId: user.userId, approved: false, rejectionReason: rejectReason })}
                             >
                                 {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : 'Confirm'}
                             </Button>
