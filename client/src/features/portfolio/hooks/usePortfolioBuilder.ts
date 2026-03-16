@@ -30,6 +30,7 @@ export function usePortfolioBuilder() {
         return {
             city: profile.city ?? '',
             niche: profile.niche ?? '',
+            workAddress: profile.workAddress ?? '',
             bio: profile.bio ?? '',
             phone: profile.phone ?? '',
             whatsapp: profile.whatsapp ?? '',
