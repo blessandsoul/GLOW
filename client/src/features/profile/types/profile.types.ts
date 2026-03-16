@@ -3,6 +3,7 @@ export interface MasterProfile {
     userId: string;
     city: string | null;
     niche: string | null;
+    workAddress: string | null;
     services: ServiceItem[] | null;
     bio: string | null;
     phone: string | null;
@@ -26,6 +27,7 @@ export interface ServiceItem {
 export interface ProfileFormData {
     city: string;
     niche: string;
+    workAddress: string;
     bio: string;
     phone: string;
     whatsapp: string;
@@ -49,6 +51,7 @@ export interface ServiceCategory {
 export const DEFAULT_PROFILE: ProfileFormData = {
     city: '',
     niche: '',
+    workAddress: '',
     bio: '',
     phone: '',
     whatsapp: '',

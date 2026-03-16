@@ -192,10 +192,11 @@ model Review {
 model MasterProfile {
   id        String   @id @default(uuid())
   userId    String   @unique
-  city      String?
-  niche     String?
-  services  Json?
-  bio       String?  @db.Text
+  city        String?
+  niche       String?
+  workAddress String?  @db.VarChar(500)
+  services    Json?
+  bio         String?  @db.Text
   phone     String?
   whatsapp  String?
   telegram  String?

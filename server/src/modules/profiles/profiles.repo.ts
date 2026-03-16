@@ -6,6 +6,7 @@ const PROFILE_SELECT = {
   userId: true,
   city: true,
   niche: true,
+  workAddress: true,
   bio: true,
   phone: true,
   whatsapp: true,

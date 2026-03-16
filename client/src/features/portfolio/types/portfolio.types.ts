@@ -41,9 +41,18 @@ export interface PublicPortfolioData {
     telegram: string | null;
     city: string | null;
     niche: string | null;
+    workAddress: string | null;
     services: { name: string; price: number; priceType?: 'fixed' | 'hourly'; startingFrom?: boolean }[];
     items: PortfolioItem[];
     reviews: PublicReview[];
     reviewsCount: number;
     averageRating: number;
+    isVerified?: boolean;
+    badges?: {
+        isCertified: boolean;
+        isHygieneVerified: boolean;
+        isQualityProducts: boolean;
+        isTopRated: boolean;
+    };
+    experienceYears?: number | null;
 }

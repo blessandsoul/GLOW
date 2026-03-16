@@ -10,6 +10,7 @@ const ServiceItemSchema = z.object({
 export const UpdateProfileSchema = z.object({
   city: z.string().max(100).optional(),
   niche: z.string().max(100).optional(),
+  workAddress: z.string().max(500).optional(),
   bio: z.string().max(2000).optional(),
   phone: z.string().max(20).optional(),
   whatsapp: z.string().max(20).optional(),

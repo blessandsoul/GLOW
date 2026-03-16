@@ -94,6 +94,7 @@ export function ProfileSetup(): React.ReactElement {
             setForm({
                 city: profile.city ?? '',
                 niche: profile.niche ?? '',
+                workAddress: profile.workAddress ?? '',
                 bio: profile.bio ?? '',
                 phone: profile.phone ?? '',
                 whatsapp: profile.whatsapp ?? '',
@@ -211,6 +212,17 @@ export function ProfileSetup(): React.ReactElement {
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <Label htmlFor="workAddress" className="text-xs text-muted-foreground">Work Location</Label>
+                    <Input
+                        id="workAddress"
+                        value={form.workAddress}
+                        onChange={(e) => handleChange('workAddress', e.target.value)}
+                        placeholder="e.g. Chavchavadze Ave 12, Tbilisi"
+                    />
+                    <p className="text-[11px] text-muted-foreground">Where clients can find you (studio, salon, or home address)</p>
                 </div>
 
                 <div className="space-y-1.5">

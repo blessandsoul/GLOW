@@ -10,6 +10,7 @@ import { useAppSelector } from '@/store/hooks';
 import { usePublicPortfolio } from '../hooks/usePortfolio';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { MasterBadgesRow } from '@/features/masters/components/MasterBadges';
 import { ImageLightbox } from './ImageLightbox';
 import { ReviewsSection } from './ReviewsSection';
 import { ReviewForm } from '@/features/reviews/components/ReviewForm';
@@ -104,17 +105,28 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     </div>
                 )}
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
-                    <div className="mt-1 flex items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
+                        <MasterBadgesRow isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
                         {portfolio.city && (
                             <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <MapPin size={14} />
                                 {portfolio.city}
                             </span>
                         )}
-                        {portfolio.reviewsCount > 0 && (
+                        {portfolio.workAddress && (
                             <>
                                 {portfolio.city && <span className="text-border">·</span>}
+                                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                                    {portfolio.workAddress}
+                                </span>
+                            </>
+                        )}
+                        {portfolio.reviewsCount > 0 && (
+                            <>
+                                {(portfolio.city || portfolio.workAddress) && <span className="text-border">·</span>}
                                 <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                     <Star size={14} weight="fill" className="text-warning" />
                                     <span className="font-medium text-foreground">{portfolio.averageRating.toFixed(1)}</span>
