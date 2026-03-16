@@ -12,7 +12,7 @@ import {
     Article,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ROUTES } from '@/lib/constants/routes';
 import { Logo } from './Logo';
 import { LanguageSwitcher, LANGUAGES } from './LanguageSwitcher';
@@ -242,12 +242,12 @@ export function Header(): React.ReactElement {
                 {/* Desktop Navigation */}
                 <nav className="hidden items-center gap-0.5 md:flex">
                     {!mounted || isInitializing ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 transition-opacity duration-300">
                             <div className="h-4 w-20 animate-pulse rounded bg-muted" />
                             <div className="h-4 w-16 animate-pulse rounded bg-muted" />
                         </div>
                     ) : isAuthenticated ? (
-                        <>
+                        <div className="flex items-center gap-0.5 animate-in fade-in slide-in-from-right-2 duration-300 ease-out">
                             {/* Create CTA — always first, always prominent */}
                             <Link
                                 href={ROUTES.CREATE}
@@ -334,16 +334,16 @@ export function Header(): React.ReactElement {
                             <Button variant="ghost" size="sm" className="text-xs" onClick={logout}>
                                 {t('auth.logout')}
                             </Button>
-                        </>
+                        </div>
                     ) : (
-                        <>
+                        <div className="flex items-center gap-0.5 animate-in fade-in slide-in-from-left-2 duration-300 ease-out">
                             <Button variant="ghost" size="sm" asChild>
                                 <Link href="/login">{t('auth.login')}</Link>
                             </Button>
                             <Button size="sm" asChild>
                                 <Link href="/register">{t('auth.register')}</Link>
                             </Button>
-                        </>
+                        </div>
                     )}
                     <Link
                         href={ROUTES.BLOG}

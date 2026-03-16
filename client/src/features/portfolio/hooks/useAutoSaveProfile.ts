@@ -17,9 +17,12 @@ export function useAutoSaveProfile(initialData: ProfileFormData): {
 } {
     const [form, setForm] = useState<ProfileFormData>(initialData);
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-    const debouncedForm = useDebounce(form, 1500);
+    const [saveCounter, setSaveCounter] = useState(0);
+    const debouncedForm = useDebounce(form, 800);
     const lastSavedRef = useRef<string>(JSON.stringify(initialData));
     const isInitialMount = useRef(true);
+    const formRef = useRef(form);
+    formRef.current = form;
 
     // Sync when initial data changes (e.g., after fetch)
     useEffect(() => {
@@ -28,55 +31,55 @@ export function useAutoSaveProfile(initialData: ProfileFormData): {
         isInitialMount.current = true;
     }, [initialData]);
 
-    // Auto-save on debounced changes
-    useEffect(() => {
-        if (isInitialMount.current) {
-            isInitialMount.current = false;
-            return;
-        }
-
-        const currentJson = JSON.stringify(debouncedForm);
+    // Save function
+    const doSave = useCallback(async (dataToSave: ProfileFormData): Promise<void> => {
+        const currentJson = JSON.stringify(dataToSave);
         if (currentJson === lastSavedRef.current) return;
 
-        let cancelled = false;
-        const doSave = async (): Promise<void> => {
-            setSaveStatus('saving');
-            try {
-                await profileService.saveProfile(debouncedForm);
-                if (!cancelled) {
-                    lastSavedRef.current = currentJson;
-                    setSaveStatus('saved');
-                    setTimeout(() => {
-                        if (!cancelled) setSaveStatus('idle');
-                    }, 2000);
-                }
-            } catch (error) {
-                if (!cancelled) {
-                    setSaveStatus('error');
-                    toast.error(getErrorMessage(error));
-                }
-            }
-        };
-        doSave();
-        return () => { cancelled = true; };
-    }, [debouncedForm]);
-
-    const updateField = useCallback(<K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]): void => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-    }, []);
-
-    const saveNow = useCallback(async (): Promise<void> => {
         setSaveStatus('saving');
         try {
-            await profileService.saveProfile(form);
-            lastSavedRef.current = JSON.stringify(form);
+            await profileService.saveProfile(dataToSave);
+            lastSavedRef.current = currentJson;
             setSaveStatus('saved');
             setTimeout(() => setSaveStatus('idle'), 2000);
         } catch (error) {
             setSaveStatus('error');
             toast.error(getErrorMessage(error));
         }
-    }, [form]);
+    }, []);
+
+    // Auto-save on debounced changes
+    useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+        doSave(debouncedForm);
+    }, [debouncedForm, doSave]);
+
+    // Immediate save triggered by saveCounter (for select/dropdown changes)
+    useEffect(() => {
+        if (saveCounter === 0) return;
+        doSave(formRef.current);
+    }, [saveCounter, doSave]);
+
+    const updateField = useCallback(<K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]): void => {
+        setForm((prev) => {
+            const next = { ...prev, [key]: value };
+
+            // Trigger immediate save for discrete fields (selects, not text typing)
+            if (key === 'city' || key === 'niche') {
+                // Use a counter bump to trigger the immediate save effect
+                setTimeout(() => setSaveCounter((c) => c + 1), 0);
+            }
+
+            return next;
+        });
+    }, []);
+
+    const saveNow = useCallback(async (): Promise<void> => {
+        await doSave(formRef.current);
+    }, [doSave]);
 
     return { form, updateField, saveStatus, saveNow };
 }
