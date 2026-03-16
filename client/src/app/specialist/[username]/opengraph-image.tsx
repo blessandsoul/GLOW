@@ -58,6 +58,13 @@ interface PortfolioData {
     reviewsCount: number;
     services: { name: string; price: number; priceType?: 'fixed' | 'hourly'; startingFrom?: boolean }[];
     items: { imageUrl: string; isPublished: boolean }[];
+    isVerified?: boolean;
+    badges?: {
+        isCertified: boolean;
+        isHygieneVerified: boolean;
+        isQualityProducts: boolean;
+        isTopRated: boolean;
+    };
 }
 
 interface PortfolioResponse {
@@ -202,13 +209,61 @@ export default async function OGImage({
                             <div
                                 style={{
                                     display: 'flex',
-                                    fontSize: '42px',
-                                    fontWeight: 700,
-                                    color: '#1C1C1E',
-                                    lineHeight: 1.1,
+                                    alignItems: 'center',
+                                    gap: '10px',
                                 }}
                             >
-                                {portfolio.displayName}
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        fontSize: '42px',
+                                        fontWeight: 700,
+                                        color: '#1C1C1E',
+                                        lineHeight: 1.1,
+                                    }}
+                                >
+                                    {portfolio.displayName}
+                                </div>
+                                {portfolio.isVerified && (
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            marginLeft: '4px',
+                                        }}
+                                    >
+                                        {/* Verified checkmark */}
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                width: '28px',
+                                                height: '28px',
+                                                borderRadius: '50%',
+                                                background: '#B490F5',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: '#fff',
+                                                fontSize: '16px',
+                                                fontWeight: 700,
+                                            }}
+                                        >
+                                            &#10003;
+                                        </div>
+                                        {portfolio.badges?.isCertified && (
+                                            <div style={{ display: 'flex', width: '22px', height: '22px', borderRadius: '50%', background: '#B490F5' }} />
+                                        )}
+                                        {portfolio.badges?.isHygieneVerified && (
+                                            <div style={{ display: 'flex', width: '22px', height: '22px', borderRadius: '50%', background: '#34C759' }} />
+                                        )}
+                                        {portfolio.badges?.isQualityProducts && (
+                                            <div style={{ display: 'flex', width: '22px', height: '22px', borderRadius: '50%', background: '#5AC8FA' }} />
+                                        )}
+                                        {portfolio.badges?.isTopRated && (
+                                            <div style={{ display: 'flex', width: '22px', height: '22px', borderRadius: '50%', background: '#F0C060' }} />
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             {(portfolio.niche || portfolio.city) && (
                                 <div
