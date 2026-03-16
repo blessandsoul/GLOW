@@ -108,6 +108,18 @@ export const API_ENDPOINTS = {
         FEATURED: '/masters/featured',
         CATALOG: '/masters/catalog',
     },
+    VERIFICATION: {
+        STATE: '/verification/state',
+        REQUEST: '/verification/request',
+        UPLOAD_ID: '/verification/upload-id',
+        UPLOAD_CERTIFICATE: '/verification/upload-certificate',
+        UPLOAD_HYGIENE: '/verification/upload-hygiene',
+        UPLOAD_QUALITY_PRODUCTS: '/verification/upload-quality-products',
+        ADMIN_PENDING: '/verification/admin/pending',
+        ADMIN_ALL: '/verification/admin/all',
+        ADMIN_REVIEW: (userId: string) => `/verification/admin/${userId}/review`,
+        ADMIN_BADGE: (userId: string) => `/verification/admin/${userId}/badge`,
+    },
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',
         SERVICE_CATEGORIES: '/catalog/service-categories',
