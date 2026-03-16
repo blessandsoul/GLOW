@@ -8,6 +8,7 @@ import {
     MapPin, ArrowRight, MagnifyingGlass, X, CaretLeft, CaretRight,
     Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle, SquaresFour,
     SlidersHorizontal, UsersFour,
+    SealCheck, Certificate, FirstAid, Diamond, Star,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -15,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useMastersCatalog } from '../hooks/useMastersCatalog';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
 import { getCityOptions, getCityLabel } from '@/lib/constants/cities';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
@@ -43,6 +45,13 @@ export function MastersCatalog(): React.ReactElement {
     const [selectedNiche, setSelectedNiche] = useState<string | undefined>(searchParams.get('niche') ?? undefined);
     const [city, setCity] = useState(searchParams.get('city') ?? '');
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+    const [badgeFilters, setBadgeFilters] = useState({
+        isVerified: searchParams.get('isVerified') === 'true',
+        isCertified: searchParams.get('isCertified') === 'true',
+        isHygieneVerified: searchParams.get('isHygieneVerified') === 'true',
+        isQualityProducts: searchParams.get('isQualityProducts') === 'true',
+        isTopRated: searchParams.get('isTopRated') === 'true',
+    });
 
     const debouncedSearch = useDebounce(searchInput, 400);
 
@@ -52,9 +61,14 @@ export function MastersCatalog(): React.ReactElement {
         if (selectedNiche) params.set('niche', selectedNiche);
         if (city) params.set('city', city);
         if (page > 1) params.set('page', String(page));
+        if (badgeFilters.isVerified) params.set('isVerified', 'true');
+        if (badgeFilters.isCertified) params.set('isCertified', 'true');
+        if (badgeFilters.isHygieneVerified) params.set('isHygieneVerified', 'true');
+        if (badgeFilters.isQualityProducts) params.set('isQualityProducts', 'true');
+        if (badgeFilters.isTopRated) params.set('isTopRated', 'true');
         const qs = params.toString();
         router.replace(qs ? `${ROUTES.MASTERS}?${qs}` : ROUTES.MASTERS, { scroll: false });
-    }, [debouncedSearch, selectedNiche, city, page, router]);
+    }, [debouncedSearch, selectedNiche, city, page, badgeFilters, router]);
 
     const { masters, pagination, isLoading, isFetching } = useMastersCatalog({
         search: debouncedSearch || undefined,
@@ -62,6 +76,11 @@ export function MastersCatalog(): React.ReactElement {
         city: city || undefined,
         page,
         limit: 12,
+        ...(badgeFilters.isVerified && { isVerified: true }),
+        ...(badgeFilters.isCertified && { isCertified: true }),
+        ...(badgeFilters.isHygieneVerified && { isHygieneVerified: true }),
+        ...(badgeFilters.isQualityProducts && { isQualityProducts: true }),
+        ...(badgeFilters.isTopRated && { isTopRated: true }),
     });
 
     const handleNicheChange = useCallback((niche: string | undefined): void => {
@@ -79,15 +98,22 @@ export function MastersCatalog(): React.ReactElement {
         setPage(1);
     }, []);
 
+    const handleBadgeToggle = useCallback((key: keyof typeof badgeFilters): void => {
+        setBadgeFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+        setPage(1);
+    }, []);
+
     const clearFilters = useCallback((): void => {
         setSearchInput('');
         setSelectedNiche(undefined);
         setCity('');
+        setBadgeFilters({ isVerified: false, isCertified: false, isHygieneVerified: false, isQualityProducts: false, isTopRated: false });
         setPage(1);
     }, []);
 
-    const hasActiveFilters = !!debouncedSearch || !!selectedNiche || !!city;
-    const activeFilterCount = [debouncedSearch, selectedNiche, city].filter(Boolean).length;
+    const activeBadgeCount = Object.values(badgeFilters).filter(Boolean).length;
+    const hasActiveFilters = !!debouncedSearch || !!selectedNiche || !!city || activeBadgeCount > 0;
+    const activeFilterCount = [debouncedSearch, selectedNiche, city].filter(Boolean).length + activeBadgeCount;
 
     return (
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
@@ -203,6 +229,48 @@ export function MastersCatalog(): React.ReactElement {
                         );
                     })}
                 </div>
+
+                {/* Badge filters */}
+                <div
+                    className="flex gap-2 mt-3 pt-3 border-t border-border/40 overflow-x-auto scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    <BadgeFilterChip
+                        checked={badgeFilters.isVerified}
+                        onToggle={() => handleBadgeToggle('isVerified')}
+                        icon={SealCheck}
+                        label={t('catalog.filter_verified')}
+                        colorClass="text-primary"
+                    />
+                    <BadgeFilterChip
+                        checked={badgeFilters.isCertified}
+                        onToggle={() => handleBadgeToggle('isCertified')}
+                        icon={Certificate}
+                        label={t('catalog.filter_certified')}
+                        colorClass="text-primary"
+                    />
+                    <BadgeFilterChip
+                        checked={badgeFilters.isHygieneVerified}
+                        onToggle={() => handleBadgeToggle('isHygieneVerified')}
+                        icon={FirstAid}
+                        label={t('catalog.filter_hygiene')}
+                        colorClass="text-success"
+                    />
+                    <BadgeFilterChip
+                        checked={badgeFilters.isQualityProducts}
+                        onToggle={() => handleBadgeToggle('isQualityProducts')}
+                        icon={Diamond}
+                        label={t('catalog.filter_quality')}
+                        colorClass="text-info"
+                    />
+                    <BadgeFilterChip
+                        checked={badgeFilters.isTopRated}
+                        onToggle={() => handleBadgeToggle('isTopRated')}
+                        icon={Star}
+                        label={t('catalog.filter_top_rated')}
+                        colorClass="text-warning"
+                    />
+                </div>
             </motion.div>
 
             {/* Results bar */}
@@ -276,6 +344,39 @@ function NicheChip({ isActive, onClick, icon: IconComponent, label }: NicheChipP
             )}
         >
             <IconComponent size={15} weight={isActive ? 'fill' : 'regular'} />
+            {label}
+        </button>
+    );
+}
+
+// ─── Badge Filter Chip ──────────────────────────────────────────────────────
+
+interface BadgeFilterChipProps {
+    checked: boolean;
+    onToggle: () => void;
+    icon: Icon;
+    label: string;
+    colorClass: string;
+}
+
+function BadgeFilterChip({ checked, onToggle, icon: IconComponent, label, colorClass }: BadgeFilterChipProps): React.ReactElement {
+    return (
+        <button
+            type="button"
+            onClick={onToggle}
+            className={cn(
+                'shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all duration-200 cursor-pointer border',
+                checked
+                    ? 'bg-primary/8 text-foreground border-primary/40 shadow-sm'
+                    : 'bg-background text-muted-foreground border-border/50 hover:border-border hover:text-foreground',
+            )}
+        >
+            <Checkbox
+                checked={checked}
+                className="pointer-events-none h-3.5 w-3.5 rounded-[4px] border-muted-foreground/40 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                tabIndex={-1}
+            />
+            <IconComponent size={14} weight={checked ? 'fill' : 'regular'} className={checked ? colorClass : ''} />
             {label}
         </button>
     );

@@ -1027,7 +1027,12 @@
     "prev_page": "წინა გვერდი",
     "next_page": "შემდეგი გვერდი",
     "empty_title": "ოსტატები ვერ მოიძებნა",
-    "empty_description": "სცადეთ საძიებო სიტყვის ან ფილტრების შეცვლა"
+    "empty_description": "სცადეთ საძიებო სიტყვის ან ფილტრების შეცვლა",
+    "filter_verified": "ვერიფიცირებული",
+    "filter_certified": "სერთიფიცირებული",
+    "filter_hygiene": "ჰიგიენა შემოწმებული",
+    "filter_quality": "ხარისხიანი პროდუქცია",
+    "filter_top_rated": "ტოპ რეიტინგი"
   },
   "landing": {
     "categories_title": "რას ეძებთ?",

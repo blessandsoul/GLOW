@@ -192,7 +192,7 @@ model Review {
 model MasterProfile {
   id        String   @id @default(uuid())
   userId    String   @unique
-  city        String?
+  city        String?  @default("tbilisi")
   niche       String?
   workAddress String?  @db.VarChar(500)
   services    Json?

@@ -990,7 +990,12 @@
     "prev_page": "Previous page",
     "next_page": "Next page",
     "empty_title": "No masters found",
-    "empty_description": "Try adjusting your search or filters to find what you're looking for"
+    "empty_description": "Try adjusting your search or filters to find what you're looking for",
+    "filter_verified": "Verified",
+    "filter_certified": "Certified",
+    "filter_hygiene": "Hygiene verified",
+    "filter_quality": "Quality products",
+    "filter_top_rated": "Top rated"
   },
   "landing": {
     "categories_title": "What are you looking for?",

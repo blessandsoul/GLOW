@@ -990,7 +990,12 @@
     "prev_page": "Предыдущая страница",
     "next_page": "Следующая страница",
     "empty_title": "Мастера не найдены",
-    "empty_description": "Попробуйте изменить запрос или фильтры"
+    "empty_description": "Попробуйте изменить запрос или фильтры",
+    "filter_verified": "Верифицированные",
+    "filter_certified": "Сертифицированные",
+    "filter_hygiene": "Гигиена проверена",
+    "filter_quality": "Качественная продукция",
+    "filter_top_rated": "Топ рейтинг"
   },
   "landing": {
     "categories_title": "Что вы ищете?",

@@ -7,6 +7,11 @@ export interface CatalogFilters {
   search?: string;
   page: number;
   limit: number;
+  isVerified?: boolean;
+  isCertified?: boolean;
+  isHygieneVerified?: boolean;
+  isQualityProducts?: boolean;
+  isTopRated?: boolean;
 }
 
 const MASTER_SELECT = {
@@ -55,14 +60,23 @@ function buildWhere(opts?: {
   niche?: string;
   city?: string;
   search?: string;
+  isVerified?: boolean;
+  isCertified?: boolean;
+  isHygieneVerified?: boolean;
+  isQualityProducts?: boolean;
+  isTopRated?: boolean;
 }): Prisma.UserWhereInput {
-  const masterProfileFilter: Prisma.MasterProfileNullableScalarRelationFilter = opts?.niche || opts?.city
-    ? {
-        is: {
-          ...(opts?.niche ? { niche: opts.niche } : {}),
-          ...(opts?.city ? { city: { contains: opts.city } } : {}),
-        },
-      }
+  const profileConditions: Record<string, unknown> = {};
+  if (opts?.niche) profileConditions.niche = opts.niche;
+  if (opts?.city) profileConditions.city = { contains: opts.city };
+  if (opts?.isVerified) profileConditions.verificationStatus = 'VERIFIED';
+  if (opts?.isCertified) profileConditions.isCertified = true;
+  if (opts?.isHygieneVerified) profileConditions.isHygieneVerified = true;
+  if (opts?.isQualityProducts) profileConditions.isQualityProducts = true;
+  if (opts?.isTopRated) profileConditions.isTopRated = true;
+
+  const masterProfileFilter: Prisma.MasterProfileNullableScalarRelationFilter = Object.keys(profileConditions).length > 0
+    ? { is: profileConditions }
     : { isNot: null };
 
   const where: Prisma.UserWhereInput = {
@@ -164,9 +178,9 @@ export const mastersRepo = {
    * Find masters for the public catalog with search, filters, and pagination.
    */
   async findCatalogMasters(filters: CatalogFilters) {
-    const { niche, city, search, page, limit } = filters;
+    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated } = filters;
     const offset = (page - 1) * limit;
-    const where = buildWhere({ niche, city, search });
+    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated });
 
     const [masters, totalItems] = await Promise.all([
       prisma.user.findMany({

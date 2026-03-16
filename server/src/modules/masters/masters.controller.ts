@@ -9,12 +9,22 @@ const FeaturedQuerySchema = z.object({
   niche: z.string().optional(),
 });
 
+const booleanFromQuery = z.preprocess(
+  (v) => v === 'true' || v === '1' ? true : v === 'false' || v === '0' ? false : undefined,
+  z.boolean().optional(),
+);
+
 const CatalogQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(12),
   niche: z.string().optional(),
   city: z.string().optional(),
   search: z.string().optional(),
+  isVerified: booleanFromQuery,
+  isCertified: booleanFromQuery,
+  isHygieneVerified: booleanFromQuery,
+  isQualityProducts: booleanFromQuery,
+  isTopRated: booleanFromQuery,
 });
 
 export function createMastersController(mastersService: MastersService) {
@@ -26,13 +36,18 @@ export function createMastersController(mastersService: MastersService) {
     },
 
     async getCatalog(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-      const { page, limit, niche, city, search } = CatalogQuerySchema.parse(request.query);
+      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated } = CatalogQuerySchema.parse(request.query);
       const { items, totalItems } = await mastersService.getCatalogMasters({
         page,
         limit,
         niche,
         city,
         search,
+        isVerified,
+        isCertified,
+        isHygieneVerified,
+        isQualityProducts,
+        isTopRated,
       });
       reply.send(paginatedResponse('Masters catalog retrieved', items, page, limit, totalItems));
     },

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { SealCheck, Certificate, FirstAid, Diamond, Star } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,7 @@ interface BadgeItemProps {
 function BadgeItem({ icon: IconComponent, label, colorClass, size }: BadgeItemProps): React.ReactElement {
     const [showTooltip, setShowTooltip] = useState(false);
     const ref = useRef<HTMLButtonElement>(null);
+    const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
     const iconSize = size === 'sm' ? 11 : 13;
     const containerSize = size === 'sm' ? 'h-5 w-5' : 'h-6 w-6';
 
@@ -37,7 +39,13 @@ function BadgeItem({ icon: IconComponent, label, colorClass, size }: BadgeItemPr
     }, []);
 
     useEffect(() => {
-        if (!showTooltip) return;
+        if (!showTooltip || !ref.current) return;
+
+        const rect = ref.current.getBoundingClientRect();
+        setTooltipPos({
+            top: rect.top - 6,
+            left: rect.left + rect.width / 2,
+        });
 
         const handleOutside = (e: MouseEvent | TouchEvent): void => {
             if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -74,15 +82,16 @@ function BadgeItem({ icon: IconComponent, label, colorClass, size }: BadgeItemPr
             >
                 <IconComponent size={iconSize} weight="fill" />
             </div>
-            <div
-                className={cn(
-                    'pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-[10px] font-medium text-background transition-opacity duration-150 z-50',
-                    showTooltip ? 'opacity-100' : 'opacity-0 group-hover/badge:opacity-100',
-                )}
-            >
-                {label}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-foreground" />
-            </div>
+            {showTooltip && tooltipPos && createPortal(
+                <div
+                    className="pointer-events-none fixed z-9999 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-[10px] font-medium text-background animate-in fade-in duration-150"
+                    style={{ top: tooltipPos.top, left: tooltipPos.left }}
+                >
+                    {label}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-foreground" />
+                </div>,
+                document.body,
+            )}
         </button>
     );
 }

@@ -30,4 +30,9 @@ export interface CatalogFilters {
     search?: string;
     page?: number;
     limit?: number;
+    isVerified?: boolean;
+    isCertified?: boolean;
+    isHygieneVerified?: boolean;
+    isQualityProducts?: boolean;
+    isTopRated?: boolean;
 }
