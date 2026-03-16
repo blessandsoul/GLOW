@@ -16,6 +16,7 @@ import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
+import { MasterBadgesRow } from './MasterBadges';
 
 const NICHE_META: Record<string, { icon: Icon }> = {
     lashes:   { icon: Eye },
@@ -219,6 +220,14 @@ interface MasterCardProps {
         niche: string | null;
         portfolioImages: { id: string; imageUrl: string; title: string | null }[];
         totalItems: number;
+        isVerified?: boolean;
+        badges?: {
+            isCertified: boolean;
+            isHygieneVerified: boolean;
+            isQualityProducts: boolean;
+            isTopRated: boolean;
+        };
+        experienceYears?: number | null;
     };
     index: number;
 }
@@ -316,6 +325,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                         <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
                             {master.displayName}
                         </p>
+                        <MasterBadgesRow isVerified={master.isVerified} badges={master.badges} />
                         <div className="flex items-center gap-2 mt-0.5">
                             {master.city && (
                                 <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground truncate">

@@ -4,6 +4,13 @@ export interface FeaturedMasterImage {
     title: string | null;
 }
 
+export interface MasterBadges {
+    isCertified: boolean;
+    isHygieneVerified: boolean;
+    isQualityProducts: boolean;
+    isTopRated: boolean;
+}
+
 export interface FeaturedMaster {
     username: string;
     displayName: string;
@@ -12,6 +19,9 @@ export interface FeaturedMaster {
     niche: string | null;
     portfolioImages: FeaturedMasterImage[];
     totalItems: number;
+    isVerified?: boolean;
+    badges?: MasterBadges;
+    experienceYears?: number | null;
 }
 
 export interface CatalogFilters {
