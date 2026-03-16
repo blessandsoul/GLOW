@@ -87,7 +87,7 @@ function SkeletonRows(): React.ReactElement {
 
 function VerificationActions({ user }: { user: AdminPortfolioUser }): React.ReactElement {
     const { review, isPending: isReviewing } = useAdminReviewVerification();
-    const { update, isPending: isUpdatingBadge } = useAdminSetBadge();
+    const { setBadge, isPending: isUpdatingBadge } = useAdminSetBadge();
     const [rejectReason, setRejectReason] = useState('');
     const [showReject, setShowReject] = useState(false);
 
@@ -167,7 +167,7 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                     hint="Professional certificate"
                     active={user.isCertified}
                     disabled={isUpdatingBadge}
-                    onClick={(e) => { e.stopPropagation(); update({ userId: user.userId, badge: 'isCertified', granted: !user.isCertified }); }}
+                    onClick={(e) => { e.stopPropagation(); setBadge({ userId: user.userId, badge: 'isCertified', value: !user.isCertified }); }}
                 />
                 <BadgeToggleBtn
                     icon={FirstAid}
@@ -175,7 +175,7 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                     hint="Workspace hygiene verified"
                     active={user.isHygieneVerified}
                     disabled={isUpdatingBadge}
-                    onClick={(e) => { e.stopPropagation(); update({ userId: user.userId, badge: 'isHygieneVerified', granted: !user.isHygieneVerified }); }}
+                    onClick={(e) => { e.stopPropagation(); setBadge({ userId: user.userId, badge: 'isHygieneVerified', value: !user.isHygieneVerified }); }}
                 />
                 <BadgeToggleBtn
                     icon={Diamond}
@@ -183,7 +183,7 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                     hint="Uses quality products"
                     active={user.isQualityProducts}
                     disabled={isUpdatingBadge}
-                    onClick={(e) => { e.stopPropagation(); update({ userId: user.userId, badge: 'isQualityProducts', granted: !user.isQualityProducts }); }}
+                    onClick={(e) => { e.stopPropagation(); setBadge({ userId: user.userId, badge: 'isQualityProducts', value: !user.isQualityProducts }); }}
                 />
             </div>
         </div>
