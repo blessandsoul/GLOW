@@ -14,6 +14,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMastersCatalog } from '../hooks/useMastersCatalog';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { getCityOptions, getCityLabel } from '@/lib/constants/cities';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
@@ -31,10 +33,11 @@ const NICHE_META: Record<string, { icon: Icon }> = {
 };
 
 export function MastersCatalog(): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const router = useRouter();
     const searchParams = useSearchParams();
     const { specialities } = useSpecialities();
+    const cityOptions = getCityOptions(language);
 
     const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '');
     const [selectedNiche, setSelectedNiche] = useState<string | undefined>(searchParams.get('niche') ?? undefined);
@@ -42,22 +45,21 @@ export function MastersCatalog(): React.ReactElement {
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
     const debouncedSearch = useDebounce(searchInput, 400);
-    const debouncedCity = useDebounce(city, 400);
 
     useEffect(() => {
         const params = new URLSearchParams();
         if (debouncedSearch) params.set('search', debouncedSearch);
         if (selectedNiche) params.set('niche', selectedNiche);
-        if (debouncedCity) params.set('city', debouncedCity);
+        if (city) params.set('city', city);
         if (page > 1) params.set('page', String(page));
         const qs = params.toString();
         router.replace(qs ? `${ROUTES.MASTERS}?${qs}` : ROUTES.MASTERS, { scroll: false });
-    }, [debouncedSearch, selectedNiche, debouncedCity, page, router]);
+    }, [debouncedSearch, selectedNiche, city, page, router]);
 
     const { masters, pagination, isLoading, isFetching } = useMastersCatalog({
         search: debouncedSearch || undefined,
         niche: selectedNiche,
-        city: debouncedCity || undefined,
+        city: city || undefined,
         page,
         limit: 12,
     });
@@ -84,8 +86,8 @@ export function MastersCatalog(): React.ReactElement {
         setPage(1);
     }, []);
 
-    const hasActiveFilters = !!debouncedSearch || !!selectedNiche || !!debouncedCity;
-    const activeFilterCount = [debouncedSearch, selectedNiche, debouncedCity].filter(Boolean).length;
+    const hasActiveFilters = !!debouncedSearch || !!selectedNiche || !!city;
+    const activeFilterCount = [debouncedSearch, selectedNiche, city].filter(Boolean).length;
 
     return (
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
@@ -139,28 +141,20 @@ export function MastersCatalog(): React.ReactElement {
                     </div>
 
                     {/* City */}
-                    <div className="relative sm:w-52">
-                        <MapPin
-                            size={18}
-                            weight="fill"
-                            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70 pointer-events-none"
-                        />
-                        <input
-                            type="text"
-                            value={city}
-                            onChange={(e) => handleCityChange(e.target.value)}
-                            placeholder={t('catalog.city_placeholder')}
-                            className="h-11 w-full rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/30"
-                        />
-                        {city && (
-                            <button
-                                type="button"
-                                onClick={() => handleCityChange('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all cursor-pointer"
-                            >
-                                <X size={12} weight="bold" />
-                            </button>
-                        )}
+                    <div className="sm:w-52">
+                        <Select value={city || undefined} onValueChange={(v) => handleCityChange(v)}>
+                            <SelectTrigger className="h-11 w-full rounded-xl border-border/50">
+                                <div className="flex items-center gap-2">
+                                    <MapPin size={16} weight="fill" className="text-muted-foreground/70 shrink-0" />
+                                    <SelectValue placeholder={t('catalog.city_placeholder')} />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {cityOptions.map((c) => (
+                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     {/* Clear all */}
@@ -311,7 +305,9 @@ interface CatalogMasterCardProps {
 }
 
 function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.ReactElement {
+    const { language } = useLanguage();
     const images = master.portfolioImages;
+    const cityDisplay = master.city ? getCityLabel(master.city, language) : null;
 
     return (
         <motion.div
@@ -402,13 +398,13 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                         </p>
                         <MasterBadgesRow isVerified={master.isVerified} badges={master.badges} />
                         <div className="flex items-center gap-2 mt-0.5">
-                            {master.city && (
+                            {cityDisplay && (
                                 <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground truncate">
                                     <MapPin size={10} weight="fill" className="shrink-0" />
-                                    {master.city}
+                                    {cityDisplay}
                                 </span>
                             )}
-                            {master.city && master.niche && (
+                            {cityDisplay && master.niche && (
                                 <span className="text-border">·</span>
                             )}
                             {master.niche && (

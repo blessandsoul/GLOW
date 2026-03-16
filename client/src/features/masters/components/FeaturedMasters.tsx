@@ -16,6 +16,7 @@ import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
+import { getCityLabel } from '@/lib/constants/cities';
 import { MasterBadgesRow } from './MasterBadges';
 
 const NICHE_META: Record<string, { icon: Icon }> = {
@@ -28,7 +29,7 @@ const NICHE_META: Record<string, { icon: Icon }> = {
 };
 
 export function FeaturedMasters(): React.ReactElement | null {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [selectedNiche, setSelectedNiche] = useState<string | undefined>(undefined);
     const { specialities } = useSpecialities();
     const { masters, isLoading, isSuccess } = useFeaturedMasters(selectedNiche);
@@ -233,6 +234,7 @@ interface MasterCardProps {
 }
 
 function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
+    const { language } = useLanguage();
     const images = master.portfolioImages;
 
     return (
@@ -330,7 +332,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                             {master.city && (
                                 <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground truncate">
                                     <MapPin size={10} weight="fill" className="shrink-0" />
-                                    {master.city}
+                                    {getCityLabel(master.city, language)}
                                 </span>
                             )}
                             {master.city && master.niche && (

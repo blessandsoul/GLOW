@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { getCityOptions } from '@/lib/constants/cities';
 import { usersService } from '@/features/users/services/users.service';
 import { useAppDispatch } from '@/store/hooks';
 import { setUser } from '@/features/auth/store/authSlice';
@@ -53,9 +54,10 @@ function SaveIndicator({ status }: { status: SaveStatus }): React.ReactElement |
 }
 
 export function AboutSection({ form, updateField, saveStatus, user }: AboutSectionProps): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const dispatch = useAppDispatch();
     const { specialities } = useSpecialities();
+    const cityOptions = getCityOptions(language);
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
@@ -151,12 +153,16 @@ export function AboutSection({ form, updateField, saveStatus, user }: AboutSecti
                             <MapPin size={12} />
                             {t('ui.text_ghe07f')}
                         </Label>
-                        <Input
-                            id="builder-city"
-                            value={form.city}
-                            onChange={(e) => updateField('city', e.target.value)}
-                            placeholder={t('ui.text_46q4bx')}
-                        />
+                        <Select value={form.city} onValueChange={(v) => updateField('city', v)}>
+                            <SelectTrigger id="builder-city" className="w-full">
+                                <SelectValue placeholder={t('ui.text_46q4bx')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {cityOptions.map((c) => (
+                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-1.5">

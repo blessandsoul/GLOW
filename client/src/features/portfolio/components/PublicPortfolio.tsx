@@ -10,6 +10,7 @@ import { useAppSelector } from '@/store/hooks';
 import { usePublicPortfolio } from '../hooks/usePortfolio';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
+import { getCityLabel } from '@/lib/constants/cities';
 import { MasterBadgesRow } from '@/features/masters/components/MasterBadges';
 import { ImageLightbox } from './ImageLightbox';
 import { ReviewsSection } from './ReviewsSection';
@@ -20,7 +21,7 @@ interface PublicPortfolioProps {
 }
 
 export function PublicPortfolio({ username }: PublicPortfolioProps): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const router = useRouter();
     const user = useAppSelector((s) => s.auth.user);
     const isOwnProfile = user?.username === username;
@@ -113,7 +114,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                         {portfolio.city && (
                             <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <MapPin size={14} />
-                                {portfolio.city}
+                                {getCityLabel(portfolio.city, language)}
                             </span>
                         )}
                         {portfolio.workAddress && (

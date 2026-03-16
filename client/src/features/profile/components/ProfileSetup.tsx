@@ -13,6 +13,7 @@ import { useSpecialities, useServiceCategories } from '../hooks/useCatalog';
 import { DEFAULT_PROFILE } from '../types/profile.types';
 import type { ProfileFormData, ServiceItem } from '../types/profile.types';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { getCityOptions } from '@/lib/constants/cities';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setUser } from '@/features/auth/store/authSlice';
 import { usersService } from '@/features/users/services/users.service';
@@ -82,9 +83,10 @@ function PersonalInfoSection(): React.ReactElement {
 // ─── Main ProfileSetup ────────────────────────────────────────────────────────
 
 export function ProfileSetup(): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { profile, isLoading, save, isSaving } = useProfile();
     const { specialities } = useSpecialities();
+    const cityOptions = getCityOptions(language);
     const { categories } = useServiceCategories();
     const [form, setForm] = useState<ProfileFormData>(DEFAULT_PROFILE);
     const [showAddPanel, setShowAddPanel] = useState(false);
@@ -191,12 +193,16 @@ export function ProfileSetup(): React.ReactElement {
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                         <Label htmlFor="city" className="text-xs text-muted-foreground">{t('ui.text_ghe07f')}</Label>
-                        <Input
-                            id="city"
-                            value={form.city}
-                            onChange={(e) => handleChange('city', e.target.value)}
-                            placeholder={t('ui.text_46q4bx')}
-                        />
+                        <Select value={form.city} onValueChange={(v) => handleChange('city', v)}>
+                            <SelectTrigger id="city" className="w-full">
+                                <SelectValue placeholder={t('ui.text_46q4bx')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {cityOptions.map((c) => (
+                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-1.5">

@@ -1,50 +1,35 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { MagnifyingGlass, MapPin, CaretDown, Check, X } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
 import { ROUTES } from '@/lib/constants/routes';
+import { getCityOptions } from '@/lib/constants/cities';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
 
-interface CityOption {
-    value: string;
-    label: string;
-}
-
-const GEORGIAN_CITIES: CityOption[] = [
-    { value: 'Tbilisi', label: 'Tbilisi' },
-    { value: 'Batumi', label: 'Batumi' },
-    { value: 'Kutaisi', label: 'Kutaisi' },
-    { value: 'Rustavi', label: 'Rustavi' },
-    { value: 'Zugdidi', label: 'Zugdidi' },
-    { value: 'Gori', label: 'Gori' },
-    { value: 'Poti', label: 'Poti' },
-    { value: 'Telavi', label: 'Telavi' },
-    { value: 'Kobuleti', label: 'Kobuleti' },
-];
-
 export function HeroSearch(): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const router = useRouter();
     const { specialities } = useSpecialities();
+    const cityOptions = useMemo(() => getCityOptions(language), [language]);
     const [niche, setNiche] = useState('');
     const [nicheOpen, setNicheOpen] = useState(false);
     const [cities, setCities] = useState<string[]>([]);
     const [cityOpen, setCityOpen] = useState(false);
 
-    const toggleCity = useCallback((city: string): void => {
+    const toggleCity = useCallback((slug: string): void => {
         setCities((prev) =>
-            prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
+            prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]
         );
     }, []);
 
-    const removeCity = useCallback((city: string): void => {
-        setCities((prev) => prev.filter((c) => c !== city));
+    const removeCity = useCallback((slug: string): void => {
+        setCities((prev) => prev.filter((c) => c !== slug));
     }, []);
 
     const handleSearch = useCallback((): void => {
@@ -56,6 +41,10 @@ export function HeroSearch(): React.ReactElement {
     }, [niche, cities, router]);
 
     const selectedNicheLabel = specialities.find((s) => s.slug === niche)?.label;
+
+    const getCityLabelBySlug = useCallback((slug: string): string => {
+        return cityOptions.find((c) => c.value === slug)?.label ?? slug;
+    }, [cityOptions]);
 
     return (
         <motion.div
@@ -125,7 +114,7 @@ export function HeroSearch(): React.ReactElement {
                                             key={c}
                                             className="inline-flex items-center gap-0.5 rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary"
                                         >
-                                            {c}
+                                            {getCityLabelBySlug(c)}
                                             <X
                                                 size={10}
                                                 weight="bold"
@@ -148,12 +137,12 @@ export function HeroSearch(): React.ReactElement {
                             <CommandList>
                                 <CommandEmpty>—</CommandEmpty>
                                 <CommandGroup>
-                                    {GEORGIAN_CITIES.map((c) => {
+                                    {cityOptions.map((c) => {
                                         const selected = cities.includes(c.value);
                                         return (
                                             <CommandItem
                                                 key={c.value}
-                                                value={c.value}
+                                                value={c.label}
                                                 onSelect={() => toggleCity(c.value)}
                                             >
                                                 <div className={cn(
