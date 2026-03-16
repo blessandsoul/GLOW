@@ -6,7 +6,8 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
+import { CaretLeft, CaretRight, ShieldCheck, Certificate, FirstAid, Diamond, CheckCircle, XCircle, SpinnerGap } from '@phosphor-icons/react';
 import {
     Table,
     TableHeader,
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useAdminPortfolioUsers, useAdminPortfolioItems } from '../hooks/useAdmin';
+import { useAdminReviewVerification, useAdminSetBadge } from '@/features/verification/hooks/useVerification';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import type { AdminPortfolioUser } from '../types/admin.types';
 
@@ -83,7 +85,140 @@ function SkeletonRows(): React.ReactElement {
     );
 }
 
-function PortfolioItemsRow({ userId, isOpen }: { userId: string; isOpen: boolean }): React.ReactElement | null {
+function VerificationActions({ user }: { user: AdminPortfolioUser }): React.ReactElement {
+    const { review, isPending: isReviewing } = useAdminReviewVerification();
+    const { update, isPending: isUpdatingBadge } = useAdminSetBadge();
+    const [rejectReason, setRejectReason] = useState('');
+    const [showReject, setShowReject] = useState(false);
+
+    const isVerified = user.verificationStatus === 'VERIFIED';
+    const isPending = user.verificationStatus === 'PENDING';
+
+    return (
+        <div className="space-y-3 rounded-lg border border-border/50 bg-card p-3">
+            <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className="text-primary" />
+                <span className="text-xs font-semibold text-foreground">Verification</span>
+                <span className={cn(
+                    'ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium',
+                    isVerified && 'bg-success/15 text-success',
+                    isPending && 'bg-warning/15 text-warning',
+                    user.verificationStatus === 'REJECTED' && 'bg-destructive/15 text-destructive',
+                    user.verificationStatus === 'NONE' && 'bg-muted text-muted-foreground',
+                )}>
+                    {user.verificationStatus}
+                </span>
+            </div>
+
+            {/* Approve / Reject for pending */}
+            {isPending && (
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5 border-success/30 text-success hover:bg-success/10"
+                        disabled={isReviewing}
+                        onClick={(e) => { e.stopPropagation(); review({ userId: user.userId, action: 'approve' }); }}
+                    >
+                        {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : <CheckCircle size={12} />}
+                        Approve
+                    </Button>
+                    {!showReject ? (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10"
+                            onClick={(e) => { e.stopPropagation(); setShowReject(true); }}
+                        >
+                            <XCircle size={12} />
+                            Reject
+                        </Button>
+                    ) : (
+                        <div className="flex w-full items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                            <input
+                                value={rejectReason}
+                                onChange={(e) => setRejectReason(e.target.value)}
+                                placeholder="Rejection reason..."
+                                className="flex-1 rounded-md border border-input bg-transparent px-2 py-1 text-xs"
+                            />
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                disabled={!rejectReason.trim() || isReviewing}
+                                onClick={() => review({ userId: user.userId, action: 'reject', rejectionReason: rejectReason })}
+                            >
+                                {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : 'Confirm'}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Quick verify for NONE status */}
+            {user.verificationStatus === 'NONE' && (
+                <p className="text-[11px] text-muted-foreground">Master has not requested verification yet.</p>
+            )}
+
+            {/* Badge toggles */}
+            <div className="flex flex-wrap gap-2">
+                <BadgeToggleBtn
+                    icon={Certificate}
+                    label="Certified"
+                    hint="Professional certificate"
+                    active={user.isCertified}
+                    disabled={isUpdatingBadge}
+                    onClick={(e) => { e.stopPropagation(); update({ userId: user.userId, badge: 'isCertified', granted: !user.isCertified }); }}
+                />
+                <BadgeToggleBtn
+                    icon={FirstAid}
+                    label="Hygiene"
+                    hint="Workspace hygiene verified"
+                    active={user.isHygieneVerified}
+                    disabled={isUpdatingBadge}
+                    onClick={(e) => { e.stopPropagation(); update({ userId: user.userId, badge: 'isHygieneVerified', granted: !user.isHygieneVerified }); }}
+                />
+                <BadgeToggleBtn
+                    icon={Diamond}
+                    label="Quality Products"
+                    hint="Uses quality products"
+                    active={user.isQualityProducts}
+                    disabled={isUpdatingBadge}
+                    onClick={(e) => { e.stopPropagation(); update({ userId: user.userId, badge: 'isQualityProducts', granted: !user.isQualityProducts }); }}
+                />
+            </div>
+        </div>
+    );
+}
+
+function BadgeToggleBtn({ icon: Icon, label, hint, active, disabled, onClick }: {
+    icon: React.ElementType;
+    label: string;
+    hint: string;
+    active: boolean;
+    disabled: boolean;
+    onClick: (e: React.MouseEvent) => void;
+}): React.ReactElement {
+    return (
+        <button
+            type="button"
+            disabled={disabled}
+            onClick={onClick}
+            title={hint}
+            className={cn(
+                'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors duration-150',
+                active
+                    ? 'bg-primary/15 text-primary ring-1 ring-primary/30'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                disabled && 'opacity-50 cursor-not-allowed',
+            )}
+        >
+            <Icon size={12} weight={active ? 'fill' : 'regular'} />
+            {label}
+        </button>
+    );
+}
+
+function PortfolioItemsRow({ userId, user, isOpen }: { userId: string; user: AdminPortfolioUser; isOpen: boolean }): React.ReactElement | null {
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
     const { items, pagination, isLoading } = useAdminPortfolioItems(isOpen ? userId : null, page, ITEMS_LIMIT);
@@ -126,7 +261,8 @@ function PortfolioItemsRow({ userId, isOpen }: { userId: string; isOpen: boolean
                     style={{ maxHeight: isOpen ? height || 'none' : 0 }}
                     onTransitionEnd={handleTransitionEnd}
                 >
-                    <div ref={contentRef} className="bg-muted/30 p-4">
+                    <div ref={contentRef} className="bg-muted/30 p-4 space-y-4">
+                        <VerificationActions user={user} />
                         {isLoading ? (
                             <div className="flex gap-2">
                                 {Array.from({ length: 6 }).map((_, i) => (
@@ -288,7 +424,7 @@ export function AdminPortfoliosTable(): React.ReactElement {
                                             {user.latestItemDate ? formatDate(user.latestItemDate) : '—'}
                                         </TableCell>
                                     </TableRow>
-                                    <PortfolioItemsRow userId={user.userId} isOpen={expandedUserId === user.userId} />
+                                    <PortfolioItemsRow userId={user.userId} user={user} isOpen={expandedUserId === user.userId} />
                                 </React.Fragment>
                             ))
                         )}

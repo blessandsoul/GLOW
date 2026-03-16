@@ -42,6 +42,15 @@ export interface AdminPortfolioUser {
     username: string | null;
     avatar: string | null;
     niche: string | null;
+    verificationStatus: string;
+    isCertified: boolean;
+    isHygieneVerified: boolean;
+    isQualityProducts: boolean;
+    isTopRated: boolean;
+    idDocumentUrl: string | null;
+    certificateUrl: string | null;
+    hygienePicsUrl: string[] | null;
+    qualityProductsUrl: string[] | null;
     totalItems: number;
     publishedItems: number;
     latestItemDate: string | null;
