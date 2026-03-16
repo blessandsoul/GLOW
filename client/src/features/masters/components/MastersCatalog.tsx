@@ -295,15 +295,15 @@ export function MastersCatalog(): React.ReactElement {
 
             {/* Masters grid */}
             {isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {Array.from({ length: 8 }).map((_, i) => (
+                <div className="flex flex-col gap-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
                         <CatalogCardSkeleton key={i} />
                     ))}
                 </div>
             ) : masters.length === 0 ? (
                 <EmptyState hasFilters={hasActiveFilters} onClear={clearFilters} />
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="flex flex-col gap-4">
                     {masters.map((master, index) => (
                         <CatalogMasterCard key={master.username} master={master} index={index} />
                     ))}
@@ -418,9 +418,10 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
         >
             <Link
                 href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
-                className="group flex flex-col rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
+                className="group flex flex-col sm:flex-row rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-border/80 overflow-hidden"
             >
-                <div className="relative aspect-4/3 overflow-hidden rounded-t-2xl bg-muted/30">
+                {/* Portfolio images */}
+                <div className="relative w-full sm:w-72 md:w-80 shrink-0 aspect-4/3 sm:aspect-auto sm:h-48 bg-muted/30">
                     {images.length >= 4 ? (
                         <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px">
                             {images.slice(0, 4).map((img) => (
@@ -430,7 +431,7 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                                         alt={img.title ?? ''}
                                         fill
                                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                        sizes="(max-width: 640px) 100vw, 320px"
                                         unoptimized
                                     />
                                 </div>
@@ -456,7 +457,7 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                                         alt={img.title ?? ''}
                                         fill
                                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                        sizes="(max-width: 640px) 100vw, 320px"
                                         unoptimized
                                     />
                                 </div>
@@ -477,31 +478,32 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                     )}
                 </div>
 
-                <div className="flex items-center gap-3 p-3.5">
+                {/* Master info */}
+                <div className="flex flex-1 items-center gap-4 p-4 sm:p-5">
                     {master.avatar ? (
                         <Image
                             src={getServerImageUrl(master.avatar)}
                             alt={master.displayName}
-                            width={40}
-                            height={40}
-                            className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-background"
+                            width={48}
+                            height={48}
+                            className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-background"
                             unoptimized
                         />
                     ) : (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary ring-2 ring-background">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-base font-bold text-primary ring-2 ring-background">
                             {master.displayName.charAt(0).toUpperCase()}
                         </div>
                     )}
 
                     <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
+                        <p className="truncate text-base font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
                             {master.displayName}
                         </p>
                         <MasterBadgesRow isVerified={master.isVerified} badges={master.badges} />
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex items-center gap-2 mt-1">
                             {cityDisplay && (
-                                <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground truncate">
-                                    <MapPin size={10} weight="fill" className="shrink-0" />
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <MapPin size={12} weight="fill" className="shrink-0" />
                                     {cityDisplay}
                                 </span>
                             )}
@@ -509,15 +511,20 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                                 <span className="text-border">·</span>
                             )}
                             {master.niche && (
-                                <span className="text-[11px] text-muted-foreground truncate">
+                                <span className="text-xs text-muted-foreground">
                                     {master.niche}
                                 </span>
                             )}
                         </div>
+                        {master.experienceYears != null && master.experienceYears > 0 && (
+                            <p className="mt-1 text-xs text-muted-foreground/70">
+                                {master.experienceYears} {master.experienceYears === 1 ? 'year' : 'years'} experience
+                            </p>
+                        )}
                     </div>
 
                     <ArrowRight
-                        size={14}
+                        size={16}
                         weight="bold"
                         className="shrink-0 text-muted-foreground/40 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5"
                     />
@@ -655,13 +662,14 @@ function EmptyState({ hasFilters, onClear }: EmptyStateProps): React.ReactElemen
 
 function CatalogCardSkeleton(): React.ReactElement {
     return (
-        <div className="overflow-hidden rounded-2xl border border-border/50 bg-card">
-            <Skeleton className="aspect-4/3 w-full rounded-none" />
-            <div className="flex items-center gap-3 p-3.5">
-                <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
-                <div className="flex-1 space-y-1.5">
-                    <Skeleton className="h-3.5 w-24" />
-                    <Skeleton className="h-2.5 w-16" />
+        <div className="flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-border/50 bg-card">
+            <Skeleton className="w-full sm:w-72 md:w-80 shrink-0 aspect-4/3 sm:aspect-auto sm:h-48 rounded-none" />
+            <div className="flex flex-1 items-center gap-4 p-4 sm:p-5">
+                <Skeleton className="h-12 w-12 shrink-0 rounded-full" />
+                <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-3 w-24" />
                 </div>
             </div>
         </div>
