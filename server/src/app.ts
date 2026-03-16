@@ -33,6 +33,7 @@ import { imagesRoutes } from '@/modules/images/images.routes.js';
 import { mastersRoutes } from '@/modules/masters/masters.routes.js';
 import { notificationsRoutes } from '@/modules/notifications/notifications.routes.js';
 import { reviewsRoutes } from '@/modules/reviews/reviews.routes.js';
+import { verificationRoutes } from '@/modules/verification/verification.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -179,6 +180,7 @@ export async function buildApp() {
   await app.register(mastersRoutes, { prefix: '/api/v1/masters' });
   await app.register(notificationsRoutes, { prefix: '/api/v1/notifications' });
   await app.register(reviewsRoutes, { prefix: '/api/v1/reviews' });
+  await app.register(verificationRoutes, { prefix: '/api/v1/verification' });
 
   return app;
 }
