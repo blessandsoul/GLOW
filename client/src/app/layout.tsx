@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     template: '%s | Glow.GE',
   },
   description:
-    'Glow.GE — AI-powered platform for beauty professionals. Lashes, hair, nails, makeup and more.',
+    'Glow.GE — find the best beauty masters in Georgia. Lashes, nails, brows, makeup, hair — verified professionals with portfolios and reviews.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -53,16 +53,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Glow.GE',
-    title: 'Glow.GE — Beauty Platform',
+    title: 'Glow.GE — Find Beauty Masters in Georgia',
     description:
-      'AI-powered platform for beauty professionals. Find top masters for lashes, hair, nails, makeup and more.',
+      'Find verified beauty professionals — lashes, nails, brows, makeup, hair. Portfolios, reviews, and transparent pricing.',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Glow.GE — Beauty Platform',
+    title: 'Glow.GE — Find Beauty Masters in Georgia',
     description:
-      'AI-powered platform for beauty professionals. Find top masters for lashes, hair, nails, makeup and more.',
+      'Find verified beauty professionals — lashes, nails, brows, makeup, hair. Portfolios, reviews, and transparent pricing.',
   },
 };
 

@@ -22,8 +22,10 @@
     "free_photos": "5 free photos daily",
     "login": "Login",
     "start": "Get Started",
+    "start_master": "I'm a Master",
     "master": "Master",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "masters_link": "Masters"
   },
   "nav": {
     "create": "Create",
@@ -89,12 +91,12 @@
     "description": "Upload your work photo and get magazine-quality results in seconds",
     "open_studio": "Open Studio",
     "how_it_works": "How It Works",
-    "step1_title": "Upload Photo",
-    "step1_desc": "Take or choose a work photo from your gallery",
-    "step2_title": "AI Enhancement",
-    "step2_desc": "Our AI perfects lighting, skin & details",
-    "step3_title": "Download & Share",
-    "step3_desc": "Get your magazine-quality result instantly"
+    "step1_title": "Choose a Specialist",
+    "step1_desc": "Browse professionals by category, city, and reviews",
+    "step2_title": "View Portfolio & Prices",
+    "step2_desc": "See real work examples and transparent pricing",
+    "step3_title": "Book & Connect",
+    "step3_desc": "Contact the master directly via WhatsApp or Telegram"
   },
   "blog_section": {
     "title": "Blog",
@@ -161,23 +163,25 @@
   },
   "hero": {
     "badge": "Glow.GE AI Studio",
-    "title_1": "Perfect Retouch For",
-    "title_2": "masters",
+    "title_1": "Find Your",
+    "title_2": "master in Georgia",
     "rotating_words": [
       "lash",
-      "hair",
+      "brow",
       "nail",
-      "makeup"
+      "makeup",
+      "hair"
     ],
-    "description": "Upload your work photo, and our neural network will create a magazine-quality retouch in 5 seconds. 5 free photos every day.",
-    "btn_start": "Start for free",
+    "description": "Browse verified beauty professionals, view portfolios and reviews, and book your next appointment.",
+    "btn_start": "Find a Master",
+    "btn_master": "I'm a Master",
     "daily_free_note": "5 free photos every day — no card needed",
-    "stats_title": "Professionals' choice",
-    "stats_desc": "Over 50,000 processed photos",
-    "stats_label_photos": "photos",
-    "stats_label_rating": "rating",
+    "stats_title": "Verified professionals",
+    "stats_desc": "Portfolios, reviews, prices",
+    "stats_label_photos": "masters",
+    "stats_label_rating": "avg. rating",
     "stats_label_rank": "Georgia",
-    "stats_label_rank_geo": "in Georgia"
+    "stats_label_rank_geo": "categories"
   },
   "visual": {
     "before": "Before retouch",
@@ -987,6 +991,16 @@
     "next_page": "Next page",
     "empty_title": "No masters found",
     "empty_description": "Try adjusting your search or filters to find what you're looking for"
+  },
+  "landing": {
+    "categories_title": "What are you looking for?",
+    "categories_subtitle": "Choose a category to find the right specialist",
+    "search_placeholder_niche": "What service?",
+    "search_placeholder_city": "City",
+    "search_btn": "Find",
+    "for_masters_title": "Are you a beauty master?",
+    "for_masters_desc": "Create your free portfolio, get verified, and attract new clients",
+    "for_masters_btn": "Create Profile"
   },
   "decorations": {
     "section_title": "Decorations",

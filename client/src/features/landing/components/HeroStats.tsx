@@ -123,8 +123,9 @@ export function HeroStats(): React.ReactElement {
     const ref = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
 
-    const photos = useCountUp(50, 1600, visible);
+    const masters = useCountUp(500, 1600, visible);
     const rating = useCountUp(49, 1200, visible);
+    const categories = useCountUp(6, 800, visible);
 
     useEffect(() => {
         const el = ref.current;
@@ -157,8 +158,8 @@ export function HeroStats(): React.ReactElement {
             <div className="flex items-center gap-5">
                 <Metric
                     icon={Camera}
-                    value={`${photos}K+`}
-                    label={t('hero.stats_label_photos') ?? 'ფოტო'}
+                    value={`${masters}+`}
+                    label={t('hero.stats_label_photos') ?? 'masters'}
                     iconClass="text-primary/70"
                     visible={visible}
                     delay={0.5}
@@ -175,8 +176,8 @@ export function HeroStats(): React.ReactElement {
                 <div className="h-5 w-px bg-zinc-200 dark:bg-zinc-700/60" />
                 <Metric
                     icon={TrendUp}
-                    value="#1"
-                    label={t('hero.stats_label_rank_geo') ?? 'საქართველოში'}
+                    value={`${categories}`}
+                    label={t('hero.stats_label_rank_geo') ?? 'categories'}
                     iconClass="text-emerald-500 dark:text-emerald-400"
                     visible={visible}
                     delay={0.66}
