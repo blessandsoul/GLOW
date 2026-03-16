@@ -110,8 +110,8 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                 </span>
             </div>
 
-            {/* Approve / Reject for pending */}
-            {isPending && (
+            {/* Verify / Reject actions */}
+            {!isVerified && (
                 <div className="flex flex-wrap items-center gap-2">
                     <Button
                         size="sm"
@@ -121,7 +121,7 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                         onClick={(e) => { e.stopPropagation(); review({ userId: user.userId, approved: true }); }}
                     >
                         {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : <CheckCircle size={12} />}
-                        Approve
+                        Verify
                     </Button>
                     {!showReject ? (
                         <Button
@@ -154,9 +154,18 @@ function VerificationActions({ user }: { user: AdminPortfolioUser }): React.Reac
                 </div>
             )}
 
-            {/* Quick verify for NONE status */}
-            {user.verificationStatus === 'NONE' && (
-                <p className="text-[11px] text-muted-foreground">Master has not requested verification yet.</p>
+            {/* Revoke for verified */}
+            {isVerified && (
+                <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10"
+                    disabled={isReviewing}
+                    onClick={(e) => { e.stopPropagation(); review({ userId: user.userId, approved: false, rejectionReason: 'Revoked by admin' }); }}
+                >
+                    {isReviewing ? <SpinnerGap size={12} className="animate-spin" /> : <XCircle size={12} />}
+                    Revoke Verification
+                </Button>
             )}
 
             {/* Badge toggles */}

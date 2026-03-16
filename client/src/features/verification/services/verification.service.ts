@@ -100,14 +100,20 @@ class VerificationService {
         userId: string,
         body: { approved: boolean; rejectionReason?: string },
     ): Promise<void> {
-        await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_REVIEW(userId), body);
+        await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_REVIEW(userId), {
+            action: body.approved ? 'approve' : 'reject',
+            reason: body.rejectionReason,
+        });
     }
 
     async adminSetBadge(
         userId: string,
         body: { badge: string; value: boolean },
     ): Promise<void> {
-        await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_BADGE(userId), body);
+        await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_BADGE(userId), {
+            badge: body.badge,
+            granted: body.value,
+        });
     }
 }
 

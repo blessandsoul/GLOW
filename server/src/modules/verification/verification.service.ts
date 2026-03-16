@@ -78,10 +78,6 @@ export function createVerificationService() {
         throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
       }
 
-      if (profile.verificationStatus !== 'PENDING') {
-        throw new BadRequestError('Only pending verification requests can be reviewed.', 'NOT_PENDING');
-      }
-
       if (input.action === 'approve') {
         logger.info({ userId, adminId }, 'Admin approving verification');
         return verificationRepo.approveVerification(userId, adminId);
