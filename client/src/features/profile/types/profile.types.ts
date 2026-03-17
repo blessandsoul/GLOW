@@ -4,6 +4,9 @@ export interface MasterProfile {
     city: string | null;
     niche: string | null;
     workAddress: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    isManualLocation: boolean;
     services: ServiceItem[] | null;
     bio: string | null;
     phone: string | null;
@@ -28,6 +31,9 @@ export interface ProfileFormData {
     city: string;
     niche: string;
     workAddress: string;
+    latitude: number | null;
+    longitude: number | null;
+    isManualLocation: boolean;
     bio: string;
     phone: string;
     whatsapp: string;
@@ -52,6 +58,9 @@ export const DEFAULT_PROFILE: ProfileFormData = {
     city: '',
     niche: '',
     workAddress: '',
+    latitude: null,
+    longitude: null,
+    isManualLocation: false,
     bio: '',
     phone: '',
     whatsapp: '',

@@ -7,10 +7,11 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import {
     MapPin, ArrowRight, MagnifyingGlass, X, CaretLeft, CaretRight, CaretDown, Check,
     Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle, SquaresFour,
-    SlidersHorizontal, UsersFour,
+    SlidersHorizontal, UsersFour, MapTrifold, ListBullets,
     SealCheck, Certificate, FirstAid, Diamond, Star,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMastersCatalog } from '../hooks/useMastersCatalog';
@@ -27,6 +28,11 @@ import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MasterBadgesRow } from './MasterBadges';
 import type { LocationType } from '../types/masters.types';
+
+const MasterMapView = dynamic(
+  () => import('./map/MasterMapView').then((m) => m.MasterMapView),
+  { ssr: false, loading: () => <div className="h-full w-full animate-pulse rounded-xl bg-muted" /> },
+);
 
 const NICHE_META: Record<string, { icon: Icon }> = {
     lashes:   { icon: Eye },
@@ -66,6 +72,9 @@ export function MastersCatalog(): React.ReactElement {
     });
 
     const debouncedSearch = useDebounce(searchInput, 400);
+
+    const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+    const [highlightedUsername, setHighlightedUsername] = useState<string | null>(null);
 
     const { districts } = useDistricts();
     const { brands } = useBrands();
@@ -155,7 +164,7 @@ export function MastersCatalog(): React.ReactElement {
     const activeFilterCount = [debouncedSearch, selectedNiche].filter(Boolean).length + (cities.length > 0 ? 1 : 0) + activeBadgeCount + extraFilterCount;
 
     return (
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mx-auto w-full max-w-6xl lg:max-w-[1600px] px-4 sm:px-6 lg:px-8 py-8">
             {/* Page header */}
             <motion.div
                 className="mb-8"
@@ -431,31 +440,71 @@ export function MastersCatalog(): React.ReactElement {
                 </motion.div>
             )}
 
-            {/* Masters grid */}
-            {isLoading ? (
-                <div className="flex flex-col gap-4">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <CatalogCardSkeleton key={i} />
-                    ))}
-                </div>
-            ) : masters.length === 0 ? (
-                <EmptyState hasFilters={hasActiveFilters} onClear={clearFilters} />
-            ) : (
-                <div className="flex flex-col gap-4">
-                    {masters.map((master, index) => (
-                        <CatalogMasterCard key={master.username} master={master} index={index} />
-                    ))}
-                </div>
-            )}
+            {/* Split layout wrapper */}
+            <div className="flex gap-6">
+                {/* Left: List */}
+                <div className={cn(
+                    'w-full lg:w-[45%] lg:block',
+                    viewMode === 'map' && 'hidden lg:block',
+                )}>
+                    {/* Masters grid */}
+                    {isLoading ? (
+                        <div className="flex flex-col gap-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <CatalogCardSkeleton key={i} />
+                            ))}
+                        </div>
+                    ) : masters.length === 0 ? (
+                        <EmptyState hasFilters={hasActiveFilters} onClear={clearFilters} />
+                    ) : (
+                        <div className="flex flex-col gap-4">
+                            {masters.map((master, index) => (
+                                <CatalogMasterCard
+                                    key={master.username}
+                                    master={master}
+                                    index={index}
+                                    isHighlighted={highlightedUsername === master.username}
+                                    onMouseEnter={() => setHighlightedUsername(master.username)}
+                                    onMouseLeave={() => setHighlightedUsername(null)}
+                                />
+                            ))}
+                        </div>
+                    )}
 
-            {/* Pagination */}
-            {pagination && pagination.totalPages > 1 && (
-                <PaginationBar
-                    page={pagination.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={setPage}
-                />
-            )}
+                    {/* Pagination */}
+                    {pagination && pagination.totalPages > 1 && (
+                        <PaginationBar
+                            page={pagination.page}
+                            totalPages={pagination.totalPages}
+                            onPageChange={setPage}
+                        />
+                    )}
+                </div>
+
+                {/* Right: Map */}
+                <div className={cn(
+                    'lg:sticky lg:top-4 lg:block lg:h-[calc(100dvh-6rem)] lg:w-[55%]',
+                    viewMode === 'list' ? 'hidden lg:block' : 'fixed inset-0 z-40 lg:relative lg:inset-auto',
+                )}>
+                    <MasterMapView
+                        masters={masters}
+                        highlightedUsername={highlightedUsername}
+                        onMasterHover={setHighlightedUsername}
+                    />
+                </div>
+            </div>
+
+            {/* Mobile toggle button */}
+            <button
+                onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
+                className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-200 hover:brightness-110 active:scale-[0.98] lg:hidden"
+            >
+                {viewMode === 'list' ? (
+                    <><MapTrifold size={18} weight="fill" /> Map</>
+                ) : (
+                    <><ListBullets size={18} weight="bold" /> List</>
+                )}
+            </button>
         </div>
     );
 }
@@ -541,9 +590,12 @@ interface CatalogMasterCardProps {
         experienceYears?: number | null;
     };
     index: number;
+    isHighlighted?: boolean;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
 }
 
-function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.ReactElement {
+function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouseLeave }: CatalogMasterCardProps): React.ReactElement {
     const { language } = useLanguage();
     const images = master.portfolioImages;
     const cityDisplay = master.city ? getCityLabel(master.city, language) : null;
@@ -553,10 +605,15 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05, ease: 'easeOut' }}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
         >
             <Link
                 href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
-                className="group flex flex-col sm:flex-row rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-border/80 overflow-hidden"
+                className={cn(
+                    'group flex flex-col sm:flex-row rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-border/80 overflow-hidden',
+                    isHighlighted && 'ring-2 ring-primary/50',
+                )}
             >
                 {/* Portfolio images */}
                 <div className="relative w-full sm:w-72 md:w-80 shrink-0 aspect-4/3 sm:aspect-auto sm:h-48 bg-muted/30">

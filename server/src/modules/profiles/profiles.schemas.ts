@@ -42,6 +42,9 @@ export const UpdateProfileSchema = z.object({
   workingHours: WorkingHoursSchema.optional().nullable(),
   brandIds: z.array(z.string().uuid()).max(20).optional(),
   styleTagIds: z.array(z.string().uuid()).max(20).optional(),
+  latitude: z.number().min(-90).max(90).optional().nullable(),
+  longitude: z.number().min(-180).max(180).optional().nullable(),
+  isManualLocation: z.boolean().optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;

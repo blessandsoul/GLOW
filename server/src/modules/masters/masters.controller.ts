@@ -30,6 +30,10 @@ const CatalogQuerySchema = z.object({
   district: z.string().optional(),
   brandSlug: z.string().optional(),
   styleTagSlug: z.string().optional(),
+  swLat: z.coerce.number().min(-90).max(90).optional(),
+  swLng: z.coerce.number().min(-180).max(180).optional(),
+  neLat: z.coerce.number().min(-90).max(90).optional(),
+  neLng: z.coerce.number().min(-180).max(180).optional(),
 });
 
 export function createMastersController(mastersService: MastersService) {
@@ -46,7 +50,10 @@ export function createMastersController(mastersService: MastersService) {
     },
 
     async getCatalog(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug } = CatalogQuerySchema.parse(request.query);
+      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug, swLat, swLng, neLat, neLng } = CatalogQuerySchema.parse(request.query);
+      const bounds = swLat !== undefined && swLng !== undefined && neLat !== undefined && neLng !== undefined
+        ? { swLat, swLng, neLat, neLng }
+        : undefined;
       const { items, totalItems } = await mastersService.getCatalogMasters({
         page,
         limit,
@@ -63,6 +70,7 @@ export function createMastersController(mastersService: MastersService) {
         district,
         brandSlug,
         styleTagSlug,
+        bounds,
       });
       reply.send(paginatedResponse('Masters catalog retrieved', items, page, limit, totalItems));
     },

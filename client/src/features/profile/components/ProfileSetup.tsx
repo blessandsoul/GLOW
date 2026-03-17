@@ -20,6 +20,7 @@ import { usersService } from '@/features/users/services/users.service';
 import { getErrorMessage } from '@/lib/utils/error';
 import { ServiceRow } from './ServiceRow';
 import { AddServicePanel } from './AddServicePanel';
+import { LocationPicker } from './LocationPicker';
 
 // ─── Personal Info section ────────────────────────────────────────────────────
 
@@ -97,6 +98,9 @@ export function ProfileSetup(): React.ReactElement {
                 city: profile.city ?? '',
                 niche: profile.niche ?? '',
                 workAddress: profile.workAddress ?? '',
+                latitude: profile.latitude ?? null,
+                longitude: profile.longitude ?? null,
+                isManualLocation: profile.isManualLocation ?? false,
                 bio: profile.bio ?? '',
                 phone: profile.phone ?? '',
                 whatsapp: profile.whatsapp ?? '',
@@ -230,6 +234,19 @@ export function ProfileSetup(): React.ReactElement {
                     />
                     <p className="text-[11px] text-muted-foreground">Where clients can find you (studio, salon, or home address)</p>
                 </div>
+
+                <LocationPicker
+                    latitude={form.latitude}
+                    longitude={form.longitude}
+                    onChange={(lat, lng) =>
+                        setForm((prev) => ({
+                            ...prev,
+                            latitude: lat,
+                            longitude: lng,
+                            isManualLocation: lat != null && lng != null,
+                        }))
+                    }
+                />
 
                 <div className="space-y-1.5">
                     <Label htmlFor="bio" className="text-xs text-muted-foreground">{t('ui.text_2v8yka')}</Label>

@@ -17,6 +17,7 @@ export interface CatalogFilters {
   district?: string;
   brandSlug?: string;
   styleTagSlug?: string;
+  bounds?: { swLat: number; swLng: number; neLat: number; neLng: number };
 }
 
 const MASTER_SELECT = {
@@ -33,6 +34,9 @@ const MASTER_SELECT = {
       languages: true,
       locationType: true,
       workingHours: true,
+      latitude: true,
+      longitude: true,
+      isManualLocation: true,
       verificationStatus: true,
       isCertified: true,
       isHygieneVerified: true,
@@ -40,7 +44,7 @@ const MASTER_SELECT = {
       isTopRated: true,
       experienceYears: true,
       district: {
-        select: { name: true, slug: true },
+        select: { name: true, slug: true, latitude: true, longitude: true },
       },
       brands: {
         select: { brand: { select: { name: true, slug: true, logoUrl: true } } },
@@ -88,6 +92,7 @@ function buildWhere(opts?: {
   district?: string;
   brandSlug?: string;
   styleTagSlug?: string;
+  bounds?: { swLat: number; swLng: number; neLat: number; neLng: number };
 }): Prisma.UserWhereInput {
   const profileConditions: Record<string, unknown> = {};
   if (opts?.niche) profileConditions.niche = opts.niche;
@@ -105,6 +110,10 @@ function buildWhere(opts?: {
   if (opts?.district) profileConditions.district = { is: { slug: opts.district } };
   if (opts?.brandSlug) profileConditions.brands = { some: { brand: { slug: opts.brandSlug } } };
   if (opts?.styleTagSlug) profileConditions.styleTags = { some: { styleTag: { slug: opts.styleTagSlug } } };
+  if (opts?.bounds) {
+    profileConditions.latitude = { gte: opts.bounds.swLat, lte: opts.bounds.neLat };
+    profileConditions.longitude = { gte: opts.bounds.swLng, lte: opts.bounds.neLng };
+  }
 
   const masterProfileFilter: Prisma.MasterProfileNullableScalarRelationFilter = Object.keys(profileConditions).length > 0
     ? { is: profileConditions }
@@ -153,6 +162,9 @@ function mapMaster(m: any) {
     locationType: p?.locationType ?? null,
     workingHours: p?.workingHours ?? null,
     district: p?.district ?? null,
+    latitude: p?.latitude ?? p?.district?.latitude ?? null,
+    longitude: p?.longitude ?? p?.district?.longitude ?? null,
+    isManualLocation: p?.isManualLocation ?? false,
     brands: (p?.brands ?? []).map((mb: { brand: { name: string; slug: string; logoUrl: string | null } }) => mb.brand),
     styleTags: (p?.styleTags ?? []).map((mt: { styleTag: { name: string; slug: string } }) => mt.styleTag),
     portfolioImages: m.portfolioItems.map((item: { id: string; imageUrl: string; title: string | null }) => ({
@@ -223,9 +235,9 @@ export const mastersRepo = {
    * Find masters for the public catalog with search, filters, and pagination.
    */
   async findCatalogMasters(filters: CatalogFilters) {
-    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug } = filters;
+    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug, bounds } = filters;
     const offset = (page - 1) * limit;
-    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug });
+    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug, bounds });
 
     const [masters, totalItems] = await Promise.all([
       prisma.user.findMany({

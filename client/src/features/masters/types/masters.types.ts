@@ -56,6 +56,9 @@ export interface FeaturedMaster {
     district?: MasterDistrict | null;
     brands?: MasterBrand[];
     styleTags?: MasterStyleTag[];
+    latitude?: number | null;
+    longitude?: number | null;
+    isManualLocation?: boolean;
 }
 
 export interface CatalogFilters {
@@ -74,6 +77,10 @@ export interface CatalogFilters {
     district?: string;
     brandSlug?: string;
     styleTagSlug?: string;
+    swLat?: number;
+    swLng?: number;
+    neLat?: number;
+    neLng?: number;
 }
 
 export interface CatalogDistrict {
@@ -95,4 +102,11 @@ export interface CatalogStyleTag {
     name: string;
     slug: string;
     niche: string | null;
+}
+
+export interface MapBounds {
+    swLat: number;
+    swLng: number;
+    neLat: number;
+    neLng: number;
 }
