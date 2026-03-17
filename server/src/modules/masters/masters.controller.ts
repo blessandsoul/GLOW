@@ -25,6 +25,11 @@ const CatalogQuerySchema = z.object({
   isHygieneVerified: booleanFromQuery,
   isQualityProducts: booleanFromQuery,
   isTopRated: booleanFromQuery,
+  language: z.string().optional(),
+  locationType: z.enum(['salon', 'home_studio', 'mobile', 'client_visit']).optional(),
+  district: z.string().optional(),
+  brandSlug: z.string().optional(),
+  styleTagSlug: z.string().optional(),
 });
 
 export function createMastersController(mastersService: MastersService) {
@@ -35,8 +40,13 @@ export function createMastersController(mastersService: MastersService) {
       reply.send(successResponse('Featured masters retrieved', masters));
     },
 
+    async getNicheCounts(_request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const counts = await mastersService.getNicheCounts();
+      reply.send(successResponse('Niche counts retrieved', counts));
+    },
+
     async getCatalog(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated } = CatalogQuerySchema.parse(request.query);
+      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug } = CatalogQuerySchema.parse(request.query);
       const { items, totalItems } = await mastersService.getCatalogMasters({
         page,
         limit,
@@ -48,6 +58,11 @@ export function createMastersController(mastersService: MastersService) {
         isHygieneVerified,
         isQualityProducts,
         isTopRated,
+        language,
+        locationType,
+        district,
+        brandSlug,
+        styleTagSlug,
       });
       reply.send(paginatedResponse('Masters catalog retrieved', items, page, limit, totalItems));
     },

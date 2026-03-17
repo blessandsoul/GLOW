@@ -15,6 +15,18 @@ export function createCatalogService() {
         suggestions: cat.suggestions.map((s) => s.name),
       }));
     },
+
+    async getDistricts(citySlug?: string) {
+      return catalogRepo.findActiveDistricts(citySlug);
+    },
+
+    async getBrands() {
+      return catalogRepo.findActiveBrands();
+    },
+
+    async getStyleTags(niche?: string) {
+      return catalogRepo.findActiveStyleTags(niche);
+    },
   };
 }
 

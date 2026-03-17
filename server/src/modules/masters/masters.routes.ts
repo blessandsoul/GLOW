@@ -8,5 +8,6 @@ export async function mastersRoutes(app: FastifyInstance): Promise<void> {
 
   // Public routes — no auth required
   app.get('/featured', controller.getFeatured);
+  app.get('/niche-counts', controller.getNicheCounts);
   app.get('/catalog', controller.getCatalog);
 }

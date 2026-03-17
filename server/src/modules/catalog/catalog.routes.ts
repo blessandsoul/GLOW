@@ -8,4 +8,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
 
   app.get('/specialities', controller.getSpecialities);
   app.get('/service-categories', controller.getServiceCategories);
+  app.get('/districts', controller.getDistricts);
+  app.get('/brands', controller.getBrands);
+  app.get('/style-tags', controller.getStyleTags);
 }

@@ -163,8 +163,8 @@
   },
   "hero": {
     "badge": "Glow.GE AI Studio",
-    "title_1": "Find Your",
-    "title_2": "master in Georgia",
+    "title_1": "All Beauty",
+    "title_2": "services in one place",
     "rotating_words": [
       "lash",
       "brow",
@@ -172,12 +172,12 @@
       "makeup",
       "hair"
     ],
-    "description": "Browse verified beauty professionals, view portfolios and reviews, and book your next appointment.",
-    "btn_start": "Find a Master",
+    "description": "Lashes, nails, brows, makeup, hair, cosmetology — find any beauty service in Georgia. Verified masters, portfolios, reviews and prices.",
+    "btn_start": "Explore Services",
     "btn_master": "I'm a Master",
     "daily_free_note": "5 free photos every day — no card needed",
-    "stats_title": "Verified professionals",
-    "stats_desc": "Portfolios, reviews, prices",
+    "stats_title": "All beauty services",
+    "stats_desc": "Masters, salons, portfolios, reviews",
     "stats_label_photos": "masters",
     "stats_label_rating": "avg. rating",
     "stats_label_rank": "Georgia",
@@ -966,8 +966,8 @@
     "all_rights": "All rights reserved."
   },
   "masters": {
-    "section_title": "Our Masters",
-    "section_subtitle": "Professionals on Glow.GE",
+    "section_title": "Top Masters",
+    "section_subtitle": "All beauty professionals in one place",
     "scroll_left": "Scroll left",
     "scroll_right": "Scroll right",
     "view_portfolio": "View portfolio",
@@ -981,8 +981,8 @@
     "badge_top_rated": "Top rated: 4.5+ with 10+ reviews"
   },
   "catalog": {
-    "title": "Find a Master",
-    "subtitle": "Browse beauty professionals and find the perfect specialist for you",
+    "title": "Beauty Services Catalog",
+    "subtitle": "All beauty professionals and services in one place — find exactly what you need",
     "search_placeholder": "Search by name...",
     "city_placeholder": "City",
     "clear_filters": "Clear filters",
@@ -995,11 +995,21 @@
     "filter_certified": "Certified",
     "filter_hygiene": "Hygiene verified",
     "filter_quality": "Quality products",
-    "filter_top_rated": "Top rated"
+    "filter_top_rated": "Top rated",
+    "filter_language": "Language",
+    "filter_location_type": "Location",
+    "filter_district": "District",
+    "filter_brand": "Brand",
+    "filter_style_tag": "Style",
+    "location_salon": "Salon",
+    "location_home_studio": "Home studio",
+    "location_mobile": "Mobile",
+    "location_client_visit": "Client visit"
   },
   "landing": {
     "categories_title": "What are you looking for?",
     "categories_subtitle": "Choose a category to find the right specialist",
+    "categories_masters_count": "masters",
     "search_placeholder_niche": "What service?",
     "search_placeholder_city": "City",
     "search_btn": "Find",

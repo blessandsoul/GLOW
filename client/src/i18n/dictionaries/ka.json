@@ -163,8 +163,8 @@
   },
   "hero": {
     "badge": "Glow.GE AI-სტუდია",
-    "title_1": "იპოვე შენი",
-    "title_2": "ოსტატი საქართველოში",
+    "title_1": "ყველა ბიუთი-სერვისი",
+    "title_2": "ერთ სივრცეში",
     "rotating_words": [
       "წამწამების",
       "წარბების",
@@ -172,12 +172,12 @@
       "მაკიაჟის",
       "თმის"
     ],
-    "description": "ვერიფიცირებული ბიუთი-ოსტატები პორტფოლიოთი, შეფასებებით და ფასებით. იპოვე შენი სპეციალისტი.",
-    "btn_start": "ოსტატის პოვნა",
+    "description": "წამწამები, ფრჩხილები, წარბები, მაკიაჟი, თმა, კოსმეტოლოგია — იპოვე ნებისმიერი ბიუთი-სერვისი საქართველოში. ვერიფიცირებული ოსტატები, პორტფოლიო, შეფასებები და ფასები.",
+    "btn_start": "სერვისების ნახვა",
     "btn_master": "მე ოსტატი ვარ",
     "daily_free_note": "ყოველდღე 5 უფასო ფოტო — გადახდა არ სჭირდება",
-    "stats_title": "ვერიფიცირებული ოსტატები",
-    "stats_desc": "პორტფოლიო, შეფასებები, ფასები",
+    "stats_title": "ყველა ბიუთი-სერვისი",
+    "stats_desc": "ოსტატები, სალონები, პორტფოლიო, შეფასებები",
     "stats_label_photos": "ოსტატი",
     "stats_label_rating": "საშ. შეფასება",
     "stats_label_rank": "Georgia",
@@ -1003,8 +1003,8 @@
     "all_rights": "ყველა უფლება დაცულია."
   },
   "masters": {
-    "section_title": "ჩვენი ოსტატები",
-    "section_subtitle": "პროფესიონალები Glow.GE-ზე",
+    "section_title": "საუკეთესო ოსტატები",
+    "section_subtitle": "ყველა ბიუთი-სპეციალისტი ერთ სივრცეში",
     "scroll_left": "მარცხნივ",
     "scroll_right": "მარჯვნივ",
     "view_portfolio": "პორტფოლიოს ნახვა",
@@ -1018,8 +1018,8 @@
     "badge_top_rated": "ტოპ რეიტინგი: 4.5+ 10+ შეფასებით"
   },
   "catalog": {
-    "title": "იპოვე ოსტატი",
-    "subtitle": "მოძებნე სილამაზის პროფესიონალი შენთვის",
+    "title": "ბიუთი-სერვისების კატალოგი",
+    "subtitle": "ყველა ბიუთი-სპეციალისტი და სერვისი ერთ სივრცეში — იპოვე ზუსტად ის, რაც გჭირდება",
     "search_placeholder": "ძიება სახელით...",
     "city_placeholder": "ქალაქი",
     "clear_filters": "ფილტრების გასუფთავება",
@@ -1032,11 +1032,21 @@
     "filter_certified": "სერთიფიცირებული",
     "filter_hygiene": "ჰიგიენა შემოწმებული",
     "filter_quality": "ხარისხიანი პროდუქცია",
-    "filter_top_rated": "ტოპ რეიტინგი"
+    "filter_top_rated": "ტოპ რეიტინგი",
+    "filter_language": "ენა",
+    "filter_location_type": "მდებარეობა",
+    "filter_district": "უბანი",
+    "filter_brand": "ბრენდი",
+    "filter_style_tag": "სტილი",
+    "location_salon": "სალონი",
+    "location_home_studio": "სახლის სტუდია",
+    "location_mobile": "გასვლით",
+    "location_client_visit": "კლიენტთან"
   },
   "landing": {
     "categories_title": "რას ეძებთ?",
     "categories_subtitle": "აირჩიეთ კატეგორია სწორი სპეციალისტის საპოვნელად",
+    "categories_masters_count": "ოსტატი",
     "search_placeholder_niche": "რა მომსახურება?",
     "search_placeholder_city": "ქალაქი",
     "search_btn": "პოვნა",

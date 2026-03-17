@@ -11,6 +11,33 @@ export interface MasterBadges {
     isTopRated: boolean;
 }
 
+export interface MasterServiceItem {
+    name: string;
+    price: number;
+    priceType: 'fixed' | 'hourly';
+    category: string;
+    duration?: number;
+    description?: string;
+}
+
+export interface MasterDistrict {
+    name: string;
+    slug: string;
+}
+
+export interface MasterBrand {
+    name: string;
+    slug: string;
+    logoUrl: string | null;
+}
+
+export interface MasterStyleTag {
+    name: string;
+    slug: string;
+}
+
+export type LocationType = 'salon' | 'home_studio' | 'mobile' | 'client_visit';
+
 export interface FeaturedMaster {
     username: string;
     displayName: string;
@@ -22,6 +49,13 @@ export interface FeaturedMaster {
     isVerified?: boolean;
     badges?: MasterBadges;
     experienceYears?: number | null;
+    services?: MasterServiceItem[] | null;
+    languages?: string[];
+    locationType?: LocationType | null;
+    workingHours?: Record<string, { open: string; close: string }[] | null> | null;
+    district?: MasterDistrict | null;
+    brands?: MasterBrand[];
+    styleTags?: MasterStyleTag[];
 }
 
 export interface CatalogFilters {
@@ -35,4 +69,30 @@ export interface CatalogFilters {
     isHygieneVerified?: boolean;
     isQualityProducts?: boolean;
     isTopRated?: boolean;
+    language?: string;
+    locationType?: LocationType;
+    district?: string;
+    brandSlug?: string;
+    styleTagSlug?: string;
+}
+
+export interface CatalogDistrict {
+    id: string;
+    name: string;
+    slug: string;
+    citySlug: string;
+}
+
+export interface CatalogBrand {
+    id: string;
+    name: string;
+    slug: string;
+    logoUrl: string | null;
+}
+
+export interface CatalogStyleTag {
+    id: string;
+    name: string;
+    slug: string;
+    niche: string | null;
 }

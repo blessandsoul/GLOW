@@ -12,6 +12,11 @@ export interface CatalogFilters {
   isHygieneVerified?: boolean;
   isQualityProducts?: boolean;
   isTopRated?: boolean;
+  language?: string;
+  locationType?: string;
+  district?: string;
+  brandSlug?: string;
+  styleTagSlug?: string;
 }
 
 const MASTER_SELECT = {
@@ -24,12 +29,25 @@ const MASTER_SELECT = {
     select: {
       city: true,
       niche: true,
+      services: true,
+      languages: true,
+      locationType: true,
+      workingHours: true,
       verificationStatus: true,
       isCertified: true,
       isHygieneVerified: true,
       isQualityProducts: true,
       isTopRated: true,
       experienceYears: true,
+      district: {
+        select: { name: true, slug: true },
+      },
+      brands: {
+        select: { brand: { select: { name: true, slug: true, logoUrl: true } } },
+      },
+      styleTags: {
+        select: { styleTag: { select: { name: true, slug: true } } },
+      },
     },
   },
   brandingProfile: {
@@ -65,15 +83,28 @@ function buildWhere(opts?: {
   isHygieneVerified?: boolean;
   isQualityProducts?: boolean;
   isTopRated?: boolean;
+  language?: string;
+  locationType?: string;
+  district?: string;
+  brandSlug?: string;
+  styleTagSlug?: string;
 }): Prisma.UserWhereInput {
   const profileConditions: Record<string, unknown> = {};
   if (opts?.niche) profileConditions.niche = opts.niche;
-  if (opts?.city) profileConditions.city = { contains: opts.city };
+  if (opts?.city) {
+    const cities = opts.city.split(',').map((c) => c.trim()).filter(Boolean);
+    profileConditions.city = cities.length === 1 ? cities[0] : { in: cities };
+  }
   if (opts?.isVerified) profileConditions.verificationStatus = 'VERIFIED';
   if (opts?.isCertified) profileConditions.isCertified = true;
   if (opts?.isHygieneVerified) profileConditions.isHygieneVerified = true;
   if (opts?.isQualityProducts) profileConditions.isQualityProducts = true;
   if (opts?.isTopRated) profileConditions.isTopRated = true;
+  if (opts?.locationType) profileConditions.locationType = opts.locationType;
+  if (opts?.language) profileConditions.languages = { array_contains: opts.language };
+  if (opts?.district) profileConditions.district = { is: { slug: opts.district } };
+  if (opts?.brandSlug) profileConditions.brands = { some: { brand: { slug: opts.brandSlug } } };
+  if (opts?.styleTagSlug) profileConditions.styleTags = { some: { styleTag: { slug: opts.styleTagSlug } } };
 
   const masterProfileFilter: Prisma.MasterProfileNullableScalarRelationFilter = Object.keys(profileConditions).length > 0
     ? { is: profileConditions }
@@ -100,40 +131,31 @@ function buildWhere(opts?: {
   return where;
 }
 
-function mapMaster(m: {
-  username: string | null;
-  firstName: string;
-  lastName: string;
-  avatar: string | null;
-  masterProfile: {
-    city: string | null;
-    niche: string | null;
-    verificationStatus: string;
-    isCertified: boolean;
-    isHygieneVerified: boolean;
-    isQualityProducts: boolean;
-    isTopRated: boolean;
-    experienceYears: number | null;
-  } | null;
-  brandingProfile: { displayName: string | null } | null;
-  portfolioItems: { id: string; imageUrl: string; title: string | null }[];
-  _count: { portfolioItems: number };
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapMaster(m: any) {
+  const p = m.masterProfile;
   return {
     username: m.username!,
     displayName: m.brandingProfile?.displayName ?? `${m.firstName} ${m.lastName}`,
     avatar: m.avatar,
-    city: m.masterProfile?.city ?? null,
-    niche: m.masterProfile?.niche ?? null,
-    isVerified: m.masterProfile?.verificationStatus === 'VERIFIED',
+    city: p?.city ?? null,
+    niche: p?.niche ?? null,
+    isVerified: p?.verificationStatus === 'VERIFIED',
     badges: {
-      isCertified: m.masterProfile?.isCertified ?? false,
-      isHygieneVerified: m.masterProfile?.isHygieneVerified ?? false,
-      isQualityProducts: m.masterProfile?.isQualityProducts ?? false,
-      isTopRated: m.masterProfile?.isTopRated ?? false,
+      isCertified: p?.isCertified ?? false,
+      isHygieneVerified: p?.isHygieneVerified ?? false,
+      isQualityProducts: p?.isQualityProducts ?? false,
+      isTopRated: p?.isTopRated ?? false,
     },
-    experienceYears: m.masterProfile?.experienceYears ?? null,
-    portfolioImages: m.portfolioItems.map((item) => ({
+    experienceYears: p?.experienceYears ?? null,
+    services: p?.services ?? null,
+    languages: (p?.languages as string[] | null) ?? [],
+    locationType: p?.locationType ?? null,
+    workingHours: p?.workingHours ?? null,
+    district: p?.district ?? null,
+    brands: (p?.brands ?? []).map((mb: { brand: { name: string; slug: string; logoUrl: string | null } }) => mb.brand),
+    styleTags: (p?.styleTags ?? []).map((mt: { styleTag: { name: string; slug: string } }) => mt.styleTag),
+    portfolioImages: m.portfolioItems.map((item: { id: string; imageUrl: string; title: string | null }) => ({
       id: item.id,
       imageUrl: item.imageUrl,
       title: item.title,
@@ -143,6 +165,29 @@ function mapMaster(m: {
 }
 
 export const mastersRepo = {
+  /**
+   * Count active masters (with published portfolio) grouped by niche.
+   */
+  async countByNiche(): Promise<{ niche: string; count: number }[]> {
+    const results = await prisma.masterProfile.groupBy({
+      by: ['niche'],
+      where: {
+        niche: { not: null },
+        user: {
+          isActive: true,
+          deletedAt: null,
+          username: { not: null },
+          portfolioItems: { some: { isPublished: true } },
+        },
+      },
+      _count: { niche: true },
+    });
+
+    return results
+      .filter((r) => r.niche !== null)
+      .map((r) => ({ niche: r.niche!, count: r._count.niche }));
+  },
+
   /**
    * Find active masters who have at least 1 published portfolio item.
    * Returns master data with their top 4 portfolio images.
@@ -178,9 +223,9 @@ export const mastersRepo = {
    * Find masters for the public catalog with search, filters, and pagination.
    */
   async findCatalogMasters(filters: CatalogFilters) {
-    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated } = filters;
+    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug } = filters;
     const offset = (page - 1) * limit;
-    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated });
+    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug });
 
     const [masters, totalItems] = await Promise.all([
       prisma.user.findMany({

@@ -106,6 +106,7 @@ export const API_ENDPOINTS = {
     },
     MASTERS: {
         FEATURED: '/masters/featured',
+        NICHE_COUNTS: '/masters/niche-counts',
         CATALOG: '/masters/catalog',
     },
     VERIFICATION: {
@@ -123,6 +124,9 @@ export const API_ENDPOINTS = {
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',
         SERVICE_CATEGORIES: '/catalog/service-categories',
+        DISTRICTS: '/catalog/districts',
+        BRANDS: '/catalog/brands',
+        STYLE_TAGS: '/catalog/style-tags',
     },
     NOTIFICATIONS: {
         REPORT: '/notifications/report',

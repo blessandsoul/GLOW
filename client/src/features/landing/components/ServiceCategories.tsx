@@ -5,6 +5,7 @@ import { Eye, HandSoap, Scissors, Sparkle, PaintBrush, FlowerLotus, ArrowRight }
 import { motion } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { useNicheCounts } from '@/features/masters/hooks/useNicheCounts';
 import { ROUTES } from '@/lib/constants/routes';
 import type { IconProps } from '@phosphor-icons/react';
 
@@ -29,6 +30,7 @@ const NICHE_COLORS: Record<string, string> = {
 export function ServiceCategories(): React.ReactElement | null {
     const { t } = useLanguage();
     const { specialities, isLoading } = useSpecialities();
+    const { counts } = useNicheCounts();
 
     if (isLoading) {
         return (
@@ -84,6 +86,11 @@ export function ServiceCategories(): React.ReactElement | null {
                                 <span className="text-sm font-semibold text-foreground text-center leading-tight">
                                     {spec.label}
                                 </span>
+                                {counts[spec.slug] != null && (
+                                    <span className="text-xs text-muted-foreground tabular-nums">
+                                        {counts[spec.slug]} {t('landing.categories_masters_count')}
+                                    </span>
+                                )}
                                 <ArrowRight
                                     size={14}
                                     className="text-muted-foreground/0 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5"

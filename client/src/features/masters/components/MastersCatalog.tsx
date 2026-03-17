@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
-    MapPin, ArrowRight, MagnifyingGlass, X, CaretLeft, CaretRight,
+    MapPin, ArrowRight, MagnifyingGlass, X, CaretLeft, CaretRight, CaretDown, Check,
     Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle, SquaresFour,
     SlidersHorizontal, UsersFour,
     SealCheck, Certificate, FirstAid, Diamond, Star,
@@ -15,15 +15,18 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMastersCatalog } from '../hooks/useMastersCatalog';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { useDistricts, useBrands, useStyleTags } from '../hooks/useCatalogLookups';
 import { getCityOptions, getCityLabel } from '@/lib/constants/cities';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MasterBadgesRow } from './MasterBadges';
+import type { LocationType } from '../types/masters.types';
 
 const NICHE_META: Record<string, { icon: Icon }> = {
     lashes:   { icon: Eye },
@@ -43,7 +46,16 @@ export function MastersCatalog(): React.ReactElement {
 
     const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '');
     const [selectedNiche, setSelectedNiche] = useState<string | undefined>(searchParams.get('niche') ?? undefined);
-    const [city, setCity] = useState(searchParams.get('city') ?? '');
+    const [cities, setCities] = useState<string[]>(() => {
+        const param = searchParams.get('city');
+        return param ? param.split(',').filter(Boolean) : [];
+    });
+    const [cityOpen, setCityOpen] = useState(false);
+    const [selectedLanguage, setSelectedLanguage] = useState<string | undefined>(searchParams.get('language') ?? undefined);
+    const [selectedLocationType, setSelectedLocationType] = useState<LocationType | undefined>((searchParams.get('locationType') as LocationType) ?? undefined);
+    const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(searchParams.get('district') ?? undefined);
+    const [selectedBrand, setSelectedBrand] = useState<string | undefined>(searchParams.get('brandSlug') ?? undefined);
+    const [selectedStyleTag, setSelectedStyleTag] = useState<string | undefined>(searchParams.get('styleTagSlug') ?? undefined);
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [badgeFilters, setBadgeFilters] = useState({
         isVerified: searchParams.get('isVerified') === 'true',
@@ -55,25 +67,34 @@ export function MastersCatalog(): React.ReactElement {
 
     const debouncedSearch = useDebounce(searchInput, 400);
 
+    const { districts } = useDistricts();
+    const { brands } = useBrands();
+    const { styleTags } = useStyleTags(selectedNiche);
+
     useEffect(() => {
         const params = new URLSearchParams();
         if (debouncedSearch) params.set('search', debouncedSearch);
         if (selectedNiche) params.set('niche', selectedNiche);
-        if (city) params.set('city', city);
+        if (cities.length > 0) params.set('city', cities.join(','));
         if (page > 1) params.set('page', String(page));
         if (badgeFilters.isVerified) params.set('isVerified', 'true');
         if (badgeFilters.isCertified) params.set('isCertified', 'true');
         if (badgeFilters.isHygieneVerified) params.set('isHygieneVerified', 'true');
         if (badgeFilters.isQualityProducts) params.set('isQualityProducts', 'true');
         if (badgeFilters.isTopRated) params.set('isTopRated', 'true');
+        if (selectedLanguage) params.set('language', selectedLanguage);
+        if (selectedLocationType) params.set('locationType', selectedLocationType);
+        if (selectedDistrict) params.set('district', selectedDistrict);
+        if (selectedBrand) params.set('brandSlug', selectedBrand);
+        if (selectedStyleTag) params.set('styleTagSlug', selectedStyleTag);
         const qs = params.toString();
         router.replace(qs ? `${ROUTES.MASTERS}?${qs}` : ROUTES.MASTERS, { scroll: false });
-    }, [debouncedSearch, selectedNiche, city, page, badgeFilters, router]);
+    }, [debouncedSearch, selectedNiche, cities, page, badgeFilters, selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, router]);
 
     const { masters, pagination, isLoading, isFetching } = useMastersCatalog({
         search: debouncedSearch || undefined,
         niche: selectedNiche,
-        city: city || undefined,
+        city: cities.length > 0 ? cities.join(',') : undefined,
         page,
         limit: 12,
         ...(badgeFilters.isVerified && { isVerified: true }),
@@ -81,6 +102,11 @@ export function MastersCatalog(): React.ReactElement {
         ...(badgeFilters.isHygieneVerified && { isHygieneVerified: true }),
         ...(badgeFilters.isQualityProducts && { isQualityProducts: true }),
         ...(badgeFilters.isTopRated && { isTopRated: true }),
+        language: selectedLanguage,
+        locationType: selectedLocationType,
+        district: selectedDistrict,
+        brandSlug: selectedBrand,
+        styleTagSlug: selectedStyleTag,
     });
 
     const handleNicheChange = useCallback((niche: string | undefined): void => {
@@ -93,8 +119,15 @@ export function MastersCatalog(): React.ReactElement {
         setPage(1);
     }, []);
 
-    const handleCityChange = useCallback((value: string): void => {
-        setCity(value);
+    const toggleCity = useCallback((slug: string): void => {
+        setCities((prev) =>
+            prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]
+        );
+        setPage(1);
+    }, []);
+
+    const removeCity = useCallback((slug: string): void => {
+        setCities((prev) => prev.filter((c) => c !== slug));
         setPage(1);
     }, []);
 
@@ -106,14 +139,20 @@ export function MastersCatalog(): React.ReactElement {
     const clearFilters = useCallback((): void => {
         setSearchInput('');
         setSelectedNiche(undefined);
-        setCity('');
+        setCities([]);
         setBadgeFilters({ isVerified: false, isCertified: false, isHygieneVerified: false, isQualityProducts: false, isTopRated: false });
+        setSelectedLanguage(undefined);
+        setSelectedLocationType(undefined);
+        setSelectedDistrict(undefined);
+        setSelectedBrand(undefined);
+        setSelectedStyleTag(undefined);
         setPage(1);
     }, []);
 
     const activeBadgeCount = Object.values(badgeFilters).filter(Boolean).length;
-    const hasActiveFilters = !!debouncedSearch || !!selectedNiche || !!city || activeBadgeCount > 0;
-    const activeFilterCount = [debouncedSearch, selectedNiche, city].filter(Boolean).length + activeBadgeCount;
+    const extraFilterCount = [selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag].filter(Boolean).length;
+    const hasActiveFilters = !!debouncedSearch || !!selectedNiche || cities.length > 0 || activeBadgeCount > 0 || extraFilterCount > 0;
+    const activeFilterCount = [debouncedSearch, selectedNiche].filter(Boolean).length + (cities.length > 0 ? 1 : 0) + activeBadgeCount + extraFilterCount;
 
     return (
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
@@ -166,21 +205,72 @@ export function MastersCatalog(): React.ReactElement {
                         )}
                     </div>
 
-                    {/* City */}
-                    <div className="sm:w-52">
-                        <Select value={city || undefined} onValueChange={(v) => handleCityChange(v)}>
-                            <SelectTrigger className="h-11 w-full rounded-xl border-border/50">
-                                <div className="flex items-center gap-2">
-                                    <MapPin size={16} weight="fill" className="text-muted-foreground/70 shrink-0" />
-                                    <SelectValue placeholder={t('catalog.city_placeholder')} />
-                                </div>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {cityOptions.map((c) => (
-                                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                    {/* City multi-select */}
+                    <div className="sm:w-60">
+                        <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                            <PopoverTrigger asChild>
+                                <button
+                                    type="button"
+                                    className="relative flex h-11 w-full items-center gap-1.5 rounded-xl border border-border/50 bg-background pl-10 pr-9 text-sm font-medium text-left outline-none transition-all duration-200 hover:border-border focus-visible:ring-2 focus-visible:ring-primary/40"
+                                >
+                                    <MapPin size={16} weight="fill" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
+                                    {cities.length === 0 ? (
+                                        <span className="text-muted-foreground/50 truncate">
+                                            {t('catalog.city_placeholder')}
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-1 truncate">
+                                            {cities.slice(0, 2).map((c) => (
+                                                <span
+                                                    key={c}
+                                                    className="inline-flex items-center gap-0.5 rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary"
+                                                >
+                                                    {cityOptions.find((o) => o.value === c)?.label ?? c}
+                                                    <X
+                                                        size={10}
+                                                        weight="bold"
+                                                        className="cursor-pointer hover:text-destructive"
+                                                        onClick={(e) => { e.stopPropagation(); removeCity(c); }}
+                                                    />
+                                                </span>
+                                            ))}
+                                            {cities.length > 2 && (
+                                                <span className="text-xs text-muted-foreground">+{cities.length - 2}</span>
+                                            )}
+                                        </span>
+                                    )}
+                                    <CaretDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-55 p-0" align="start">
+                                <Command>
+                                    <CommandInput placeholder={t('catalog.city_placeholder')} />
+                                    <CommandList>
+                                        <CommandEmpty>—</CommandEmpty>
+                                        <CommandGroup>
+                                            {cityOptions.map((c) => {
+                                                const selected = cities.includes(c.value);
+                                                return (
+                                                    <CommandItem
+                                                        key={c.value}
+                                                        value={c.label}
+                                                        onSelect={() => toggleCity(c.value)}
+                                                    >
+                                                        <div className={cn(
+                                                            'mr-1 flex h-4 w-4 items-center justify-center rounded border border-primary/40',
+                                                            selected ? 'bg-primary border-primary' : 'bg-transparent'
+                                                        )}>
+                                                            {selected && <Check size={10} weight="bold" className="text-primary-foreground" />}
+                                                        </div>
+                                                        {c.label}
+                                                    </CommandItem>
+                                                );
+                                            })}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
 
                     {/* Clear all */}
@@ -270,6 +360,54 @@ export function MastersCatalog(): React.ReactElement {
                         label={t('catalog.filter_top_rated')}
                         colorClass="text-warning"
                     />
+                </div>
+
+                {/* Extra filters row */}
+                <div
+                    className="flex gap-2 mt-3 pt-3 border-t border-border/40 overflow-x-auto scrollbar-hide flex-wrap"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {/* Language */}
+                    <SelectFilterChip
+                        value={selectedLanguage}
+                        onChange={(v) => { setSelectedLanguage(v); setPage(1); }}
+                        label={t('catalog.filter_language')}
+                        options={LANGUAGE_OPTIONS}
+                    />
+                    {/* Location type */}
+                    <SelectFilterChip
+                        value={selectedLocationType}
+                        onChange={(v) => { setSelectedLocationType(v as LocationType | undefined); setPage(1); }}
+                        label={t('catalog.filter_location_type')}
+                        options={LOCATION_TYPE_OPTIONS.map((o) => ({ value: o.value, label: t(`catalog.location_${o.value}`) }))}
+                    />
+                    {/* District */}
+                    {districts.length > 0 && (
+                        <SelectFilterChip
+                            value={selectedDistrict}
+                            onChange={(v) => { setSelectedDistrict(v); setPage(1); }}
+                            label={t('catalog.filter_district')}
+                            options={districts.map((d) => ({ value: d.slug, label: d.name }))}
+                        />
+                    )}
+                    {/* Brand */}
+                    {brands.length > 0 && (
+                        <SelectFilterChip
+                            value={selectedBrand}
+                            onChange={(v) => { setSelectedBrand(v); setPage(1); }}
+                            label={t('catalog.filter_brand')}
+                            options={brands.map((b) => ({ value: b.slug, label: b.name }))}
+                        />
+                    )}
+                    {/* Style tag */}
+                    {styleTags.length > 0 && (
+                        <SelectFilterChip
+                            value={selectedStyleTag}
+                            onChange={(v) => { setSelectedStyleTag(v); setPage(1); }}
+                            label={t('catalog.filter_style_tag')}
+                            options={styleTags.map((s) => ({ value: s.slug, label: s.name }))}
+                        />
+                    )}
                 </div>
             </motion.div>
 
@@ -531,6 +669,90 @@ function CatalogMasterCard({ master, index }: CatalogMasterCardProps): React.Rea
                 </div>
             </Link>
         </motion.div>
+    );
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const LANGUAGE_OPTIONS = [
+    { value: 'ka', label: 'ქართული' },
+    { value: 'ru', label: 'Русский' },
+    { value: 'en', label: 'English' },
+    { value: 'tr', label: 'Türkçe' },
+];
+
+const LOCATION_TYPE_OPTIONS = [
+    { value: 'salon', label: 'Salon' },
+    { value: 'home_studio', label: 'Home studio' },
+    { value: 'mobile', label: 'Mobile' },
+    { value: 'client_visit', label: 'Client visit' },
+];
+
+// ─── Select Filter Chip ──────────────────────────────────────────────────────
+
+interface SelectFilterChipProps {
+    value: string | undefined;
+    onChange: (value: string | undefined) => void;
+    label: string;
+    options: { value: string; label: string }[];
+}
+
+function SelectFilterChip({ value, onChange, label, options }: SelectFilterChipProps): React.ReactElement {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <button
+                    type="button"
+                    className={cn(
+                        'shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all duration-200 cursor-pointer border',
+                        value
+                            ? 'bg-primary/8 text-foreground border-primary/40 shadow-sm'
+                            : 'bg-background text-muted-foreground border-border/50 hover:border-border hover:text-foreground',
+                    )}
+                >
+                    {value ? options.find((o) => o.value === value)?.label ?? label : label}
+                    <CaretDown size={12} className="text-muted-foreground" />
+                    {value && (
+                        <X
+                            size={10}
+                            weight="bold"
+                            className="ml-0.5 cursor-pointer hover:text-destructive"
+                            onClick={(e) => { e.stopPropagation(); onChange(undefined); }}
+                        />
+                    )}
+                </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-0" align="start">
+                <Command>
+                    <CommandInput placeholder={label} />
+                    <CommandList>
+                        <CommandEmpty>—</CommandEmpty>
+                        <CommandGroup>
+                            {options.map((opt) => (
+                                <CommandItem
+                                    key={opt.value}
+                                    value={opt.label}
+                                    onSelect={() => {
+                                        onChange(value === opt.value ? undefined : opt.value);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    <div className={cn(
+                                        'mr-1 flex h-4 w-4 items-center justify-center rounded border border-primary/40',
+                                        value === opt.value ? 'bg-primary border-primary' : 'bg-transparent'
+                                    )}>
+                                        {value === opt.value && <Check size={10} weight="bold" className="text-primary-foreground" />}
+                                    </div>
+                                    {opt.label}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 }
 

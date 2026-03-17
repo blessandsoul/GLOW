@@ -10,6 +10,10 @@ export function createMastersService() {
     async getCatalogMasters(filters: CatalogFilters) {
       return mastersRepo.findCatalogMasters(filters);
     },
+
+    async getNicheCounts() {
+      return mastersRepo.countByNiche();
+    },
   };
 }
 

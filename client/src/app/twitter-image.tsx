@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Glow.GE — Beauty Platform';
+export const alt = 'Glow.GE — All Beauty Services in One Place';
 export const size = {
   width: 1200,
   height: 630,
@@ -131,7 +131,7 @@ export default function TwitterImage(): ImageResponse {
             fontFamily: 'Inter, Helvetica Neue, Arial, sans-serif',
           }}
         >
-          BEAUTY PLATFORM
+          ALL BEAUTY IN ONE PLACE
         </p>
 
         {/* Bottom accent */}

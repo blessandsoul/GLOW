@@ -204,6 +204,12 @@ model MasterProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // New profile fields
+  languages      Json?       // ["ka", "ru", "en", "tr"]
+  locationType   String?     // salon, home_studio, mobile, client_visit
+  districtId     String?
+  workingHours   Json?       // { monday: [{ open: "10:00", close: "19:00" }], ... }
+
   // Verification
   verificationStatus  String    @default("NONE")  // NONE, PENDING, VERIFIED, REJECTED
   idDocumentUrl       String?   @db.VarChar(1000)
@@ -223,9 +229,16 @@ model MasterProfile {
   isQualityProducts   Boolean @default(false)
   isTopRated          Boolean @default(false)  // Auto-set when 4.5+ avg, 10+ reviews
 
-  user User @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  district District? @relation(fields: [districtId], references: [id])
+
+  // M2M relations
+  brands    MasterBrand[]
+  styleTags MasterStyleTag[]
 
   @@index([verificationStatus])
+  @@index([districtId])
+  @@index([locationType])
   @@map("master_profiles")
 }
 
@@ -380,6 +393,81 @@ model ServiceSuggestion {
 
   @@index([categoryId, sortOrder])
   @@map("service_suggestions")
+}
+
+model District {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  citySlug  String   @default("tbilisi")
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  masterProfiles MasterProfile[]
+
+  @@index([citySlug, isActive, sortOrder])
+  @@map("districts")
+}
+
+model Brand {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  logoUrl   String?  @db.VarChar(1000)
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  masters MasterBrand[]
+
+  @@index([isActive, sortOrder])
+  @@map("brands")
+}
+
+model StyleTag {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  niche     String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  masters MasterStyleTag[]
+
+  @@index([isActive, sortOrder])
+  @@index([niche])
+  @@map("style_tags")
+}
+
+model MasterBrand {
+  masterProfileId String
+  brandId         String
+  createdAt       DateTime @default(now())
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  brand         Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@id([masterProfileId, brandId])
+  @@index([brandId])
+  @@map("master_brands")
+}
+
+model MasterStyleTag {
+  masterProfileId String
+  styleTagId      String
+  createdAt       DateTime @default(now())
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  styleTag      StyleTag      @relation(fields: [styleTagId], references: [id], onDelete: Cascade)
+
+  @@id([masterProfileId, styleTagId])
+  @@index([styleTagId])
+  @@map("master_style_tags")
 }
 
 // ─────────────────────────────────────────────
