@@ -15,6 +15,7 @@ import { setUser } from '@/features/auth/store/authSlice';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { getErrorMessage } from '@/lib/utils/error';
 import type { IUser } from '@/features/auth/types/auth.types';
+import { LocationPicker } from '@/features/profile/components/LocationPicker';
 import type { ProfileFormData } from '@/features/profile/types/profile.types';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -251,6 +252,21 @@ export function AboutSection({ form, updateField, saveStatus, user }: AboutSecti
                         />
                     </div>
                 </div>
+            </div>
+
+            {/* Location on map */}
+            <div className="space-y-3 rounded-xl border border-border/50 bg-card p-5">
+                <p className="text-sm font-semibold text-foreground">{t('portfolio.location_title') || 'Location on Map'}</p>
+                <p className="text-xs text-muted-foreground">{t('portfolio.location_desc') || 'Set your pin so clients can find you'}</p>
+                <LocationPicker
+                    latitude={form.latitude}
+                    longitude={form.longitude}
+                    onChange={(lat, lng) => {
+                        updateField('latitude', lat);
+                        updateField('longitude', lng);
+                        updateField('isManualLocation', lat != null && lng != null);
+                    }}
+                />
             </div>
         </div>
     );
