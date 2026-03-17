@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/libs/prisma.js';
 import type { UpdateProfileInput } from './profiles.schemas.js';
 
@@ -51,7 +52,20 @@ export const profilesRepo = {
   },
 
   async upsert(userId: string, data: UpdateProfileInput) {
-    const { brandIds, styleTagIds, ...profileData } = data;
+    const { brandIds, styleTagIds, districtId, workingHours, ...rest } = data;
+
+    // Build prisma-safe data: handle JSON nulls and relation fields
+    const profileData: Record<string, unknown> = { ...rest };
+
+    // districtId: nullable relation field
+    if (districtId !== undefined) {
+      profileData.districtId = districtId;
+    }
+
+    // workingHours: Prisma requires DbNull instead of JS null for JSON fields
+    if (workingHours !== undefined) {
+      profileData.workingHours = workingHours === null ? Prisma.DbNull : workingHours;
+    }
 
     // Get existing profile id for M2M updates
     const existing = await prisma.masterProfile.findUnique({
@@ -66,8 +80,8 @@ export const profilesRepo = {
       create: {
         userId,
         ...profileData,
-      },
-      update: profileData,
+      } as Prisma.MasterProfileUncheckedCreateInput,
+      update: profileData as Prisma.MasterProfileUncheckedUpdateInput,
       select: PROFILE_SELECT,
     });
 
