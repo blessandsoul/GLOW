@@ -26,6 +26,8 @@ function onboardingReducer(state: OnboardingState, action: OnboardingAction): On
             return { ...state, portfolioItemIds: [...state.portfolioItemIds, action.payload] };
         case 'REMOVE_PORTFOLIO_ITEM':
             return { ...state, portfolioItemIds: state.portfolioItemIds.filter((id) => id !== action.payload) };
+        case 'GO_TO_STEP':
+            return { ...state, currentStep: action.payload };
         case 'RESET':
             return INITIAL_STATE;
         default:
@@ -114,6 +116,11 @@ export function useOnboardingWizard() {
 
     const goNext = useCallback(() => dispatch({ type: 'NEXT_STEP' }), []);
     const goBack = useCallback(() => dispatch({ type: 'PREV_STEP' }), []);
+    const goToStep = useCallback((index: number) => {
+        if (index < state.currentStep) {
+            dispatch({ type: 'GO_TO_STEP', payload: index });
+        }
+    }, [state.currentStep]);
 
     return {
         state,
@@ -124,5 +131,6 @@ export function useOnboardingWizard() {
         isFirstStep,
         goNext,
         goBack,
+        goToStep,
     };
 }

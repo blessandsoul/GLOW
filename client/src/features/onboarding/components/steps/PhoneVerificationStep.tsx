@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAppSelector } from '@/store/hooks';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { Check } from '@phosphor-icons/react';
 import { OtpInput } from '@/components/common/OtpInput';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,18 +24,13 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
     );
     const [isSending, setIsSending] = useState(false);
     const [sendError, setSendError] = useState<string | null>(null);
-    const hasAutoAdvanced = useRef(false);
 
-    // If phone already verified, auto-advance ONCE
+    // Sync phoneVerified state when user verifies
     useEffect(() => {
-        if (user?.isPhoneVerified && !hasAutoAdvanced.current) {
-            hasAutoAdvanced.current = true;
+        if (user?.isPhoneVerified && !state.phoneVerified) {
             dispatch({ type: 'SET_PHONE_VERIFIED' });
-            // Small delay so user sees the step briefly
-            const timer = setTimeout(() => goNext(), 300);
-            return () => clearTimeout(timer);
         }
-    }, [user?.isPhoneVerified, dispatch, goNext]);
+    }, [user?.isPhoneVerified, state.phoneVerified, dispatch]);
 
     const alreadyVerified = !!user?.isPhoneVerified;
     const alreadyHasPhone = !!user?.phone;
@@ -71,15 +67,20 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
         return (
             <WizardLayout
                 title={t('onboarding.phone_verified_title')}
-                subtitle={t('onboarding.phone_verified_subtitle')}
-                showBack={false}
-                showNext={false}
+                onNext={goNext}
+                nextLabel={t('onboarding.btn_continue')}
+                onBack={goBack}
+                backLabel={t('onboarding.btn_back')}
             >
-                <div className="flex justify-center py-4">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <div className="flex flex-col items-center gap-3 py-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success/10">
+                        <Check size={24} weight="bold" className="text-success" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        {user?.phone ? `+995 ${user.phone}` : ''}
+                    </p>
                 </div>
 
-                {/* Marketing consents still editable */}
                 <ConsentCheckboxes state={state} dispatch={dispatch} />
             </WizardLayout>
         );

@@ -49,7 +49,7 @@ export interface StepProps {
 }
 
 export function OnboardingWizard(): React.ReactElement {
-    const { state, dispatch, steps, currentStepConfig, isLastStep, isFirstStep, goNext, goBack } = useOnboardingWizard();
+    const { state, dispatch, steps, currentStepConfig, isLastStep, isFirstStep, goNext, goBack, goToStep } = useOnboardingWizard();
     const { submit, isSubmitting, error: submitError } = useOnboardingSubmit();
     const { t } = useLanguage();
 
@@ -64,7 +64,7 @@ export function OnboardingWizard(): React.ReactElement {
         <div className="space-y-8">
             <div className="flex flex-col items-center gap-4">
                 <p className="text-sm font-medium tracking-widest uppercase text-primary">{t('onboarding.brand')}</p>
-                <WizardProgress steps={steps} currentStep={state.currentStep} />
+                <WizardProgress steps={steps} currentStep={state.currentStep} onGoToStep={goToStep} />
             </div>
 
             <div className="overflow-visible rounded-2xl border border-border/50 bg-card p-5 shadow-sm sm:p-8">

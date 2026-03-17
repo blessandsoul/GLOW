@@ -23,6 +23,7 @@ export interface OnboardingState {
     longitude: number | null;
     niche: string;
     experienceYears: number | null;
+    experienceMonths: number;
     services: ServiceItem[];
     portfolioItemIds: string[];
     // SALON fields
@@ -40,6 +41,7 @@ export type OnboardingAction =
     | { type: 'REMOVE_SERVICE'; payload: number }
     | { type: 'ADD_PORTFOLIO_ITEM'; payload: string }
     | { type: 'REMOVE_PORTFOLIO_ITEM'; payload: string }
+    | { type: 'GO_TO_STEP'; payload: number }
     | { type: 'RESET' };
 
 export interface StepConfig {
@@ -64,6 +66,7 @@ export const INITIAL_STATE: OnboardingState = {
     longitude: null,
     niche: '',
     experienceYears: null,
+    experienceMonths: 0,
     services: [],
     portfolioItemIds: [],
     salonName: '',
