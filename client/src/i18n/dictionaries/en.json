@@ -788,6 +788,8 @@
     "saving": "Saving...",
     "saved": "Saved",
     "save_failed": "Save failed",
+    "location_title": "Location on Map",
+    "location_desc": "Set your pin so clients can find you",
     "specialty": "Specialty",
     "select_specialty": "Select specialty",
     "bio_placeholder": "Tell clients about yourself and your experience...",

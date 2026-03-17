@@ -1,8 +1,8 @@
 'use client';
 
 import './leaflet-setup';
-import { useCallback, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MapContainer, TileLayer, useMapEvents, useMap } from 'react-leaflet';
 import type { Map as LeafletMap } from 'leaflet';
 import { MasterPin } from './MasterPin';
 import { MasterPopupCard } from './MasterPopupCard';
@@ -37,6 +37,16 @@ function MapEvents({ onBoundsChange }: { onBoundsChange?: (bounds: MapBounds) =>
   return null;
 }
 
+/** Forces Leaflet to recalculate size when container becomes visible */
+function InvalidateSizeOnMount(): null {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => map.invalidateSize(), 100);
+    return (): void => { clearTimeout(timer); };
+  }, [map]);
+  return null;
+}
+
 export function MasterMapView({
   masters,
   highlightedUsername,
@@ -66,12 +76,14 @@ export function MasterMapView({
         zoom={DEFAULT_ZOOM}
         className="h-full w-full rounded-xl"
         zoomControl={false}
+        style={{ minHeight: '400px' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         <MapEvents onBoundsChange={onBoundsChange} />
+        <InvalidateSizeOnMount />
         {mastersWithCoords.map((master) => (
           <MasterPin
             key={master.username}

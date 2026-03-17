@@ -484,9 +484,10 @@ export function MastersCatalog(): React.ReactElement {
                 {/* Right: Map */}
                 <div className={cn(
                     'lg:sticky lg:top-4 lg:block lg:h-[calc(100dvh-6rem)] lg:w-[55%]',
-                    viewMode === 'list' ? 'hidden lg:block' : 'fixed inset-0 z-40 lg:relative lg:inset-auto',
+                    viewMode === 'list' ? 'hidden lg:block' : 'fixed inset-0 z-40 h-dvh lg:relative lg:inset-auto lg:h-auto',
                 )}>
                     <MasterMapView
+                        key={viewMode}
                         masters={masters}
                         highlightedUsername={highlightedUsername}
                         onMasterHover={setHighlightedUsername}
