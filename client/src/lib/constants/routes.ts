@@ -15,6 +15,7 @@ export const ROUTES = {
     MASTERS: '/masters',
     BLOG: '/blog',
     VERIFY_PHONE: '/verify-phone',
+    ONBOARDING: '/onboarding',
     ADMIN: '/admin',
     TERMS: '/terms',
     PRIVACY: '/privacy',

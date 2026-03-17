@@ -23,6 +23,8 @@ model User {
   credits       Int       @default(5)
   referralBonus Int       @default(0)
   role          String    @default("USER")
+  onboardingCompleted Boolean @default(false)
+  metadata      Json?
   isActive      Boolean   @default(true)
   emailVerified        Boolean   @default(false)
   phone                String?   @unique

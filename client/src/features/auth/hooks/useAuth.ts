@@ -29,6 +29,10 @@ export const useAuth = () => {
         try {
             const res = await authService.login(data);
             dispatch(setUser(res.user));
+            if (!res.user.onboardingCompleted) {
+                router.push('/onboarding');
+                return;
+            }
             if (!res.user.isPhoneVerified) {
                 router.push('/verify-phone');
                 return;
@@ -54,10 +58,8 @@ export const useAuth = () => {
             if (demoJobId) sessionStorage.removeItem('glowge_demo_job_id');
             if (res.otpRequestId) {
                 sessionStorage.setItem('otp_request_id', res.otpRequestId);
-                router.push('/verify-phone');
-            } else {
-                router.push('/dashboard');
             }
+            router.push('/onboarding');
         } catch (error) {
             setRegisterError(error instanceof Error ? error : new Error('Registration failed'));
         } finally {

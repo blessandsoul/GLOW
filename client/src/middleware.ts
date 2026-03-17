@@ -8,31 +8,41 @@ export function middleware(request: NextRequest): NextResponse {
     const { pathname } = request.nextUrl;
     const token = request.cookies.get('accessToken')?.value;
     const session = request.cookies.get('session')?.value;
+    const onboardingCompleted = request.cookies.get('onboardingCompleted')?.value === '1';
 
+    const isAuthenticated = !!(token || session);
     const isProtectedPath = protectedPaths.some((path) =>
         pathname.startsWith(path)
     );
+    const isOnboardingPath = pathname === '/onboarding';
+    const isAuthPath = authPaths.some((path) => pathname.startsWith(path));
 
-    // Only redirect to login if NEITHER access token NOR session marker exists.
-    // When the access token has expired but the session cookie remains, the
-    // client-side AuthHydrator will refresh the token transparently.
-    if (isProtectedPath && !token && !session) {
+    // Authenticated users who haven't completed onboarding → send to /onboarding
+    if (isAuthenticated && !onboardingCompleted && isProtectedPath) {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+
+    // /onboarding is always accessible for authenticated users (they can re-do it from profile)
+
+    // /onboarding requires a session (not public)
+    if (isOnboardingPath && !isAuthenticated) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // Protected paths: redirect to login if not authenticated
+    if (isProtectedPath && !isAuthenticated) {
         const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('from', pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    const isAuthPath = authPaths.some((path) => pathname.startsWith(path));
-
-    // Only redirect away from auth pages if a valid access token exists.
-    // The session cookie alone is not enough — it may be stale after the
-    // refresh token expired, and client-side cleanup hasn't run yet.
+    // Auth pages: redirect to dashboard if already authenticated with valid token
     if (isAuthPath && token) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
-    // /verify-phone requires a session but should NOT redirect to dashboard
-    if (pathname === '/verify-phone' && !token && !session) {
+    // /verify-phone requires a session
+    if (pathname === '/verify-phone' && !isAuthenticated) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
@@ -49,5 +59,6 @@ export const config = {
         '/login',
         '/register',
         '/verify-phone',
+        '/onboarding',
     ],
 };

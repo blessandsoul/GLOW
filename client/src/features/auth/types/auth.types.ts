@@ -13,6 +13,7 @@ export interface IUser {
     hasPassword: boolean;
     avatar?: string;
     credits: number;
+    onboardingCompleted: boolean;
     createdAt: string;
     updatedAt: string;
 }

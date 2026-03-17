@@ -179,7 +179,7 @@ export function createAuthService(app: FastifyInstance) {
       });
       const newRefreshToken = await generateRefreshToken(storedToken.user.id);
 
-      return { accessToken, refreshToken: newRefreshToken };
+      return { accessToken, refreshToken: newRefreshToken, onboardingCompleted: storedToken.user.onboardingCompleted };
     },
 
     async logout(refreshTokenValue: string) {

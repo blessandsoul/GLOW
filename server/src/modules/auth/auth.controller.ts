@@ -25,7 +25,7 @@ export function createAuthController(authService: AuthService) {
     async register(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const input = RegisterSchema.parse(request.body);
       const result = await authService.register(input);
-      setAuthCookies(reply, result.accessToken, result.refreshToken);
+      setAuthCookies(reply, result.accessToken, result.refreshToken, result.user.onboardingCompleted);
       const message = result.otpRequestId
         ? 'Registration successful. Please verify your phone.'
         : 'Registration successful';
@@ -40,7 +40,7 @@ export function createAuthController(authService: AuthService) {
     async login(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const input = LoginSchema.parse(request.body);
       const result = await authService.login(input);
-      setAuthCookies(reply, result.accessToken, result.refreshToken);
+      setAuthCookies(reply, result.accessToken, result.refreshToken, result.user.onboardingCompleted);
       reply.send(successResponse('Login successful', { user: result.user }));
     },
 
@@ -50,7 +50,7 @@ export function createAuthController(authService: AuthService) {
         throw new UnauthorizedError('Refresh token missing', 'MISSING_REFRESH_TOKEN');
       }
       const result = await authService.refresh(refreshToken);
-      setAuthCookies(reply, result.accessToken, result.refreshToken);
+      setAuthCookies(reply, result.accessToken, result.refreshToken, result.onboardingCompleted);
       reply.send(successResponse('Token refreshed', null));
     },
 
@@ -175,9 +175,11 @@ export function createAuthController(authService: AuthService) {
 
       try {
         const result = await authService.googleAuth(code, referralCode);
-        setAuthCookies(reply, result.accessToken, result.refreshToken);
+        setAuthCookies(reply, result.accessToken, result.refreshToken, result.user.onboardingCompleted);
 
-        if (!result.user.isPhoneVerified) {
+        if (!result.user.onboardingCompleted) {
+          reply.redirect(`${env.APP_URL}/onboarding`);
+        } else if (!result.user.isPhoneVerified) {
           reply.redirect(`${env.APP_URL}/verify-phone`);
         } else {
           reply.redirect(`${env.APP_URL}/dashboard`);

@@ -14,6 +14,7 @@ export const USER_SELECT = {
   phoneVerified: true,
   googleId: true,
   credits: true,
+  onboardingCompleted: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -32,6 +33,7 @@ export interface RawSelectedUser {
   phoneVerified: boolean;
   googleId: string | null;
   credits: number;
+  onboardingCompleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,17 +52,19 @@ export interface UserResponse {
   isPhoneVerified: boolean;
   hasPassword: boolean;
   credits: number;
+  onboardingCompleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export function mapUserToResponse(user: RawSelectedUser & { hasPassword?: boolean }): UserResponse {
-  const { emailVerified, phoneVerified, googleId, hasPassword, ...rest } = user;
+  const { emailVerified, phoneVerified, googleId, hasPassword, onboardingCompleted, ...rest } = user;
   return {
     ...rest,
     isEmailVerified: emailVerified,
     isPhoneVerified: phoneVerified,
     hasPassword: hasPassword ?? true,
+    onboardingCompleted: onboardingCompleted ?? false,
   };
 }
 

@@ -57,15 +57,36 @@ function getSessionMarkerCookieOptions(): CookieSerializeOptions {
   return options;
 }
 
+function getOnboardingCookieOptions(): CookieSerializeOptions {
+  const options: CookieSerializeOptions = {
+    httpOnly: true,
+    secure: env.COOKIE_SECURE,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: parseExpiryToSeconds(env.JWT_REFRESH_EXPIRY),
+  };
+  if (env.COOKIE_DOMAIN) {
+    options.domain = env.COOKIE_DOMAIN;
+  }
+  return options;
+}
+
 export function setAuthCookies(
   reply: FastifyReply,
   accessToken: string,
   refreshToken: string,
+  onboardingCompleted?: boolean,
 ): void {
   reply
     .setCookie('accessToken', accessToken, getAccessTokenCookieOptions())
     .setCookie('refreshToken', refreshToken, getRefreshTokenCookieOptions())
     .setCookie('session', '1', getSessionMarkerCookieOptions());
+
+  if (onboardingCompleted) {
+    reply.setCookie('onboardingCompleted', '1', getOnboardingCookieOptions());
+  } else {
+    reply.clearCookie('onboardingCompleted', { path: '/' });
+  }
 }
 
 export function clearAuthCookies(reply: FastifyReply): void {

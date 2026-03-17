@@ -138,4 +138,7 @@ export const API_ENDPOINTS = {
         UPDATE: (reviewId: string) => `/reviews/${reviewId}`,
         DELETE: (reviewId: string) => `/reviews/${reviewId}`,
     },
+    ONBOARDING: {
+        COMPLETE: '/onboarding/complete',
+    },
 } as const;
