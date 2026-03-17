@@ -92,7 +92,7 @@ function buildWhere(opts?: {
   const profileConditions: Record<string, unknown> = {};
   if (opts?.niche) profileConditions.niche = opts.niche;
   if (opts?.city) {
-    const cities = opts.city.split(',').map((c) => c.trim()).filter(Boolean);
+    const cities = opts.city.split(',').map((c) => c.trim().toLowerCase()).filter(Boolean);
     profileConditions.city = cities.length === 1 ? cities[0] : { in: cities };
   }
   if (opts?.isVerified) profileConditions.verificationStatus = 'VERIFIED';
