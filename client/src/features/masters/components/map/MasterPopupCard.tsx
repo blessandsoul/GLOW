@@ -57,7 +57,9 @@ export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): Reac
                 <p className="mt-0.5 text-xs text-muted-foreground">{master.district.name}</p>
               )}
               {master.badges && (
-                <MasterBadgesRow badges={master.badges} size="sm" className="mt-1.5" />
+                <div className="mt-1.5">
+                  <MasterBadgesRow badges={master.badges} size="sm" />
+                </div>
               )}
             </div>
           </Link>
