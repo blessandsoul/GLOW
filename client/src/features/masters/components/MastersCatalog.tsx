@@ -497,7 +497,7 @@ export function MastersCatalog(): React.ReactElement {
             {/* Mobile toggle button */}
             <button
                 onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
-                className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-200 hover:brightness-110 active:scale-[0.98] lg:hidden"
+                className="fixed bottom-20 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-200 hover:brightness-110 active:scale-[0.98] lg:hidden"
             >
                 {viewMode === 'list' ? (
                     <><MapTrifold size={18} weight="fill" /> Map</>
