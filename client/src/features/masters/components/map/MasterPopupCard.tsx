@@ -5,6 +5,7 @@ import { X, ArrowRight, MapPin, Briefcase } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { ROUTES } from '@/lib/constants/routes';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { MasterBadgesRow } from '../MasterBadges';
 import type { FeaturedMaster, MasterServiceItem } from '../../types/masters.types';
 
@@ -14,6 +15,7 @@ interface MasterPopupCardProps {
 }
 
 export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): React.ReactElement {
+  const { t } = useLanguage();
   const services = (master?.services ?? []) as MasterServiceItem[];
   const topServices = services.slice(0, 3);
 
@@ -104,7 +106,7 @@ export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): Reac
                   </div>
                 ))}
                 {services.length > 3 && (
-                  <p className="text-[11px] text-muted-foreground/60">+{services.length - 3} more</p>
+                  <p className="text-[11px] text-muted-foreground/60">+{services.length - 3} {t('catalog.more_services')}</p>
                 )}
               </div>
             )}
@@ -113,13 +115,13 @@ export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): Reac
             {master.experienceYears != null && master.experienceYears > 0 && (
               <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
                 <Briefcase size={11} />
-                <span>{master.experienceYears} {master.experienceYears === 1 ? 'year' : 'years'}</span>
+                <span>{master.experienceYears} {t('catalog.years_many')}</span>
               </div>
             )}
 
             {/* CTA */}
             <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary/8 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/15">
-              View profile
+              {t('catalog.view_profile')}
               <ArrowRight size={12} weight="bold" />
             </div>
           </Link>

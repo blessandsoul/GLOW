@@ -1006,7 +1006,14 @@
     "location_salon": "Салон",
     "location_home_studio": "Домашняя студия",
     "location_mobile": "Выезд",
-    "location_client_visit": "К клиенту"
+    "location_client_visit": "К клиенту",
+    "btn_map": "Карта",
+    "btn_list": "Список",
+    "view_profile": "Смотреть профиль",
+    "years_one": "год",
+    "years_few": "года",
+    "years_many": "лет",
+    "more_services": "ещё"
   },
   "landing": {
     "categories_title": "Что вы ищете?",

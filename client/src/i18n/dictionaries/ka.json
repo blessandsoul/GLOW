@@ -1043,7 +1043,14 @@
     "location_salon": "სალონი",
     "location_home_studio": "სახლის სტუდია",
     "location_mobile": "გასვლით",
-    "location_client_visit": "კლიენტთან"
+    "location_client_visit": "კლიენტთან",
+    "btn_map": "რუკა",
+    "btn_list": "სია",
+    "view_profile": "პროფილის ნახვა",
+    "years_one": "წელი",
+    "years_few": "წელი",
+    "years_many": "წელი",
+    "more_services": "სხვა"
   },
   "landing": {
     "categories_title": "რას ეძებთ?",

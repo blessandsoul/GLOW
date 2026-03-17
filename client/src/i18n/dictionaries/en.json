@@ -1006,7 +1006,14 @@
     "location_salon": "Salon",
     "location_home_studio": "Home studio",
     "location_mobile": "Mobile",
-    "location_client_visit": "Client visit"
+    "location_client_visit": "Client visit",
+    "btn_map": "Map",
+    "btn_list": "List",
+    "view_profile": "View profile",
+    "years_one": "year",
+    "years_few": "years",
+    "years_many": "years",
+    "more_services": "more"
   },
   "landing": {
     "categories_title": "What are you looking for?",
