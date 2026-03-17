@@ -22,7 +22,7 @@ export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): Reac
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 40, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="absolute bottom-4 left-3 right-3 z-[1000] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl lg:bottom-auto lg:left-auto lg:right-4 lg:top-4 lg:w-80"
+          className="absolute bottom-28 left-3 right-3 z-1000 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl lg:bottom-auto lg:left-auto lg:right-4 lg:top-4 lg:w-80"
         >
           <button
             onClick={onClose}
