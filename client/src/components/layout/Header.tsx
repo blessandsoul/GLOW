@@ -371,6 +371,24 @@ export function Header(): React.ReactElement {
 
                 {/* Mobile Header Actions */}
                 <div className="flex items-center gap-1 md:hidden">
+                    {isAuthenticated && user && (
+                        <Link
+                            href={user.role === 'MASTER' ? ROUTES.DASHBOARD : ROUTES.DASHBOARD_PROFILE}
+                            className={cn(
+                                'flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-[0.98]',
+                                pathname === ROUTES.DASHBOARD || pathname === ROUTES.DASHBOARD_PROFILE
+                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                    : 'bg-primary/10 text-primary hover:bg-primary/15',
+                            )}
+                        >
+                            {user.role === 'MASTER' ? (
+                                <SquaresFour size={14} weight="fill" />
+                            ) : (
+                                <User size={14} weight="fill" />
+                            )}
+                            {t(user.role === 'MASTER' ? 'nav.my_studio' : 'nav.my_profile')}
+                        </Link>
+                    )}
                     {IS_LAUNCH_MODE && isAuthenticated && (
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                             Free

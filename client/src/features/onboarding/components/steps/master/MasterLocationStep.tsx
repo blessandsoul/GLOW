@@ -58,6 +58,7 @@ export function MasterLocationStep({ state, dispatch, goNext, goBack }: StepProp
                     latitude={state.latitude}
                     longitude={state.longitude}
                     onChange={(lat, lng) => dispatch({ type: 'SET_FIELD', payload: { latitude: lat, longitude: lng } })}
+                    onAddressResolved={(address) => dispatch({ type: 'SET_FIELD', payload: { workAddress: address } })}
                 />
             </div>
         </WizardLayout>

@@ -40,7 +40,9 @@
     "cat_business": "Business",
     "cat_account": "Account",
     "cat_plans": "Plans",
-    "blog": "Blog"
+    "blog": "Blog",
+    "my_studio": "My Studio",
+    "my_profile": "My Profile"
   },
   "dashboard": {
     "credits_btn": "Buy credits",
@@ -1061,7 +1063,7 @@
     "consent_promotions": "Promotions & special offers",
     "consent_news": "News & updates from Glow.GE",
     "city_title": "Where are you located?",
-    "city_subtitle_user": "We'll show you beauty professionals nearby",
+    "city_subtitle_user": "This helps us find the best professionals near you",
     "city_subtitle_master": "Clients will find you based on your location",
     "city_subtitle_salon": "This information will appear on your public profile",
     "city_label": "City",

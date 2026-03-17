@@ -68,6 +68,7 @@ export function SalonInfoStep({ state, dispatch, goNext, goBack }: StepProps): R
                     latitude={state.latitude}
                     longitude={state.longitude}
                     onChange={(lat, lng) => dispatch({ type: 'SET_FIELD', payload: { latitude: lat, longitude: lng } })}
+                    onAddressResolved={(address) => dispatch({ type: 'SET_FIELD', payload: { workAddress: address } })}
                 />
             </div>
         </WizardLayout>

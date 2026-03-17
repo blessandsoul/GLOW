@@ -52,30 +52,30 @@ export function WizardLayout({
                 {children}
             </div>
 
-            <div className="mt-8 flex items-center justify-between gap-3">
-                <div>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
+                <div className="shrink-0">
                     {showBack && onBack && (
                         <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={onBack}
-                            className="gap-1.5 text-muted-foreground"
+                            className="gap-1 text-muted-foreground px-2"
                         >
                             <ArrowLeft size={16} />
-                            {backLabel}
+                            <span className="hidden sm:inline">{backLabel}</span>
                         </Button>
                     )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-auto">
                     {showSkip && onSkip && (
                         <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={onSkip}
-                            className="gap-1.5 text-muted-foreground"
+                            className="gap-1 text-muted-foreground px-2"
                         >
                             {skipLabel}
                             <SkipForward size={14} />
@@ -86,7 +86,7 @@ export function WizardLayout({
                             type="button"
                             onClick={onNext}
                             disabled={nextDisabled || nextLoading}
-                            className="gap-1.5 min-w-30"
+                            className="gap-1.5"
                         >
                             {nextLoading ? (
                                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
