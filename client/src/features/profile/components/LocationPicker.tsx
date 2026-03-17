@@ -21,7 +21,7 @@ interface LocationPickerProps {
 async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=en`,
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&zoom=18&accept-language=en`,
       { headers: { 'User-Agent': 'GlowGE/1.0' } },
     );
     if (!res.ok) return null;
@@ -29,16 +29,30 @@ async function reverseGeocode(lat: number, lng: number): Promise<string | null> 
     const addr = data.address;
     if (!addr) return data.display_name ?? null;
 
-    // Build a concise address: road + house_number, neighbourhood, city
     const parts: string[] = [];
     const road = addr.road ?? addr.pedestrian ?? addr.street ?? '';
-    if (road) {
-      parts.push(addr.house_number ? `${road} ${addr.house_number}` : road);
+    const houseNumber = addr.house_number ?? '';
+
+    if (road && houseNumber) {
+      parts.push(`${road} ${houseNumber}`);
+    } else if (road) {
+      parts.push(road);
     }
-    if (addr.neighbourhood && !road.includes(addr.neighbourhood)) {
-      parts.push(addr.neighbourhood);
+
+    // Add neighbourhood/suburb for context if not already in road name
+    const area = addr.neighbourhood ?? addr.suburb ?? '';
+    if (area && !road.includes(area)) {
+      parts.push(area);
     }
-    return parts.length > 0 ? parts.join(', ') : (data.display_name ?? null);
+
+    // If we got a house number, return concise address
+    if (parts.length > 0) return parts.join(', ');
+
+    // Fallback: use display_name but trim country/postcode for brevity
+    const display = data.display_name as string | undefined;
+    if (!display) return null;
+    // Take first 3 comma-separated parts (usually: building, street, district)
+    return display.split(', ').slice(0, 3).join(', ');
   } catch {
     return null;
   }
