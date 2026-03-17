@@ -295,7 +295,39 @@ async function main(): Promise<void> {
   console.log('    PRO  (პრო) ★    — S ₾21.90| M ₾59.90 | L ₾129.00');
 }
 
+// ── District Coordinates ──────────────────────────────────────
+async function seedDistrictCoordinates(): Promise<void> {
+  const DISTRICT_COORDS: Record<string, { latitude: number; longitude: number }> = {
+    vake: { latitude: 41.7087, longitude: 44.7465 },
+    saburtalo: { latitude: 41.7275, longitude: 44.7460 },
+    vera: { latitude: 41.7100, longitude: 44.7835 },
+    mtatsminda: { latitude: 41.6940, longitude: 44.7920 },
+    'old-tbilisi': { latitude: 41.6900, longitude: 44.8075 },
+    gldani: { latitude: 41.7690, longitude: 44.8140 },
+    nadzaladevi: { latitude: 41.7480, longitude: 44.8020 },
+    didube: { latitude: 41.7370, longitude: 44.7800 },
+    chugureti: { latitude: 41.7080, longitude: 44.8060 },
+    isani: { latitude: 41.6950, longitude: 44.8270 },
+    samgori: { latitude: 41.7060, longitude: 44.8520 },
+    dighomi: { latitude: 41.7550, longitude: 44.7530 },
+    avlabari: { latitude: 41.6930, longitude: 44.8130 },
+    ortachala: { latitude: 41.6830, longitude: 44.8170 },
+    varketili: { latitude: 41.6870, longitude: 44.8850 },
+  };
+
+  for (const [slug, coords] of Object.entries(DISTRICT_COORDS)) {
+    await prisma.district.updateMany({
+      where: { slug },
+      data: coords,
+    });
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(`✅ Updated coordinates for ${Object.keys(DISTRICT_COORDS).length} districts`);
+}
+
 main()
+  .then(() => seedDistrictCoordinates())
   .catch((e) => {
     // eslint-disable-next-line no-console
     console.error('❌ Seed failed:', e);

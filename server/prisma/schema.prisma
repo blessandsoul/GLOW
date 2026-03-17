@@ -208,6 +208,9 @@ model MasterProfile {
   languages      Json?       // ["ka", "ru", "en", "tr"]
   locationType   String?     // salon, home_studio, mobile, client_visit
   districtId     String?
+  latitude       Float?
+  longitude      Float?
+  isManualLocation Boolean @default(false)
   workingHours   Json?       // { monday: [{ open: "10:00", close: "19:00" }], ... }
 
   // Verification
@@ -238,6 +241,7 @@ model MasterProfile {
 
   @@index([verificationStatus])
   @@index([districtId])
+  @@index([latitude, longitude])
   @@index([locationType])
   @@map("master_profiles")
 }
@@ -402,6 +406,8 @@ model District {
   citySlug  String   @default("tbilisi")
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
+  latitude  Float?
+  longitude Float?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
