@@ -14,7 +14,7 @@ interface MasterPinProps {
 
 function createPinIcon(locationType: LocationType | null, isHighlighted: boolean): ReturnType<typeof divIcon> {
   const isMobile = locationType === 'mobile' || locationType === 'client_visit';
-  const size = isHighlighted ? 52 : 44;
+  const size = isHighlighted ? 38 : 30;
   const dotSize = Math.round(size * 0.3);
   const svgSize = Math.round(size * 0.4);
   const bgColor = isMobile ? '#3b82f6' : '#7c3aed';
