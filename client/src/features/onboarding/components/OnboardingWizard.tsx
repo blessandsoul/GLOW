@@ -2,6 +2,7 @@
 
 import { useOnboardingWizard } from '../hooks/useOnboardingWizard';
 import { useOnboardingSubmit } from '../hooks/useOnboardingSubmit';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { WizardProgress } from './WizardProgress';
 import { RoleSelectionStep } from './steps/RoleSelectionStep';
 import { PhoneVerificationStep } from './steps/PhoneVerificationStep';
@@ -50,6 +51,7 @@ export interface StepProps {
 export function OnboardingWizard(): React.ReactElement {
     const { state, dispatch, steps, currentStepConfig, isLastStep, isFirstStep, goNext, goBack } = useOnboardingWizard();
     const { submit, isSubmitting, error: submitError } = useOnboardingSubmit();
+    const { t } = useLanguage();
 
     const handleSubmit = (): void => {
         submit(state);
@@ -61,11 +63,11 @@ export function OnboardingWizard(): React.ReactElement {
     return (
         <div className="space-y-8">
             <div className="flex flex-col items-center gap-4">
-                <p className="text-sm font-medium tracking-widest uppercase text-primary">Glow.GE</p>
+                <p className="text-sm font-medium tracking-widest uppercase text-primary">{t('onboarding.brand')}</p>
                 <WizardProgress steps={steps} currentStep={state.currentStep} />
             </div>
 
-            <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm sm:p-8">
+            <div className="overflow-visible rounded-2xl border border-border/50 bg-card p-5 shadow-sm sm:p-8">
                 {StepComponent && (
                     <StepComponent
                         key={stepId}

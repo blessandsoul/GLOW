@@ -1,12 +1,14 @@
 'use client';
 
 import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { WizardLayout } from '../../WizardLayout';
 import type { StepProps } from '../../OnboardingWizard';
 
 export function SalonCategoriesStep({ state, dispatch, goNext, goBack }: StepProps): React.ReactElement {
     const { categories, isLoading } = useServiceCategories();
+    const { t } = useLanguage();
 
     const toggleCategory = (id: string): void => {
         const current = state.serviceCategories;
@@ -18,11 +20,13 @@ export function SalonCategoriesStep({ state, dispatch, goNext, goBack }: StepPro
 
     return (
         <WizardLayout
-            title="What services does your salon offer?"
-            subtitle="Select all categories that apply"
+            title={t('onboarding.categories_title_salon')}
+            subtitle={t('onboarding.categories_subtitle_salon')}
             onNext={goNext}
             onBack={goBack}
             nextDisabled={state.serviceCategories.length === 0}
+            nextLabel={t('onboarding.btn_continue')}
+            backLabel={t('onboarding.btn_back')}
         >
             {isLoading ? (
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">

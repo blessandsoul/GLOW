@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAppSelector } from '@/store/hooks';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { OtpInput } from '@/components/common/OtpInput';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import type { StepProps } from '../OnboardingWizard';
 export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepProps): React.ReactElement {
     const { setPhone, verifyPhone, resendOtp, isVerifying, verifyError } = useAuth();
     const user = useAppSelector((s) => s.auth.user);
+    const { t } = useLanguage();
 
     const [phone, setPhoneValue] = useState('');
     const [otpRequestId, setOtpRequestId] = useState<string | null>(
@@ -21,18 +23,23 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
     );
     const [isSending, setIsSending] = useState(false);
     const [sendError, setSendError] = useState<string | null>(null);
+    const hasAutoAdvanced = useRef(false);
 
-    // If phone already verified (e.g. restoring from localStorage), skip to next
+    // If phone already verified, auto-advance ONCE
     useEffect(() => {
-        if (user?.isPhoneVerified) {
+        if (user?.isPhoneVerified && !hasAutoAdvanced.current) {
+            hasAutoAdvanced.current = true;
             dispatch({ type: 'SET_PHONE_VERIFIED' });
-            goNext();
+            // Small delay so user sees the step briefly
+            const timer = setTimeout(() => goNext(), 300);
+            return () => clearTimeout(timer);
         }
     }, [user?.isPhoneVerified, dispatch, goNext]);
 
+    const alreadyVerified = !!user?.isPhoneVerified;
     const alreadyHasPhone = !!user?.phone;
-    const needsPhoneInput = !alreadyHasPhone && !otpRequestId;
-    const showOtp = !!otpRequestId || alreadyHasPhone;
+    const needsPhoneInput = !alreadyHasPhone && !otpRequestId && !alreadyVerified;
+    const showOtp = !alreadyVerified && (!!otpRequestId || alreadyHasPhone);
 
     const handleSendOtp = async (): Promise<void> => {
         if (!phone || phone.length !== 9) return;
@@ -42,7 +49,7 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
         if (requestId) {
             setOtpRequestId(requestId);
         } else {
-            setSendError('Failed to send verification code');
+            setSendError(t('onboarding.phone_send_error'));
         }
         setIsSending(false);
     };
@@ -51,8 +58,6 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
         const reqId = otpRequestId ?? sessionStorage.getItem('otp_request_id');
         if (!reqId) return;
         await verifyPhone(reqId, code);
-        // useAuth.verifyPhone dispatches setUser which updates user.isPhoneVerified
-        // The useEffect above will detect it and advance
     };
 
     const handleResend = async (): Promise<void> => {
@@ -60,10 +65,30 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
         if (newId) setOtpRequestId(newId);
     };
 
+    // After successful verification, user.isPhoneVerified updates via Redux → useEffect advances
+
+    if (alreadyVerified) {
+        return (
+            <WizardLayout
+                title={t('onboarding.phone_verified_title')}
+                subtitle={t('onboarding.phone_verified_subtitle')}
+                showBack={false}
+                showNext={false}
+            >
+                <div className="flex justify-center py-4">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+
+                {/* Marketing consents still editable */}
+                <ConsentCheckboxes state={state} dispatch={dispatch} />
+            </WizardLayout>
+        );
+    }
+
     return (
         <WizardLayout
-            title="Verify your phone"
-            subtitle="We'll send you a verification code"
+            title={t('onboarding.phone_title')}
+            subtitle={t('onboarding.phone_subtitle')}
             showBack={true}
             showNext={false}
             onBack={goBack}
@@ -71,7 +96,7 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
             {needsPhoneInput && (
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label className="text-sm">Phone number</Label>
+                        <Label className="text-sm">{t('onboarding.phone_label')}</Label>
                         <div className="flex gap-2">
                             <div className="flex h-10 items-center rounded-xl border border-border bg-muted px-3 text-sm text-muted-foreground">
                                 +995
@@ -80,7 +105,7 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
                                 type="tel"
                                 value={phone}
                                 onChange={(e) => setPhoneValue(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                                placeholder="5XX XXX XXX"
+                                placeholder={t('onboarding.phone_placeholder')}
                                 className="rounded-xl"
                                 maxLength={9}
                             />
@@ -94,7 +119,7 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
                         disabled={phone.length !== 9 || isSending}
                         className="w-full"
                     >
-                        {isSending ? 'Sending...' : 'Send code'}
+                        {isSending ? t('onboarding.phone_sending') : t('onboarding.phone_send')}
                     </Button>
                 </div>
             )}
@@ -103,7 +128,7 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
                 <div className="space-y-6">
                     <div className="space-y-3">
                         <p className="text-center text-sm text-muted-foreground">
-                            Enter the 6-digit code sent to your phone
+                            {t('onboarding.phone_otp_hint')}
                         </p>
                         <OtpInput
                             onComplete={handleVerify}
@@ -119,42 +144,49 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
                         onClick={handleResend}
                         className="mx-auto block text-xs text-primary transition-colors hover:text-primary/80"
                     >
-                        Resend code
+                        {t('onboarding.phone_resend')}
                     </button>
                 </div>
             )}
 
-            {/* Marketing consents */}
-            <div className="mt-6 space-y-2 border-t border-border/50 pt-4">
-                <p className="text-xs font-medium text-muted-foreground">Notifications</p>
-                {([
-                    { key: 'smsAppointments', label: 'Appointment reminders & updates' },
-                    { key: 'smsPromotions', label: 'Promotions & special offers' },
-                    { key: 'smsNews', label: 'News & updates from Glow.GE' },
-                ] as const).map(({ key, label }) => (
-                    <label key={key} className="flex items-center gap-2.5 cursor-pointer select-none">
-                        <button
-                            type="button"
-                            role="checkbox"
-                            aria-checked={state[key]}
-                            onClick={() => dispatch({ type: 'SET_FIELD', payload: { [key]: !state[key] } })}
-                            className={cn(
-                                'flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-md border transition-colors duration-150',
-                                state[key]
-                                    ? 'border-primary bg-primary'
-                                    : 'border-border bg-card hover:border-primary/50',
-                            )}
-                        >
-                            {state[key] && (
-                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                    <path d="M2 5.5L4 7.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            )}
-                        </button>
-                        <span className="text-xs text-foreground">{label}</span>
-                    </label>
-                ))}
-            </div>
+            <ConsentCheckboxes state={state} dispatch={dispatch} />
         </WizardLayout>
+    );
+}
+
+function ConsentCheckboxes({ state, dispatch }: Pick<StepProps, 'state' | 'dispatch'>): React.ReactElement {
+    const { t } = useLanguage();
+
+    return (
+        <div className="mt-6 space-y-2 border-t border-border/50 pt-4">
+            <p className="text-xs font-medium text-muted-foreground">{t('onboarding.consent_title')}</p>
+            {([
+                { key: 'smsAppointments', label: t('onboarding.consent_appointments') },
+                { key: 'smsPromotions', label: t('onboarding.consent_promotions') },
+                { key: 'smsNews', label: t('onboarding.consent_news') },
+            ] as const).map(({ key, label }) => (
+                <label key={key} className="flex items-center gap-2.5 cursor-pointer select-none">
+                    <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={state[key]}
+                        onClick={() => dispatch({ type: 'SET_FIELD', payload: { [key]: !state[key] } })}
+                        className={cn(
+                            'flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-md border transition-colors duration-150',
+                            state[key]
+                                ? 'border-primary bg-primary'
+                                : 'border-border bg-card hover:border-primary/50',
+                        )}
+                    >
+                        {state[key] && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                <path d="M2 5.5L4 7.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        )}
+                    </button>
+                    <span className="text-xs text-foreground">{label}</span>
+                </label>
+            ))}
+        </div>
     );
 }

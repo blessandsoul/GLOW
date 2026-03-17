@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Plus, Trash } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { AddServicePanel } from '@/features/profile/components/AddServicePanel';
 import { WizardLayout } from '../../WizardLayout';
 import type { StepProps } from '../../OnboardingWizard';
@@ -10,6 +11,7 @@ import type { ServiceItem } from '@/features/profile/types/profile.types';
 
 export function MasterServicesStep({ state, dispatch, goNext, goBack }: StepProps): React.ReactElement {
     const [showAdd, setShowAdd] = useState(state.services.length === 0);
+    const { t } = useLanguage();
 
     const handleAdd = (service: ServiceItem): void => {
         dispatch({ type: 'ADD_SERVICE', payload: service });
@@ -18,11 +20,13 @@ export function MasterServicesStep({ state, dispatch, goNext, goBack }: StepProp
 
     return (
         <WizardLayout
-            title="What services do you offer?"
-            subtitle="Add at least one service with pricing"
+            title={t('onboarding.services_title')}
+            subtitle={t('onboarding.services_subtitle')}
             onNext={goNext}
             onBack={goBack}
             nextDisabled={state.services.length === 0}
+            nextLabel={t('onboarding.btn_continue')}
+            backLabel={t('onboarding.btn_back')}
         >
             <div className="space-y-4">
                 {state.services.length > 0 && (
@@ -65,7 +69,7 @@ export function MasterServicesStep({ state, dispatch, goNext, goBack }: StepProp
                         className="gap-1.5"
                     >
                         <Plus size={14} />
-                        Add another service
+                        {t('onboarding.services_add_another')}
                     </Button>
                 )}
             </div>

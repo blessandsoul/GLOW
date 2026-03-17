@@ -99,7 +99,9 @@ export function clearOnboardingStorage(): void {
 
 export function useOnboardingWizard() {
     const saved = typeof window !== 'undefined' ? loadFromStorage() : null;
-    const [state, dispatch] = useReducer(onboardingReducer, saved ?? INITIAL_STATE);
+    // Clamp currentStep to valid range on restore
+    const initial = saved ? { ...saved, currentStep: Math.min(saved.currentStep, getSteps(saved.role).length - 1) } : INITIAL_STATE;
+    const [state, dispatch] = useReducer(onboardingReducer, initial);
 
     useEffect(() => {
         saveToStorage(state);

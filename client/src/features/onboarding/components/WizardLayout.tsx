@@ -12,6 +12,8 @@ interface WizardLayoutProps {
     onBack?: () => void;
     onSkip?: () => void;
     nextLabel?: string;
+    backLabel?: string;
+    skipLabel?: string;
     nextDisabled?: boolean;
     nextLoading?: boolean;
     showBack?: boolean;
@@ -27,6 +29,8 @@ export function WizardLayout({
     onBack,
     onSkip,
     nextLabel = 'Continue',
+    backLabel = 'Back',
+    skipLabel = 'Skip',
     nextDisabled = false,
     nextLoading = false,
     showBack = true,
@@ -59,7 +63,7 @@ export function WizardLayout({
                             className="gap-1.5 text-muted-foreground"
                         >
                             <ArrowLeft size={16} />
-                            Back
+                            {backLabel}
                         </Button>
                     )}
                 </div>
@@ -73,7 +77,7 @@ export function WizardLayout({
                             onClick={onSkip}
                             className="gap-1.5 text-muted-foreground"
                         >
-                            Skip
+                            {skipLabel}
                             <SkipForward size={14} />
                         </Button>
                     )}
@@ -82,7 +86,7 @@ export function WizardLayout({
                             type="button"
                             onClick={onNext}
                             disabled={nextDisabled || nextLoading}
-                            className="gap-1.5 min-w-[120px]"
+                            className="gap-1.5 min-w-30"
                         >
                             {nextLoading ? (
                                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />

@@ -2,41 +2,45 @@
 
 import { User, Scissors, Buildings } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { WizardLayout } from '../WizardLayout';
 import type { StepProps } from '../OnboardingWizard';
 import type { OnboardingRole } from '../../types/onboarding.types';
 
-const roles: { id: OnboardingRole; label: string; description: string; icon: React.ElementType }[] = [
-    {
-        id: 'USER',
-        label: 'Client',
-        description: 'Find and book beauty professionals near you',
-        icon: User,
-    },
-    {
-        id: 'MASTER',
-        label: 'Master',
-        description: 'Showcase your work and grow your client base',
-        icon: Scissors,
-    },
-    {
-        id: 'SALON',
-        label: 'Salon',
-        description: 'Manage your salon and team of professionals',
-        icon: Buildings,
-    },
-];
-
 export function RoleSelectionStep({ state, dispatch, goNext }: StepProps): React.ReactElement {
+    const { t } = useLanguage();
+
+    const roles: { id: OnboardingRole; label: string; description: string; icon: React.ElementType }[] = [
+        {
+            id: 'USER',
+            label: t('onboarding.role_client'),
+            description: t('onboarding.role_client_desc'),
+            icon: User,
+        },
+        {
+            id: 'MASTER',
+            label: t('onboarding.role_master'),
+            description: t('onboarding.role_master_desc'),
+            icon: Scissors,
+        },
+        {
+            id: 'SALON',
+            label: t('onboarding.role_salon'),
+            description: t('onboarding.role_salon_desc'),
+            icon: Buildings,
+        },
+    ];
+
     const handleSelect = (role: OnboardingRole): void => {
         dispatch({ type: 'SET_ROLE', payload: role });
     };
 
     return (
         <WizardLayout
-            title="Welcome to Glow.GE"
-            subtitle="Tell us who you are so we can personalize your experience"
+            title={t('onboarding.role_title')}
+            subtitle={t('onboarding.role_subtitle')}
             onNext={goNext}
+            nextLabel={t('onboarding.btn_continue')}
             nextDisabled={!state.role}
             showBack={false}
         >

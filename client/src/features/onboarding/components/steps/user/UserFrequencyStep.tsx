@@ -1,26 +1,30 @@
 'use client';
 
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { WizardLayout } from '../../WizardLayout';
-import { useOnboardingSubmit } from '../../../hooks/useOnboardingSubmit';
 import type { StepProps } from '../../OnboardingWizard';
 import type { VisitFrequency } from '../../../types/onboarding.types';
 
-const options: { id: VisitFrequency; label: string; description: string }[] = [
-    { id: 'biweekly', label: 'Every 2 weeks', description: 'Regular maintenance' },
-    { id: 'monthly', label: 'Once a month', description: 'Standard schedule' },
-    { id: 'rarely', label: 'A few times a year', description: 'Occasional visits' },
-    { id: 'first_time', label: 'First time', description: 'Never been before' },
-];
-
 export function UserFrequencyStep({ state, dispatch, goBack, onSubmit, isSubmitting, submitError }: StepProps): React.ReactElement {
+    const { t } = useLanguage();
+
+    const options: { id: VisitFrequency; label: string; description: string }[] = [
+        { id: 'biweekly', label: t('onboarding.frequency_biweekly'), description: t('onboarding.frequency_biweekly_desc') },
+        { id: 'monthly', label: t('onboarding.frequency_monthly'), description: t('onboarding.frequency_monthly_desc') },
+        { id: 'rarely', label: t('onboarding.frequency_rarely'), description: t('onboarding.frequency_rarely_desc') },
+        { id: 'first_time', label: t('onboarding.frequency_first_time'), description: t('onboarding.frequency_first_time_desc') },
+    ];
+
     return (
         <WizardLayout
-            title="How often do you visit?"
-            subtitle="This helps us suggest the right schedule"
+            title={t('onboarding.frequency_title')}
+            subtitle={t('onboarding.frequency_subtitle')}
             onNext={onSubmit}
             onBack={goBack}
-            nextLabel="Get started"
+            nextLabel={t('onboarding.btn_get_started')}
+            backLabel={t('onboarding.btn_back')}
+            skipLabel={t('onboarding.btn_skip')}
             nextLoading={isSubmitting}
             onSkip={onSubmit}
             showSkip={true}

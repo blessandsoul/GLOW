@@ -52,9 +52,9 @@ export default function ProfilePage(): React.ReactElement {
                     <Sparkle size={22} className="text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground">Setup wizard</p>
+                    <p className="text-sm font-semibold text-foreground">{t('onboarding.setup_wizard')}</p>
                     <p className="mt-0.5 text-xs text-muted-foreground">
-                        Change your role or update your profile info
+                        {t('onboarding.setup_wizard_desc')}
                     </p>
                 </div>
                 <ArrowRight size={18} className="shrink-0 text-muted-foreground" />

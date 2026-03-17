@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { CloudArrowUp, X, ImageSquare } from '@phosphor-icons/react';
 import { portfolioService } from '@/features/portfolio/services/portfolio.service';
 import { getErrorMessage } from '@/lib/utils/error';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { WizardLayout } from '../../WizardLayout';
 import type { StepProps } from '../../OnboardingWizard';
@@ -17,6 +18,7 @@ export function MasterPortfolioStep({ state, dispatch, goBack, onSubmit, isSubmi
     const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
+    const { t } = useLanguage();
 
     const handleFiles = useCallback(async (files: FileList | null) => {
         if (!files || files.length === 0) return;
@@ -44,13 +46,16 @@ export function MasterPortfolioStep({ state, dispatch, goBack, onSubmit, isSubmi
     const count = state.portfolioItemIds.length;
     const canSubmit = count >= 3;
 
+    const subtitle = t('onboarding.portfolio_subtitle').replace('{count}', String(count));
+
     return (
         <WizardLayout
-            title="Show your best work"
-            subtitle={`Upload at least 3 photos of your work (${count}/3)`}
+            title={t('onboarding.portfolio_title')}
+            subtitle={subtitle}
             onNext={onSubmit}
             onBack={goBack}
-            nextLabel="Complete setup"
+            nextLabel={t('onboarding.btn_complete')}
+            backLabel={t('onboarding.btn_back')}
             nextDisabled={!canSubmit}
             nextLoading={isSubmitting}
         >
@@ -66,9 +71,9 @@ export function MasterPortfolioStep({ state, dispatch, goBack, onSubmit, isSubmi
                 >
                     <CloudArrowUp size={32} className="text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                        {isUploading ? 'Uploading...' : 'Click or drag photos here'}
+                        {isUploading ? t('onboarding.portfolio_uploading') : t('onboarding.portfolio_upload')}
                     </p>
-                    <p className="text-xs text-muted-foreground">JPEG, PNG, WebP up to 5MB</p>
+                    <p className="text-xs text-muted-foreground">{t('onboarding.portfolio_formats')}</p>
                     <input
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
@@ -110,7 +115,7 @@ export function MasterPortfolioStep({ state, dispatch, goBack, onSubmit, isSubmi
                     <div className="flex items-center gap-2">
                         <ImageSquare size={16} className="text-muted-foreground" />
                         <p className="text-xs text-muted-foreground">
-                            {3 - count} more photo{3 - count !== 1 ? 's' : ''} needed
+                            {t('onboarding.portfolio_needed').replace('{count}', String(3 - count))}
                         </p>
                     </div>
                 )}

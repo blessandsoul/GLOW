@@ -1,20 +1,24 @@
 'use client';
 
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { WizardLayout } from '../../WizardLayout';
 import type { StepProps } from '../../OnboardingWizard';
 
 export function MasterSpecializationStep({ state, dispatch, goNext, goBack }: StepProps): React.ReactElement {
     const { specialities, isLoading } = useSpecialities();
+    const { t } = useLanguage();
 
     return (
         <WizardLayout
-            title="What's your specialization?"
-            subtitle="Choose your primary area of expertise"
+            title={t('onboarding.specialization_title')}
+            subtitle={t('onboarding.specialization_subtitle')}
             onNext={goNext}
             onBack={goBack}
             nextDisabled={!state.niche}
+            nextLabel={t('onboarding.btn_continue')}
+            backLabel={t('onboarding.btn_back')}
         >
             {isLoading ? (
                 <div className="grid grid-cols-2 gap-2">
