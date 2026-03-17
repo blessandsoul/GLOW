@@ -1,5 +1,5 @@
 export interface CityOption {
-    /** English name — stored in DB and sent to API */
+    /** Lowercase slug — stored in DB and sent to API */
     value: string;
     ka: string;
     ru: string;
@@ -7,35 +7,36 @@ export interface CityOption {
 }
 
 export const GEORGIAN_CITIES: CityOption[] = [
-    { value: 'Tbilisi',      ka: 'თბილისი',   ru: 'Тбилиси',     en: 'Tbilisi' },
-    { value: 'Batumi',       ka: 'ბათუმი',    ru: 'Батуми',      en: 'Batumi' },
-    { value: 'Kutaisi',      ka: 'ქუთაისი',   ru: 'Кутаиси',     en: 'Kutaisi' },
-    { value: 'Rustavi',      ka: 'რუსთავი',   ru: 'Рустави',     en: 'Rustavi' },
-    { value: 'Zugdidi',      ka: 'ზუგდიდი',   ru: 'Зугдиди',     en: 'Zugdidi' },
-    { value: 'Gori',         ka: 'გორი',      ru: 'Гори',        en: 'Gori' },
-    { value: 'Poti',         ka: 'ფოთი',      ru: 'Поти',        en: 'Poti' },
-    { value: 'Telavi',       ka: 'თელავი',    ru: 'Телави',      en: 'Telavi' },
-    { value: 'Kobuleti',     ka: 'ქობულეთი',  ru: 'Кобулети',    en: 'Kobuleti' },
-    { value: 'Senaki',       ka: 'სენაკი',    ru: 'Сенаки',      en: 'Senaki' },
-    { value: 'Samtredia',    ka: 'სამტრედია', ru: 'Самтредиа',   en: 'Samtredia' },
-    { value: 'Marneuli',     ka: 'მარნეული',  ru: 'Марнეული',    en: 'Marneuli' },
-    { value: 'Akhaltsikhe',  ka: 'ახალციხე',  ru: 'Ахалцихе',    en: 'Akhaltsikhe' },
-    { value: 'Ozurgeti',     ka: 'ოზურგეთი',  ru: 'Озургети',    en: 'Ozurgeti' },
-    { value: 'Tkibuli',      ka: 'ტყიბული',   ru: 'Ткибули',     en: 'Tkibuli' },
-    { value: 'Kaspi',        ka: 'კასპი',     ru: 'Каспи',       en: 'Kaspi' },
-    { value: 'Zestaponi',    ka: 'ზესტაფონი', ru: 'Зესტაфონი',   en: 'Zestaponi' },
-    { value: 'Mtskheta',     ka: 'მცხეთა',    ru: 'Мцხета',      en: 'Mtskheta' },
-    { value: 'Borjomi',      ka: 'ბორჯომი',   ru: 'Боржоми',     en: 'Borjomi' },
-    { value: 'Sighnaghi',    ka: 'სიღნაღი',   ru: 'Сигнахи',     en: 'Sighnaghi' },
+    { value: 'tbilisi',      ka: 'თბილისი',   ru: 'Тбилиси',     en: 'Tbilisi' },
+    { value: 'batumi',       ka: 'ბათუმი',    ru: 'Батуми',      en: 'Batumi' },
+    { value: 'kutaisi',      ka: 'ქუთაისი',   ru: 'Кутаиси',     en: 'Kutaisi' },
+    { value: 'rustavi',      ka: 'რუსთავი',   ru: 'Რустави',     en: 'Rustavi' },
+    { value: 'zugdidi',      ka: 'ზუგდიდი',   ru: 'Зугдиди',     en: 'Zugdidi' },
+    { value: 'gori',         ka: 'გორი',      ru: 'Гори',        en: 'Gori' },
+    { value: 'poti',         ka: 'ფოთი',      ru: 'Поти',        en: 'Poti' },
+    { value: 'telavi',       ka: 'თელავი',    ru: 'Телави',      en: 'Telavi' },
+    { value: 'kobuleti',     ka: 'ქობულეთი',  ru: 'Кობулети',    en: 'Kobuleti' },
+    { value: 'senaki',       ka: 'სენაკი',    ru: 'Სენაки',      en: 'Senaki' },
+    { value: 'samtredia',    ka: 'სამტრედია', ru: 'Самтредиа',   en: 'Samtredia' },
+    { value: 'marneuli',     ka: 'მარნეული',  ru: 'Марნეული',    en: 'Marneuli' },
+    { value: 'akhaltsikhe',  ka: 'ახალციხე',  ru: 'Ахалцихе',    en: 'Akhaltsikhe' },
+    { value: 'ozurgeti',     ka: 'ოზურგეთი',  ru: 'Озургети',    en: 'Ozurgeti' },
+    { value: 'tkibuli',      ka: 'ტყიბული',   ru: 'Ткибული',     en: 'Tkibuli' },
+    { value: 'kaspi',        ka: 'კასპი',     ru: 'Каспი',       en: 'Kaspi' },
+    { value: 'zestaponi',    ka: 'ზესტაფონი', ru: 'Зესტაფონი',   en: 'Zestaponi' },
+    { value: 'mtskheta',     ka: 'მცხეთა',    ru: 'Мцхეთа',      en: 'Mtskheta' },
+    { value: 'borjomi',      ka: 'ბორჯომი',   ru: 'Боржоми',     en: 'Borjomi' },
+    { value: 'sighnaghi',    ka: 'სიღნაღი',   ru: 'Сигნахი',     en: 'Sighnaghi' },
 ];
 
 /**
- * Get localized label for a city stored value (English name).
- * Also handles legacy values in Georgian/Russian by matching against all locales.
+ * Get localized label for a city stored value.
+ * Handles both lowercase slugs and legacy PascalCase/localized values.
  */
 export function getCityLabel(storedValue: string, lang: string): string {
-    // Try exact match on value (English name)
-    let city = GEORGIAN_CITIES.find((c) => c.value === storedValue);
+    const lower = storedValue.toLowerCase();
+    // Try match on lowercase value
+    let city = GEORGIAN_CITIES.find((c) => c.value === lower);
 
     // Fallback: try matching against any locale (handles legacy "თბილისი", "Тбилиси" etc.)
     if (!city) {
@@ -50,7 +51,7 @@ export function getCityLabel(storedValue: string, lang: string): string {
     return city.en;
 }
 
-/** Get all cities as { value, label } for the current language. value = English name. */
+/** Get all cities as { value, label } for the current language. value = lowercase slug. */
 export function getCityOptions(lang: string): { value: string; label: string }[] {
     return GEORGIAN_CITIES.map((c) => ({
         value: c.value,
