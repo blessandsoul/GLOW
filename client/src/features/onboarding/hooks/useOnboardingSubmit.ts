@@ -34,7 +34,7 @@ function buildPayload(state: OnboardingState): Record<string, unknown> {
                 workAddress: state.workAddress,
                 latitude: state.latitude,
                 longitude: state.longitude,
-                niche: state.niche,
+                niches: state.niches,
                 experienceYears: state.experienceYears,
                 experienceMonths: state.experienceMonths,
                 services: state.services,

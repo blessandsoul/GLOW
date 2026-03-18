@@ -29,7 +29,7 @@ export const onboardingRepo = {
       workAddress: string;
       latitude?: number | null;
       longitude?: number | null;
-      niche: string;
+      niches: string[];
       experienceYears: number;
       services: Array<{
         name: string;
@@ -63,7 +63,8 @@ export const onboardingRepo = {
           workAddress: profileData.workAddress,
           latitude: profileData.latitude ?? null,
           longitude: profileData.longitude ?? null,
-          niche: profileData.niche,
+          niche: profileData.niches[0] ?? null,
+          niches: profileData.niches,
           experienceYears: profileData.experienceYears,
           services: profileData.services as unknown as Prisma.InputJsonValue,
         },
@@ -72,7 +73,8 @@ export const onboardingRepo = {
           workAddress: profileData.workAddress,
           latitude: profileData.latitude ?? null,
           longitude: profileData.longitude ?? null,
-          niche: profileData.niche,
+          niche: profileData.niches[0] ?? null,
+          niches: profileData.niches,
           experienceYears: profileData.experienceYears,
           services: profileData.services as unknown as Prisma.InputJsonValue,
         },

@@ -33,7 +33,7 @@ export function createOnboardingService() {
               workAddress: input.workAddress,
               latitude: input.latitude,
               longitude: input.longitude,
-              niche: input.niche,
+              niches: input.niches,
               experienceYears: input.experienceYears,
               services: input.services,
             },

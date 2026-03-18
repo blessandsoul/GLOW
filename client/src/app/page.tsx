@@ -19,6 +19,7 @@ import { ServiceCategories } from '@/features/landing/components/ServiceCategori
 import { FeaturedMasters } from '@/features/masters/components/FeaturedMasters';
 import { HomeBlogSection } from '@/features/blog/components/HomeBlogSection';
 import { Footer } from '@/components/layout/Footer';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { ROUTES } from '@/lib/constants/routes';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
@@ -284,6 +285,7 @@ export default function HomePage(): React.ReactElement {
             </main>
 
             <Footer />
+            <MobileBottomNav />
         </div>
     );
 }

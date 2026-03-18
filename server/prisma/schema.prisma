@@ -196,6 +196,7 @@ model MasterProfile {
   userId    String   @unique
   city        String?  @default("tbilisi")
   niche       String?
+  niches      Json?       // ["lashes", "brows", "makeup"] — multiple specializations
   workAddress String?  @db.VarChar(500)
   services    Json?
   bio         String?  @db.Text

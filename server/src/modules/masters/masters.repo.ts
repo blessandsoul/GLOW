@@ -111,8 +111,21 @@ function buildWhere(opts?: {
   if (opts?.brandSlug) profileConditions.brands = { some: { brand: { slug: opts.brandSlug } } };
   if (opts?.styleTagSlug) profileConditions.styleTags = { some: { styleTag: { slug: opts.styleTagSlug } } };
   if (opts?.bounds) {
-    profileConditions.latitude = { gte: opts.bounds.swLat, lte: opts.bounds.neLat };
-    profileConditions.longitude = { gte: opts.bounds.swLng, lte: opts.bounds.neLng };
+    profileConditions.OR = [
+      {
+        latitude: { gte: opts.bounds.swLat, lte: opts.bounds.neLat },
+        longitude: { gte: opts.bounds.swLng, lte: opts.bounds.neLng },
+      },
+      {
+        latitude: null,
+        district: {
+          is: {
+            latitude: { gte: opts.bounds.swLat, lte: opts.bounds.neLat },
+            longitude: { gte: opts.bounds.swLng, lte: opts.bounds.neLng },
+          },
+        },
+      },
+    ];
   }
 
   const masterProfileFilter: Prisma.MasterProfileNullableScalarRelationFilter = Object.keys(profileConditions).length > 0

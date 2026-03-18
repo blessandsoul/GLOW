@@ -21,7 +21,7 @@ export interface OnboardingState {
     workAddress: string;
     latitude: number | null;
     longitude: number | null;
-    niche: string;
+    niches: string[];
     experienceYears: number | null;
     experienceMonths: number;
     services: ServiceItem[];
@@ -64,7 +64,7 @@ export const INITIAL_STATE: OnboardingState = {
     workAddress: '',
     latitude: null,
     longitude: null,
-    niche: '',
+    niches: [],
     experienceYears: null,
     experienceMonths: 0,
     services: [],
