@@ -106,7 +106,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     </div>
                 )}
                 <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                         <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
                         <MasterBadgesRow isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
                     </div>
