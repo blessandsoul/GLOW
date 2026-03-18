@@ -104,7 +104,19 @@
     "cat_plans": "Тарифы",
     "blog": "Блог",
     "my_studio": "Моя студия",
-    "my_profile": "Мой профиль"
+    "my_profile": "Мой профиль",
+    "home": "Главная",
+    "search": "Поиск",
+    "favorites": "Избранное",
+    "appointments": "Записи"
+  },
+  "favorites": {
+    "empty_title": "Пока пусто",
+    "empty_description": "Сохраняйте мастеров, чтобы быстро находить их снова"
+  },
+  "appointments": {
+    "empty_title": "Нет записей",
+    "empty_description": "Здесь появятся ваши записи к мастерам"
   },
   "auth": {
     "login": "Войти",
@@ -1089,7 +1101,7 @@
     "address_label": "Рабочий адрес",
     "address_placeholder": "напр. пр. Руставели 42",
     "specialization_title": "Ваша специализация?",
-    "specialization_subtitle": "Выберите основное направление",
+    "specialization_subtitle": "Выберите до 3 направлений",
     "experience_title": "Какой у вас опыт?",
     "experience_subtitle": "Это поможет клиентам оценить ваш уровень",
     "experience_years": "Лет",

@@ -42,7 +42,11 @@
     "cat_plans": "Plans",
     "blog": "Blog",
     "my_studio": "My Studio",
-    "my_profile": "My Profile"
+    "my_profile": "My Profile",
+    "home": "Home",
+    "search": "Search",
+    "favorites": "Favorites",
+    "appointments": "Appointments"
   },
   "dashboard": {
     "credits_btn": "Buy credits",
@@ -105,6 +109,14 @@
     "subtitle": "News and useful tips",
     "view_all": "View all",
     "read_more": "Read more"
+  },
+  "favorites": {
+    "empty_title": "No favorites yet",
+    "empty_description": "Save masters to quickly find them again"
+  },
+  "appointments": {
+    "empty_title": "No appointments",
+    "empty_description": "Your appointments with masters will appear here"
   },
   "auth": {
     "login": "Sign in",
@@ -1089,7 +1101,7 @@
     "address_label": "Work address",
     "address_placeholder": "e.g. Rustaveli Ave 42",
     "specialization_title": "What's your specialization?",
-    "specialization_subtitle": "Choose your primary area of expertise",
+    "specialization_subtitle": "Choose up to 3 areas of expertise",
     "experience_title": "How experienced are you?",
     "experience_subtitle": "This helps clients know your level",
     "experience_years": "Years",

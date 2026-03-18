@@ -104,7 +104,19 @@
     "cat_plans": "ტარიფები",
     "blog": "ბლოგი",
     "my_studio": "ჩემი სტუდია",
-    "my_profile": "ჩემი პროფილი"
+    "my_profile": "ჩემი პროფილი",
+    "home": "მთავარი",
+    "search": "ძიება",
+    "favorites": "რჩეულები",
+    "appointments": "ჯავშნები"
+  },
+  "favorites": {
+    "empty_title": "ჯერ ცარიელია",
+    "empty_description": "შეინახეთ ოსტატები, რომ სწრაფად იპოვოთ ისინი"
+  },
+  "appointments": {
+    "empty_title": "ჯავშნები არ არის",
+    "empty_description": "აქ გამოჩნდება თქვენი ჯავშნები ოსტატებთან"
   },
   "auth": {
     "login": "შესვლა",
@@ -1126,7 +1138,7 @@
     "address_label": "სამუშაო მისამართი",
     "address_placeholder": "მაგ. რუსთაველის გამზ. 42",
     "specialization_title": "რა არის შენი სპეციალიზაცია?",
-    "specialization_subtitle": "აირჩიე შენი ძირითადი მიმართულება",
+    "specialization_subtitle": "აირჩიე 3-მდე მიმართულება",
     "experience_title": "რა გამოცდილება გაქვს?",
     "experience_subtitle": "ეს კლიენტებს შენი დონის შეფასებაში დაეხმარება",
     "experience_years": "წელი",
