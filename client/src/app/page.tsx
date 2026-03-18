@@ -18,6 +18,7 @@ import { HeroSearch } from '@/features/landing/components/HeroSearch';
 import { ServiceCategories } from '@/features/landing/components/ServiceCategories';
 import { FeaturedMasters } from '@/features/masters/components/FeaturedMasters';
 import { HomeBlogSection } from '@/features/blog/components/HomeBlogSection';
+import { Footer } from '@/components/layout/Footer';
 import { ROUTES } from '@/lib/constants/routes';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
@@ -282,6 +283,7 @@ export default function HomePage(): React.ReactElement {
 
             </main>
 
+            <Footer />
         </div>
     );
 }

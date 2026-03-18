@@ -20,7 +20,14 @@ export const queryClient = new QueryClient({
             staleTime: 5 * 60 * 1000,
             gcTime: 5 * 60 * 1000,
             refetchOnWindowFocus: false,
-            retry: 1,
+            retry: (failureCount, error) => {
+                // Don't retry on 429 (rate limited) or 4xx client errors
+                if (axios.isAxiosError(error) && error.response?.status) {
+                    const status = error.response.status;
+                    if (status === 429 || (status >= 400 && status < 500)) return false;
+                }
+                return failureCount < 1;
+            },
         },
     },
 });

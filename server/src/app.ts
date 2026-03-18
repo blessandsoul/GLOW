@@ -59,7 +59,7 @@ export async function buildApp() {
   });
 
   await app.register(rateLimit, {
-    max: 100,
+    max: 300,
     timeWindow: '1 minute',
     redis,  // shared counter across all PM2 cluster workers
   });
