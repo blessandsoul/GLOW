@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { Upload, SpinnerGap } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 interface BadgeUploadCardProps {
     icon: React.ElementType;
@@ -29,6 +30,7 @@ export function BadgeUploadCard({
     maxFiles = 10,
 }: BadgeUploadCardProps): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
+    const { t } = useLanguage();
 
     const hasContent = multiple
         ? Array.isArray(existingUrls) && existingUrls.length > 0
@@ -61,15 +63,15 @@ export function BadgeUploadCard({
                         <p className="text-sm font-semibold text-foreground">{title}</p>
                         {isApproved ? (
                             <Badge className="bg-success/15 text-success border-success/20 text-xs">
-                                Approved
+                                {t('verification.approved')}
                             </Badge>
                         ) : isPendingReview ? (
                             <Badge variant="secondary" className="text-xs">
-                                Pending review
+                                {t('verification.pending_review')}
                             </Badge>
                         ) : (
                             <Badge variant="outline" className="text-xs text-muted-foreground">
-                                Not submitted
+                                {t('verification.not_submitted')}
                             </Badge>
                         )}
                     </div>
@@ -112,10 +114,10 @@ export function BadgeUploadCard({
                             <Upload size={14} />
                         )}
                         {isPending
-                            ? 'Uploading...'
+                            ? t('verification.uploading')
                             : hasContent
-                            ? (multiple ? 'Replace photos' : 'Replace file')
-                            : (multiple ? 'Upload photos' : 'Upload file')}
+                            ? (multiple ? t('verification.replace_photos') : t('verification.replace_file'))
+                            : (multiple ? t('verification.upload_photos') : t('verification.upload_file'))}
                     </button>
                     <input
                         ref={inputRef}
@@ -127,7 +129,7 @@ export function BadgeUploadCard({
                     />
                     {multiple && (
                         <p className="mt-1 text-xs text-muted-foreground text-center">
-                            Max {maxFiles} photos
+                            {t('verification.max_photos').replace('{max}', String(maxFiles))}
                         </p>
                     )}
                 </div>

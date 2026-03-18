@@ -77,7 +77,7 @@ export function LocationPicker({ latitude, longitude, onChange, onAddressResolve
   return (
     <div className={cn('space-y-2', className)}>
       <label className="text-sm font-medium text-foreground">Location on map</label>
-      <div className="relative h-[300px] overflow-hidden rounded-xl border border-border/60">
+      <div className="relative z-0 h-[300px] overflow-hidden rounded-xl border border-border/60">
         <MapContent latitude={latitude} longitude={longitude} onChange={handleChange} />
       </div>
       <div className="flex items-center justify-between">

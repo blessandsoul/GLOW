@@ -11,6 +11,7 @@ import { IdUploadArea } from './IdUploadArea';
 import { ROUTES } from '@/lib/constants/routes';
 import { useProfile } from '@/features/profile/hooks/useProfile';
 import { usePortfolioPreview } from '@/features/profile/hooks/usePortfolioPreview';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { IUser } from '@/features/auth/types/auth.types';
 
 const PORTFOLIO_THRESHOLD = 5;
@@ -35,28 +36,29 @@ export function VerificationNoneView({
     const [experienceYears, setExperienceYears] = useState<string>('');
     const { profile } = useProfile();
     const { publishedCount } = usePortfolioPreview();
+    const { t } = useLanguage();
 
     const isProfileComplete = !!(profile?.city && profile?.niche);
     const hasPortfolio = publishedCount >= PORTFOLIO_THRESHOLD;
 
     const requirements = [
         {
-            label: 'Phone number verified',
+            label: t('verification.phone_verified'),
             met: user.isPhoneVerified,
             href: !user.isPhoneVerified ? ROUTES.DASHBOARD_PROFILE : undefined,
         },
         {
-            label: 'Profile complete (city and niche)',
+            label: t('verification.profile_complete'),
             met: isProfileComplete,
             href: !isProfileComplete ? ROUTES.DASHBOARD_PROFILE : undefined,
         },
         {
-            label: 'ID document uploaded',
+            label: t('verification.id_uploaded'),
             met: !!idDocumentUrl,
             href: undefined,
         },
         {
-            label: `${PORTFOLIO_THRESHOLD}+ portfolio items (${publishedCount} uploaded)`,
+            label: t('verification.portfolio_items').replace('{threshold}', String(PORTFOLIO_THRESHOLD)).replace('{count}', String(publishedCount)),
             met: hasPortfolio,
             href: !hasPortfolio ? ROUTES.DASHBOARD_PORTFOLIO : undefined,
         },
@@ -77,9 +79,9 @@ export function VerificationNoneView({
                     <ShieldCheck size={20} className="text-primary" />
                 </div>
                 <div>
-                    <h2 className="text-base font-semibold text-foreground">Master Verification</h2>
+                    <h2 className="text-base font-semibold text-foreground">{t('verification.title')}</h2>
                     <p className="mt-0.5 text-sm text-muted-foreground">
-                        Get verified to appear on the homepage and earn trust badges
+                        {t('verification.subtitle')}
                     </p>
                 </div>
             </div>
@@ -87,7 +89,7 @@ export function VerificationNoneView({
             {/* Requirements checklist */}
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Requirements
+                    {t('verification.requirements')}
                 </p>
                 <ul className="space-y-2">
                     {requirements.map((req) => (
@@ -110,7 +112,7 @@ export function VerificationNoneView({
                                     href={req.href}
                                     className="text-xs text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded"
                                 >
-                                    Set up
+                                    {t('verification.set_up')}
                                 </Link>
                             )}
                         </li>
@@ -128,7 +130,7 @@ export function VerificationNoneView({
             {/* Experience years (optional) */}
             <div className="space-y-1.5">
                 <Label htmlFor="exp-years" className="text-xs font-medium text-muted-foreground">
-                    Years of experience (optional)
+                    {t('verification.experience_years')}
                 </Label>
                 <Input
                     id="exp-years"
@@ -137,7 +139,7 @@ export function VerificationNoneView({
                     max={50}
                     value={experienceYears}
                     onChange={(e) => setExperienceYears(e.target.value)}
-                    placeholder="e.g. 3"
+                    placeholder={t('verification.experience_placeholder')}
                     className="h-9 w-32 text-sm"
                 />
             </div>
@@ -149,12 +151,12 @@ export function VerificationNoneView({
                 className="w-full gap-2"
             >
                 {isRequesting && <SpinnerGap size={15} className="animate-spin" />}
-                Request Verification
+                {t('verification.request_verification')}
             </Button>
 
             {!allMet && (
                 <p className="text-center text-xs text-muted-foreground">
-                    Complete all requirements above to request verification
+                    {t('verification.complete_requirements')}
                 </p>
             )}
         </section>

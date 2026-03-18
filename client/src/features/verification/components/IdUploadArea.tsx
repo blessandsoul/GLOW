@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { Upload, SpinnerGap, CheckCircle } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 interface IdUploadAreaProps {
     currentUrl: string | null;
@@ -12,6 +13,7 @@ interface IdUploadAreaProps {
 
 export function IdUploadArea({ currentUrl, onUpload, isPending }: IdUploadAreaProps): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
+    const { t } = useLanguage();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const file = e.target.files?.[0];
@@ -30,7 +32,7 @@ export function IdUploadArea({ currentUrl, onUpload, isPending }: IdUploadAreaPr
 
     return (
         <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">ID Document</p>
+            <p className="text-xs font-medium text-muted-foreground">{t('verification.id_document')}</p>
 
             {currentUrl ? (
                 <div className="flex items-center gap-3 rounded-lg border border-border/50 bg-muted/30 p-3">
@@ -43,7 +45,7 @@ export function IdUploadArea({ currentUrl, onUpload, isPending }: IdUploadAreaPr
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 text-xs font-medium text-success">
                             <CheckCircle size={14} weight="fill" />
-                            Document uploaded
+                            {t('verification.document_uploaded')}
                         </div>
                         <button
                             type="button"
@@ -51,7 +53,7 @@ export function IdUploadArea({ currentUrl, onUpload, isPending }: IdUploadAreaPr
                             disabled={isPending}
                             className="mt-1 text-xs text-muted-foreground underline hover:text-foreground transition-colors disabled:opacity-50"
                         >
-                            Replace
+                            {t('verification.replace')}
                         </button>
                     </div>
                 </div>
@@ -74,10 +76,10 @@ export function IdUploadArea({ currentUrl, onUpload, isPending }: IdUploadAreaPr
                     )}
                     <div>
                         <p className="text-sm font-medium text-foreground">
-                            {isPending ? 'Uploading...' : 'Upload ID document'}
+                            {isPending ? t('verification.uploading') : t('verification.upload_id')}
                         </p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
-                            Passport, national ID, or driver&apos;s license
+                            {t('verification.upload_id_hint')}
                         </p>
                     </div>
                 </div>

@@ -10,6 +10,7 @@ import {
     Diamond,
 } from '@phosphor-icons/react';
 import { useAppSelector } from '@/store/hooks';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import {
     useVerificationState,
     useRequestVerification,
@@ -25,6 +26,7 @@ import { IdUploadArea } from './IdUploadArea';
 // ─── Pending View ────────────────────────────────────────────────────────────
 
 function PendingView({ idDocumentUrl }: { idDocumentUrl: string | null }): React.ReactElement {
+    const { t } = useLanguage();
     return (
         <section className="rounded-xl border border-border/50 bg-card p-6 space-y-4">
             <div className="flex items-start gap-3">
@@ -32,16 +34,16 @@ function PendingView({ idDocumentUrl }: { idDocumentUrl: string | null }): React
                     <Clock size={20} className="text-warning" weight="fill" />
                 </div>
                 <div>
-                    <h2 className="text-base font-semibold text-foreground">Verification Under Review</h2>
+                    <h2 className="text-base font-semibold text-foreground">{t('verification.pending_title')}</h2>
                     <p className="mt-0.5 text-sm text-muted-foreground">
-                        Your verification request is being reviewed by our team. This usually takes 1–2 business days.
+                        {t('verification.pending_desc')}
                     </p>
                 </div>
             </div>
 
             {idDocumentUrl && (
                 <div className="space-y-1.5">
-                    <p className="text-xs font-medium text-muted-foreground">Submitted ID document</p>
+                    <p className="text-xs font-medium text-muted-foreground">{t('verification.submitted_id')}</p>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src={idDocumentUrl}
@@ -87,8 +89,10 @@ function VerifiedView({
     uploadQuality,
     isUploadingQuality,
 }: VerifiedViewProps): React.ReactElement {
+    const { t, language } = useLanguage();
+    const localeMap = { ka: 'ka-GE', ru: 'ru-RU', en: 'en-US' } as const;
     const verifiedDate = verifiedAt
-        ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(
+        ? new Intl.DateTimeFormat(localeMap[language] ?? 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(
               new Date(verifiedAt),
           )
         : null;
@@ -101,10 +105,10 @@ function VerifiedView({
                     <CheckCircle size={20} className="text-success" weight="fill" />
                 </div>
                 <div>
-                    <h2 className="text-base font-semibold text-foreground">Verified Master</h2>
+                    <h2 className="text-base font-semibold text-foreground">{t('verification.verified_title')}</h2>
                     {verifiedDate && (
                         <p className="mt-0.5 text-xs text-muted-foreground">
-                            Verified on {verifiedDate}
+                            {t('verification.verified_on').replace('{date}', verifiedDate)}
                         </p>
                     )}
                 </div>
@@ -113,13 +117,13 @@ function VerifiedView({
             {/* Tier 2 badges */}
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Trust badges
+                    {t('verification.trust_badges')}
                 </p>
                 <div className="space-y-3">
                     <BadgeUploadCard
                         icon={Certificate}
-                        title="Certified Professional"
-                        description="Upload your professional certificate"
+                        title={t('verification.certified_title')}
+                        description={t('verification.certified_desc')}
                         isApproved={isCertified}
                         existingUrls={certificateUrl}
                         onUpload={uploadCertificate as (files: File | File[]) => void}
@@ -128,8 +132,8 @@ function VerifiedView({
                     />
                     <BadgeUploadCard
                         icon={SprayBottle}
-                        title="Hygiene Verified"
-                        description="Upload photos of your clean workspace and tools"
+                        title={t('verification.hygiene_title')}
+                        description={t('verification.hygiene_desc')}
                         isApproved={isHygieneVerified}
                         existingUrls={hygienePicsUrl}
                         onUpload={uploadHygiene as (files: File | File[]) => void}
@@ -139,8 +143,8 @@ function VerifiedView({
                     />
                     <BadgeUploadCard
                         icon={Diamond}
-                        title="Quality Products"
-                        description="Upload photos showing the quality products you use"
+                        title={t('verification.quality_title')}
+                        description={t('verification.quality_desc')}
                         isApproved={isQualityProducts}
                         existingUrls={qualityProductsUrl}
                         onUpload={uploadQuality as (files: File | File[]) => void}
@@ -173,6 +177,7 @@ function RejectedView({
     onRequest,
     isRequesting,
 }: RejectedViewProps): React.ReactElement {
+    const { t } = useLanguage();
     return (
         <section className="rounded-xl border border-destructive/30 bg-card p-6 space-y-4">
             <div className="flex items-start gap-3">
@@ -180,16 +185,16 @@ function RejectedView({
                     <Warning size={20} className="text-destructive" weight="fill" />
                 </div>
                 <div>
-                    <h2 className="text-base font-semibold text-foreground">Verification Rejected</h2>
+                    <h2 className="text-base font-semibold text-foreground">{t('verification.rejected_title')}</h2>
                     <p className="mt-0.5 text-sm text-muted-foreground">
-                        You can re-upload your ID and resubmit your request.
+                        {t('verification.rejected_desc')}
                     </p>
                 </div>
             </div>
 
             {rejectionReason && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
-                    <p className="text-xs font-semibold text-destructive mb-0.5">Rejection reason</p>
+                    <p className="text-xs font-semibold text-destructive mb-0.5">{t('verification.rejection_reason')}</p>
                     <p className="text-sm text-destructive/80">{rejectionReason}</p>
                 </div>
             )}
@@ -206,7 +211,7 @@ function RejectedView({
                 disabled={!idDocumentUrl || isRequesting}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
-                Resubmit Verification Request
+                {t('verification.resubmit')}
             </button>
         </section>
     );
