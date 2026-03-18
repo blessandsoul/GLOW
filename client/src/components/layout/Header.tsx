@@ -371,6 +371,20 @@ export function Header(): React.ReactElement {
 
                 {/* Mobile Header Actions */}
                 <div className="flex items-center gap-1 md:hidden">
+                    {isAuthenticated && (user?.role === 'MASTER' || user?.role === 'ADMIN') && (
+                        <Link
+                            href={ROUTES.CREATE}
+                            className={cn(
+                                'flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200 active:scale-[0.95]',
+                                pathname === ROUTES.CREATE || pathname.startsWith(ROUTES.CREATE + '/')
+                                    ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
+                                    : 'bg-primary/10 text-primary hover:bg-primary/20',
+                            )}
+                            aria-label={t('nav.create')}
+                        >
+                            <Plus size={18} weight="bold" />
+                        </Link>
+                    )}
                     {IS_LAUNCH_MODE && isAuthenticated && (
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                             Free

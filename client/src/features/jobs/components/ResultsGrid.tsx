@@ -7,7 +7,7 @@ import {
     DownloadSimple, WarningCircle,
     LinkSimple, Stamp, MagnifyingGlassPlus,
     SlidersHorizontal, GridFour, ArrowsOut,
-    PencilSimple, Trash,
+    PencilSimple, Trash, Eraser,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
