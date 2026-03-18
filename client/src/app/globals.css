@@ -228,34 +228,6 @@
   }
 }
 
-/* ── Create button shimmer (matches Logo shine effect) ────────────────────── */
-@keyframes create-btn-shimmer {
-  0%, 100% {
-    box-shadow:
-      0 0 8px oklch(0.58 0.15 340 / 0.3),
-      0 0 20px oklch(0.58 0.15 340 / 0.15);
-  }
-  50% {
-    box-shadow:
-      0 0 14px oklch(0.58 0.15 340 / 0.55),
-      0 0 32px oklch(0.58 0.15 340 / 0.25);
-  }
-}
-
-@keyframes create-btn-shine-rotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .animate-create-shimmer {
-    animation: create-btn-shimmer 2.4s ease-in-out infinite;
-  }
-
-  .animate-create-shine-rotate {
-    animation: create-btn-shine-rotate 3s linear infinite;
-  }
-}
 
 /* ── Generation progress shimmer ──────────────────────────────────────────── */
 @keyframes gen-shimmer {
