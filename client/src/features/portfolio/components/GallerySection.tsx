@@ -10,7 +10,7 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { GalleryImagePicker } from './GalleryImagePicker';
 import { ImageEditor } from '@/components/common/ImageEditor';
-import { getServerImageUrl, base64ToFile } from '@/lib/utils/image';
+import { getServerImageUrl, getThumbUrl, base64ToFile } from '@/lib/utils/image';
 import type { PortfolioItem, PortfolioItemFormData } from '../types/portfolio.types';
 import type { JobResultImage } from '../types/builder.types';
 
@@ -152,7 +152,7 @@ export function GallerySection({
                         >
                             <div className="aspect-[3/4]">
                                 <img
-                                    src={getServerImageUrl(item.imageUrl)}
+                                    src={getThumbUrl(item.imageUrl, 512)}
                                     alt={item.title ?? t('portfolio.your_portfolio')}
                                     className="h-full w-full object-cover"
                                     loading="lazy"

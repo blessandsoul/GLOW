@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFeaturedMasters } from '../hooks/useFeaturedMasters';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
-import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -310,7 +310,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                 <div className="flex items-center gap-3 p-3.5">
                     {master.avatar ? (
                         <Image
-                            src={getServerImageUrl(master.avatar)}
+                            src={getThumbUrl(master.avatar, 96)}
                             alt={master.displayName}
                             width={40}
                             height={40}

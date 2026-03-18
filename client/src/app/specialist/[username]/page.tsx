@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 import { PublicPortfolio } from '@/features/portfolio/components/PublicPortfolio';
 import type { PublicPortfolioData } from '@/features/portfolio/types/portfolio.types';
@@ -11,25 +12,38 @@ interface PortfolioPublicPageProps {
 const API_BASE =
     process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
 
-async function fetchPortfolio(username: string): Promise<PublicPortfolioData | null> {
+interface FetchResult {
+    data: PublicPortfolioData | null;
+    redirectTo: string | null;
+}
+
+async function fetchPortfolio(username: string): Promise<FetchResult> {
     try {
         const res = await fetch(`${API_BASE}/portfolio/public/${username}`, {
             next: { revalidate: 60 },
+            redirect: 'manual',
         });
-        if (!res.ok) return null;
-        const json = (await res.json()) as ApiResponse<PublicPortfolioData>;
-        return json.data;
+
+        const json = (await res.json()) as ApiResponse<PublicPortfolioData & { redirect?: string }>;
+
+        // Handle username redirect (old username → new username)
+        if (json.data?.redirect) {
+            return { data: null, redirectTo: json.data.redirect };
+        }
+
+        if (!res.ok) return { data: null, redirectTo: null };
+        return { data: json.data, redirectTo: null };
     } catch {
-        return null;
+        return { data: null, redirectTo: null };
     }
 }
 
 
 export async function generateMetadata({ params }: PortfolioPublicPageProps): Promise<Metadata> {
     const { username } = await params;
-    const portfolio = await fetchPortfolio(username);
+    const { data: portfolio, redirectTo } = await fetchPortfolio(username);
 
-    if (!portfolio) {
+    if (redirectTo || !portfolio) {
         return { title: 'Specialist' };
     }
 
@@ -67,6 +81,12 @@ export async function generateMetadata({ params }: PortfolioPublicPageProps): Pr
 
 export default async function PortfolioPublicPage({ params }: PortfolioPublicPageProps): Promise<React.ReactElement> {
     const { username } = await params;
+
+    // Check for username redirect before rendering
+    const { redirectTo } = await fetchPortfolio(username);
+    if (redirectTo) {
+        redirect(`/specialist/${redirectTo}`);
+    }
 
     return <PublicPortfolio username={username} />;
 }

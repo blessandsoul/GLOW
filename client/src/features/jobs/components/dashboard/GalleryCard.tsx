@@ -12,7 +12,7 @@ import {
     ArrowsOut,
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { Job } from '../../types/job.types';
 
@@ -44,8 +44,8 @@ function GalleryCardInner({
 
     const imageSrc =
         isDone && job.results && job.results.length > 0
-            ? getServerImageUrl(job.results[0])
-            : getServerImageUrl(job.originalUrl);
+            ? getThumbUrl(job.results[0], 512)
+            : getThumbUrl(job.originalUrl, 512);
 
     const resultCount = job.results?.length ?? 0;
     const dateLabel = new Date(job.createdAt).toLocaleDateString('en-US', {

@@ -98,6 +98,12 @@ export function createPortfolioController(portfolioService: PortfolioService) {
     async getPublic(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const { username } = PublicPortfolioParamsSchema.parse(request.params);
       const data = await portfolioService.getPublicPortfolio(username);
+
+      if ('redirect' in data) {
+        reply.status(301).send(successResponse('Username changed', { redirect: data.redirect }));
+        return;
+      }
+
       reply.send(successResponse('Portfolio retrieved', data));
     },
   };

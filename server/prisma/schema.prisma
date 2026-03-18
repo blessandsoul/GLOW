@@ -53,8 +53,23 @@ model User {
   referralsGiven   Referral[]       @relation("referrerReferrals")
   referralReceived Referral?        @relation("referredReferral")
   hdUpscaleLogs    HdUpscaleLog[]
+  usernameHistory  UsernameHistory[]
 
   @@map("users")
+}
+
+model UsernameHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  username  String   @db.VarChar(30)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([username, expiresAt])
+  @@index([userId])
+  @@map("username_history")
 }
 
 model RefreshToken {

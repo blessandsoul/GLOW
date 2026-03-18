@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { apiClient } from '@/lib/api/axios.config';
 import { API_ENDPOINTS } from '@/lib/constants/api-endpoints';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 
 // ─── Step definitions ────────────────────────────────────────────────────────
 const STEP_KEYS = [
@@ -219,7 +219,7 @@ export function GenerationProgress({ originalUrl, jobId }: GenerationProgressPro
                 <div className="relative w-full max-w-xs overflow-hidden rounded-2xl border border-border/40">
                     <div className="relative aspect-3/4">
                         <Image
-                            src={getServerImageUrl(originalUrl)}
+                            src={getThumbUrl(originalUrl, 512)}
                             alt=""
                             fill
                             className="object-cover transition-[filter] duration-1000 ease-out"

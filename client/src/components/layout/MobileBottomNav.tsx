@@ -70,9 +70,7 @@ export function MobileBottomNav(): React.ReactElement | null {
 
     const role = user?.role;
 
-    if (role === 'ADMIN') return null;
-
-    // SALON falls through to USER_ITEMS intentionally (same nav for now)
+    // All roles see the nav; ADMIN and SALON use USER_ITEMS for now
     const items = [...SHARED_START, ...(role === 'MASTER' ? MASTER_ITEMS : USER_ITEMS), ...SHARED_END];
 
     return (

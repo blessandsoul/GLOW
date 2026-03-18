@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ROUTES } from '@/lib/constants/routes';
 import { usePortfolioPreview } from '../hooks/usePortfolioPreview';
+import { getThumbUrl } from '@/lib/utils/image';
 
 export function PortfolioPreview(): React.ReactElement {
     const { items, isLoading, publishedCount } = usePortfolioPreview();
@@ -63,7 +64,7 @@ export function PortfolioPreview(): React.ReactElement {
                             className="group relative aspect-square overflow-hidden rounded-lg border border-border/40 bg-muted cursor-pointer"
                         >
                             <Image
-                                src={item.imageUrl}
+                                src={getThumbUrl(item.imageUrl, 256)}
                                 alt={item.title ?? 'Portfolio work'}
                                 fill
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"

@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { CloudArrowUp, X, ImageSquare } from '@phosphor-icons/react';
 import { portfolioService } from '@/features/portfolio/services/portfolio.service';
 import { getErrorMessage } from '@/lib/utils/error';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import { WizardLayout } from '../../WizardLayout';
@@ -95,7 +95,7 @@ export function MasterPortfolioStep({ state, dispatch, goBack, onSubmit, isSubmi
                         {photos.map((photo) => (
                             <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl border border-border/60">
                                 <img
-                                    src={getServerImageUrl(photo.url)}
+                                    src={getThumbUrl(photo.url, 512)}
                                     alt="Portfolio"
                                     className="h-full w-full object-cover"
                                 />

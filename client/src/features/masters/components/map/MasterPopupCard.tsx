@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { X, ArrowRight, MapPin, Briefcase } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { ROUTES } from '@/lib/constants/routes';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { MasterBadgesRow } from '../MasterBadges';
@@ -43,7 +43,7 @@ export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): Reac
               {master.portfolioImages.slice(0, 4).map((img) => (
                 <div key={img.id} className="relative flex-1 overflow-hidden">
                   <img
-                    src={getServerImageUrl(img.imageUrl)}
+                    src={getThumbUrl(img.imageUrl, 256)}
                     alt={img.title ?? ''}
                     className="h-full w-full object-cover"
                   />
@@ -61,7 +61,7 @@ export function MasterPopupCard({ master, onClose }: MasterPopupCardProps): Reac
               <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 ring-background">
                 {master.avatar ? (
                   <img
-                    src={getServerImageUrl(master.avatar)}
+                    src={getThumbUrl(master.avatar, 96)}
                     alt={master.displayName}
                     className="h-full w-full object-cover"
                   />

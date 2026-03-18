@@ -417,7 +417,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\"\n}"
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"username\": \"newusername\"\n}"
             }
           }
         },

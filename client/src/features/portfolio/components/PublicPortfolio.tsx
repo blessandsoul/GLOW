@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppSelector } from '@/store/hooks';
 import { usePublicPortfolio } from '../hooks/usePortfolio';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
 import { getCityLabel } from '@/lib/constants/cities';
 import { MasterBadgesRow } from '@/features/masters/components/MasterBadges';
@@ -93,7 +93,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
             <div className="flex flex-col items-center gap-4 text-center">
                 {portfolio.avatar ? (
                     <Image
-                        src={getServerImageUrl(portfolio.avatar)}
+                        src={getThumbUrl(portfolio.avatar, 160)}
                         alt={portfolio.displayName}
                         width={80}
                         height={80}
@@ -223,7 +223,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                             >
                                 <div className="relative aspect-3/4">
                                     <Image
-                                        src={getServerImageUrl(item.imageUrl)}
+                                        src={getThumbUrl(item.imageUrl, 512)}
                                         alt={item.title ?? t('ui.text_kaosed')}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"

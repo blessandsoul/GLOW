@@ -1,11 +1,20 @@
 import { onboardingRepo } from './onboarding.repo.js';
 import { mapUserToResponse } from '@/modules/auth/auth.repo.js';
+import { forwardGeocode } from '@/libs/geocode.js';
 import type { CompleteOnboardingInput } from './onboarding.schemas.js';
 import type { UserResponse } from '@/modules/auth/auth.repo.js';
 
 export function createOnboardingService() {
   return {
     async complete(userId: string, input: CompleteOnboardingInput): Promise<UserResponse> {
+      // Auto-geocode workAddress if coordinates not provided
+      if ('workAddress' in input && input.workAddress && input.latitude == null) {
+        const coords = await forwardGeocode(input.workAddress, input.city);
+        if (coords) {
+          input.latitude = coords.latitude;
+          input.longitude = coords.longitude;
+        }
+      }
       const consents = {
         smsAppointments: input.smsAppointments,
         smsPromotions: input.smsPromotions,

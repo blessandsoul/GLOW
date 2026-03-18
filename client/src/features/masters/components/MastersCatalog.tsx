@@ -21,7 +21,7 @@ import { getCityOptions, getCityLabel } from '@/lib/constants/cities';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -679,7 +679,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                 <div className="flex flex-1 items-center gap-4 p-4 sm:p-5">
                     {master.avatar ? (
                         <Image
-                            src={getServerImageUrl(master.avatar)}
+                            src={getThumbUrl(master.avatar, 96)}
                             alt={master.displayName}
                             width={48}
                             height={48}

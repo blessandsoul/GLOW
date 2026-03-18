@@ -119,8 +119,14 @@ export function createPortfolioService() {
     },
 
     async getPublicPortfolio(username: string) {
-      const user = await portfolioRepo.findUserByUsername(username);
+      let user = await portfolioRepo.findUserByUsername(username);
+
+      // Check if this is an old username that should redirect
       if (!user) {
+        const redirect = await portfolioRepo.findFrozenUsernameRedirect(username);
+        if (redirect?.user?.username) {
+          return { redirect: redirect.user.username };
+        }
         throw new NotFoundError('User not found', 'USER_NOT_FOUND');
       }
 

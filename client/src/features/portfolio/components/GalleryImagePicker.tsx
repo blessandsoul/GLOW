@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import type { JobResultImage } from '../types/builder.types';
 import type { PortfolioItemFormData } from '../types/portfolio.types';
 
@@ -73,7 +73,7 @@ export function GalleryImagePicker({ jobResults, portfolioImageUrls, onAdd }: Ga
                         >
                             <div className="aspect-[3/4]">
                                 <img
-                                    src={getServerImageUrl(img.imageUrl)}
+                                    src={getThumbUrl(img.imageUrl, 512)}
                                     alt={t('portfolio.nav_gallery')}
                                     className="h-full w-full object-cover"
                                     loading="lazy"
@@ -128,7 +128,7 @@ export function GalleryImagePicker({ jobResults, portfolioImageUrls, onAdd }: Ga
                         <div className="space-y-4">
                             <div className="mx-auto w-48 overflow-hidden rounded-xl">
                                 <img
-                                    src={getServerImageUrl(selectedImage.imageUrl)}
+                                    src={getThumbUrl(selectedImage.imageUrl, 384)}
                                     alt="Selected"
                                     className="aspect-[3/4] w-full object-cover"
                                 />

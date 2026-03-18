@@ -102,6 +102,20 @@ export const portfolioRepo = {
     });
   },
 
+  async findFrozenUsernameRedirect(username: string) {
+    return prisma.usernameHistory.findFirst({
+      where: {
+        username,
+        expiresAt: { gt: new Date() },
+      },
+      select: {
+        user: {
+          select: { username: true },
+        },
+      },
+    });
+  },
+
   async findMasterProfileByUserId(userId: string) {
     return prisma.masterProfile.findUnique({
       where: { userId },

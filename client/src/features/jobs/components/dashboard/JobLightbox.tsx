@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { X, CaretLeft, CaretRight, DownloadSimple, ShareNetwork, Trash, ArrowsOut } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { AddToPortfolioButton } from '@/features/portfolio/components/AddToPortfolioButton';
 import { ROUTES } from '@/lib/constants/routes';
@@ -197,7 +197,7 @@ export function JobLightbox({ jobs, initialJobIndex, open, onClose, onDelete }: 
                     <div className="flex justify-center gap-2">
                         {variantUrls.map((url, i) => (
                             <button key={i} type="button" onClick={() => setSelectedVariant(i)} className={cn('relative h-14 w-10 overflow-hidden rounded-lg transition-all duration-150 sm:h-16 sm:w-12', i === safeVariant ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-90')}>
-                                <Image src={getServerImageUrl(url)} alt={i === 0 ? t('dashboard.original') : `${t('dashboard.variant')} ${i}`} fill className="object-cover" sizes="48px" unoptimized />
+                                <Image src={getThumbUrl(url, 96)} alt={i === 0 ? t('dashboard.original') : `${t('dashboard.variant')} ${i}`} fill className="object-cover" sizes="48px" unoptimized />
                                 {i === 0 && <span className="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 text-center text-[9px] font-medium text-white">{t('dashboard.original')}</span>}
                             </button>
                         ))}

@@ -22,7 +22,7 @@ import { ImageEditor } from '@/components/common/ImageEditor';
 import { GenerationProgress } from './GenerationProgress';
 import type { Job } from '../types/job.types';
 import { useLanguage } from "@/i18n/hooks/useLanguage";
-import { getServerImageUrl, base64ToFile } from '@/lib/utils/image';
+import { getServerImageUrl, getThumbUrl, base64ToFile } from '@/lib/utils/image';
 import { jobService } from '../services/job.service';
 
 interface ResultsGridProps {
@@ -278,7 +278,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDel
                             >
                                 <div className="relative aspect-3/4">
                                     <Image
-                                        src={getServerImageUrl(job.originalUrl)}
+                                        src={getThumbUrl(job.originalUrl, 512)}
                                         alt={t('ui.text_pt6')}
                                         fill
                                         className="scale-[1.30] object-cover transition-transform duration-300 group-hover:scale-[1.32]"
@@ -303,7 +303,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDel
                             >
                                 <div className="relative aspect-3/4">
                                     <Image
-                                        src={getServerImageUrl(afterImageUrl)}
+                                        src={getThumbUrl(afterImageUrl, 512)}
                                         alt={t('ui.text_gnzjzw')}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
@@ -353,7 +353,7 @@ export function ResultsGrid({ job, isAuthenticated, onDownload, onRetouch, onDel
                                         )}
                                     >
                                         <Image
-                                            src={getServerImageUrl(url)}
+                                            src={getThumbUrl(url, 96)}
                                             alt={`#${i + 1}`}
                                             fill
                                             className="object-cover"

@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { useMyPortfolio } from '../hooks/usePortfolio';
 import { useAppSelector } from '@/store/hooks';
 import { ROUTES } from '@/lib/constants/routes';
@@ -33,7 +33,7 @@ function PortfolioItemCard({
         )}>
             <div className="relative aspect-3/4">
                 <Image
-                    src={getServerImageUrl(item.imageUrl)}
+                    src={getThumbUrl(item.imageUrl, 512)}
                     alt={item.title ?? 'Portfolio item'}
                     fill
                     unoptimized

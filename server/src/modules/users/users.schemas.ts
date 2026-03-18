@@ -1,8 +1,24 @@
 import { z } from 'zod';
 
+const usernameRegex = /^[a-z0-9][a-z0-9._]*[a-z0-9]$/;
+const noConsecutiveSpecial = /^(?!.*[._]{2})/;
+
+export const UsernameSchema = z
+  .string()
+  .min(3, 'Username must be at least 3 characters')
+  .max(30, 'Username must be at most 30 characters')
+  .transform((val) => val.toLowerCase())
+  .refine((val) => usernameRegex.test(val), {
+    message: 'Username can only contain lowercase letters, numbers, dots and underscores',
+  })
+  .refine((val) => noConsecutiveSpecial.test(val), {
+    message: 'Username cannot contain consecutive dots or underscores',
+  });
+
 export const UpdateUserSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50).optional(),
   lastName: z.string().min(1, 'Last name is required').max(50).optional(),
+  username: UsernameSchema.optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;

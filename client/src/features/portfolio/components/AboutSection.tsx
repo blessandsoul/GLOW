@@ -12,7 +12,7 @@ import { getCityOptions } from '@/lib/constants/cities';
 import { usersService } from '@/features/users/services/users.service';
 import { useAppDispatch } from '@/store/hooks';
 import { setUser } from '@/features/auth/store/authSlice';
-import { getServerImageUrl } from '@/lib/utils/image';
+import { getThumbUrl } from '@/lib/utils/image';
 import { getErrorMessage } from '@/lib/utils/error';
 import type { IUser } from '@/features/auth/types/auth.types';
 import { LocationPicker } from '@/features/profile/components/LocationPicker';
@@ -123,7 +123,7 @@ export function AboutSection({ form, updateField, saveStatus, user }: AboutSecti
                 >
                     {user?.avatar ? (
                         <img
-                            src={getServerImageUrl(user.avatar)}
+                            src={getThumbUrl(user.avatar, 128)}
                             alt={displayName}
                             className="h-full w-full object-cover"
                         />
