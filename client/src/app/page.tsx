@@ -6,6 +6,7 @@ import { ArrowRight, Users, MagnifyingGlass, Star, ChatCircleDots } from '@phosp
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
 import dynamic from 'next/dynamic';
 
@@ -81,6 +82,7 @@ export default function HomePage(): React.ReactElement {
                             {t('nav.blog')}
                         </Link>
 
+                        <LanguageSwitcher />
                         <ThemeToggle />
 
                         <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />

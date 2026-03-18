@@ -26,6 +26,23 @@ export default function ProfilePage(): React.ReactElement {
                 </p>
             </div>
 
+            {/* Portfolio CTA — primary action, always visible */}
+            <Link
+                href={ROUTES.DASHBOARD_PORTFOLIO}
+                className="group flex items-center gap-4 rounded-2xl border-2 border-primary/30 bg-primary/10 p-6 shadow-sm shadow-primary/10 transition-all duration-200 hover:border-primary/50 hover:bg-primary/15 hover:shadow-md hover:shadow-primary/15 hover:-translate-y-0.5 active:scale-[0.99]"
+            >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 transition-colors duration-200 group-hover:bg-primary/30">
+                    <Briefcase size={24} weight="fill" className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-base font-bold text-foreground">{t('ui.profile_portfolio_cta')}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                        {t('ui.profile_portfolio_cta_desc')}
+                    </p>
+                </div>
+                <ArrowRight size={20} weight="bold" className="shrink-0 text-primary transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+
             {/* Referrals CTA */}
             <Link
                 href={ROUTES.DASHBOARD_REFERRALS}
@@ -68,23 +85,6 @@ export default function ProfilePage(): React.ReactElement {
 
             {/* 3. Personal info — avatar, name */}
             <PersonalInfoSection />
-
-            {/* 3. Portfolio CTA */}
-            <Link
-                href={ROUTES.DASHBOARD_PORTFOLIO}
-                className="flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-5 transition-all duration-200 hover:border-primary/40 hover:bg-primary/10"
-            >
-                <div className="rounded-full bg-primary/10 p-3">
-                    <Briefcase size={22} className="text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{t('ui.profile_portfolio_cta')}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                        {t('ui.profile_portfolio_cta_desc')}
-                    </p>
-                </div>
-                <ArrowRight size={18} className="shrink-0 text-primary" />
-            </Link>
 
             {/* 4. Security */}
             <ChangePassword />
