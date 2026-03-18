@@ -314,8 +314,8 @@ function Blink({ uid }: { uid: string }): React.ReactElement {
                 cx="80"
                 cy="105"
                 rx="12"
-                ry="0"
                 fill="#f472b6"
+                initial={{ ry: 0 }}
                 animate={{
                     ry: [0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0],
                 }}
@@ -330,8 +330,8 @@ function Blink({ uid }: { uid: string }): React.ReactElement {
                 cx="120"
                 cy="105"
                 rx="12"
-                ry="0"
                 fill="#f472b6"
+                initial={{ ry: 0 }}
                 animate={{
                     ry: [0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0],
                 }}

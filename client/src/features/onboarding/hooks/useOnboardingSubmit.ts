@@ -70,6 +70,9 @@ export function useOnboardingSubmit() {
             const res = await onboardingService.complete(buildPayload(state));
             dispatch(setUser(res.user));
             clearOnboardingStorage();
+            // Set cookie on client domain so Next.js middleware can read it
+            // (the API server sets it on its own domain which may differ)
+            document.cookie = 'onboardingCompleted=1; path=/; max-age=31536000; SameSite=Lax';
             router.push('/dashboard');
         } catch (e) {
             setError(getErrorMessage(e));

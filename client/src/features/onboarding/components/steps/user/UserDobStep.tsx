@@ -15,11 +15,14 @@ export function UserDobStep({ state, dispatch, goNext, goBack }: StepProps): Rea
     const { t, language } = useLanguage();
     const [open, setOpen] = useState(false);
 
-    const date = state.dateOfBirth ? new Date(state.dateOfBirth) : undefined;
+    const date = state.dateOfBirth ? new Date(state.dateOfBirth + 'T00:00:00') : undefined;
 
     const handleSelect = (selected: Date | undefined): void => {
         if (selected) {
-            dispatch({ type: 'SET_FIELD', payload: { dateOfBirth: selected.toISOString().split('T')[0] } });
+            const year = selected.getFullYear();
+            const month = String(selected.getMonth() + 1).padStart(2, '0');
+            const day = String(selected.getDate()).padStart(2, '0');
+            dispatch({ type: 'SET_FIELD', payload: { dateOfBirth: `${year}-${month}-${day}` } });
             setOpen(false);
         }
     };
