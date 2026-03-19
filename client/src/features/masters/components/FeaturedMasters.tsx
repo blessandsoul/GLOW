@@ -18,6 +18,8 @@ import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import { getCityLabel } from '@/lib/constants/cities';
 import { MasterBadgesRow } from './MasterBadges';
+import { FavoriteButton } from '@/features/favorites/components/FavoriteButton';
+import { useAppSelector } from '@/store/hooks';
 
 const NICHE_META: Record<string, { icon: Icon }> = {
     lashes:   { icon: Eye },
@@ -214,6 +216,7 @@ function NicheChip({ isActive, onClick, icon: IconComponent, label }: NicheChipP
 
 interface MasterCardProps {
     master: {
+        masterProfileId: string | null;
         username: string;
         displayName: string;
         avatar: string | null;
@@ -235,6 +238,7 @@ interface MasterCardProps {
 
 function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
     const { language } = useLanguage();
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const images = master.portfolioImages;
 
     return (
@@ -302,6 +306,16 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                     {master.totalItems > 4 && (
                         <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
                             +{master.totalItems - 4}
+                        </div>
+                    )}
+
+                    {isAuthenticated && master.masterProfileId && (
+                        <div className="absolute right-2 top-2 z-10">
+                            <FavoriteButton
+                                entityType="master"
+                                entityId={master.masterProfileId}
+                                isFavorited={false}
+                            />
                         </div>
                     )}
                 </div>

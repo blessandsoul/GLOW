@@ -27,6 +27,8 @@ import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MasterBadgesRow } from './MasterBadges';
+import { FavoriteButton } from '@/features/favorites/components/FavoriteButton';
+import { useAppSelector } from '@/store/hooks';
 import type { LocationType } from '../types/masters.types';
 
 const MasterMapView = dynamic(
@@ -575,6 +577,7 @@ function BadgeFilterChip({ checked, onToggle, icon: IconComponent, label, colorC
 
 interface CatalogMasterCardProps {
     master: {
+        masterProfileId: string | null;
         username: string;
         displayName: string;
         avatar: string | null;
@@ -599,6 +602,7 @@ interface CatalogMasterCardProps {
 
 function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouseLeave }: CatalogMasterCardProps): React.ReactElement {
     const { language } = useLanguage();
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const images = master.portfolioImages;
     const cityDisplay = master.city ? getCityLabel(master.city, language) : null;
 
@@ -671,6 +675,16 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                     {master.totalItems > 4 && (
                         <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
                             +{master.totalItems - 4}
+                        </div>
+                    )}
+
+                    {isAuthenticated && master.masterProfileId && (
+                        <div className="absolute right-2 top-2 z-10">
+                            <FavoriteButton
+                                entityType="master"
+                                entityId={master.masterProfileId}
+                                isFavorited={false}
+                            />
                         </div>
                     )}
                 </div>
