@@ -52,6 +52,9 @@ const MASTER_SELECT = {
       styleTags: {
         select: { styleTag: { select: { name: true, slug: true } } },
       },
+      _count: {
+        select: { favoritedBy: true },
+      },
     },
   },
   brandingProfile: {
@@ -186,6 +189,7 @@ function mapMaster(m: any) {
       title: item.title,
     })),
     totalItems: m._count.portfolioItems,
+    favoritesCount: m.masterProfile?._count?.favoritedBy ?? 0,
   };
 }
 

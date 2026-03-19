@@ -11,6 +11,9 @@ const PORTFOLIO_ITEM_SELECT = {
   isPublished: true,
   sortOrder: true,
   createdAt: true,
+  _count: {
+    select: { favoritedBy: true },
+  },
 } as const;
 
 export const portfolioRepo = {
