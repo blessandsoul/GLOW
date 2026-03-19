@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Heart } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useFavoriteToggle } from '../hooks/useFavorites';
@@ -19,7 +19,7 @@ export function FavoriteButton({
   isFavorited,
   size = 20,
   className,
-}: FavoriteButtonProps): JSX.Element {
+}: FavoriteButtonProps): React.ReactElement {
   const { toggleMaster, togglePortfolioItem, isTogglingMaster, isTogglingPortfolioItem } =
     useFavoriteToggle();
 
