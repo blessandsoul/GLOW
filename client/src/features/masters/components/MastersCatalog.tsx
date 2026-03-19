@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MasterBadgesRow } from './MasterBadges';
 import { FavoriteButton } from '@/features/favorites/components/FavoriteButton';
+import { useFavoriteStatus } from '@/features/favorites/hooks/useFavorites';
 import { useAppSelector } from '@/store/hooks';
 import type { LocationType } from '../types/masters.types';
 
@@ -603,6 +604,9 @@ interface CatalogMasterCardProps {
 function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouseLeave }: CatalogMasterCardProps): React.ReactElement {
     const { language } = useLanguage();
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const masterIds = master.masterProfileId ? [master.masterProfileId] : [];
+    const { status } = useFavoriteStatus(masterIds, []);
+    const isFavorited = master.masterProfileId ? status?.masters[master.masterProfileId] ?? false : false;
     const images = master.portfolioImages;
     const cityDisplay = master.city ? getCityLabel(master.city, language) : null;
 
@@ -683,7 +687,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                             <FavoriteButton
                                 entityType="master"
                                 entityId={master.masterProfileId}
-                                isFavorited={false}
+                                isFavorited={isFavorited}
                             />
                         </div>
                     )}
