@@ -15,6 +15,8 @@ import { MasterBadgesRow } from '@/features/masters/components/MasterBadges';
 import { ImageLightbox } from './ImageLightbox';
 import { ReviewsSection } from './ReviewsSection';
 import { ReviewForm } from '@/features/reviews/components/ReviewForm';
+import { FavoriteButton } from '@/features/favorites/components/FavoriteButton';
+import { useFavoriteStatus } from '@/features/favorites/hooks/useFavorites';
 
 interface PublicPortfolioProps {
     username: string;
@@ -24,9 +26,16 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
     const { t, language } = useLanguage();
     const router = useRouter();
     const user = useAppSelector((s) => s.auth.user);
+    const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
     const isOwnProfile = user?.username === username;
     const { portfolio, isLoading, isError } = usePublicPortfolio(username);
     const [lightboxIndex, setLightboxIndex] = useState(-1);
+
+    const masterProfileId = portfolio?.masterId ?? '';
+    const { status: favoriteStatus } = useFavoriteStatus(
+        isAuthenticated && !isOwnProfile && masterProfileId ? [masterProfileId] : [],
+        [],
+    );
 
     const handleOpenLightbox = useCallback((index: number): void => {
         setLightboxIndex(index);
@@ -109,6 +118,13 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     <div className="flex items-center justify-center gap-2">
                         <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
                         <MasterBadgesRow isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
+                        {isAuthenticated && !isOwnProfile && masterProfileId && (
+                            <FavoriteButton
+                                entityType="master"
+                                entityId={masterProfileId}
+                                isFavorited={favoriteStatus?.masters?.[masterProfileId] ?? false}
+                            />
+                        )}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
                         {portfolio.city && (
