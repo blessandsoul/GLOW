@@ -28,6 +28,7 @@ const MASTER_SELECT = {
   avatar: true,
   masterProfile: {
     select: {
+      id: true,
       city: true,
       niche: true,
       services: true,
@@ -160,6 +161,7 @@ function buildWhere(opts?: {
 function mapMaster(m: any) {
   const p = m.masterProfile;
   return {
+    masterProfileId: p?.id ?? null,
     username: m.username!,
     displayName: m.brandingProfile?.displayName ?? `${m.firstName} ${m.lastName}`,
     avatar: m.avatar,

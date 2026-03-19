@@ -39,6 +39,7 @@ export interface MasterStyleTag {
 export type LocationType = 'salon' | 'home_studio' | 'mobile' | 'client_visit';
 
 export interface FeaturedMaster {
+    masterProfileId: string | null;
     username: string;
     displayName: string;
     avatar: string | null;
