@@ -141,4 +141,17 @@ export const API_ENDPOINTS = {
     ONBOARDING: {
         COMPLETE: '/onboarding/complete',
     },
+    FAVORITES: {
+        MASTERS: {
+            LIST: '/favorites/masters',
+            ADD: (masterProfileId: string) => `/favorites/masters/${masterProfileId}`,
+            REMOVE: (masterProfileId: string) => `/favorites/masters/${masterProfileId}`,
+        },
+        PORTFOLIO: {
+            LIST: '/favorites/portfolio',
+            ADD: (portfolioItemId: string) => `/favorites/portfolio/${portfolioItemId}`,
+            REMOVE: (portfolioItemId: string) => `/favorites/portfolio/${portfolioItemId}`,
+        },
+        STATUS: '/favorites/status',
+    },
 } as const;
