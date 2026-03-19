@@ -54,6 +54,8 @@ model User {
   referralReceived Referral?        @relation("referredReferral")
   hdUpscaleLogs    HdUpscaleLog[]
   usernameHistory  UsernameHistory[]
+  favoriteMasters          FavoriteMaster[]       @relation("userFavoriteMasters")
+  favoritePortfolioItems   FavoritePortfolioItem[] @relation("userFavoritePortfolioItems")
 
   @@map("users")
 }
@@ -256,6 +258,7 @@ model MasterProfile {
   // M2M relations
   brands    MasterBrand[]
   styleTags MasterStyleTag[]
+  favoritedBy FavoriteMaster[]
 
   @@index([verificationStatus])
   @@index([districtId])
@@ -291,6 +294,7 @@ model PortfolioItem {
   createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  favoritedBy FavoritePortfolioItem[]
 
   @@index([userId, isPublished])
   @@map("portfolio_items")
@@ -545,4 +549,38 @@ model VariableSuggestion {
 
   @@index([variableId])
   @@map("variable_suggestions")
+}
+
+// ─────────────────────────────────────────────
+// Favorites
+// ─────────────────────────────────────────────
+
+model FavoriteMaster {
+  id              String        @id @default(uuid())
+  userId          String
+  masterProfileId String
+  createdAt       DateTime      @default(now())
+
+  user          User          @relation("userFavoriteMasters", fields: [userId], references: [id], onDelete: Cascade)
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, masterProfileId])
+  @@index([userId])
+  @@index([masterProfileId])
+  @@map("favorite_masters")
+}
+
+model FavoritePortfolioItem {
+  id              String        @id @default(uuid())
+  userId          String
+  portfolioItemId String
+  createdAt       DateTime      @default(now())
+
+  user          User          @relation("userFavoritePortfolioItems", fields: [userId], references: [id], onDelete: Cascade)
+  portfolioItem PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, portfolioItemId])
+  @@index([userId])
+  @@index([portfolioItemId])
+  @@map("favorite_portfolio_items")
 }
