@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, MapPin, SealCheck, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { useFavoriteMasters } from '../hooks/useFavorites';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { getThumbUrl } from '@/lib/utils/image';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -132,14 +133,15 @@ function FavoriteMasterCard({ item }: FavoriteMasterCardProps): React.ReactEleme
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
 function MastersEmptyState(): React.ReactElement {
+    const { t } = useLanguage();
     return (
         <div className="flex flex-col items-center justify-center py-20">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mb-4">
                 <Heart size={28} weight="fill" className="text-primary/60" />
             </div>
-            <p className="text-base font-medium text-foreground mb-1">No favorite masters yet</p>
+            <p className="text-base font-medium text-foreground mb-1">{t('favorites.masters_empty_title')}</p>
             <p className="text-sm text-muted-foreground text-center max-w-xs">
-                Browse masters and tap the heart to save your favorites here.
+                {t('favorites.masters_empty_desc')}
             </p>
         </div>
     );

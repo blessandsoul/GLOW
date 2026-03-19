@@ -112,7 +112,18 @@
   },
   "favorites": {
     "empty_title": "No favorites yet",
-    "empty_description": "Save masters to quickly find them again"
+    "empty_description": "Save masters to quickly find them again",
+    "title": "Favorites",
+    "tab_masters": "Masters",
+    "tab_works": "Works",
+    "masters_empty_title": "No favorite masters yet",
+    "masters_empty_desc": "Browse masters and tap the heart to save your favorites here.",
+    "works_empty_title": "No favorite works yet",
+    "works_empty_desc": "Browse portfolio works and tap the heart to save your favorites here.",
+    "added": "Added to favorites",
+    "removed": "Removed from favorites",
+    "add": "Add to favorites",
+    "remove": "Remove from favorites"
   },
   "appointments": {
     "empty_title": "No appointments",

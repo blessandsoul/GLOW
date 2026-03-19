@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { favoritesService } from '../services/favorites.service';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { getErrorMessage } from '@/lib/utils/error';
 import type { FavoriteMasterItem, FavoritePortfolioItemItem, FavoriteStatusResponse } from '../types/favorites.types';
 import type { PaginationMeta } from '@/lib/api/api.types';
@@ -68,6 +69,7 @@ export function useFavoriteToggle(): {
     isTogglingPortfolioItem: boolean;
 } {
     const queryClient = useQueryClient();
+    const { t } = useLanguage();
 
     const masterMutation = useMutation({
         mutationFn: ({ masterProfileId, isFavorited }: { masterProfileId: string; isFavorited: boolean }) =>
@@ -75,7 +77,7 @@ export function useFavoriteToggle(): {
                 ? favoritesService.removeFavoriteMaster(masterProfileId)
                 : favoritesService.addFavoriteMaster(masterProfileId),
         onSuccess: (_data, { isFavorited }) => {
-            toast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
+            toast.success(isFavorited ? t('favorites.removed') : t('favorites.added'));
             queryClient.invalidateQueries({ queryKey: favoriteKeys.all });
         },
         onError: (error: unknown) => {
@@ -89,7 +91,7 @@ export function useFavoriteToggle(): {
                 ? favoritesService.removeFavoritePortfolioItem(portfolioItemId)
                 : favoritesService.addFavoritePortfolioItem(portfolioItemId),
         onSuccess: (_data, { isFavorited }) => {
-            toast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
+            toast.success(isFavorited ? t('favorites.removed') : t('favorites.added'));
             queryClient.invalidateQueries({ queryKey: favoriteKeys.all });
         },
         onError: (error: unknown) => {

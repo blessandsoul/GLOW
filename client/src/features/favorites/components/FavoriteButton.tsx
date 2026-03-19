@@ -4,6 +4,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { Heart } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useFavoriteToggle } from '../hooks/useFavorites';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 interface FavoriteButtonProps {
   entityType: 'master' | 'portfolio';
@@ -22,6 +23,7 @@ export function FavoriteButton({
 }: FavoriteButtonProps): React.ReactElement {
   const { toggleMaster, togglePortfolioItem, isTogglingMaster, isTogglingPortfolioItem } =
     useFavoriteToggle();
+  const { t } = useLanguage();
 
   const [optimistic, setOptimistic] = useState(isFavorited);
   const isPending = isTogglingMaster || isTogglingPortfolioItem;
@@ -57,7 +59,7 @@ export function FavoriteButton({
       type="button"
       onClick={handleClick}
       disabled={isPending}
-      aria-label={optimistic ? 'Remove from favorites' : 'Add to favorites'}
+      aria-label={optimistic ? t('favorites.remove') : t('favorites.add')}
       className={cn(
         'flex h-8 w-8 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm',
         'transition-all duration-200 hover:scale-110 active:scale-95',
