@@ -8,13 +8,17 @@ const FAVORITE_MASTER_SELECT = {
   masterProfile: {
     select: {
       id: true,
-      bio: true,
-      avatarUrl: true,
+      city: true,
+      niche: true,
+      verificationStatus: true,
+      isCertified: true,
       user: {
         select: {
           id: true,
+          username: true,
           firstName: true,
           lastName: true,
+          avatar: true,
         },
       },
       _count: {
@@ -42,6 +46,7 @@ const FAVORITE_PORTFOLIO_SELECT = {
       user: {
         select: {
           id: true,
+          username: true,
           firstName: true,
           lastName: true,
         },
@@ -59,7 +64,6 @@ export const favoritesRepo = {
   async addMaster(userId: string, masterProfileId: string) {
     return prisma.favoriteMaster.create({
       data: { userId, masterProfileId },
-      select: FAVORITE_MASTER_SELECT,
     });
   },
 
@@ -96,7 +100,6 @@ export const favoritesRepo = {
   async addPortfolioItem(userId: string, portfolioItemId: string) {
     return prisma.favoritePortfolioItem.create({
       data: { userId, portfolioItemId },
-      select: FAVORITE_PORTFOLIO_SELECT,
     });
   },
 
