@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import {
-    House, MagnifyingGlass, Heart, CalendarBlank, Images, UserCircle, Plus,
+    House, MagnifyingGlass, Heart, CalendarBlank, Images, UserCircle,
 } from '@phosphor-icons/react';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -70,9 +70,6 @@ export function MobileBottomNav(): React.ReactElement | null {
 
     const role = user?.role;
 
-    const showCreateButton = role === 'MASTER' || role === 'ADMIN';
-
-    // All roles see the nav; ADMIN and SALON use USER_ITEMS for now
     const middleItems = role === 'MASTER' ? MASTER_ITEMS : USER_ITEMS;
 
     return (
@@ -85,35 +82,9 @@ export function MobileBottomNav(): React.ReactElement | null {
                     <NavTab key={item.href} item={item} pathname={pathname} t={t} />
                 ))}
 
-                {showCreateButton ? (
-                    <Link
-                        href={ROUTES.CREATE}
-                        className="flex flex-col items-center justify-center -mt-5"
-                    >
-                        <div className={cn(
-                            'flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all duration-200 active:scale-[0.95]',
-                            pathname === ROUTES.CREATE || pathname.startsWith(ROUTES.CREATE + '/')
-                                ? 'bg-primary text-primary-foreground shadow-primary/30'
-                                : 'bg-primary text-primary-foreground shadow-primary/25 hover:shadow-primary/40',
-                        )}>
-                            <Plus size={24} weight="bold" />
-                        </div>
-                        <span className="mt-0.5 text-[10px] font-medium leading-none text-primary">{t('nav.create')}</span>
-                    </Link>
-                ) : (
-                    middleItems.slice(0, 1).map((item) => (
-                        <NavTab key={item.href} item={item} pathname={pathname} t={t} />
-                    ))
-                )}
-
-                {showCreateButton
-                    ? middleItems.map((item) => (
-                        <NavTab key={item.href} item={item} pathname={pathname} t={t} />
-                    ))
-                    : middleItems.slice(1).map((item) => (
-                        <NavTab key={item.href} item={item} pathname={pathname} t={t} />
-                    ))
-                }
+                {middleItems.map((item) => (
+                    <NavTab key={item.href} item={item} pathname={pathname} t={t} />
+                ))}
 
                 {SHARED_END.map((item) => (
                     <NavTab key={item.href} item={item} pathname={pathname} t={t} />

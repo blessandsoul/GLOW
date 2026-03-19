@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Users, MagnifyingGlass, Star, ChatCircleDots } from '@phosphor-icons/react';
+import { ArrowRight, Users, MagnifyingGlass, Star, ChatCircleDots, Plus } from '@phosphor-icons/react';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
@@ -28,7 +28,7 @@ export default function HomePage(): React.ReactElement {
     const [scrolled, setScrolled] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { t, tArray } = useLanguage();
-    const { isAuthenticated, isInitializing } = useAuth();
+    const { isAuthenticated, isInitializing, user } = useAuth();
     const rotatingWords = tArray('hero.rotating_words');
     const [wordIndex, setWordIndex] = useState(0);
     const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -91,6 +91,15 @@ export default function HomePage(): React.ReactElement {
                             <div className="h-8 w-20 animate-pulse rounded-xl bg-muted" />
                         ) : isAuthenticated ? (
                             <div className="flex items-center gap-2">
+                                {(user?.role === 'MASTER' || user?.role === 'ADMIN') && (
+                                    <Link
+                                        href={ROUTES.CREATE}
+                                        className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-200 active:scale-[0.95]"
+                                        aria-label={t('nav.create')}
+                                    >
+                                        <Plus size={18} weight="bold" />
+                                    </Link>
+                                )}
                                 <Button variant="outline" size="sm" className="hidden h-10 gap-2 rounded-xl px-4 text-sm font-medium sm:inline-flex" asChild>
                                     <Link href={ROUTES.DASHBOARD}>
                                         {t('header.dashboard')}
