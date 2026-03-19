@@ -35,7 +35,7 @@ function formatDate(dateString: string): string {
 }
 
 function UserAvatar({ user }: { user: AdminPortfolioUser }): React.ReactElement {
-    const initials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
+    const initials = `${(user.firstName ?? '')[0] ?? ''}${(user.lastName ?? '')[0] ?? ''}`.toUpperCase();
 
     return (
         <div className="flex items-center gap-3">

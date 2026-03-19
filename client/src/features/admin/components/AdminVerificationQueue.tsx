@@ -133,7 +133,7 @@ function RequestCard({ request }: RequestCardProps): React.ReactElement {
     const { review, isPending: isReviewing } = useAdminReviewVerification();
     const { setBadge, isPending: isBadging } = useAdminSetBadge();
 
-    const initials = `${request.firstName[0] ?? ''}${request.lastName[0] ?? ''}`.toUpperCase();
+    const initials = `${(request.firstName ?? '')[0] ?? ''}${(request.lastName ?? '')[0] ?? ''}`.toUpperCase();
 
     const handleApprove = useCallback(() => {
         review({ userId: request.userId, approved: true });

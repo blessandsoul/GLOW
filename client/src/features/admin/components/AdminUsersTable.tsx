@@ -53,7 +53,7 @@ function formatDate(dateString: string): string {
 }
 
 function UserAvatar({ user }: { user: AdminUser }): React.ReactElement {
-    const initials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
+    const initials = `${(user.firstName ?? '')[0] ?? ''}${(user.lastName ?? '')[0] ?? ''}`.toUpperCase();
     const [imgError, setImgError] = useState(false);
     const avatarUrl = user.avatar ? getThumbUrl(user.avatar, 64) : null;
 
