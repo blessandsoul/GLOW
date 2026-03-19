@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useAppSelector } from '@/store/hooks';
 import { favoritesService } from '../services/favorites.service';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { getErrorMessage } from '@/lib/utils/error';
@@ -23,9 +24,12 @@ export function useFavoriteMasters(page: number = 1, limit: number = 10): {
     pagination: PaginationMeta | undefined;
     isLoading: boolean;
 } {
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
     const { data, isLoading } = useQuery({
         queryKey: favoriteKeys.mastersList(page, limit),
         queryFn: () => favoritesService.getFavoriteMasters({ page, limit }),
+        enabled: isAuthenticated,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -37,9 +41,12 @@ export function useFavoritePortfolioItems(page: number = 1, limit: number = 10):
     pagination: PaginationMeta | undefined;
     isLoading: boolean;
 } {
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
     const { data, isLoading } = useQuery({
         queryKey: favoriteKeys.portfolioList(page, limit),
         queryFn: () => favoritesService.getFavoritePortfolioItems({ page, limit }),
+        enabled: isAuthenticated,
         staleTime: 5 * 60 * 1000,
     });
 
@@ -50,7 +57,8 @@ export function useFavoriteStatus(masterIds: string[], portfolioItemIds: string[
     status: FavoriteStatusResponse | undefined;
     isLoading: boolean;
 } {
-    const enabled = masterIds.length > 0 || portfolioItemIds.length > 0;
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const enabled = isAuthenticated && (masterIds.length > 0 || portfolioItemIds.length > 0);
 
     const { data: status, isLoading } = useQuery({
         queryKey: favoriteKeys.status(masterIds, portfolioItemIds),
