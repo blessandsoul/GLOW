@@ -256,6 +256,11 @@ model MasterProfile {
   masterTier      String  @default("JUNIOR")   // JUNIOR, INTERMEDIATE, PROFESSIONAL, TOP_MASTER
   tierSortOrder   Int     @default(3)           // 0=TOP_MASTER, 1=PROFESSIONAL, 2=INTERMEDIATE, 3=JUNIOR
 
+  // Glow Star (Top Master) request
+  glowStarStatus    String    @default("NONE")  // NONE, REQUESTED, APPROVED, REJECTED
+  glowStarRequestedAt DateTime?
+  glowStarReviewedAt  DateTime?
+
   user     User      @relation(fields: [userId], references: [id])
   district District? @relation(fields: [districtId], references: [id])
 

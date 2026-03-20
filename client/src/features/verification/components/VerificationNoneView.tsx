@@ -39,6 +39,7 @@ export function VerificationNoneView({
     const { t } = useLanguage();
 
     const isProfileComplete = !!(profile?.city && profile?.niche);
+    const hasInstagram = !!profile?.instagram;
     const hasPortfolio = publishedCount >= PORTFOLIO_THRESHOLD;
 
     const requirements = [
@@ -51,6 +52,11 @@ export function VerificationNoneView({
             label: t('verification.profile_complete'),
             met: isProfileComplete,
             href: !isProfileComplete ? ROUTES.DASHBOARD_PROFILE : undefined,
+        },
+        {
+            label: t('verification.instagram_linked'),
+            met: hasInstagram,
+            href: !hasInstagram ? ROUTES.DASHBOARD_PROFILE : undefined,
         },
         {
             label: t('verification.id_uploaded'),

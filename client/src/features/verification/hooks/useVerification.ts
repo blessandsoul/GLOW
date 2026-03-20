@@ -243,3 +243,90 @@ export function useAdminSetTier(): {
 
     return { setTier: mutate, isPending };
 }
+
+export function useGlowStarState(): {
+    state: { glowStarStatus: string; glowStarRequestedAt: string | null; masterTier: string } | undefined;
+    isLoading: boolean;
+} {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [...verificationKeys.all, 'glow-star'] as const,
+        queryFn: () => verificationService.getGlowStarState(),
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return { state: data, isLoading };
+}
+
+export function useRequestGlowStar(): {
+    request: () => void;
+    isPending: boolean;
+} {
+    const queryClient = useQueryClient();
+    const { mutate, isPending } = useMutation({
+        mutationFn: () => verificationService.requestGlowStar(),
+        onSuccess: () => {
+            toast.success('Glow Star request submitted');
+            queryClient.invalidateQueries({ queryKey: [...verificationKeys.all, 'glow-star'] });
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
+    });
+
+    return { request: mutate, isPending };
+}
+
+export function useAdminGlowStarRequests(page: number, limit: number): {
+    requests: Array<{
+        userId: string;
+        firstName: string;
+        lastName: string;
+        avatar: string | null;
+        niche: string | null;
+        city: string | null;
+        instagram: string | null;
+        masterTier: string;
+        glowStarStatus: string;
+        glowStarRequestedAt: string | null;
+    }>;
+    pagination: PaginationMeta | null;
+    isLoading: boolean;
+} {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [...verificationKeys.all, 'admin', 'glow-star', { page, limit }] as const,
+        queryFn: () => verificationService.adminGetGlowStarRequests({ page, limit }),
+    });
+
+    useEffect(() => {
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
+
+    return {
+        requests: data?.items ?? [],
+        pagination: data?.pagination ?? null,
+        isLoading,
+    };
+}
+
+export function useAdminReviewGlowStar(): {
+    review: (args: { userId: string; action: 'approve' | 'reject' }) => void;
+    isPending: boolean;
+} {
+    const queryClient = useQueryClient();
+    const { mutate, isPending } = useMutation({
+        mutationFn: ({ userId, action }: { userId: string; action: 'approve' | 'reject' }) =>
+            verificationService.adminReviewGlowStar(userId, action),
+        onSuccess: () => {
+            toast.success('Glow Star request reviewed');
+            queryClient.invalidateQueries({ queryKey: [...verificationKeys.all, 'admin', 'glow-star'] });
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
+    });
+
+    return { review: mutate, isPending };
+}

@@ -1193,6 +1193,7 @@
     "btn_complete": "დასრულება",
     "btn_get_started": "დაწყება",
     "experience_hint": "შეიყვანე 0, თუ ახლა იწყებ — ყველა რაღაცით იწყებს!",
+    "instagram_hint": "თქვენი Instagram პროფილი აუცილებელია ვერიფიკაციისთვის",
     "setup_wizard": "პროფილის ცვლილება",
     "setup_wizard_desc": "შეცვალე როლი ან განაახლე პროფილის ინფორმაცია"
   },
@@ -1202,6 +1203,7 @@
     "requirements": "მოთხოვნები",
     "phone_verified": "ტელეფონის ნომერი დადასტურებული",
     "profile_complete": "პროფილი შევსებული (ქალაქი და ნიშა)",
+    "instagram_linked": "Instagram პროფილი მითითებულია",
     "id_uploaded": "პირადობის დოკუმენტი ატვირთული",
     "portfolio_items": "{threshold}+ პორტფოლიოს ფოტო ({count} ატვირთული)",
     "set_up": "შეცვლა",
@@ -1239,5 +1241,24 @@
     "upload_file": "ფაილის ატვირთვა",
     "replace_file": "ფაილის შეცვლა",
     "max_photos": "მაქსიმუმ {max} ფოტო"
+  },
+  "glow_star": {
+    "title": "Glow Star სტატუსი",
+    "subtitle": "მიიღე უმაღლესი აღიარება — Glow.GE-ს გუნდის ვერიფიკაცია მისტიური კლიენტის ვიზიტით",
+    "requirements": "მოთხოვნები",
+    "req_portfolio": "მინიმუმ 10 ნამუშევარი პორტფოლიოში ({count} ატვირთული)",
+    "req_profile": "შევსებული პროფილი (სერვისები, ლოკაცია)",
+    "req_instagram": "Instagram პროფილი მითითებულია",
+    "request_button": "მოითხოვე Glow Star სტატუსი",
+    "confirm_text": "მოთხოვნის გაგზავნით თქვენ ეთანხმებით, რომ მისტიური კლიენტი შეიძლება ნებისმიერ დროს ეწვიოს თქვენ სამუშაო გარემოს, ჰიგიენის სტანდარტებისა და მომსახურების ხარისხის შესაფასებლად.",
+    "confirm_yes": "ვეთანხმები, გაგზავნა",
+    "confirm_cancel": "გაუქმება",
+    "status_pending": "თქვენი Glow Star მოთხოვნა განხილვაშია",
+    "status_approved": "გილოცავთ! თქვენ გაქვთ Glow Star სტატუსი",
+    "status_rejected": "თქვენი Glow Star მოთხოვნა ამჯერად არ დამტკიცდა",
+    "admin_title": "Glow Star მოთხოვნები",
+    "admin_empty": "Glow Star მოთხოვნები არ არის",
+    "admin_approve": "მინიჭება Glow Star",
+    "admin_reject": "უარყოფა"
   }
 }

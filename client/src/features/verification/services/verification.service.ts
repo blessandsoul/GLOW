@@ -116,6 +116,57 @@ class VerificationService {
         });
     }
 
+    async getGlowStarState(): Promise<{
+        glowStarStatus: string;
+        glowStarRequestedAt: string | null;
+        masterTier: string;
+    }> {
+        const { data } = await apiClient.get<ApiResponse<{
+            glowStarStatus: string;
+            glowStarRequestedAt: string | null;
+            masterTier: string;
+        }>>(API_ENDPOINTS.VERIFICATION.GLOW_STAR_STATE);
+        return data.data;
+    }
+
+    async requestGlowStar(): Promise<void> {
+        await apiClient.post(API_ENDPOINTS.VERIFICATION.GLOW_STAR_REQUEST);
+    }
+
+    async adminGetGlowStarRequests(params?: { page?: number; limit?: number }): Promise<{
+        items: Array<{
+            userId: string;
+            firstName: string;
+            lastName: string;
+            avatar: string | null;
+            niche: string | null;
+            city: string | null;
+            instagram: string | null;
+            masterTier: string;
+            glowStarStatus: string;
+            glowStarRequestedAt: string | null;
+        }>;
+        pagination: PaginationMeta;
+    }> {
+        const { data } = await apiClient.get<PaginatedApiResponse<{
+            userId: string;
+            firstName: string;
+            lastName: string;
+            avatar: string | null;
+            niche: string | null;
+            city: string | null;
+            instagram: string | null;
+            masterTier: string;
+            glowStarStatus: string;
+            glowStarRequestedAt: string | null;
+        }>>(API_ENDPOINTS.VERIFICATION.ADMIN_GLOW_STAR_LIST, { params });
+        return { items: data.data.items, pagination: data.data.pagination };
+    }
+
+    async adminReviewGlowStar(userId: string, action: 'approve' | 'reject'): Promise<void> {
+        await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_GLOW_STAR_REVIEW(userId), { action });
+    }
+
     async adminSetTier(
         userId: string,
         tier: string,

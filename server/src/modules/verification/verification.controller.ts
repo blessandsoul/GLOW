@@ -9,6 +9,7 @@ import {
   AdminReviewSchema,
   AdminSetBadgeSchema,
   AdminSetTierSchema,
+  AdminGlowStarReviewSchema,
   AdminVerificationUserParamSchema,
   PaginationSchema,
   VerificationListQuerySchema,
@@ -176,6 +177,29 @@ export function createVerificationController(service: VerificationService) {
       const input = AdminSetBadgeSchema.parse(request.body);
       const state = await service.adminSetBadge(userId, input);
       reply.send(successResponse('Badge updated', state));
+    },
+
+    async getGlowStarState(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const state = await service.getGlowStarState(request.user!.id);
+      reply.send(successResponse('Glow Star state retrieved', state));
+    },
+
+    async requestGlowStar(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const result = await service.requestGlowStar(request.user!.id);
+      reply.send(successResponse('Glow Star request submitted', result));
+    },
+
+    async adminGetGlowStarRequests(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const { page, limit } = PaginationSchema.parse(request.query);
+      const { items, totalItems } = await service.getGlowStarRequests(page, limit);
+      reply.send(paginatedResponse('Glow Star requests retrieved', items, page, limit, totalItems));
+    },
+
+    async adminReviewGlowStar(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const { userId } = AdminVerificationUserParamSchema.parse(request.params);
+      const { action } = AdminGlowStarReviewSchema.parse(request.body);
+      const result = await service.adminReviewGlowStar(userId, action);
+      reply.send(successResponse('Glow Star request reviewed', result));
     },
 
     async adminSetTier(request: FastifyRequest, reply: FastifyReply): Promise<void> {

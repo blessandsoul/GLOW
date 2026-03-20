@@ -22,6 +22,11 @@ export const AdminSetTierSchema = z.object({
 });
 export type AdminSetTierInput = z.infer<typeof AdminSetTierSchema>;
 
+export const AdminGlowStarReviewSchema = z.object({
+  action: z.enum(['approve', 'reject']),
+});
+export type AdminGlowStarReviewInput = z.infer<typeof AdminGlowStarReviewSchema>;
+
 export const AdminVerificationUserParamSchema = z.object({
   userId: z.string().uuid(),
 });

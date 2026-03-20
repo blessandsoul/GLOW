@@ -30,6 +30,7 @@ const MasterOnboardingSchema = z.object({
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),
   niches: z.array(z.string().min(1).max(100)).min(1).max(3),
+  instagram: z.string().min(1).max(100),
   experienceYears: z.number().int().min(0).max(50),
   experienceMonths: z.number().int().min(0).max(11).default(0),
   services: z.array(ServiceItemSchema).min(1).max(50),

@@ -121,6 +121,10 @@ export const API_ENDPOINTS = {
         ADMIN_REVIEW: (userId: string) => `/verification/admin/${userId}/review`,
         ADMIN_BADGE: (userId: string) => `/verification/admin/${userId}/badge`,
         ADMIN_TIER: (userId: string) => `/verification/admin/${userId}/tier`,
+        GLOW_STAR_STATE: '/verification/glow-star/state',
+        GLOW_STAR_REQUEST: '/verification/glow-star/request',
+        ADMIN_GLOW_STAR_LIST: '/verification/admin/glow-star',
+        ADMIN_GLOW_STAR_REVIEW: (userId: string) => `/verification/admin/${userId}/glow-star`,
     },
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',

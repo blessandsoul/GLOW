@@ -18,6 +18,7 @@ export interface OnboardingState {
     interestedCategories: string[];
     visitFrequency: VisitFrequency | null;
     // MASTER fields
+    instagram: string;
     workAddress: string;
     latitude: number | null;
     longitude: number | null;
@@ -61,6 +62,7 @@ export const INITIAL_STATE: OnboardingState = {
     dateOfBirth: '',
     interestedCategories: [],
     visitFrequency: null,
+    instagram: '',
     workAddress: '',
     latitude: null,
     longitude: null,

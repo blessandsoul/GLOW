@@ -18,10 +18,16 @@ export async function verificationRoutes(app: FastifyInstance): Promise<void> {
   app.post('/upload-hygiene', { preHandler: userGuard }, controller.uploadHygienePics);
   app.post('/upload-quality-products', { preHandler: userGuard }, controller.uploadQualityProductsPics);
 
+  // Glow Star routes
+  app.get('/glow-star/state', { preHandler: userGuard }, controller.getGlowStarState);
+  app.post('/glow-star/request', { preHandler: userGuard }, controller.requestGlowStar);
+
   // Admin-facing routes
   app.get('/admin/pending', { preHandler: adminGuard }, controller.adminGetPending);
   app.get('/admin/all', { preHandler: adminGuard }, controller.adminGetAll);
   app.post('/admin/:userId/review', { preHandler: adminGuard }, controller.adminReview);
   app.post('/admin/:userId/badge', { preHandler: adminGuard }, controller.adminSetBadge);
   app.post('/admin/:userId/tier', { preHandler: adminGuard }, controller.adminSetTier);
+  app.get('/admin/glow-star', { preHandler: adminGuard }, controller.adminGetGlowStarRequests);
+  app.post('/admin/:userId/glow-star', { preHandler: adminGuard }, controller.adminReviewGlowStar);
 }

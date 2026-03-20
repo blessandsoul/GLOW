@@ -1156,6 +1156,7 @@
     "btn_complete": "Complete setup",
     "btn_get_started": "Get started",
     "experience_hint": "Enter 0 if you're just starting out — everyone starts somewhere!",
+    "instagram_hint": "Your Instagram profile is required for verification",
     "setup_wizard": "Setup wizard",
     "setup_wizard_desc": "Change your role or update your profile info"
   },
@@ -1165,6 +1166,7 @@
     "requirements": "Requirements",
     "phone_verified": "Phone number verified",
     "profile_complete": "Profile complete (city and niche)",
+    "instagram_linked": "Instagram profile linked",
     "id_uploaded": "ID document uploaded",
     "portfolio_items": "{threshold}+ portfolio items ({count} uploaded)",
     "set_up": "Set up",
@@ -1202,5 +1204,24 @@
     "upload_file": "Upload file",
     "replace_file": "Replace file",
     "max_photos": "Max {max} photos"
+  },
+  "glow_star": {
+    "title": "Glow Star Status",
+    "subtitle": "Get the highest recognition — verified by the Glow.GE team with a mystery client visit",
+    "requirements": "Requirements",
+    "req_portfolio": "At least 10 portfolio items ({count} uploaded)",
+    "req_profile": "Complete profile (services, location)",
+    "req_instagram": "Instagram profile linked",
+    "request_button": "Request Glow Star Status",
+    "confirm_text": "By submitting this request, you agree that a mystery client may visit you at any time to evaluate your workspace, hygiene standards, and service quality.",
+    "confirm_yes": "I agree, submit request",
+    "confirm_cancel": "Cancel",
+    "status_pending": "Your Glow Star request is under review",
+    "status_approved": "Congratulations! You have Glow Star status",
+    "status_rejected": "Your Glow Star request was not approved at this time",
+    "admin_title": "Glow Star Requests",
+    "admin_empty": "No Glow Star requests",
+    "admin_approve": "Grant Glow Star",
+    "admin_reject": "Reject"
   }
 }

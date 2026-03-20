@@ -43,6 +43,7 @@ export function createOnboardingService() {
               latitude: input.latitude,
               longitude: input.longitude,
               niches: input.niches,
+              instagram: input.instagram,
               experienceYears: input.experienceYears,
               services: input.services,
             },

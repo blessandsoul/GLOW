@@ -1,7 +1,9 @@
 'use client';
 
+import { InstagramLogo } from '@phosphor-icons/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 import { WizardLayout } from '../../WizardLayout';
 import type { StepProps } from '../../OnboardingWizard';
 
@@ -17,7 +19,7 @@ export function MasterExperienceStep({ state, dispatch, goNext, goBack }: StepPr
             subtitle={t('onboarding.experience_subtitle')}
             onNext={goNext}
             onBack={goBack}
-            nextDisabled={state.experienceYears === null}
+            nextDisabled={state.experienceYears === null || !state.instagram.trim()}
             nextLabel={t('onboarding.btn_continue')}
             backLabel={t('onboarding.btn_back')}
         >
@@ -65,6 +67,20 @@ export function MasterExperienceStep({ state, dispatch, goNext, goBack }: StepPr
                 </div>
 
                 <p className="text-xs text-muted-foreground">{t('onboarding.experience_hint')}</p>
+
+                <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground">Instagram *</p>
+                    <div className="relative">
+                        <InstagramLogo size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                            value={state.instagram}
+                            onChange={(e) => dispatch({ type: 'SET_FIELD', payload: { instagram: e.target.value } })}
+                            placeholder="@username"
+                            className="pl-10"
+                        />
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('onboarding.instagram_hint')}</p>
+                </div>
             </div>
         </WizardLayout>
     );

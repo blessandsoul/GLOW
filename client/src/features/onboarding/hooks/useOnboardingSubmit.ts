@@ -35,6 +35,7 @@ function buildPayload(state: OnboardingState): Record<string, unknown> {
                 latitude: state.latitude,
                 longitude: state.longitude,
                 niches: state.niches,
+                instagram: state.instagram,
                 experienceYears: state.experienceYears,
                 experienceMonths: state.experienceMonths,
                 services: state.services,

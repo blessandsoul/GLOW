@@ -12,6 +12,7 @@ import { AdminBulkSms } from '@/features/admin/components/AdminBulkSms';
 import { AdminDecorationPool } from '@/features/admin/components/AdminDecorationPool';
 import { AdminVariablePool } from '@/features/admin/components/AdminVariablePool';
 import { AdminVerificationQueue } from '@/features/admin/components/AdminVerificationQueue';
+import { AdminGlowStarQueue } from '@/features/admin/components/AdminGlowStarQueue';
 import { ROUTES } from '@/lib/constants/routes';
 
 function AdminPageContent(): React.ReactElement {
@@ -42,6 +43,8 @@ function AdminPageContent(): React.ReactElement {
             <AdminStatsCards stats={stats} isLoading={statsLoading} />
 
             <AdminVerificationQueue />
+
+            <AdminGlowStarQueue />
 
             <AdminDecorationPool />
 

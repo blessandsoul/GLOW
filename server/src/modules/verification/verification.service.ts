@@ -31,6 +31,7 @@ export function createVerificationService() {
           idDocumentUrl: true,
           city: true,
           niche: true,
+          instagram: true,
           user: {
             select: { phoneVerified: true },
           },
@@ -59,6 +60,10 @@ export function createVerificationService() {
 
       if (!profile.city || !profile.niche) {
         throw new BadRequestError('City and niche must be filled in your profile before requesting verification.', 'PROFILE_INCOMPLETE');
+      }
+
+      if (!profile.instagram) {
+        throw new BadRequestError('Instagram link is required before requesting verification.', 'INSTAGRAM_REQUIRED');
       }
 
       const publishedPortfolioCount = await prisma.portfolioItem.count({
@@ -126,6 +131,79 @@ export function createVerificationService() {
 
       logger.info({ userId, tier: input.tier }, 'Admin setting master tier');
       return verificationRepo.setTier(userId, input.tier, TIER_SORT_MAP[input.tier]);
+    },
+
+    async getGlowStarState(userId: string) {
+      const state = await verificationRepo.getGlowStarState(userId);
+      if (!state) {
+        throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
+      }
+      return state;
+    },
+
+    async requestGlowStar(userId: string) {
+      const profile = await prisma.masterProfile.findUnique({
+        where: { userId },
+        select: {
+          glowStarStatus: true,
+          masterTier: true,
+          instagram: true,
+          city: true,
+          niche: true,
+          services: true,
+        },
+      });
+
+      if (!profile) {
+        throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
+      }
+
+      if (profile.glowStarStatus === 'REQUESTED') {
+        throw new BadRequestError('Glow Star request is already pending.', 'GLOW_STAR_ALREADY_REQUESTED');
+      }
+
+      if (profile.masterTier === 'TOP_MASTER') {
+        throw new BadRequestError('You already have Top Master status.', 'ALREADY_TOP_MASTER');
+      }
+
+      if (!profile.instagram) {
+        throw new BadRequestError('Instagram is required for Glow Star request.', 'INSTAGRAM_REQUIRED');
+      }
+
+      if (!profile.city || !profile.niche) {
+        throw new BadRequestError('Complete your profile before requesting Glow Star.', 'PROFILE_INCOMPLETE');
+      }
+
+      const portfolioCount = await prisma.portfolioItem.count({
+        where: { userId, isPublished: true },
+      });
+
+      if (portfolioCount < 10) {
+        throw new BadRequestError(
+          `At least 10 published portfolio items are required. You have ${portfolioCount}.`,
+          'INSUFFICIENT_PORTFOLIO',
+        );
+      }
+
+      logger.info({ userId }, 'Master requesting Glow Star status');
+      return verificationRepo.requestGlowStar(userId);
+    },
+
+    async adminReviewGlowStar(userId: string, action: 'approve' | 'reject') {
+      const profile = await verificationRepo.getGlowStarState(userId);
+      if (!profile) {
+        throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
+      }
+      if (profile.glowStarStatus !== 'REQUESTED') {
+        throw new BadRequestError('No pending Glow Star request.', 'NO_PENDING_REQUEST');
+      }
+
+      logger.info({ userId, action }, 'Admin reviewing Glow Star request');
+      return verificationRepo.reviewGlowStar(userId, action);
+    },
+
+    async getGlowStarRequests(page: number, limit: number) {
+      return verificationRepo.findGlowStarRequests(page, limit);
     },
 
     async getPendingVerifications(page: number, limit: number) {

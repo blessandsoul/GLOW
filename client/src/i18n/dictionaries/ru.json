@@ -1156,6 +1156,7 @@
     "btn_complete": "Завершить настройку",
     "btn_get_started": "Начать",
     "experience_hint": "Введите 0, если вы только начинаете — все с чего-то начинают!",
+    "instagram_hint": "Ваш Instagram профиль необходим для верификации",
     "setup_wizard": "Мастер настройки",
     "setup_wizard_desc": "Измените роль или обновите информацию профиля"
   },
@@ -1165,6 +1166,7 @@
     "requirements": "Требования",
     "phone_verified": "Номер телефона подтверждён",
     "profile_complete": "Профиль заполнен (город и ниша)",
+    "instagram_linked": "Instagram профиль указан",
     "id_uploaded": "Документ, удостоверяющий личность, загружен",
     "portfolio_items": "{threshold}+ работ в портфолио ({count} загружено)",
     "set_up": "Изменить",
@@ -1202,5 +1204,24 @@
     "upload_file": "Загрузить файл",
     "replace_file": "Заменить файл",
     "max_photos": "Максимум {max} фото"
+  },
+  "glow_star": {
+    "title": "Статус Glow Star",
+    "subtitle": "Получите высшее признание — верификация командой Glow.GE с визитом тайного клиента",
+    "requirements": "Требования",
+    "req_portfolio": "Минимум 10 работ в портфолио ({count} загружено)",
+    "req_profile": "Заполненный профиль (услуги, локация)",
+    "req_instagram": "Instagram профиль указан",
+    "request_button": "Запросить статус Glow Star",
+    "confirm_text": "Отправляя заявку, вы соглашаетесь с тем, что тайный клиент может посетить вас в любое время для оценки рабочего пространства, стандартов гигиены и качества услуг.",
+    "confirm_yes": "Согласен, отправить заявку",
+    "confirm_cancel": "Отмена",
+    "status_pending": "Ваша заявка Glow Star на рассмотрении",
+    "status_approved": "Поздравляем! У вас статус Glow Star",
+    "status_rejected": "Ваша заявка Glow Star не была одобрена",
+    "admin_title": "Заявки Glow Star",
+    "admin_empty": "Нет заявок Glow Star",
+    "admin_approve": "Дать Glow Star",
+    "admin_reject": "Отклонить"
   }
 }

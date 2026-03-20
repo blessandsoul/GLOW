@@ -6,6 +6,7 @@ import { ArrowRight, Briefcase, UsersThree, SignOut, Sparkle } from '@phosphor-i
 import { PersonalInfoSection } from '@/features/profile/components/ProfileSetup';
 import { AccountStatus } from '@/features/profile/components/AccountStatus';
 import { VerificationSection } from '@/features/verification/components/VerificationSection';
+import { GlowStarSection } from '@/features/verification/components/GlowStarSection';
 import { ChangeUsername } from '@/features/profile/components/ChangeUsername';
 import { ChangePassword } from '@/features/profile/components/ChangePassword';
 import { DeleteAccount } from '@/features/profile/components/DeleteAccount';
@@ -83,6 +84,9 @@ export default function ProfilePage(): React.ReactElement {
 
             {/* 2. Verification status (masters only) */}
             <VerificationSection />
+
+            {/* 3. Glow Star request (masters only) */}
+            <GlowStarSection />
 
             {/* 3. Personal info — avatar, name */}
             <PersonalInfoSection />

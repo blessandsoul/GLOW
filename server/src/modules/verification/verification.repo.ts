@@ -184,6 +184,83 @@ export const verificationRepo = {
     return { items, totalItems };
   },
 
+  async getGlowStarState(userId: string) {
+    return prisma.masterProfile.findUnique({
+      where: { userId },
+      select: {
+        glowStarStatus: true,
+        glowStarRequestedAt: true,
+        glowStarReviewedAt: true,
+        ...VERIFICATION_SELECT,
+      },
+    });
+  },
+
+  async requestGlowStar(userId: string) {
+    return prisma.masterProfile.update({
+      where: { userId },
+      data: {
+        glowStarStatus: 'REQUESTED',
+        glowStarRequestedAt: new Date(),
+      },
+      select: { glowStarStatus: true, glowStarRequestedAt: true },
+    });
+  },
+
+  async reviewGlowStar(userId: string, action: 'approve' | 'reject') {
+    const data: Record<string, unknown> = {
+      glowStarStatus: action === 'approve' ? 'APPROVED' : 'REJECTED',
+      glowStarReviewedAt: new Date(),
+    };
+    if (action === 'approve') {
+      data.masterTier = 'TOP_MASTER';
+      data.tierSortOrder = 0;
+    }
+    return prisma.masterProfile.update({
+      where: { userId },
+      data,
+      select: { glowStarStatus: true, masterTier: true },
+    });
+  },
+
+  async findGlowStarRequests(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const where = { glowStarStatus: 'REQUESTED' };
+
+    const [items, totalItems] = await Promise.all([
+      prisma.masterProfile.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { glowStarRequestedAt: 'asc' },
+        select: {
+          userId: true,
+          city: true,
+          niche: true,
+          instagram: true,
+          masterTier: true,
+          glowStarStatus: true,
+          glowStarRequestedAt: true,
+          experienceYears: true,
+          isCertified: true,
+          isHygieneVerified: true,
+          isQualityProducts: true,
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatar: true,
+            },
+          },
+        },
+      }),
+      prisma.masterProfile.count({ where }),
+    ]);
+
+    return { items, totalItems };
+  },
+
   async setTier(userId: string, tier: string, tierSortOrder: number) {
     return prisma.masterProfile.update({
       where: { userId },
