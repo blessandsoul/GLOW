@@ -1,10 +1,17 @@
 import { logger } from '@/libs/logger.js';
 import { BadRequestError, NotFoundError } from '@/shared/errors/errors.js';
 import { verificationRepo } from './verification.repo.js';
-import type { RequestVerificationInput, AdminReviewInput, AdminSetBadgeInput } from './verification.schemas.js';
+import type { RequestVerificationInput, AdminReviewInput, AdminSetBadgeInput, AdminSetTierInput } from './verification.schemas.js';
 import { prisma } from '@/libs/prisma.js';
 
 const MIN_PORTFOLIO_ITEMS = 5;
+
+const TIER_SORT_MAP: Record<string, number> = {
+  TOP_MASTER: 0,
+  PROFESSIONAL: 1,
+  INTERMEDIATE: 2,
+  JUNIOR: 3,
+};
 
 export function createVerificationService() {
   return {
@@ -99,6 +106,26 @@ export function createVerificationService() {
 
       logger.info({ userId, badge: input.badge, granted: input.granted }, 'Admin setting badge');
       return verificationRepo.setBadge(userId, input.badge, input.granted);
+    },
+
+    async adminSetTier(userId: string, input: AdminSetTierInput) {
+      const profile = await verificationRepo.getVerificationState(userId);
+      if (!profile) {
+        throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
+      }
+
+      if (input.tier !== 'JUNIOR' && profile.verificationStatus !== 'VERIFIED') {
+        throw new BadRequestError('Master must be verified for tiers above Junior', 'NOT_VERIFIED');
+      }
+
+      if (input.tier === 'TOP_MASTER') {
+        if (!profile.isCertified || !profile.isHygieneVerified) {
+          throw new BadRequestError('Top Master requires certified + hygiene badges', 'MISSING_BADGES');
+        }
+      }
+
+      logger.info({ userId, tier: input.tier }, 'Admin setting master tier');
+      return verificationRepo.setTier(userId, input.tier, TIER_SORT_MAP[input.tier]);
     },
 
     async getPendingVerifications(page: number, limit: number) {

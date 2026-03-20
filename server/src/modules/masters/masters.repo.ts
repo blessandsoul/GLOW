@@ -12,6 +12,7 @@ export interface CatalogFilters {
   isHygieneVerified?: boolean;
   isQualityProducts?: boolean;
   isTopRated?: boolean;
+  masterTier?: string;
   language?: string;
   locationType?: string;
   district?: string;
@@ -43,6 +44,7 @@ const MASTER_SELECT = {
       isHygieneVerified: true,
       isQualityProducts: true,
       isTopRated: true,
+      masterTier: true,
       experienceYears: true,
       district: {
         select: { name: true, slug: true, latitude: true, longitude: true },
@@ -91,6 +93,7 @@ function buildWhere(opts?: {
   isHygieneVerified?: boolean;
   isQualityProducts?: boolean;
   isTopRated?: boolean;
+  masterTier?: string;
   language?: string;
   locationType?: string;
   district?: string;
@@ -109,6 +112,10 @@ function buildWhere(opts?: {
   if (opts?.isHygieneVerified) profileConditions.isHygieneVerified = true;
   if (opts?.isQualityProducts) profileConditions.isQualityProducts = true;
   if (opts?.isTopRated) profileConditions.isTopRated = true;
+  if (opts?.masterTier) {
+    const tiers = opts.masterTier.split(',').map((t) => t.trim()).filter(Boolean);
+    profileConditions.masterTier = tiers.length === 1 ? tiers[0] : { in: tiers };
+  }
   if (opts?.locationType) profileConditions.locationType = opts.locationType;
   if (opts?.language) profileConditions.languages = { array_contains: opts.language };
   if (opts?.district) profileConditions.district = { is: { slug: opts.district } };
@@ -174,6 +181,7 @@ function mapMaster(m: any) {
       isQualityProducts: p?.isQualityProducts ?? false,
       isTopRated: p?.isTopRated ?? false,
     },
+    masterTier: p?.masterTier ?? 'JUNIOR',
     experienceYears: p?.experienceYears ?? null,
     services: p?.services ?? null,
     languages: (p?.languages as string[] | null) ?? [],
@@ -243,7 +251,10 @@ export const mastersRepo = {
     const masters = await prisma.user.findMany({
       where,
       select: MASTER_SELECT,
-      orderBy: { updatedAt: 'desc' },
+      orderBy: [
+        { masterProfile: { tierSortOrder: 'asc' } },
+        { updatedAt: 'desc' },
+      ],
       take: limit,
     });
 
@@ -254,15 +265,18 @@ export const mastersRepo = {
    * Find masters for the public catalog with search, filters, and pagination.
    */
   async findCatalogMasters(filters: CatalogFilters) {
-    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug, bounds } = filters;
+    const { niche, city, search, page, limit, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, masterTier, language, locationType, district, brandSlug, styleTagSlug, bounds } = filters;
     const offset = (page - 1) * limit;
-    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug, bounds });
+    const where = buildWhere({ niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, masterTier, language, locationType, district, brandSlug, styleTagSlug, bounds });
 
     const [masters, totalItems] = await Promise.all([
       prisma.user.findMany({
         where,
         select: MASTER_SELECT,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [
+          { masterProfile: { tierSortOrder: 'asc' } },
+          { updatedAt: 'desc' },
+        ],
         skip: offset,
         take: limit,
       }),

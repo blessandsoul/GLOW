@@ -115,6 +115,15 @@ class VerificationService {
             granted: body.value,
         });
     }
+
+    async adminSetTier(
+        userId: string,
+        tier: string,
+    ): Promise<void> {
+        await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_TIER(userId), {
+            tier,
+        });
+    }
 }
 
 export const verificationService = new VerificationService();

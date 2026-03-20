@@ -1019,7 +1019,11 @@
     "badge_certified": "Has a professional certificate",
     "badge_hygiene": "Workspace hygiene verified by Glow.GE",
     "badge_quality_products": "Uses verified quality products",
-    "badge_top_rated": "Top rated: 4.5+ with 10+ reviews"
+    "badge_top_rated": "Top rated: 4.5+ with 10+ reviews",
+    "tier_top_master": "Top Master",
+    "tier_professional": "Professional",
+    "tier_intermediate": "Intermediate",
+    "tier_junior": "Junior"
   },
   "catalog": {
     "title": "Beauty Services Catalog",
@@ -1037,6 +1041,8 @@
     "filter_hygiene": "Hygiene verified",
     "filter_quality": "Quality products",
     "filter_top_rated": "Top rated",
+    "filter_tier": "Level",
+    "all_tiers": "All levels",
     "filter_language": "Language",
     "filter_location_type": "Location",
     "filter_district": "District",

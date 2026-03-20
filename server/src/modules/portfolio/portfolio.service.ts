@@ -151,6 +151,7 @@ export function createPortfolioService() {
         niche: profile?.niche ?? null,
         workAddress: profile?.workAddress ?? null,
         services: profile?.services ?? [],
+        masterTier: profile?.masterTier ?? 'JUNIOR',
         isVerified: profile?.verificationStatus === 'VERIFIED',
         badges: {
           isCertified: profile?.isCertified ?? false,

@@ -1,3 +1,5 @@
+export type MasterTier = 'JUNIOR' | 'INTERMEDIATE' | 'PROFESSIONAL' | 'TOP_MASTER';
+
 export interface FeaturedMasterImage {
     id: string;
     imageUrl: string;
@@ -48,6 +50,7 @@ export interface FeaturedMaster {
     portfolioImages: FeaturedMasterImage[];
     totalItems: number;
     favoritesCount?: number;
+    masterTier?: MasterTier;
     isVerified?: boolean;
     badges?: MasterBadges;
     experienceYears?: number | null;
@@ -74,6 +77,7 @@ export interface CatalogFilters {
     isHygieneVerified?: boolean;
     isQualityProducts?: boolean;
     isTopRated?: boolean;
+    masterTier?: string;
     language?: string;
     locationType?: LocationType;
     district?: string;

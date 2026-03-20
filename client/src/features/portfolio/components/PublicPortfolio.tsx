@@ -127,7 +127,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                         )}
                     </div>
                     <div className="mt-1.5 flex justify-center">
-                        <MasterBadgesRow isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
+                        <MasterBadgesRow masterTier={portfolio.masterTier} isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
                     </div>
                     <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
                         {portfolio.city && (

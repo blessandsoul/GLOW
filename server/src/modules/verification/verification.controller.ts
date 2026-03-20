@@ -8,6 +8,7 @@ import {
   RequestVerificationSchema,
   AdminReviewSchema,
   AdminSetBadgeSchema,
+  AdminSetTierSchema,
   AdminVerificationUserParamSchema,
   PaginationSchema,
   VerificationListQuerySchema,
@@ -175,6 +176,13 @@ export function createVerificationController(service: VerificationService) {
       const input = AdminSetBadgeSchema.parse(request.body);
       const state = await service.adminSetBadge(userId, input);
       reply.send(successResponse('Badge updated', state));
+    },
+
+    async adminSetTier(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const { userId } = AdminVerificationUserParamSchema.parse(request.params);
+      const input = AdminSetTierSchema.parse(request.body);
+      const state = await service.adminSetTier(userId, input);
+      reply.send(successResponse('Master tier updated', state));
     },
   };
 }

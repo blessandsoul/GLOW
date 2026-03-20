@@ -15,6 +15,8 @@ import {
     Certificate,
     SprayBottle,
     Diamond,
+    Trophy,
+    Medal,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,10 +26,18 @@ import {
     useAdminAllVerifications,
     useAdminReviewVerification,
     useAdminSetBadge,
+    useAdminSetTier,
 } from '@/features/verification/hooks/useVerification';
 import type { VerificationRequest, VerificationStatus } from '@/features/verification/types/verification.types';
 
 const LIMIT = 10;
+
+const TIER_OPTIONS = [
+    { value: 'JUNIOR', label: 'Junior', icon: null, colorClass: 'text-muted-foreground' },
+    { value: 'INTERMEDIATE', label: 'Intermediate', icon: <ShieldCheck size={12} />, colorClass: 'text-info' },
+    { value: 'PROFESSIONAL', label: 'Professional', icon: <Medal size={12} />, colorClass: 'text-primary' },
+    { value: 'TOP_MASTER', label: 'Top Master', icon: <Trophy size={12} />, colorClass: 'text-warning' },
+] as const;
 
 type TabFilter = 'ALL' | 'PENDING' | 'VERIFIED' | 'REJECTED';
 
@@ -131,6 +141,7 @@ function RequestCard({ request }: RequestCardProps): React.ReactElement {
     const [rejectionReason, setRejectionReason] = useState('');
     const { review, isPending: isReviewing } = useAdminReviewVerification();
     const { setBadge, isPending: isBadging } = useAdminSetBadge();
+    const { setTier, isPending: isTiering } = useAdminSetTier();
 
     const initials = `${(request.firstName ?? '')[0] ?? ''}${(request.lastName ?? '')[0] ?? ''}`.toUpperCase();
 
@@ -264,6 +275,33 @@ function RequestCard({ request }: RequestCardProps): React.ReactElement {
                     isPending={isBadging}
                     onToggle={() => handleToggleBadge('isQualityProducts', request.isQualityProducts)}
                 />
+            </div>
+
+            {/* Tier selector */}
+            <div className="mt-3 flex items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground">Tier:</span>
+                <div className="flex gap-1">
+                    {TIER_OPTIONS.map((opt) => {
+                        const isActive = (request.masterTier ?? 'JUNIOR') === opt.value;
+                        return (
+                            <button
+                                key={opt.value}
+                                onClick={() => setTier({ userId: request.userId, tier: opt.value })}
+                                disabled={isTiering}
+                                className={[
+                                    'inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200',
+                                    isActive
+                                        ? `border-current/30 bg-current/10 ${opt.colorClass}`
+                                        : 'border-border/50 bg-muted/30 text-muted-foreground hover:bg-muted/60',
+                                    isTiering ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+                                ].join(' ')}
+                            >
+                                {isTiering ? <SpinnerGap size={10} className="animate-spin" /> : opt.icon}
+                                {opt.label}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Action buttons for PENDING */}

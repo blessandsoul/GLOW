@@ -120,6 +120,7 @@ export const API_ENDPOINTS = {
         ADMIN_ALL: '/verification/admin/all',
         ADMIN_REVIEW: (userId: string) => `/verification/admin/${userId}/review`,
         ADMIN_BADGE: (userId: string) => `/verification/admin/${userId}/badge`,
+        ADMIN_TIER: (userId: string) => `/verification/admin/${userId}/tier`,
     },
     CATALOG: {
         SPECIALITIES: '/catalog/specialities',

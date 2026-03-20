@@ -137,6 +137,7 @@ export const portfolioRepo = {
         isHygieneVerified: true,
         isQualityProducts: true,
         isTopRated: true,
+        masterTier: true,
         experienceYears: true,
         _count: { select: { favoritedBy: true } },
       },

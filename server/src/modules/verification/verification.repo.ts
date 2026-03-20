@@ -13,6 +13,7 @@ const VERIFICATION_SELECT = {
   isHygieneVerified: true,
   isQualityProducts: true,
   isTopRated: true,
+  masterTier: true,
 } as const;
 
 export const verificationRepo = {
@@ -181,5 +182,13 @@ export const verificationRepo = {
     ]);
 
     return { items, totalItems };
+  },
+
+  async setTier(userId: string, tier: string, tierSortOrder: number) {
+    return prisma.masterProfile.update({
+      where: { userId },
+      data: { masterTier: tier, tierSortOrder },
+      select: VERIFICATION_SELECT,
+    });
   },
 };

@@ -252,6 +252,10 @@ model MasterProfile {
   isQualityProducts   Boolean @default(false)
   isTopRated          Boolean @default(false)  // Auto-set when 4.5+ avg, 10+ reviews
 
+  // Master tier / hierarchy
+  masterTier      String  @default("JUNIOR")   // JUNIOR, INTERMEDIATE, PROFESSIONAL, TOP_MASTER
+  tierSortOrder   Int     @default(3)           // 0=TOP_MASTER, 1=PROFESSIONAL, 2=INTERMEDIATE, 3=JUNIOR
+
   user     User      @relation(fields: [userId], references: [id])
   district District? @relation(fields: [districtId], references: [id])
 
@@ -264,6 +268,7 @@ model MasterProfile {
   @@index([districtId])
   @@index([latitude, longitude])
   @@index([locationType])
+  @@index([tierSortOrder])
   @@map("master_profiles")
 }
 

@@ -21,6 +21,7 @@ export interface AdminUser {
     isHygieneVerified: boolean;
     isQualityProducts: boolean;
     isTopRated: boolean;
+    masterTier: string;
 }
 
 export interface AdminStats {
@@ -52,6 +53,7 @@ export interface AdminPortfolioUser {
     isHygieneVerified: boolean;
     isQualityProducts: boolean;
     isTopRated: boolean;
+    masterTier: string;
     idDocumentUrl: string | null;
     certificateUrl: string | null;
     hygienePicsUrl: string[] | null;

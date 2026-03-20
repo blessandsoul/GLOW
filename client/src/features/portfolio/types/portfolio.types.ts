@@ -47,6 +47,7 @@ export interface PublicPortfolioData {
     reviews: PublicReview[];
     reviewsCount: number;
     averageRating: number;
+    masterTier?: string;
     isVerified?: boolean;
     badges?: {
         isCertified: boolean;

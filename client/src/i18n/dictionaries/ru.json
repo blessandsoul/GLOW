@@ -1019,7 +1019,11 @@
     "badge_certified": "Имеет профессиональный сертификат",
     "badge_hygiene": "Гигиена рабочего места подтверждена Glow.GE",
     "badge_quality_products": "Использует качественную продукцию",
-    "badge_top_rated": "Топ рейтинг: 4.5+ с 10+ отзывами"
+    "badge_top_rated": "Топ рейтинг: 4.5+ с 10+ отзывами",
+    "tier_top_master": "Топ мастер",
+    "tier_professional": "Профессионал",
+    "tier_intermediate": "Средний уровень",
+    "tier_junior": "Начинающий"
   },
   "catalog": {
     "title": "Каталог бьюти-услуг",
@@ -1037,6 +1041,8 @@
     "filter_hygiene": "Гигиена проверена",
     "filter_quality": "Качественная продукция",
     "filter_top_rated": "Топ рейтинг",
+    "filter_tier": "Уровень",
+    "all_tiers": "Все уровни",
     "filter_language": "Язык",
     "filter_location_type": "Расположение",
     "filter_district": "Район",

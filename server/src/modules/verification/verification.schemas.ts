@@ -17,6 +17,11 @@ export const AdminSetBadgeSchema = z.object({
 });
 export type AdminSetBadgeInput = z.infer<typeof AdminSetBadgeSchema>;
 
+export const AdminSetTierSchema = z.object({
+  tier: z.enum(['JUNIOR', 'INTERMEDIATE', 'PROFESSIONAL', 'TOP_MASTER']),
+});
+export type AdminSetTierInput = z.infer<typeof AdminSetTierSchema>;
+
 export const AdminVerificationUserParamSchema = z.object({
   userId: z.string().uuid(),
 });

@@ -223,3 +223,23 @@ export function useAdminSetBadge(): {
 
     return { setBadge: mutate, isPending };
 }
+
+export function useAdminSetTier(): {
+    setTier: (args: { userId: string; tier: string }) => void;
+    isPending: boolean;
+} {
+    const queryClient = useQueryClient();
+    const { mutate, isPending } = useMutation({
+        mutationFn: ({ userId, tier }: { userId: string; tier: string }) =>
+            verificationService.adminSetTier(userId, tier),
+        onSuccess: () => {
+            toast.success('Master tier updated');
+            queryClient.invalidateQueries({ queryKey: [...verificationKeys.all, 'admin'] });
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
+    });
+
+    return { setTier: mutate, isPending };
+}

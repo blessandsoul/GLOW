@@ -9,6 +9,7 @@ import {
     Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle, SquaresFour,
     SlidersHorizontal, UsersFour, MapTrifold, ListBullets,
     SealCheck, Certificate, FirstAid, Diamond, Star,
+    Trophy, Medal, ShieldCheck,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import dynamic from 'next/dynamic';
@@ -65,6 +66,7 @@ export function MastersCatalog(): React.ReactElement {
     const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(searchParams.get('district') ?? undefined);
     const [selectedBrand, setSelectedBrand] = useState<string | undefined>(searchParams.get('brandSlug') ?? undefined);
     const [selectedStyleTag, setSelectedStyleTag] = useState<string | undefined>(searchParams.get('styleTagSlug') ?? undefined);
+    const [selectedTier, setSelectedTier] = useState<string | undefined>(searchParams.get('masterTier') ?? undefined);
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [badgeFilters, setBadgeFilters] = useState({
         isVerified: searchParams.get('isVerified') === 'true',
@@ -99,9 +101,10 @@ export function MastersCatalog(): React.ReactElement {
         if (selectedDistrict) params.set('district', selectedDistrict);
         if (selectedBrand) params.set('brandSlug', selectedBrand);
         if (selectedStyleTag) params.set('styleTagSlug', selectedStyleTag);
+        if (selectedTier) params.set('masterTier', selectedTier);
         const qs = params.toString();
         router.replace(qs ? `${ROUTES.MASTERS}?${qs}` : ROUTES.MASTERS, { scroll: false });
-    }, [debouncedSearch, selectedNiche, cities, page, badgeFilters, selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, router]);
+    }, [debouncedSearch, selectedNiche, cities, page, badgeFilters, selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, selectedTier, router]);
 
     const { masters, pagination, isLoading, isFetching } = useMastersCatalog({
         search: debouncedSearch || undefined,
@@ -114,6 +117,7 @@ export function MastersCatalog(): React.ReactElement {
         ...(badgeFilters.isHygieneVerified && { isHygieneVerified: true }),
         ...(badgeFilters.isQualityProducts && { isQualityProducts: true }),
         ...(badgeFilters.isTopRated && { isTopRated: true }),
+        masterTier: selectedTier,
         language: selectedLanguage,
         locationType: selectedLocationType,
         district: selectedDistrict,
@@ -157,12 +161,13 @@ export function MastersCatalog(): React.ReactElement {
         setSelectedLocationType(undefined);
         setSelectedDistrict(undefined);
         setSelectedBrand(undefined);
+        setSelectedTier(undefined);
         setSelectedStyleTag(undefined);
         setPage(1);
     }, []);
 
     const activeBadgeCount = Object.values(badgeFilters).filter(Boolean).length;
-    const extraFilterCount = [selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag].filter(Boolean).length;
+    const extraFilterCount = [selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, selectedTier].filter(Boolean).length;
     const hasActiveFilters = !!debouncedSearch || !!selectedNiche || cities.length > 0 || activeBadgeCount > 0 || extraFilterCount > 0;
     const activeFilterCount = [debouncedSearch, selectedNiche].filter(Boolean).length + (cities.length > 0 ? 1 : 0) + activeBadgeCount + extraFilterCount;
 
@@ -379,6 +384,18 @@ export function MastersCatalog(): React.ReactElement {
                     className="flex gap-2 mt-3 pt-3 border-t border-border/40 overflow-x-auto scrollbar-hide flex-wrap"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
+                    {/* Master tier */}
+                    <SelectFilterChip
+                        value={selectedTier}
+                        onChange={(v) => { setSelectedTier(v); setPage(1); }}
+                        label={t('catalog.filter_tier')}
+                        options={[
+                            { value: 'TOP_MASTER', label: t('masters.tier_top_master') },
+                            { value: 'PROFESSIONAL', label: t('masters.tier_professional') },
+                            { value: 'INTERMEDIATE', label: t('masters.tier_intermediate') },
+                            { value: 'JUNIOR', label: t('masters.tier_junior') },
+                        ]}
+                    />
                     {/* Language */}
                     <SelectFilterChip
                         value={selectedLanguage}
@@ -587,6 +604,7 @@ interface CatalogMasterCardProps {
         portfolioImages: { id: string; imageUrl: string; title: string | null }[];
         totalItems: number;
         favoritesCount?: number;
+        masterTier?: string;
         isVerified?: boolean;
         badges?: {
             isCertified: boolean;
@@ -716,7 +734,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                         <p className="truncate text-base font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
                             {master.displayName}
                         </p>
-                        <MasterBadgesRow isVerified={master.isVerified} badges={master.badges} />
+                        <MasterBadgesRow masterTier={master.masterTier} isVerified={master.isVerified} badges={master.badges} />
                         <div className="flex items-center gap-2 mt-1">
                             {cityDisplay && (
                                 <span className="flex items-center gap-1 text-xs text-muted-foreground">

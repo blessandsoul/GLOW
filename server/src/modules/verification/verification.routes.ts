@@ -23,4 +23,5 @@ export async function verificationRoutes(app: FastifyInstance): Promise<void> {
   app.get('/admin/all', { preHandler: adminGuard }, controller.adminGetAll);
   app.post('/admin/:userId/review', { preHandler: adminGuard }, controller.adminReview);
   app.post('/admin/:userId/badge', { preHandler: adminGuard }, controller.adminSetBadge);
+  app.post('/admin/:userId/tier', { preHandler: adminGuard }, controller.adminSetTier);
 }

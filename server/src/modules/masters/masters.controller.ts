@@ -25,6 +25,7 @@ const CatalogQuerySchema = z.object({
   isHygieneVerified: booleanFromQuery,
   isQualityProducts: booleanFromQuery,
   isTopRated: booleanFromQuery,
+  masterTier: z.string().optional(),
   language: z.string().optional(),
   locationType: z.enum(['salon', 'home_studio', 'mobile', 'client_visit']).optional(),
   district: z.string().optional(),
@@ -50,7 +51,7 @@ export function createMastersController(mastersService: MastersService) {
     },
 
     async getCatalog(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, language, locationType, district, brandSlug, styleTagSlug, swLat, swLng, neLat, neLng } = CatalogQuerySchema.parse(request.query);
+      const { page, limit, niche, city, search, isVerified, isCertified, isHygieneVerified, isQualityProducts, isTopRated, masterTier, language, locationType, district, brandSlug, styleTagSlug, swLat, swLng, neLat, neLng } = CatalogQuerySchema.parse(request.query);
       const bounds = swLat !== undefined && swLng !== undefined && neLat !== undefined && neLng !== undefined
         ? { swLat, swLng, neLat, neLng }
         : undefined;
@@ -65,6 +66,7 @@ export function createMastersController(mastersService: MastersService) {
         isHygieneVerified,
         isQualityProducts,
         isTopRated,
+        masterTier,
         language,
         locationType,
         district,

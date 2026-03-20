@@ -1,3 +1,5 @@
+import type { MasterTier } from '@/features/masters/types/masters.types';
+
 export type VerificationStatus = 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
 
 export interface VerificationState {
@@ -13,6 +15,7 @@ export interface VerificationState {
     isHygieneVerified: boolean;
     isQualityProducts: boolean;
     isTopRated: boolean;
+    masterTier: MasterTier;
 }
 
 export interface VerificationRequest {
@@ -34,6 +37,7 @@ export interface VerificationRequest {
     isCertified: boolean;
     isHygieneVerified: boolean;
     isQualityProducts: boolean;
+    masterTier: MasterTier;
 }
 
 export interface MasterBadges {

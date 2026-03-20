@@ -1056,7 +1056,11 @@
     "badge_certified": "აქვს პროფესიონალური სერთიფიკატი",
     "badge_hygiene": "სამუშაო ადგილის ჰიგიენა დადასტურებულია Glow.GE-ს მიერ",
     "badge_quality_products": "იყენებს ხარისხიან პროდუქციას",
-    "badge_top_rated": "ტოპ რეიტინგი: 4.5+ 10+ შეფასებით"
+    "badge_top_rated": "ტოპ რეიტინგი: 4.5+ 10+ შეფასებით",
+    "tier_top_master": "ტოპ მასტერი",
+    "tier_professional": "პროფესიონალი",
+    "tier_intermediate": "საშუალო დონე",
+    "tier_junior": "დამწყები"
   },
   "catalog": {
     "title": "ბიუთი-სერვისების კატალოგი",
@@ -1074,6 +1078,8 @@
     "filter_hygiene": "ჰიგიენა შემოწმებული",
     "filter_quality": "ხარისხიანი პროდუქცია",
     "filter_top_rated": "ტოპ რეიტინგი",
+    "filter_tier": "დონე",
+    "all_tiers": "ყველა დონე",
     "filter_language": "ენა",
     "filter_location_type": "მდებარეობა",
     "filter_district": "უბანი",

@@ -2,15 +2,16 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { SealCheck, Certificate, FirstAid, Diamond, Star } from '@phosphor-icons/react';
+import { SealCheck, Certificate, FirstAid, Diamond, Star, Trophy, Medal, ShieldCheck } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import type { MasterBadges } from '../types/masters.types';
+import type { MasterBadges, MasterTier } from '../types/masters.types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MasterBadgesRowProps {
+    masterTier?: string;
     isVerified?: boolean;
     badges?: MasterBadges;
     size?: 'sm' | 'md';
@@ -98,9 +99,26 @@ function BadgeItem({ icon: IconComponent, label, colorClass, size }: BadgeItemPr
 
 // ─── Master Badges Row ────────────────────────────────────────────────────────
 
-export function MasterBadgesRow({ isVerified, badges, size = 'sm' }: MasterBadgesRowProps): React.ReactElement | null {
+const TIER_CONFIG: Record<string, { icon: Icon; label: string; colorClass: string } | null> = {
+    TOP_MASTER: { icon: Trophy, label: 'masters.tier_top_master', colorClass: 'bg-warning/15 text-warning' },
+    PROFESSIONAL: { icon: Medal, label: 'masters.tier_professional', colorClass: 'bg-primary/15 text-primary' },
+    INTERMEDIATE: { icon: ShieldCheck, label: 'masters.tier_intermediate', colorClass: 'bg-info/15 text-info' },
+    JUNIOR: null,
+};
+
+export function MasterBadgesRow({ masterTier, isVerified, badges, size = 'sm' }: MasterBadgesRowProps): React.ReactElement | null {
     const { t } = useLanguage();
     const activeBadges: { icon: Icon; label: string; colorClass: string }[] = [];
+
+    // Tier badge first (skip JUNIOR — it's the default)
+    if (masterTier && TIER_CONFIG[masterTier]) {
+        const tierCfg = TIER_CONFIG[masterTier]!;
+        activeBadges.push({
+            icon: tierCfg.icon,
+            label: t(tierCfg.label),
+            colorClass: tierCfg.colorClass,
+        });
+    }
 
     if (isVerified) {
         activeBadges.push({

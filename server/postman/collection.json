@@ -1573,6 +1573,27 @@
               }
             }
           }
+        },
+        {
+          "name": "Admin — Set Tier",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/verification/admin/{{userId}}/tier",
+              "host": ["{{baseUrl}}"],
+              "path": ["verification", "admin", "{{userId}}", "tier"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tier\": \"PROFESSIONAL\"\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            }
+          }
         }
       ]
     },
