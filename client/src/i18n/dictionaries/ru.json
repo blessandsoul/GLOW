@@ -1137,7 +1137,21 @@
     "btn_get_started": "Начать",
     "experience_hint": "Введите 0, если вы только начинаете — все с чего-то начинают!",
     "setup_wizard": "Мастер настройки",
-    "setup_wizard_desc": "Измените роль или обновите информацию профиля"
+    "setup_wizard_desc": "Измените роль или обновите информацию профиля",
+    "username_title": "Имя пользователя",
+    "username_not_set": "Установите уникальное имя для ссылки на ваш публичный профиль.",
+    "username_set": "Установить",
+    "username_change": "Изменить",
+    "username_label": "Имя пользователя",
+    "username_hint": "3-30 символов. Строчные буквы, цифры, точки и подчёркивания.",
+    "username_cooldown_warning": "Имя пользователя можно менять раз в 30 дней.",
+    "username_save": "Сохранить",
+    "username_updated": "Имя пользователя обновлено",
+    "username_err_min_3": "Минимум 3 символа",
+    "username_err_max_30": "Максимум 30 символов",
+    "username_err_lowercase": "Только строчные буквы",
+    "username_err_invalid_chars": "Только строчные буквы, цифры, точки и подчёркивания",
+    "username_err_no_consecutive": "Нельзя использовать подряд точки или подчёркивания"
   },
   "verification": {
     "title": "Верификация мастера",
@@ -1181,20 +1195,6 @@
     "replace_photos": "Заменить фото",
     "upload_file": "Загрузить файл",
     "replace_file": "Заменить файл",
-    "max_photos": "Максимум {max} фото",
-    "username_title": "Имя пользователя",
-    "username_not_set": "Установите уникальное имя для ссылки на ваш публичный профиль.",
-    "username_set": "Установить",
-    "username_change": "Изменить",
-    "username_label": "Имя пользователя",
-    "username_hint": "3-30 символов. Строчные буквы, цифры, точки и подчёркивания.",
-    "username_cooldown_warning": "Имя пользователя можно менять раз в 30 дней.",
-    "username_save": "Сохранить",
-    "username_updated": "Имя пользователя обновлено",
-    "username_err_min_3": "Минимум 3 символа",
-    "username_err_max_30": "Максимум 30 символов",
-    "username_err_lowercase": "Только строчные буквы",
-    "username_err_invalid_chars": "Только строчные буквы, цифры, точки и подчёркивания",
-    "username_err_no_consecutive": "Нельзя использовать подряд точки или подчёркивания"
+    "max_photos": "Максимум {max} фото"
   }
 }

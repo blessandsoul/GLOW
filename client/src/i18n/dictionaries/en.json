@@ -1137,7 +1137,21 @@
     "btn_get_started": "Get started",
     "experience_hint": "Enter 0 if you're just starting out — everyone starts somewhere!",
     "setup_wizard": "Setup wizard",
-    "setup_wizard_desc": "Change your role or update your profile info"
+    "setup_wizard_desc": "Change your role or update your profile info",
+    "username_title": "Username",
+    "username_not_set": "Set a unique username for your public profile link.",
+    "username_set": "Set username",
+    "username_change": "Change username",
+    "username_label": "Username",
+    "username_hint": "3-30 characters. Lowercase letters, numbers, dots and underscores.",
+    "username_cooldown_warning": "You can only change your username once every 30 days.",
+    "username_save": "Save username",
+    "username_updated": "Username updated",
+    "username_err_min_3": "Username must be at least 3 characters",
+    "username_err_max_30": "Username must be at most 30 characters",
+    "username_err_lowercase": "Username must be lowercase",
+    "username_err_invalid_chars": "Only lowercase letters, numbers, dots and underscores",
+    "username_err_no_consecutive": "No consecutive dots or underscores"
   },
   "verification": {
     "title": "Master Verification",
@@ -1181,20 +1195,6 @@
     "replace_photos": "Replace photos",
     "upload_file": "Upload file",
     "replace_file": "Replace file",
-    "max_photos": "Max {max} photos",
-    "username_title": "Username",
-    "username_not_set": "Set a unique username for your public profile link.",
-    "username_set": "Set username",
-    "username_change": "Change username",
-    "username_label": "Username",
-    "username_hint": "3-30 characters. Lowercase letters, numbers, dots and underscores.",
-    "username_cooldown_warning": "You can only change your username once every 30 days.",
-    "username_save": "Save username",
-    "username_updated": "Username updated",
-    "username_err_min_3": "Username must be at least 3 characters",
-    "username_err_max_30": "Username must be at most 30 characters",
-    "username_err_lowercase": "Username must be lowercase",
-    "username_err_invalid_chars": "Only lowercase letters, numbers, dots and underscores",
-    "username_err_no_consecutive": "No consecutive dots or underscores"
+    "max_photos": "Max {max} photos"
   }
 }
