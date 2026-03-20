@@ -139,7 +139,7 @@ export function createPortfolioService() {
       ]);
 
       return {
-        masterId: user.id,
+        masterId: profile?.id ?? user.id,
         username: user.username,
         displayName: branding?.displayName ?? `${user.firstName} ${user.lastName}`,
         avatar: user.avatar,

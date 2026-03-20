@@ -123,6 +123,7 @@ export const portfolioRepo = {
     return prisma.masterProfile.findUnique({
       where: { userId },
       select: {
+        id: true,
         bio: true,
         city: true,
         niche: true,
