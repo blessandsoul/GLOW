@@ -137,7 +137,7 @@ export function Character({
                 animate={
                     state === 'happy'
                         ? { opacity: [0.7, 1, 0.7], rx: [14, 16, 14] }
-                        : { opacity: 0.5 }
+                        : { opacity: 0.5, rx: 14 }
                 }
                 transition={{
                     repeat: Infinity,
@@ -156,7 +156,7 @@ export function Character({
                 animate={
                     state === 'happy'
                         ? { opacity: [0.7, 1, 0.7], rx: [14, 16, 14] }
-                        : { opacity: 0.5 }
+                        : { opacity: 0.5, rx: 14 }
                 }
                 transition={{
                     repeat: Infinity,
