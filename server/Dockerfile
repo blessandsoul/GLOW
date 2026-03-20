@@ -11,7 +11,7 @@ COPY prisma ./prisma/
 # Force development to install devDependencies (typescript, tsc-alias, prisma)
 # Coolify injects NODE_ENV=production as a build ARG which causes npm ci to skip devDeps
 ENV NODE_ENV=development
-RUN npm ci
+RUN npm ci || npm ci
 RUN npx prisma generate
 
 # ─── Stage 2: Build TypeScript ───
