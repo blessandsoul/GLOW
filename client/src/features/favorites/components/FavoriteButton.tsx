@@ -10,6 +10,7 @@ interface FavoriteButtonProps {
   entityType: 'master' | 'portfolio';
   entityId: string;
   isFavorited: boolean;
+  favoritesCount?: number;
   size?: number;
   className?: string;
 }
@@ -18,6 +19,7 @@ export function FavoriteButton({
   entityType,
   entityId,
   isFavorited,
+  favoritesCount,
   size = 20,
   className,
 }: FavoriteButtonProps): React.ReactElement {
@@ -26,14 +28,19 @@ export function FavoriteButton({
   const { t } = useLanguage();
 
   const [optimistic, setOptimistic] = useState(isFavorited);
+  const [optimisticCount, setOptimisticCount] = useState(favoritesCount ?? 0);
   const isPending = isTogglingMaster || isTogglingPortfolioItem;
+  const showCount = favoritesCount !== undefined;
 
   // Sync optimistic state when prop changes (after query refetch), but not while pending
   useEffect(() => {
     if (!isPending) {
       setOptimistic(isFavorited);
+      if (favoritesCount !== undefined) {
+        setOptimisticCount(favoritesCount);
+      }
     }
-  }, [isFavorited, isPending]);
+  }, [isFavorited, favoritesCount, isPending]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -44,6 +51,9 @@ export function FavoriteButton({
 
       const nextState = !optimistic;
       setOptimistic(nextState);
+      if (showCount) {
+        setOptimisticCount((prev) => Math.max(0, prev + (nextState ? 1 : -1)));
+      }
 
       if (entityType === 'master') {
         toggleMaster({ masterProfileId: entityId, isFavorited: optimistic });
@@ -51,7 +61,7 @@ export function FavoriteButton({
         togglePortfolioItem({ portfolioItemId: entityId, isFavorited: optimistic });
       }
     },
-    [entityType, entityId, optimistic, isPending, toggleMaster, togglePortfolioItem],
+    [entityType, entityId, optimistic, isPending, showCount, toggleMaster, togglePortfolioItem],
   );
 
   return (
@@ -61,10 +71,11 @@ export function FavoriteButton({
       disabled={isPending}
       aria-label={optimistic ? t('favorites.remove') : t('favorites.add')}
       className={cn(
-        'flex h-8 w-8 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm',
+        'flex items-center justify-center rounded-full bg-background/80 backdrop-blur-sm',
         'transition-all duration-200 hover:scale-110 active:scale-95',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
         'disabled:pointer-events-none disabled:opacity-60',
+        showCount && optimisticCount > 0 ? 'h-8 gap-1 px-2.5' : 'h-8 w-8',
         className,
       )}
     >
@@ -72,10 +83,15 @@ export function FavoriteButton({
         size={size}
         weight={optimistic ? 'fill' : 'regular'}
         className={cn(
-          'transition-colors duration-200',
+          'shrink-0 transition-colors duration-200',
           optimistic ? 'text-destructive' : 'text-foreground/60',
         )}
       />
+      {showCount && optimisticCount > 0 && (
+        <span className="text-xs font-medium tabular-nums text-foreground/70">
+          {optimisticCount}
+        </span>
+      )}
     </button>
   );
 }

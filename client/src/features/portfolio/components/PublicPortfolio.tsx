@@ -114,17 +114,20 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                         {portfolio.displayName.charAt(0).toUpperCase()}
                     </div>
                 )}
-                <div>
-                    <div className="flex items-center justify-center gap-2">
-                        <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
-                        <MasterBadgesRow isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
-                        {isAuthenticated && !isOwnProfile && masterProfileId && (
+                <div className="relative">
+                    {isAuthenticated && !isOwnProfile && masterProfileId && (
+                        <div className="absolute -right-10 top-1">
                             <FavoriteButton
                                 entityType="master"
                                 entityId={masterProfileId}
                                 isFavorited={favoriteStatus?.masters?.[masterProfileId] ?? false}
+                                favoritesCount={portfolio.favoritesCount}
                             />
-                        )}
+                        </div>
+                    )}
+                    <h1 className="text-2xl font-bold text-foreground">{portfolio.displayName}</h1>
+                    <div className="mt-1.5 flex justify-center">
+                        <MasterBadgesRow isVerified={portfolio.isVerified} badges={portfolio.badges} size="md" />
                     </div>
                     <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
                         {portfolio.city && (

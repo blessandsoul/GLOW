@@ -159,6 +159,7 @@ export function createPortfolioService() {
           isTopRated: profile?.isTopRated ?? false,
         },
         experienceYears: profile?.experienceYears ?? null,
+        favoritesCount: profile?._count?.favoritedBy ?? 0,
         primaryColor: branding?.primaryColor ?? null,
         logoUrl: branding?.logoUrl ?? null,
         items,

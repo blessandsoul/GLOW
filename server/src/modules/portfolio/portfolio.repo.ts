@@ -138,6 +138,7 @@ export const portfolioRepo = {
         isQualityProducts: true,
         isTopRated: true,
         experienceYears: true,
+        _count: { select: { favoritedBy: true } },
       },
     });
   },

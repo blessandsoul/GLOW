@@ -47,6 +47,7 @@ export interface FeaturedMaster {
     niche: string | null;
     portfolioImages: FeaturedMasterImage[];
     totalItems: number;
+    favoritesCount?: number;
     isVerified?: boolean;
     badges?: MasterBadges;
     experienceYears?: number | null;

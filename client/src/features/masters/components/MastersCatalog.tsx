@@ -586,6 +586,7 @@ interface CatalogMasterCardProps {
         niche: string | null;
         portfolioImages: { id: string; imageUrl: string; title: string | null }[];
         totalItems: number;
+        favoritesCount?: number;
         isVerified?: boolean;
         badges?: {
             isCertified: boolean;
@@ -688,6 +689,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                                 entityType="master"
                                 entityId={master.masterProfileId}
                                 isFavorited={isFavorited}
+                                favoritesCount={master.favoritesCount}
                             />
                         </div>
                     )}

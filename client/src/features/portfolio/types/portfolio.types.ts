@@ -55,4 +55,5 @@ export interface PublicPortfolioData {
         isTopRated: boolean;
     };
     experienceYears?: number | null;
+    favoritesCount?: number;
 }
