@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getServerImageUrl } from '@/lib/utils/image';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import {
     useAdminPendingVerifications,
     useAdminAllVerifications,
@@ -33,10 +34,10 @@ import type { VerificationRequest, VerificationStatus } from '@/features/verific
 const LIMIT = 10;
 
 const TIER_OPTIONS = [
-    { value: 'JUNIOR', label: 'Junior', icon: null, colorClass: 'text-muted-foreground' },
-    { value: 'INTERMEDIATE', label: 'Intermediate', icon: <ShieldCheck size={12} />, colorClass: 'text-info' },
-    { value: 'PROFESSIONAL', label: 'Professional', icon: <Medal size={12} />, colorClass: 'text-primary' },
-    { value: 'TOP_MASTER', label: 'Top Master', icon: <Trophy size={12} />, colorClass: 'text-warning' },
+    { value: 'JUNIOR', labelKey: 'masters.tier_junior', icon: null, colorClass: 'text-muted-foreground' },
+    { value: 'INTERMEDIATE', labelKey: 'masters.tier_intermediate', icon: <ShieldCheck size={12} />, colorClass: 'text-info' },
+    { value: 'PROFESSIONAL', labelKey: 'masters.tier_professional', icon: <Medal size={12} />, colorClass: 'text-primary' },
+    { value: 'TOP_MASTER', labelKey: 'masters.tier_top_master', icon: <Trophy size={12} />, colorClass: 'text-warning' },
 ] as const;
 
 type TabFilter = 'ALL' | 'PENDING' | 'VERIFIED' | 'REJECTED';
@@ -137,6 +138,7 @@ interface RequestCardProps {
 }
 
 function RequestCard({ request }: RequestCardProps): React.ReactElement {
+    const { t } = useLanguage();
     const [showRejectForm, setShowRejectForm] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
     const { review, isPending: isReviewing } = useAdminReviewVerification();
@@ -279,7 +281,7 @@ function RequestCard({ request }: RequestCardProps): React.ReactElement {
 
             {/* Tier selector */}
             <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">Tier:</span>
+                <span className="text-xs font-medium text-muted-foreground">{t('catalog.filter_tier')}:</span>
                 <div className="flex gap-1">
                     {TIER_OPTIONS.map((opt) => {
                         const isActive = (request.masterTier ?? 'JUNIOR') === opt.value;
@@ -297,7 +299,7 @@ function RequestCard({ request }: RequestCardProps): React.ReactElement {
                                 ].join(' ')}
                             >
                                 {isTiering ? <SpinnerGap size={10} className="animate-spin" /> : opt.icon}
-                                {opt.label}
+                                {t(opt.labelKey)}
                             </button>
                         );
                     })}

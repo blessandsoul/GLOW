@@ -23,9 +23,9 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, CheckCircle, XCircle, SpinnerGap, Certificate, FirstAid, Diamond } from '@phosphor-icons/react';
+import { ShieldCheck, CheckCircle, XCircle, SpinnerGap, Certificate, FirstAid, Diamond, Trophy, Medal } from '@phosphor-icons/react';
 import { useAdminUsers, useAdminUserImages } from '../hooks/useAdmin';
-import { useAdminReviewVerification, useAdminSetBadge } from '@/features/verification/hooks/useVerification';
+import { useAdminReviewVerification, useAdminSetBadge, useAdminSetTier } from '@/features/verification/hooks/useVerification';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { cn } from '@/lib/utils';
 import { getServerImageUrl, getThumbUrl } from '@/lib/utils/image';
@@ -143,9 +143,18 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }): 
     );
 }
 
+const TIER_OPTIONS = [
+    { value: 'JUNIOR', labelKey: 'masters.tier_junior', icon: null, colorClass: 'text-muted-foreground' },
+    { value: 'INTERMEDIATE', labelKey: 'masters.tier_intermediate', icon: <ShieldCheck size={12} />, colorClass: 'text-info' },
+    { value: 'PROFESSIONAL', labelKey: 'masters.tier_professional', icon: <Medal size={12} />, colorClass: 'text-primary' },
+    { value: 'TOP_MASTER', labelKey: 'masters.tier_top_master', icon: <Trophy size={12} />, colorClass: 'text-warning' },
+] as const;
+
 function UserVerificationActions({ user }: { user: AdminUser }): React.ReactElement {
+    const { t } = useLanguage();
     const { review, isPending: isReviewing } = useAdminReviewVerification();
     const { setBadge, isPending: isUpdatingBadge } = useAdminSetBadge();
+    const { setTier, isPending: isTiering } = useAdminSetTier();
     const [rejectReason, setRejectReason] = useState('');
     const [showReject, setShowReject] = useState(false);
     const isVerified = user.verificationStatus === 'VERIFIED';
@@ -216,6 +225,32 @@ function UserVerificationActions({ user }: { user: AdminUser }): React.ReactElem
                         {label}
                     </button>
                 ))}
+            </div>
+
+            {/* Tier selector */}
+            <div className="flex items-center gap-2">
+                <span className="text-[11px] font-medium text-muted-foreground">{t('catalog.filter_tier')}:</span>
+                {TIER_OPTIONS.map((opt) => {
+                    const isActive = (user.masterTier ?? 'JUNIOR') === opt.value;
+                    return (
+                        <button
+                            key={opt.value}
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setTier({ userId: user.id, tier: opt.value }); }}
+                            disabled={isTiering}
+                            className={cn(
+                                'flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors duration-150',
+                                isActive
+                                    ? `${opt.colorClass} ring-1 ring-current/30 bg-current/10`
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                                isTiering && 'opacity-50 cursor-not-allowed',
+                            )}
+                        >
+                            {isTiering ? <SpinnerGap size={10} className="animate-spin" /> : opt.icon}
+                            {t(opt.labelKey)}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );
