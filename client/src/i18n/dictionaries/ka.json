@@ -1218,6 +1218,20 @@
     "replace_photos": "ფოტოების შეცვლა",
     "upload_file": "ფაილის ატვირთვა",
     "replace_file": "ფაილის შეცვლა",
-    "max_photos": "მაქსიმუმ {max} ფოტო"
+    "max_photos": "მაქსიმუმ {max} ფოტო",
+    "username_title": "მომხმარებლის სახელი",
+    "username_not_set": "დააყენეთ უნიკალური სახელი თქვენი საჯარო პროფილის ბმულისთვის.",
+    "username_set": "დაყენება",
+    "username_change": "შეცვლა",
+    "username_label": "მომხმარებლის სახელი",
+    "username_hint": "3-30 სიმბოლო. პატარა ასოები, ციფრები, წერტილები და ქვედა ტირეები.",
+    "username_cooldown_warning": "მომხმარებლის სახელის შეცვლა შესაძლებელია 30 დღეში ერთხელ.",
+    "username_save": "შენახვა",
+    "username_updated": "მომხმარებლის სახელი განახლდა",
+    "username_err_min_3": "მინიმუმ 3 სიმბოლო",
+    "username_err_max_30": "მაქსიმუმ 30 სიმბოლო",
+    "username_err_lowercase": "მხოლოდ პატარა ასოები",
+    "username_err_invalid_chars": "მხოლოდ პატარა ასოები, ციფრები, წერტილები და ქვედა ტირეები",
+    "username_err_no_consecutive": "წერტილები ან ქვედა ტირეები ზედიზედ არ შეიძლება"
   }
 }

@@ -6,6 +6,7 @@ import { ArrowRight, Briefcase, UsersThree, SignOut, Sparkle } from '@phosphor-i
 import { PersonalInfoSection } from '@/features/profile/components/ProfileSetup';
 import { AccountStatus } from '@/features/profile/components/AccountStatus';
 import { VerificationSection } from '@/features/verification/components/VerificationSection';
+import { ChangeUsername } from '@/features/profile/components/ChangeUsername';
 import { ChangePassword } from '@/features/profile/components/ChangePassword';
 import { DeleteAccount } from '@/features/profile/components/DeleteAccount';
 import { ROUTES } from '@/lib/constants/routes';
@@ -86,7 +87,10 @@ export default function ProfilePage(): React.ReactElement {
             {/* 3. Personal info — avatar, name */}
             <PersonalInfoSection />
 
-            {/* 4. Security */}
+            {/* 4. Username */}
+            <ChangeUsername />
+
+            {/* 5. Security */}
             <ChangePassword />
 
             {/* Sign out */}

@@ -6,6 +6,7 @@ import type { IUser } from '@/features/auth/types/auth.types';
 interface UpdateMeRequest {
     firstName?: string;
     lastName?: string;
+    username?: string;
 }
 
 class UsersService {
