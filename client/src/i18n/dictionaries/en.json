@@ -992,7 +992,8 @@
     "retry": "Try again",
     "mute": "Mute sounds",
     "unmute": "Unmute sounds",
-    "fallback_notice": "offline"
+    "fallback_notice": "offline",
+    "dismiss_24h": "Hide for 24 hours"
   },
   "legal": {
     "terms_title": "Terms of Service",
