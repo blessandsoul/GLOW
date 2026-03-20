@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Star, UserCircle } from '@phosphor-icons/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { getServerImageUrl } from '@/lib/utils/image';
 import type { PublicReview } from '../types/portfolio.types';
 
 interface ReviewsSectionProps {
@@ -73,7 +74,7 @@ export function ReviewsSection({ reviews, averageRating, reviewsCount }: Reviews
                                 <div className="flex items-center gap-2.5">
                                     {review.user?.avatar ? (
                                         <div className="relative h-8 w-8 overflow-hidden rounded-full">
-                                            <Image src={review.user.avatar} alt="" fill className="object-cover" />
+                                            <Image src={getServerImageUrl(review.user.avatar)} alt="" fill className="object-cover" />
                                         </div>
                                     ) : (
                                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">

@@ -46,6 +46,9 @@ const nextConfig: NextConfig = {
         pathname: "/api/og",
         search: "?*",
       },
+      {
+        pathname: "/filters/**",
+      },
     ],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

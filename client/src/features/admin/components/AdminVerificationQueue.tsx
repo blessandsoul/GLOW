@@ -18,6 +18,7 @@ import {
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getServerImageUrl } from '@/lib/utils/image';
 import {
     useAdminPendingVerifications,
     useAdminAllVerifications,
@@ -31,9 +32,7 @@ const LIMIT = 10;
 type TabFilter = 'ALL' | 'PENDING' | 'VERIFIED' | 'REJECTED';
 
 function getImageUrl(path: string): string {
-    if (path.startsWith('http')) return path;
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-    return `${base}${path}`;
+    return getServerImageUrl(path);
 }
 
 function StatusBadge({ status }: { status: VerificationStatus }): React.ReactElement {
