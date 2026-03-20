@@ -271,7 +271,7 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
             />
 
             {/* Leave a review */}
-            <ReviewForm masterId={portfolio.masterId} />
+            <ReviewForm masterId={portfolio.userId} />
 
             {/* Footer */}
             <div className="text-center">

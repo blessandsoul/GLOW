@@ -162,9 +162,10 @@ async function main(): Promise<void> {
     { slug: 'lashes', label: 'წამწამები', sortOrder: 0 },
     { slug: 'nails', label: 'ფრჩხილები', sortOrder: 1 },
     { slug: 'brows', label: 'წარბები', sortOrder: 2 },
-    { slug: 'makeup', label: 'მაკიაჟი', sortOrder: 3 },
-    { slug: 'hair', label: 'თმა', sortOrder: 4 },
-    { slug: 'skincare', label: 'კანის მოვლა', sortOrder: 5 },
+    { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი', sortOrder: 3 },
+    { slug: 'makeup', label: 'მაკიაჟი', sortOrder: 4 },
+    { slug: 'hair', label: 'თმა', sortOrder: 5 },
+    { slug: 'skincare', label: 'კანის მოვლა', sortOrder: 6 },
   ];
 
   for (const spec of specialities) {
@@ -191,7 +192,6 @@ async function main(): Promise<void> {
         'წარბების არქიტექტურა და ფორმირება', 'წარბების ლამინირება',
         'წარბების შეღებვა (საღებავით / ხნით)', 'წარბების კორექცია ძაფით',
         'წარბების კორექცია ცვილით', 'წარბების კორექცია პინცეტით',
-        'მიკრობლეიდინგი (Microblading)', 'წარბის პუდროვანი დაფერვა (Powder Brows)',
       ],
     },
     {
@@ -206,15 +206,40 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'makeup', label: 'მაკიაჟი', icon: '✦', sortOrder: 3,
+      slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი', icon: '✦', sortOrder: 3,
       suggestions: [
-        'დღიური მაკიაჟი', 'საღამოს / სადღესასწაულო მაკიაჟი', 'სარძლო მაკიაჟი',
-        'მაკიაჟი ფოტოსესიისთვის', 'ტუჩის პერმანენტული მაკიაჟი',
-        'წარბის პერმანენტული მაკიაჟი', 'ქუთუთოს პერმანენტული მაკიაჟი (ისარი / კონტური)',
+        // წარბის პერმანენტული მაკიაჟი
+        'მიკრობლეიდინგი (ღეროვანი ტექნიკა)',
+        'პუდროვანი დაჩრდილვა (Powder Brows / Ombre)',
+        'კომბინირებული ტექნიკა (Mix Brows)',
+        'აპარატურული ღეროვანი ტექნიკა (Nano Brows)',
+        // ტუჩის პერმანენტული მაკიაჟი
+        'აკვარელური ტექნიკა (Aquarelle Lips)',
+        'პომადის ეფექტი (Lipstick Effect)',
+        'ტუჩის კონტური და დაჩრდილვა',
+        '3D მოცულობითი ეფექტი',
+        // თვალის პერმანენტული მაკიაჟი
+        'წამწამთაშორისი დაჩრდილვა',
+        'კლასიკური ისარი (Classic Eyeliner)',
+        'დაჩრდილული ისარი (Soft Liner)',
+        'ქვედა ქუთუთოს პერმანენტი',
+        // სამედიცინო / სპეციფიკური კორექცია
+        'ტრიქოპიგმენტაცია (თმის იმიტაცია თავის კანზე)',
+        'არეოლას პიგმენტაცია',
+        'ნაწიბურების კამუფლაჟი',
+        'ვიტილიგოს კორექცია',
+        'ხალის იმიტაცია (Beauty Mark)',
       ],
     },
     {
-      slug: 'hair', label: 'თმა', icon: '✦', sortOrder: 4,
+      slug: 'makeup', label: 'მაკიაჟი', icon: '✦', sortOrder: 4,
+      suggestions: [
+        'დღიური მაკიაჟი', 'საღამოს / სადღესასწაულო მაკიაჟი', 'სარძლო მაკიაჟი',
+        'მაკიაჟი ფოტოსესიისთვის',
+      ],
+    },
+    {
+      slug: 'hair', label: 'თმა', icon: '✦', sortOrder: 5,
       suggestions: [
         'ქალის თმის შეჭრა', 'მამაკაცის თმის შეჭრა', 'ბავშვის თმის შეჭრა',
         'თმის დავარცხნა / სადღესასწაულო ვარცხნილობა',
@@ -225,7 +250,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'skincare', label: 'კანის მოვლა', icon: '✦', sortOrder: 5,
+      slug: 'skincare', label: 'კანის მოვლა', icon: '✦', sortOrder: 6,
       suggestions: [
         'სახის წმენდა (მექანიკური / ულტრაბგერითი)', 'სახის პილინგი',
         'სახის სკულპტურული მასაჟი', 'კარბოქსითერაპია',
@@ -235,7 +260,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'waxing', label: 'ეპილაცია და რუჯი', icon: '✦', sortOrder: 6,
+      slug: 'waxing', label: 'ეპილაცია და რუჯი', icon: '✦', sortOrder: 7,
       suggestions: [
         'ლაზერული ეპილაცია', 'ელექტრო ეპილაცია', 'დეპილაცია ცვილით',
         'შუგარინგი', 'სახის / ტუჩის დეპილაცია ძაფით',
@@ -243,7 +268,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'body', label: 'მასაჟი და სხეული', icon: '✦', sortOrder: 7,
+      slug: 'body', label: 'მასაჟი და სხეული', icon: '✦', sortOrder: 8,
       suggestions: [
         'სარელაქსაციო მასაჟი', 'სამკურნალო / სპორტული მასაჟი',
         'ანტიცელულიტური მასაჟი', 'ლიმფოდრენაჟული მასაჟი',
@@ -251,7 +276,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'other', label: 'ცხოვრების სტილი და სხვა', icon: '✦', sortOrder: 8,
+      slug: 'other', label: 'ცხოვრების სტილი და სხვა', icon: '✦', sortOrder: 9,
       suggestions: [
         'ყურის / ცხვირის გახვრეტა (Piercing)', 'ტატუირება',
         'ტატუს ლაზერული მოშორება', 'სტილისტის / შოპერის კონსულტაცია',
