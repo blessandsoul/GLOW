@@ -86,8 +86,8 @@ export function GlowStarSection(): React.ReactElement | null {
         setShowPopup(false);
     }, []);
 
-    // Only show for masters
-    if (!user || user.role !== 'MASTER') return null;
+    // Only show for masters and admins
+    if (!user || (user.role !== 'MASTER' && user.role !== 'ADMIN')) return null;
 
     if (isLoading) {
         return (

@@ -249,8 +249,8 @@ export function VerificationSection(): React.ReactElement {
     const { upload: uploadHygiene, isPending: isUploadingHygiene } = useUploadHygienePics();
     const { upload: uploadQuality, isPending: isUploadingQuality } = useUploadQualityProductsPics();
 
-    // Only show for MASTER role
-    if (!user || user.role !== 'MASTER') return <></>;
+    // Only show for MASTER or ADMIN role
+    if (!user || (user.role !== 'MASTER' && user.role !== 'ADMIN')) return <></>;
 
     if (isLoading || !state) return <VerificationSkeleton />;
 
