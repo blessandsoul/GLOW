@@ -279,19 +279,29 @@ export function useRequestGlowStar(): {
     return { request: mutate, isPending };
 }
 
+export interface GlowStarRequestFlat {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+    username: string | null;
+    phone: string | null;
+    niche: string | null;
+    city: string | null;
+    instagram: string | null;
+    masterTier: string;
+    glowStarStatus: string;
+    glowStarRequestedAt: string | null;
+    experienceYears: number | null;
+    isCertified: boolean;
+    isHygieneVerified: boolean;
+    isQualityProducts: boolean;
+    verificationStatus: string;
+    portfolioCount: number;
+}
+
 export function useAdminGlowStarRequests(page: number, limit: number): {
-    requests: Array<{
-        userId: string;
-        firstName: string;
-        lastName: string;
-        avatar: string | null;
-        niche: string | null;
-        city: string | null;
-        instagram: string | null;
-        masterTier: string;
-        glowStarStatus: string;
-        glowStarRequestedAt: string | null;
-    }>;
+    requests: GlowStarRequestFlat[];
     pagination: PaginationMeta | null;
     isLoading: boolean;
 } {
@@ -304,8 +314,29 @@ export function useAdminGlowStarRequests(page: number, limit: number): {
         if (error) toast.error(getErrorMessage(error));
     }, [error]);
 
+    const requests: GlowStarRequestFlat[] = (data?.items ?? []).map((item) => ({
+        userId: item.userId,
+        firstName: item.user.firstName,
+        lastName: item.user.lastName,
+        avatar: item.user.avatar,
+        username: item.user.username,
+        phone: item.user.phone,
+        niche: item.niche,
+        city: item.city,
+        instagram: item.instagram,
+        masterTier: item.masterTier,
+        glowStarStatus: item.glowStarStatus,
+        glowStarRequestedAt: item.glowStarRequestedAt,
+        experienceYears: item.experienceYears,
+        isCertified: item.isCertified,
+        isHygieneVerified: item.isHygieneVerified,
+        isQualityProducts: item.isQualityProducts,
+        verificationStatus: item.verificationStatus,
+        portfolioCount: item.portfolioCount,
+    }));
+
     return {
-        requests: data?.items ?? [],
+        requests,
         pagination: data?.pagination ?? null,
         isLoading,
     };

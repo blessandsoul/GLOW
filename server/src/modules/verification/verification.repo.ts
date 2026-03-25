@@ -256,12 +256,15 @@ export const verificationRepo = {
           isCertified: true,
           isHygieneVerified: true,
           isQualityProducts: true,
+          verificationStatus: true,
           user: {
             select: {
               id: true,
               firstName: true,
               lastName: true,
               avatar: true,
+              username: true,
+              phone: true,
             },
           },
         },
@@ -269,7 +272,16 @@ export const verificationRepo = {
       prisma.masterProfile.count({ where }),
     ]);
 
-    return { items, totalItems };
+    const itemsWithPortfolioCount = await Promise.all(
+      items.map(async (item) => {
+        const portfolioCount = await prisma.portfolioItem.count({
+          where: { userId: item.userId, isPublished: true },
+        });
+        return { ...item, portfolioCount };
+      }),
+    );
+
+    return { items: itemsWithPortfolioCount, totalItems };
   },
 
   async setTier(userId: string, tier: string, tierSortOrder: number) {

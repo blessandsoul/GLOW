@@ -136,29 +136,51 @@ class VerificationService {
     async adminGetGlowStarRequests(params?: { page?: number; limit?: number }): Promise<{
         items: Array<{
             userId: string;
-            firstName: string;
-            lastName: string;
-            avatar: string | null;
             niche: string | null;
             city: string | null;
             instagram: string | null;
             masterTier: string;
             glowStarStatus: string;
             glowStarRequestedAt: string | null;
+            experienceYears: number | null;
+            isCertified: boolean;
+            isHygieneVerified: boolean;
+            isQualityProducts: boolean;
+            verificationStatus: string;
+            portfolioCount: number;
+            user: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                avatar: string | null;
+                username: string | null;
+                phone: string | null;
+            };
         }>;
         pagination: PaginationMeta;
     }> {
         const { data } = await apiClient.get<PaginatedApiResponse<{
             userId: string;
-            firstName: string;
-            lastName: string;
-            avatar: string | null;
             niche: string | null;
             city: string | null;
             instagram: string | null;
             masterTier: string;
             glowStarStatus: string;
             glowStarRequestedAt: string | null;
+            experienceYears: number | null;
+            isCertified: boolean;
+            isHygieneVerified: boolean;
+            isQualityProducts: boolean;
+            verificationStatus: string;
+            portfolioCount: number;
+            user: {
+                id: string;
+                firstName: string;
+                lastName: string;
+                avatar: string | null;
+                username: string | null;
+                phone: string | null;
+            };
         }>>(API_ENDPOINTS.VERIFICATION.ADMIN_GLOW_STAR_LIST, { params });
         return { items: data.data.items, pagination: data.data.pagination };
     }

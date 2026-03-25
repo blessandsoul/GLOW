@@ -1,60 +1,100 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import Link from 'next/link';
 import {
     Trophy, CheckCircle, XCircle, User, CaretLeft, CaretRight, SpinnerGap, InstagramLogo, Eye,
+    Phone, ArrowSquareOut, Certificate, Drop, Star, Images,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { getServerImageUrl } from '@/lib/utils/image';
 import { useAdminGlowStarRequests, useAdminReviewGlowStar } from '@/features/verification/hooks/useVerification';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { ROUTES } from '@/lib/constants/routes';
 
 const LIMIT = 10;
 
-function RequestCard({ request }: {
-    request: {
-        userId: string;
-        firstName: string;
-        lastName: string;
-        avatar: string | null;
-        niche: string | null;
-        city: string | null;
-        instagram: string | null;
-        masterTier: string;
-        glowStarStatus: string;
-        glowStarRequestedAt: string | null;
-    };
-}): React.ReactElement {
+interface GlowStarRequest {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+    username: string | null;
+    phone: string | null;
+    niche: string | null;
+    city: string | null;
+    instagram: string | null;
+    masterTier: string;
+    glowStarStatus: string;
+    glowStarRequestedAt: string | null;
+    experienceYears: number | null;
+    isCertified: boolean;
+    isHygieneVerified: boolean;
+    isQualityProducts: boolean;
+    verificationStatus: string;
+    portfolioCount: number;
+}
+
+function RequestCard({ request }: { request: GlowStarRequest }): React.ReactElement {
     const { t } = useLanguage();
     const { review, isPending } = useAdminReviewGlowStar();
     const initials = `${(request.firstName ?? '')[0] ?? ''}${(request.lastName ?? '')[0] ?? ''}`.toUpperCase();
     const isUnderReview = request.glowStarStatus === 'UNDER_REVIEW';
+    const profileUrl = request.username ? ROUTES.PORTFOLIO_PUBLIC(request.username) : null;
 
     return (
         <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:shadow-md">
             <div className="flex items-start gap-4">
                 <div className="shrink-0">
                     {request.avatar ? (
-                        <img src={getServerImageUrl(request.avatar)} alt="" className="h-12 w-12 rounded-xl object-cover" />
-                    ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/10 text-sm font-semibold text-warning">
-                            {initials || <User size={20} />}
-                        </div>
-                    )}
+                        <img
+                            src={getServerImageUrl(request.avatar)}
+                            alt=""
+                            className="h-14 w-14 rounded-xl object-cover"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }}
+                        />
+                    ) : null}
+                    <div className={`${request.avatar ? 'hidden' : ''} flex h-14 w-14 items-center justify-center rounded-xl bg-warning/10 text-sm font-semibold text-warning`}>
+                        {initials || <User size={22} />}
+                    </div>
                 </div>
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                        <span className="font-semibold text-foreground">{request.firstName} {request.lastName}</span>
+                        {profileUrl ? (
+                            <Link
+                                href={profileUrl}
+                                target="_blank"
+                                className="flex items-center gap-1.5 font-semibold text-foreground transition-colors hover:text-primary"
+                            >
+                                {request.firstName} {request.lastName}
+                                <ArrowSquareOut size={13} className="text-muted-foreground" />
+                            </Link>
+                        ) : (
+                            <span className="font-semibold text-foreground">{request.firstName} {request.lastName}</span>
+                        )}
                         {isUnderReview && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-info/15 px-2 py-0.5 text-[10px] font-semibold text-info">
                                 <Eye size={10} weight="fill" />
                                 {t('glow_star.status_under_review_badge')}
                             </span>
                         )}
+                        {request.verificationStatus === 'VERIFIED' && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-semibold text-success">
+                                <CheckCircle size={10} weight="fill" />
+                                Verified
+                            </span>
+                        )}
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
+
+                    <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                         {request.niche && <span>{request.niche}</span>}
                         {request.city && <span>{request.city}</span>}
+                        {request.phone && (
+                            <a href={`tel:${request.phone}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                                <Phone size={11} />
+                                {request.phone}
+                            </a>
+                        )}
                         {request.instagram && (
                             <a
                                 href={`https://instagram.com/${request.instagram.replace('@', '')}`}
@@ -67,8 +107,41 @@ function RequestCard({ request }: {
                                 {request.instagram}
                             </a>
                         )}
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                            <Images size={10} />
+                            {request.portfolioCount} portfolio
+                        </span>
+                        {request.experienceYears != null && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                                <Star size={10} />
+                                {request.experienceYears} yrs
+                            </span>
+                        )}
+                        {request.isCertified && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+                                <Certificate size={10} weight="fill" />
+                                Certified
+                            </span>
+                        )}
+                        {request.isHygieneVerified && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-info/10 px-2 py-0.5 text-[10px] font-medium text-info">
+                                <Drop size={10} weight="fill" />
+                                Hygiene
+                            </span>
+                        )}
+                        {request.isQualityProducts && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                                <CheckCircle size={10} weight="fill" />
+                                Quality
+                            </span>
+                        )}
                         {request.glowStarRequestedAt && (
-                            <span>{new Date(request.glowStarRequestedAt).toLocaleDateString()}</span>
+                            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                                {new Date(request.glowStarRequestedAt).toLocaleDateString()}
+                            </span>
                         )}
                     </div>
                 </div>
