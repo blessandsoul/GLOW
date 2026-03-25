@@ -129,6 +129,24 @@ export async function sendBulkSms(
 }
 
 /**
+ * Send a single SMS to a phone number via gosms.ge.
+ * Fire-and-forget — logs errors but does not throw.
+ */
+export async function sendSms(phoneNumber: string, message: string): Promise<void> {
+  try {
+    await gosmsPost('/api/sendbulk', {
+      api_key: env.OTP_API_KEY,
+      from: 'GLOW',
+      to: [formatPhone(phoneNumber)],
+      text: message,
+    });
+    logger.info({ phone: phoneNumber }, 'SMS notification sent');
+  } catch (error) {
+    logger.error({ phone: phoneNumber, err: error }, 'Failed to send SMS notification');
+  }
+}
+
+/**
  * Send an SMS OTP to the given phone number via gosms.ge.
  * Returns the hash needed for verification (stored as otpRequestId).
  */

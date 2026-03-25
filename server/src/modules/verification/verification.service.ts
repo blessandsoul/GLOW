@@ -3,8 +3,27 @@ import { BadRequestError, NotFoundError } from '@/shared/errors/errors.js';
 import { verificationRepo } from './verification.repo.js';
 import type { RequestVerificationInput, AdminReviewInput, AdminSetBadgeInput, AdminSetTierInput } from './verification.schemas.js';
 import { prisma } from '@/libs/prisma.js';
+import { sendSms } from '@/libs/otp.js';
 
 const MIN_PORTFOLIO_ITEMS = 5;
+
+const SMS_MESSAGES = {
+  GLOW_STAR_ACCEPTED: 'Glow.GE: თქვენი Glow Star განაცხადი მიღებულია განსახილველად. ჩვენი წარმომადგენელი მალე დაგიკავშირდებათ.',
+  GLOW_STAR_APPROVED: 'Glow.GE: გილოცავთ! თქვენ მიიღეთ Glow Star სტატუსი!',
+  GLOW_STAR_REJECTED: 'Glow.GE: სამწუხაროდ, თქვენი Glow Star განაცხადი ამჯერად არ დამტკიცდა.',
+  VERIFICATION_APPROVED: 'Glow.GE: თქვენი პროფილი წარმატებით ვერიფიცირებულია!',
+  VERIFICATION_REJECTED: 'Glow.GE: სამწუხაროდ, თქვენი ვერიფიკაცია ამჯერად არ დამტკიცდა.',
+} as const;
+
+async function notifyUserBySms(userId: string, message: string): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { phone: true, phoneVerified: true },
+  });
+  if (user?.phone && user.phoneVerified) {
+    sendSms(user.phone, message).catch(() => {});
+  }
+}
 
 const TIER_SORT_MAP: Record<string, number> = {
   TOP_MASTER: 0,
@@ -92,7 +111,9 @@ export function createVerificationService() {
 
       if (input.action === 'approve') {
         logger.info({ userId, adminId }, 'Admin approving verification');
-        return verificationRepo.approveVerification(userId, adminId);
+        const result = await verificationRepo.approveVerification(userId, adminId);
+        notifyUserBySms(userId, SMS_MESSAGES.VERIFICATION_APPROVED);
+        return result;
       }
 
       if (!input.reason) {
@@ -100,7 +121,9 @@ export function createVerificationService() {
       }
 
       logger.info({ userId, adminId, reason: input.reason }, 'Admin rejecting verification');
-      return verificationRepo.rejectVerification(userId, input.reason);
+      const result = await verificationRepo.rejectVerification(userId, input.reason);
+      notifyUserBySms(userId, SMS_MESSAGES.VERIFICATION_REJECTED);
+      return result;
     },
 
     async adminSetBadge(userId: string, input: AdminSetBadgeInput) {
@@ -200,7 +223,9 @@ export function createVerificationService() {
           throw new BadRequestError('Can only accept a REQUESTED Glow Star application.', 'INVALID_STATUS');
         }
         logger.info({ userId, action }, 'Admin accepting Glow Star request for review');
-        return verificationRepo.acceptGlowStar(userId);
+        const result = await verificationRepo.acceptGlowStar(userId);
+        notifyUserBySms(userId, SMS_MESSAGES.GLOW_STAR_ACCEPTED);
+        return result;
       }
 
       if (action === 'approve') {
@@ -208,7 +233,9 @@ export function createVerificationService() {
           throw new BadRequestError('Can only approve a Glow Star application that is under review.', 'INVALID_STATUS');
         }
         logger.info({ userId, action }, 'Admin approving Glow Star request');
-        return verificationRepo.reviewGlowStar(userId, 'approve');
+        const result = await verificationRepo.reviewGlowStar(userId, 'approve');
+        notifyUserBySms(userId, SMS_MESSAGES.GLOW_STAR_APPROVED);
+        return result;
       }
 
       // reject — allowed from REQUESTED or UNDER_REVIEW
@@ -217,7 +244,9 @@ export function createVerificationService() {
       }
 
       logger.info({ userId, action }, 'Admin rejecting Glow Star request');
-      return verificationRepo.reviewGlowStar(userId, 'reject');
+      const result = await verificationRepo.reviewGlowStar(userId, 'reject');
+      notifyUserBySms(userId, SMS_MESSAGES.GLOW_STAR_REJECTED);
+      return result;
     },
 
     async getGlowStarRequests(page: number, limit: number) {
