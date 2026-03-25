@@ -199,7 +199,12 @@ export function createVerificationController(service: VerificationService) {
       const { userId } = AdminVerificationUserParamSchema.parse(request.params);
       const { action } = AdminGlowStarReviewSchema.parse(request.body);
       const result = await service.adminReviewGlowStar(userId, action);
-      reply.send(successResponse('Glow Star request reviewed', result));
+      const messages: Record<string, string> = {
+        accept: 'Glow Star request accepted for review',
+        approve: 'Glow Star granted',
+        reject: 'Glow Star request rejected',
+      };
+      reply.send(successResponse(messages[action] ?? 'Glow Star request reviewed', result));
     },
 
     async adminSetTier(request: FastifyRequest, reply: FastifyReply): Promise<void> {

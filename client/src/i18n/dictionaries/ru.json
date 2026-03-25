@@ -1218,11 +1218,18 @@
     "confirm_yes": "Согласен, отправить заявку",
     "confirm_cancel": "Отмена",
     "status_pending": "Ваша заявка Glow Star на рассмотрении",
+    "status_under_review": "На рассмотрении",
+    "status_under_review_detail": "Ваша заявка принята. Наш представитель скоро свяжется с вами.",
+    "status_under_review_badge": "На рассмотрении",
     "status_approved": "Поздравляем! У вас статус Glow Star",
     "status_rejected": "Ваша заявка Glow Star не была одобрена",
+    "popup_title": "Заявка Glow Star принята",
+    "popup_message": "К вам придёт тайный клиент в течение следующего месяца. До этого с вами свяжется наш представитель.",
+    "popup_ok": "Понятно",
     "admin_title": "Заявки Glow Star",
     "admin_empty": "Нет заявок Glow Star",
-    "admin_approve": "Дать Glow Star",
+    "admin_accept": "Принято на рассмотрение",
+    "admin_grant": "Выдать Glow Star",
     "admin_reject": "Отклонить"
   }
 }

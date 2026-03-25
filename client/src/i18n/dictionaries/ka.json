@@ -1255,11 +1255,18 @@
     "confirm_yes": "ვეთანხმები, გაგზავნა",
     "confirm_cancel": "გაუქმება",
     "status_pending": "თქვენი Glow Star მოთხოვნა განხილვაშია",
+    "status_under_review": "მიმოხილვის პროცესშია",
+    "status_under_review_detail": "თქვენი განაცხადი მიღებულია. ჩვენი წარმომადგენელი მალე დაგიკავშირდებათ.",
+    "status_under_review_badge": "მიმოხილვაში",
     "status_approved": "გილოცავთ! თქვენ გაქვთ Glow Star სტატუსი",
     "status_rejected": "თქვენი Glow Star მოთხოვნა ამჯერად არ დამტკიცდა",
+    "popup_title": "Glow Star განაცხადი მიღებულია",
+    "popup_message": "თქვენ გეწვევათ მისტიური მომდევნო ერთი თვის მანძილზე მანამდე კი დაგიკავშირდებათ ჩვენი წარმომადგენელი",
+    "popup_ok": "გასაგებია",
     "admin_title": "Glow Star მოთხოვნები",
     "admin_empty": "Glow Star მოთხოვნები არ არის",
-    "admin_approve": "მინიჭება Glow Star",
+    "admin_accept": "მიღებულია განსახილველად",
+    "admin_grant": "მინიჭება Glow Star",
     "admin_reject": "უარყოფა"
   }
 }

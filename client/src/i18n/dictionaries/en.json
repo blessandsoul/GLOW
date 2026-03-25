@@ -1218,11 +1218,18 @@
     "confirm_yes": "I agree, submit request",
     "confirm_cancel": "Cancel",
     "status_pending": "Your Glow Star request is under review",
+    "status_under_review": "Under review",
+    "status_under_review_detail": "Your application has been accepted. Our representative will contact you soon.",
+    "status_under_review_badge": "Under review",
     "status_approved": "Congratulations! You have Glow Star status",
     "status_rejected": "Your Glow Star request was not approved at this time",
+    "popup_title": "Glow Star application accepted",
+    "popup_message": "You will be visited by a mystery client within the next month. Our representative will contact you beforehand.",
+    "popup_ok": "Got it",
     "admin_title": "Glow Star Requests",
     "admin_empty": "No Glow Star requests",
-    "admin_approve": "Grant Glow Star",
+    "admin_accept": "Accept for review",
+    "admin_grant": "Grant Glow Star",
     "admin_reject": "Reject"
   }
 }

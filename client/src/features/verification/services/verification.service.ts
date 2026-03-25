@@ -163,7 +163,7 @@ class VerificationService {
         return { items: data.data.items, pagination: data.data.pagination };
     }
 
-    async adminReviewGlowStar(userId: string, action: 'approve' | 'reject'): Promise<void> {
+    async adminReviewGlowStar(userId: string, action: 'accept' | 'approve' | 'reject'): Promise<void> {
         await apiClient.post(API_ENDPOINTS.VERIFICATION.ADMIN_GLOW_STAR_REVIEW(userId), { action });
     }
 

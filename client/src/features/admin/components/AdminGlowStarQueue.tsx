@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import {
-    Trophy, CheckCircle, XCircle, User, CaretLeft, CaretRight, SpinnerGap, InstagramLogo,
+    Trophy, CheckCircle, XCircle, User, CaretLeft, CaretRight, SpinnerGap, InstagramLogo, Eye,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { getServerImageUrl } from '@/lib/utils/image';
@@ -21,12 +21,14 @@ function RequestCard({ request }: {
         city: string | null;
         instagram: string | null;
         masterTier: string;
+        glowStarStatus: string;
         glowStarRequestedAt: string | null;
     };
 }): React.ReactElement {
     const { t } = useLanguage();
     const { review, isPending } = useAdminReviewGlowStar();
     const initials = `${(request.firstName ?? '')[0] ?? ''}${(request.lastName ?? '')[0] ?? ''}`.toUpperCase();
+    const isUnderReview = request.glowStarStatus === 'UNDER_REVIEW';
 
     return (
         <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:shadow-md">
@@ -41,7 +43,15 @@ function RequestCard({ request }: {
                     )}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <span className="font-semibold text-foreground">{request.firstName} {request.lastName}</span>
+                    <div className="flex items-center gap-2">
+                        <span className="font-semibold text-foreground">{request.firstName} {request.lastName}</span>
+                        {isUnderReview && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-info/15 px-2 py-0.5 text-[10px] font-semibold text-info">
+                                <Eye size={10} weight="fill" />
+                                {t('glow_star.status_under_review_badge')}
+                            </span>
+                        )}
+                    </div>
                     <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
                         {request.niche && <span>{request.niche}</span>}
                         {request.city && <span>{request.city}</span>}
@@ -65,15 +75,27 @@ function RequestCard({ request }: {
             </div>
 
             <div className="mt-4 flex gap-2">
-                <Button
-                    size="sm"
-                    onClick={() => review({ userId: request.userId, action: 'approve' })}
-                    disabled={isPending}
-                    className="gap-1.5 bg-warning text-warning-foreground hover:bg-warning/90"
-                >
-                    {isPending ? <SpinnerGap size={14} className="animate-spin" /> : <Trophy size={14} weight="fill" />}
-                    {t('glow_star.admin_approve')}
-                </Button>
+                {isUnderReview ? (
+                    <Button
+                        size="sm"
+                        onClick={() => review({ userId: request.userId, action: 'approve' })}
+                        disabled={isPending}
+                        className="gap-1.5 bg-warning text-warning-foreground hover:bg-warning/90"
+                    >
+                        {isPending ? <SpinnerGap size={14} className="animate-spin" /> : <Trophy size={14} weight="fill" />}
+                        {t('glow_star.admin_grant')}
+                    </Button>
+                ) : (
+                    <Button
+                        size="sm"
+                        onClick={() => review({ userId: request.userId, action: 'accept' })}
+                        disabled={isPending}
+                        className="gap-1.5 bg-info text-info-foreground hover:bg-info/90"
+                    >
+                        {isPending ? <SpinnerGap size={14} className="animate-spin" /> : <CheckCircle size={14} weight="fill" />}
+                        {t('glow_star.admin_accept')}
+                    </Button>
+                )}
                 <Button
                     size="sm"
                     variant="destructive"

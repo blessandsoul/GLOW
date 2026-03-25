@@ -158,7 +158,7 @@ export function createVerificationService() {
         throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
       }
 
-      if (profile.glowStarStatus === 'REQUESTED') {
+      if (profile.glowStarStatus === 'REQUESTED' || profile.glowStarStatus === 'UNDER_REVIEW') {
         throw new BadRequestError('Glow Star request is already pending.', 'GLOW_STAR_ALREADY_REQUESTED');
       }
 
@@ -189,17 +189,35 @@ export function createVerificationService() {
       return verificationRepo.requestGlowStar(userId);
     },
 
-    async adminReviewGlowStar(userId: string, action: 'approve' | 'reject') {
+    async adminReviewGlowStar(userId: string, action: 'accept' | 'approve' | 'reject') {
       const profile = await verificationRepo.getGlowStarState(userId);
       if (!profile) {
         throw new NotFoundError('Master profile not found', 'PROFILE_NOT_FOUND');
       }
-      if (profile.glowStarStatus !== 'REQUESTED') {
-        throw new BadRequestError('No pending Glow Star request.', 'NO_PENDING_REQUEST');
+
+      if (action === 'accept') {
+        if (profile.glowStarStatus !== 'REQUESTED') {
+          throw new BadRequestError('Can only accept a REQUESTED Glow Star application.', 'INVALID_STATUS');
+        }
+        logger.info({ userId, action }, 'Admin accepting Glow Star request for review');
+        return verificationRepo.acceptGlowStar(userId);
       }
 
-      logger.info({ userId, action }, 'Admin reviewing Glow Star request');
-      return verificationRepo.reviewGlowStar(userId, action);
+      if (action === 'approve') {
+        if (profile.glowStarStatus !== 'UNDER_REVIEW') {
+          throw new BadRequestError('Can only approve a Glow Star application that is under review.', 'INVALID_STATUS');
+        }
+        logger.info({ userId, action }, 'Admin approving Glow Star request');
+        return verificationRepo.reviewGlowStar(userId, 'approve');
+      }
+
+      // reject — allowed from REQUESTED or UNDER_REVIEW
+      if (profile.glowStarStatus !== 'REQUESTED' && profile.glowStarStatus !== 'UNDER_REVIEW') {
+        throw new BadRequestError('No pending Glow Star request to reject.', 'NO_PENDING_REQUEST');
+      }
+
+      logger.info({ userId, action }, 'Admin rejecting Glow Star request');
+      return verificationRepo.reviewGlowStar(userId, 'reject');
     },
 
     async getGlowStarRequests(page: number, limit: number) {

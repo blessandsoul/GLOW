@@ -312,12 +312,12 @@ export function useAdminGlowStarRequests(page: number, limit: number): {
 }
 
 export function useAdminReviewGlowStar(): {
-    review: (args: { userId: string; action: 'approve' | 'reject' }) => void;
+    review: (args: { userId: string; action: 'accept' | 'approve' | 'reject' }) => void;
     isPending: boolean;
 } {
     const queryClient = useQueryClient();
     const { mutate, isPending } = useMutation({
-        mutationFn: ({ userId, action }: { userId: string; action: 'approve' | 'reject' }) =>
+        mutationFn: ({ userId, action }: { userId: string; action: 'accept' | 'approve' | 'reject' }) =>
             verificationService.adminReviewGlowStar(userId, action),
         onSuccess: () => {
             toast.success('Glow Star request reviewed');

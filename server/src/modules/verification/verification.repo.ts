@@ -207,6 +207,17 @@ export const verificationRepo = {
     });
   },
 
+  async acceptGlowStar(userId: string) {
+    return prisma.masterProfile.update({
+      where: { userId },
+      data: {
+        glowStarStatus: 'UNDER_REVIEW',
+        glowStarAcceptedAt: new Date(),
+      },
+      select: { glowStarStatus: true, masterTier: true },
+    });
+  },
+
   async reviewGlowStar(userId: string, action: 'approve' | 'reject') {
     const data: Record<string, unknown> = {
       glowStarStatus: action === 'approve' ? 'APPROVED' : 'REJECTED',
@@ -225,7 +236,7 @@ export const verificationRepo = {
 
   async findGlowStarRequests(page: number, limit: number) {
     const skip = (page - 1) * limit;
-    const where = { glowStarStatus: 'REQUESTED' };
+    const where = { glowStarStatus: { in: ['REQUESTED', 'UNDER_REVIEW'] } };
 
     const [items, totalItems] = await Promise.all([
       prisma.masterProfile.findMany({

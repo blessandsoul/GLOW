@@ -23,7 +23,7 @@ export const AdminSetTierSchema = z.object({
 export type AdminSetTierInput = z.infer<typeof AdminSetTierSchema>;
 
 export const AdminGlowStarReviewSchema = z.object({
-  action: z.enum(['approve', 'reject']),
+  action: z.enum(['accept', 'approve', 'reject']),
 });
 export type AdminGlowStarReviewInput = z.infer<typeof AdminGlowStarReviewSchema>;
 
