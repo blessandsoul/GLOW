@@ -23,9 +23,8 @@ import { useFavoriteStatus } from '@/features/favorites/hooks/useFavorites';
 import { useAppSelector } from '@/store/hooks';
 
 const NICHE_META: Record<string, { icon: Icon }> = {
-    lashes:   { icon: Eye },
+    'lashes-brows': { icon: Eye },
     nails:    { icon: HandPalm },
-    brows:    { icon: Eye },
     makeup:   { icon: PaintBrush },
     hair:     { icon: Scissors },
     skincare: { icon: Drop },

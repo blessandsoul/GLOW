@@ -39,9 +39,8 @@ const MasterMapView = dynamic(
 );
 
 const NICHE_META: Record<string, { icon: Icon }> = {
-    lashes:   { icon: Eye },
+    'lashes-brows': { icon: Eye },
     nails:    { icon: HandPalm },
-    brows:    { icon: Eye },
     makeup:   { icon: PaintBrush },
     hair:     { icon: Scissors },
     skincare: { icon: Drop },
