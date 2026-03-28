@@ -16,6 +16,9 @@ const NICHE_ICONS: Record<string, React.ComponentType<IconProps>> = {
     makeup:             Sparkle,
     hair:               Scissors,
     skincare:           FlowerLotus,
+    waxing:             Sparkle,
+    body:               Sparkle,
+    other:              Sparkle,
 };
 
 const NICHE_COLORS: Record<string, string> = {
@@ -25,6 +28,9 @@ const NICHE_COLORS: Record<string, string> = {
     makeup:             'bg-rose-500/10 text-rose-600 dark:text-rose-400',
     hair:               'bg-sky-500/10 text-sky-600 dark:text-sky-400',
     skincare:           'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    waxing:             'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    body:               'bg-teal-500/10 text-teal-600 dark:text-teal-400',
+    other:              'bg-purple-500/10 text-purple-600 dark:text-purple-400',
 };
 
 export function ServiceCategories(): React.ReactElement | null {

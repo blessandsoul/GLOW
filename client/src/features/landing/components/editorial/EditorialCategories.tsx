@@ -26,7 +26,9 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   hair:               Scissors,
   skincare:           Droplets,
   waxing:             Waves,
+  body:               Sparkles,
   massage:            Sparkles,
+  other:              Sparkles,
   lifestyle:          Sparkles,
 };
 
@@ -41,7 +43,8 @@ const STATIC_CATEGORIES = [
   { slug: 'hair',             label: 'თმა' },
   { slug: 'skincare',         label: 'კანის მოვლა' },
   { slug: 'waxing',           label: 'ეპილაცია და რუჯი' },
-  { slug: 'massage',          label: 'მასაჟი და სხეული' },
+  { slug: 'body',             label: 'მასაჟი და სხეული' },
+  { slug: 'other',            label: 'ცხოვრების სტილი და სხვა' },
 ];
 
 export const EditorialCategories = (): React.ReactElement => {
