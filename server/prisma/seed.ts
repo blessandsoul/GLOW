@@ -277,7 +277,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'massage', label: 'მასაჟი და სხეული', icon: '✦', sortOrder: 7,
+      slug: 'body', label: 'მასაჟი და სხეული', icon: '✦', sortOrder: 8,
       suggestions: [
         'სარელაქსაციო მასაჟი', 'სამკურნალო / სპორტული მასაჟი',
         'ანტიცელულიტური მასაჟი', 'ლიმფოდრენაჟული მასაჟი',
@@ -285,7 +285,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'lifestyle', label: 'ცხოვრების სტილი და სხვა', icon: '✦', sortOrder: 8,
+      slug: 'other', label: 'ცხოვრების სტილი და სხვა', icon: '✦', sortOrder: 9,
       suggestions: [
         'ყურის / ცხვირის გახვრეტა (Piercing)', 'ტატუირება',
         'ტატუს ლაზერული მოშორება', 'სტილისტის / შოპერის კონსულტაცია',
