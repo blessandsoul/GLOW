@@ -636,12 +636,10 @@
     "username_err_no_consecutive": "წერტილები ან ქვედა ტირეები ზედიზედ არ შეიძლება"
   },
   "upload": {
-    "niche_lashes": "წამწამები",
-    "niche_lashes_desc": "დაგრძელება, ლამინირება",
+    "niche_lashes-brows": "წამწამები & წარბები",
+    "niche_lashes-brows_desc": "დაგრძელება, ლამინირება, გაფორმება",
     "niche_nails": "ფრჩხილები",
     "niche_nails_desc": "მანიკიური, პედიკიური, დიზაინი",
-    "niche_brows": "წარბები",
-    "niche_brows_desc": "გაფორმება, შეღებვა",
     "niche_makeup": "მაკიაჟი",
     "niche_makeup_desc": "სახეები, ვიზაჟი",
     "style_natural": "ნატურალური",

@@ -599,12 +599,10 @@
     "username_err_no_consecutive": "No consecutive dots or underscores"
   },
   "upload": {
-    "niche_lashes": "Lashes",
-    "niche_lashes_desc": "Extensions, lamination",
+    "niche_lashes-brows": "Lashes & Brows",
+    "niche_lashes-brows_desc": "Extensions, lamination, shaping",
     "niche_nails": "Nails",
     "niche_nails_desc": "Manicure, pedicure, design",
-    "niche_brows": "Brows",
-    "niche_brows_desc": "Shaping, tinting",
     "niche_makeup": "Makeup",
     "niche_makeup_desc": "Looks, visou",
     "style_natural": "Natural",

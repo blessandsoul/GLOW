@@ -599,12 +599,10 @@
     "username_err_no_consecutive": "Нельзя использовать подряд точки или подчёркивания"
   },
   "upload": {
-    "niche_lashes": "Ресницы",
-    "niche_lashes_desc": "Наращивание, ламинирование",
+    "niche_lashes-brows": "Ресницы & Брови",
+    "niche_lashes-brows_desc": "Наращивание, ламинирование, оформление",
     "niche_nails": "Ногти",
     "niche_nails_desc": "Маникюр, педикюр, дизайн",
-    "niche_brows": "Брови",
-    "niche_brows_desc": "Оформление, окрашивание",
     "niche_makeup": "Макияж",
     "niche_makeup_desc": "Образы, визаж",
     "style_natural": "Натуральный",
