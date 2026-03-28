@@ -28,16 +28,16 @@ SET `niches` = (
 WHERE `niches` IS NOT NULL
   AND (JSON_CONTAINS(`niches`, '"lashes"') OR JSON_CONTAINS(`niches`, '"brows"'));
 
--- 1c. Delete old speciality rows
-DELETE FROM `specialities` WHERE `slug` IN ('lashes', 'brows');
-
--- 1d. Shift sortOrder down by 1 for rows after position 0
+-- 1c. Shift sortOrder down by 1 for rows after position 0
 --     Guarded: only runs if the old rows still exist (i.e. first run), preventing
 --     repeated execution from corrupting the order.
 UPDATE `specialities`
 SET `sortOrder` = `sortOrder` - 1
 WHERE `sortOrder` >= 2
   AND (SELECT COUNT(*) FROM (SELECT `slug` FROM `specialities` WHERE `slug` IN ('lashes', 'brows')) AS _chk) > 0;
+
+-- 1d. Delete old speciality rows
+DELETE FROM `specialities` WHERE `slug` IN ('lashes', 'brows');
 
 -- ============================================================
 -- 2. SERVICE_CATEGORIES TABLE
@@ -57,14 +57,14 @@ WHERE `categoryId` IN (
     ) AS _old
 );
 
--- 2c. Delete old service category rows
-DELETE FROM `service_categories` WHERE `slug` IN ('lashes', 'brows');
-
--- 2d. Shift sortOrder for service_categories
+-- 2c. Shift sortOrder for service_categories
 --     Guarded: only runs if the old rows still exist (i.e. first run).
 UPDATE `service_categories`
 SET `sortOrder` = `sortOrder` - 1
 WHERE `sortOrder` >= 2
   AND (SELECT COUNT(*) FROM (SELECT `slug` FROM `service_categories` WHERE `slug` IN ('lashes', 'brows')) AS _chk) > 0;
+
+-- 2d. Delete old service category rows
+DELETE FROM `service_categories` WHERE `slug` IN ('lashes', 'brows');
 
 COMMIT;
