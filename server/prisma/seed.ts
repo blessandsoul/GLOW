@@ -159,13 +159,15 @@ async function main(): Promise<void> {
 
   // ─── Specialities (niches) ──────────────────────────────────────────────────
   const specialities = [
-    { slug: 'lashes', label: 'წამწამები', sortOrder: 0 },
-    { slug: 'nails', label: 'ფრჩხილები', sortOrder: 1 },
-    { slug: 'brows', label: 'წარბები', sortOrder: 2 },
-    { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი', sortOrder: 3 },
-    { slug: 'makeup', label: 'მაკიაჟი', sortOrder: 4 },
-    { slug: 'hair', label: 'თმა', sortOrder: 5 },
-    { slug: 'skincare', label: 'კანის მოვლა', sortOrder: 6 },
+    { slug: 'lashes-brows',     label: 'წამწამები & წარბები',         sortOrder: 0 },
+    { slug: 'nails',            label: 'ფრჩხილები',                   sortOrder: 1 },
+    { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი',         sortOrder: 2 },
+    { slug: 'makeup',           label: 'მაკიაჟი',                     sortOrder: 3 },
+    { slug: 'hair',             label: 'თმა',                         sortOrder: 4 },
+    { slug: 'skincare',         label: 'კანის მოვლა',                 sortOrder: 5 },
+    { slug: 'waxing',           label: 'ეპილაცია და რუჯი',            sortOrder: 6 },
+    { slug: 'massage',          label: 'მასაჟი და სხეული',            sortOrder: 7 },
+    { slug: 'lifestyle',        label: 'ცხოვრების სტილი და სხვა',     sortOrder: 8 },
   ];
 
   for (const spec of specialities) {
@@ -179,23 +181,30 @@ async function main(): Promise<void> {
   // ─── Service Categories & Suggestions ─────────────────────────────────────
   const serviceCategories = [
     {
-      slug: 'lashes', label: 'ლეში ინდუსტრია / წამწამები', icon: '✦', sortOrder: 0,
+      slug: 'lashes-brows',
+      label: 'წამწამები & წარბები',
+      icon: '✦',
+      sortOrder: 0,
       suggestions: [
-        'წამწამების დაგრძელება (კლასიკური)', 'წამწამების მოცულობითი დაგრძელება (2D, 3D, Volume)',
-        'წამწამების კორექცია', 'წამწამების მოხსნა', 'წამწამების ლამინირება',
-        'წამწამების ბიოდახვევა (Lash Lift)', 'წამწამების შეღებვა',
+        // წამწამები
+        'წამწამების დაგრძელება (კლასიკური)',
+        'წამწამების მოცულობითი დაგრძელება (2D, 3D, Volume)',
+        'წამწამების კორექცია',
+        'წამწამების მოხსნა',
+        'წამწამების ლამინირება',
+        'წამწამების ბიოდახვევა (Lash Lift)',
+        'წამწამების შეღებვა',
+        // წარბები
+        'წარბების არქიტექტურა და ფორმირება',
+        'წარბების ლამინირება',
+        'წარბების შეღებვა (საღებავით / ხნით)',
+        'წარბების კორექცია ძაფით',
+        'წარბების კორექცია ცვილით',
+        'წარბების კორექცია პინცეტით',
       ],
     },
     {
-      slug: 'brows', label: 'წარბები', icon: '✦', sortOrder: 1,
-      suggestions: [
-        'წარბების არქიტექტურა და ფორმირება', 'წარბების ლამინირება',
-        'წარბების შეღებვა (საღებავით / ხნით)', 'წარბების კორექცია ძაფით',
-        'წარბების კორექცია ცვილით', 'წარბების კორექცია პინცეტით',
-      ],
-    },
-    {
-      slug: 'nails', label: 'ფრჩხილები', icon: '✦', sortOrder: 2,
+      slug: 'nails', label: 'ფრჩხილები', icon: '✦', sortOrder: 1,
       suggestions: [
         'კლასიკური მანიკური', 'აპარატული / კომბინირებული მანიკური',
         'კლასიკური პედიკური', 'აპარატული პედიკური',
@@ -206,7 +215,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი', icon: '✦', sortOrder: 3,
+      slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი', icon: '✦', sortOrder: 2,
       suggestions: [
         // წარბის პერმანენტული მაკიაჟი
         'მიკრობლეიდინგი (ღეროვანი ტექნიკა)',
@@ -232,14 +241,14 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'makeup', label: 'მაკიაჟი', icon: '✦', sortOrder: 4,
+      slug: 'makeup', label: 'მაკიაჟი', icon: '✦', sortOrder: 3,
       suggestions: [
         'დღიური მაკიაჟი', 'საღამოს / სადღესასწაულო მაკიაჟი', 'სარძლო მაკიაჟი',
         'მაკიაჟი ფოტოსესიისთვის',
       ],
     },
     {
-      slug: 'hair', label: 'თმა', icon: '✦', sortOrder: 5,
+      slug: 'hair', label: 'თმა', icon: '✦', sortOrder: 4,
       suggestions: [
         'ქალის თმის შეჭრა', 'მამაკაცის თმის შეჭრა', 'ბავშვის თმის შეჭრა',
         'თმის დავარცხნა / სადღესასწაულო ვარცხნილობა',
@@ -250,7 +259,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'skincare', label: 'კანის მოვლა', icon: '✦', sortOrder: 6,
+      slug: 'skincare', label: 'კანის მოვლა', icon: '✦', sortOrder: 5,
       suggestions: [
         'სახის წმენდა (მექანიკური / ულტრაბგერითი)', 'სახის პილინგი',
         'სახის სკულპტურული მასაჟი', 'კარბოქსითერაპია',
@@ -260,7 +269,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'waxing', label: 'ეპილაცია და რუჯი', icon: '✦', sortOrder: 7,
+      slug: 'waxing', label: 'ეპილაცია და რუჯი', icon: '✦', sortOrder: 6,
       suggestions: [
         'ლაზერული ეპილაცია', 'ელექტრო ეპილაცია', 'დეპილაცია ცვილით',
         'შუგარინგი', 'სახის / ტუჩის დეპილაცია ძაფით',
@@ -268,7 +277,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'body', label: 'მასაჟი და სხეული', icon: '✦', sortOrder: 8,
+      slug: 'massage', label: 'მასაჟი და სხეული', icon: '✦', sortOrder: 7,
       suggestions: [
         'სარელაქსაციო მასაჟი', 'სამკურნალო / სპორტული მასაჟი',
         'ანტიცელულიტური მასაჟი', 'ლიმფოდრენაჟული მასაჟი',
@@ -276,7 +285,7 @@ async function main(): Promise<void> {
       ],
     },
     {
-      slug: 'other', label: 'ცხოვრების სტილი და სხვა', icon: '✦', sortOrder: 9,
+      slug: 'lifestyle', label: 'ცხოვრების სტილი და სხვა', icon: '✦', sortOrder: 8,
       suggestions: [
         'ყურის / ცხვირის გახვრეტა (Piercing)', 'ტატუირება',
         'ტატუს ლაზერული მოშორება', 'სტილისტის / შოპერის კონსულტაცია',
