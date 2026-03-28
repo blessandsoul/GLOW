@@ -1,131 +1,137 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  Eye,
+  Hand,
+  Sparkles,
+  Paintbrush,
+  Scissors,
+  Droplets,
+  Wand2,
+  Waves,
+} from 'lucide-react';
+import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
 
-interface Category {
-  label: string;
-  slug: string;
-  image: string;
-  offset: boolean;
-}
+// TODO: replace with real photos
+const CATEGORY_IMAGES: Record<string, string> = {};
 
-const CATEGORIES: Category[] = [
-  { label: 'თმა', slug: 'hair', image: '/images/categories/hair.jpg', offset: false },
-  { label: 'მაკიაჟი', slug: 'makeup', image: '/images/categories/makeup.jpg', offset: true },
-  { label: 'ფრჩხილები', slug: 'nails', image: '/images/categories/nails.jpg', offset: false },
-  { label: 'წამწამები და წარბები', slug: 'lashes', image: '/images/categories/lashes.jpg', offset: false },
-  { label: 'პერმანენტული მაკიაჟი', slug: 'pmu', image: '/images/categories/pmu.jpg', offset: true },
-  { label: 'სახის ესთეტიკა', slug: 'skincare', image: '/images/categories/skincare.jpg', offset: false },
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  'lashes-brows':     Eye,
+  nails:              Hand,
+  'permanent-makeup': Wand2,
+  makeup:             Paintbrush,
+  hair:               Scissors,
+  skincare:           Droplets,
+  waxing:             Waves,
+  massage:            Sparkles,
+  lifestyle:          Sparkles,
+};
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80';
+const DEFAULT_ICON = Sparkles;
+
+const STATIC_CATEGORIES = [
+  { slug: 'lashes-brows',     label: 'წამწამები & წარბები' },
+  { slug: 'nails',            label: 'ფრჩხილები' },
+  { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი' },
+  { slug: 'makeup',           label: 'მაკიაჟი' },
+  { slug: 'hair',             label: 'თმა' },
+  { slug: 'skincare',         label: 'კანის მოვლა' },
+  { slug: 'waxing',           label: 'ეპილაცია და რუჯი' },
+  { slug: 'massage',          label: 'მასაჟი და სხეული' },
 ];
 
 export const EditorialCategories = (): React.ReactElement => {
-  return (
-    <section
-      className="py-16 px-8"
-      style={{ backgroundColor: 'var(--ed-surface)' }}
-    >
-      {/* Section header */}
-      <div className="mb-10">
-        <p
-          className="text-xs tracking-[0.3em] uppercase mb-2"
-          style={{
-            color: 'color-mix(in oklch, var(--ed-on-surface) 40%, transparent)',
-            fontFamily: 'var(--font-ed-label)',
-          }}
-        >
-          კატეგორიები
-        </p>
-        <h2
-          className="text-3xl md:text-4xl leading-tight tracking-tight"
-          style={{
-            color: 'var(--ed-on-surface)',
-            fontFamily: 'var(--font-ed-display)',
-          }}
-        >
-          სილამაზის სამყარო
-        </h2>
-      </div>
+  const { categories: apiCategories, isLoading } = useServiceCategories();
+  const specialities = apiCategories.length > 0 ? apiCategories : (!isLoading ? STATIC_CATEGORIES : []);
 
-      {/* 2-col asymmetric grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {CATEGORIES.map((cat) => (
-          <Link
-            key={cat.slug}
-            href={`/masters?niche=${cat.slug}`}
-            className={`group relative aspect-[4/5] overflow-hidden cursor-pointer${cat.offset ? ' translate-y-8' : ''}`}
-          >
-            <div className="relative w-full h-full">
-              <Image
-                src={cat.image}
-                alt={cat.label}
-                fill
-                sizes="50vw"
-                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-              />
-            </div>
-            {/* Overlay */}
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{ backgroundColor: 'color-mix(in oklch, var(--ed-on-surface) 20%, transparent)' }}
-            >
-              <span
-                className="text-xs tracking-[0.2em] uppercase text-white text-center px-2"
-                style={{ fontFamily: 'var(--font-ed-label)' }}
+  return (
+    <section className="py-16 px-8 bg-[#f9f9f9]">
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-x-4 gap-y-12">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className={`aspect-4/5 bg-[#e8e8e8] animate-pulse${i % 2 === 1 ? ' translate-y-8' : ''}`} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-x-4 gap-y-12">
+          {specialities.map((spec, i) => {
+            const image = CATEGORY_IMAGES[spec.slug];
+            const Icon = CATEGORY_ICONS[spec.slug] ?? DEFAULT_ICON;
+            return (
+              <Link
+                key={spec.slug}
+                href={`/masters?niche=${spec.slug}`}
+                className={`group relative aspect-4/5 bg-[#f3f3f3] overflow-hidden cursor-pointer${i % 2 === 1 ? ' translate-y-8' : ''}`}
               >
-                {cat.label}
+                {image ? (
+                  <Image
+                    src={image}
+                    alt={spec.label}
+                    fill
+                    sizes="50vw"
+                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 active:grayscale-0 transition-all duration-700 ease-in-out"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#ececec]">
+                    <Icon size={48} strokeWidth={1} className="text-[#aaa]" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-[#1a1c1c]/20 flex items-center justify-center">
+                  <span
+                    className="text-xs tracking-[0.2em] uppercase text-white text-center px-4 leading-relaxed"
+                    style={{ fontFamily: 'var(--font-inter), var(--font-noto-georgian), sans-serif' }}
+                  >
+                    {spec.label}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+
+          {/* AI რეტუში — full-width */}
+          <Link
+            href="/masters"
+            className="group relative col-span-2 bg-zinc-900 overflow-hidden mt-8 cursor-pointer"
+            style={{ aspectRatio: '16/7' }}
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=800&q=80"
+              alt="AI რეტუში"
+              fill
+              sizes="100vw"
+              className="h-full w-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+            />
+            <div
+              className="absolute inset-0 flex items-center px-12"
+              style={{ background: 'linear-gradient(to right, rgba(26,28,28,0.6), transparent)' }}
+            >
+              <div className="space-y-2">
+                <span
+                  className="block text-[10px] tracking-[0.4em] uppercase opacity-70 text-white"
+                  style={{ fontFamily: 'var(--font-inter), var(--font-noto-georgian), sans-serif' }}
+                >
+                  სილამაზის მომავალი
+                </span>
+                <h3
+                  className="text-white text-3xl"
+                  style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+                >
+                  AI რეტუში
+                </h3>
+              </div>
+            </div>
+            <div className="absolute bottom-6 right-8">
+              <span className="material-symbols-outlined text-white/50 text-4xl" style={{ fontVariationSettings: "'wght' 100" }}>
+                blur_on
               </span>
             </div>
           </Link>
-        ))}
-      </div>
-
-      {/* AI Retouch — full-width card */}
-      <Link
-        href="/masters?niche=ai-retouch"
-        className="group relative mt-8 block w-full overflow-hidden cursor-pointer"
-        style={{ aspectRatio: '16/7', backgroundColor: 'rgb(24 24 27)' }}
-      >
-        <Image
-          src="/images/categories/ai-retouch.jpg"
-          alt="AI რეტუში"
-          fill
-          sizes="100vw"
-          className="object-cover opacity-60 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all duration-700"
-        />
-        {/* Gradient overlay from left */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(to right, rgba(24,24,27,0.9) 0%, rgba(24,24,27,0.5) 50%, transparent 100%)',
-          }}
-        />
-        {/* Text + icon */}
-        <div className="absolute inset-0 flex items-center px-8 gap-3">
-          <span
-            className="material-symbols-outlined text-white/80 group-hover:text-white transition-colors duration-300"
-            style={{ fontSize: '2rem' }}
-          >
-            blur_on
-          </span>
-          <div>
-            <p
-              className="text-xs tracking-[0.3em] uppercase mb-1"
-              style={{
-                color: 'rgba(255,255,255,0.5)',
-                fontFamily: 'var(--font-ed-label)',
-              }}
-            >
-              ახალი
-            </p>
-            <span
-              className="text-2xl md:text-3xl tracking-tight text-white"
-              style={{ fontFamily: 'var(--font-ed-display)' }}
-            >
-              AI რეტუში
-            </span>
-          </div>
         </div>
-      </Link>
+      )}
     </section>
   );
 };
