@@ -109,7 +109,9 @@
     "search": "ძიება",
     "favorites": "რჩეულები",
     "appointments": "ჯავშნები",
-    "my_page": "ჩემი გვერდი"
+    "my_page": "ჩემი გვერდი",
+    "marketplace": "მარკეტფლეისი",
+    "map": "რუკა"
   },
   "favorites": {
     "empty_title": "ჯერ ცარიელია",

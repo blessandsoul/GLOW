@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, UsersThree, SignOut, Sparkle } from '@phosphor-icons/react';
 import { PersonalInfoSection } from '@/features/profile/components/ProfileSetup';
@@ -8,7 +8,6 @@ import { AccountStatus } from '@/features/profile/components/AccountStatus';
 import { VerificationSection } from '@/features/verification/components/VerificationSection';
 import { GlowStarSection } from '@/features/verification/components/GlowStarSection';
 import { ProfileHeroCard } from '@/features/profile/components/ProfileHeroCard';
-import { BadgesSection } from '@/features/profile/components/BadgesSection';
 import { ChangeUsername } from '@/features/profile/components/ChangeUsername';
 import { ChangePassword } from '@/features/profile/components/ChangePassword';
 import { DeleteAccount } from '@/features/profile/components/DeleteAccount';
@@ -19,18 +18,12 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 export default function ProfilePage(): React.ReactElement {
     const { t } = useLanguage();
     const { logout, user } = useAuth();
-    const [hasPendingBadges, setHasPendingBadges] = useState(false);
     const isMaster = user?.role === 'MASTER' || user?.role === 'ADMIN';
 
     return (
         <div className="container mx-auto max-w-2xl px-4 py-10 space-y-8">
             {/* Welcome hero */}
-            <ProfileHeroCard hasPendingBadges={hasPendingBadges} />
-
-            {/* Badges overview (masters only) */}
-            {isMaster && (
-                <BadgesSection onHasPendingChange={setHasPendingBadges} />
-            )}
+            <ProfileHeroCard />
 
             {/* Account status — role, email, member since */}
             <AccountStatus />

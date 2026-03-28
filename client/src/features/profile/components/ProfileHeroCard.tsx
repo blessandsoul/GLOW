@@ -2,16 +2,11 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Warning } from '@phosphor-icons/react';
 import { useAppSelector } from '@/store/hooks';
 import { usePortfolioPreview } from '@/features/profile/hooks/usePortfolioPreview';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 
-interface ProfileHeroCardProps {
-    hasPendingBadges: boolean;
-}
-
-export function ProfileHeroCard({ hasPendingBadges }: ProfileHeroCardProps): React.ReactElement | null {
+export function ProfileHeroCard(): React.ReactElement | null {
     const user = useAppSelector((s) => s.auth.user);
     const { publishedCount } = usePortfolioPreview();
     const { t } = useLanguage();
@@ -56,15 +51,6 @@ export function ProfileHeroCard({ hasPendingBadges }: ProfileHeroCardProps): Rea
                 </div>
             </div>
 
-            {/* Badge hint */}
-            {hasPendingBadges && (
-                <div className="mt-4 flex items-center gap-2 rounded-xl bg-warning/10 px-4 py-2.5">
-                    <Warning size={16} weight="fill" className="shrink-0 text-warning" />
-                    <p className="text-sm text-warning font-medium">
-                        {t('ui.profile_badges_hint')}
-                    </p>
-                </div>
-            )}
         </div>
     );
 }

@@ -47,7 +47,9 @@
     "search": "Search",
     "favorites": "Favorites",
     "appointments": "Appointments",
-    "my_page": "My Page"
+    "my_page": "My Page",
+    "marketplace": "Marketplace",
+    "map": "Map"
   },
   "dashboard": {
     "credits_btn": "Buy credits",

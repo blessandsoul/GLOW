@@ -1,17 +1,17 @@
 'use client';
 
-import { Header } from '@/components/layout/Header';
-import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { EditorialTopBar } from '@/features/landing/components/editorial/EditorialTopBar';
 import { EditorialHero } from '@/features/landing/components/editorial/EditorialHero';
 import { EditorialWhySection } from '@/features/landing/components/editorial/EditorialWhySection';
 import { EditorialCategories } from '@/features/landing/components/editorial/EditorialCategories';
 import { EditorialSteps } from '@/features/landing/components/editorial/EditorialSteps';
 import { EditorialArtists } from '@/features/landing/components/editorial/EditorialArtists';
+import { EditorialBottomNav } from '@/features/landing/components/editorial/EditorialBottomNav';
 
 export default function HomePage(): React.ReactElement {
   return (
     <div className="min-h-dvh flex flex-col overflow-x-hidden">
-      <Header />
+      <EditorialTopBar />
       <main className="flex-1 pt-14">
         <EditorialHero />
         <EditorialWhySection />
@@ -19,7 +19,7 @@ export default function HomePage(): React.ReactElement {
         <EditorialSteps />
         <EditorialArtists />
       </main>
-      <MobileBottomNav />
+      <EditorialBottomNav />
     </div>
   );
 }

@@ -17,6 +17,8 @@ export const ROUTES = {
     SEARCH: '/search',
     FAVORITES: '/favorites',
     APPOINTMENTS: '/appointments',
+    MARKETPLACE: '/marketplace',
+    MAP: '/map',
     BLOG: '/blog',
     VERIFY_PHONE: '/verify-phone',
     ONBOARDING: '/onboarding',

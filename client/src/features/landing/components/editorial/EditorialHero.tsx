@@ -156,7 +156,7 @@ export const EditorialHero = (): React.ReactElement => {
         <video ref={refA} src={srcA} muted playsInline onEnded={activeSlot === 0 ? advance : undefined} style={videoStyle(0)} />
         <video ref={refB} src={srcB} muted playsInline onEnded={activeSlot === 1 ? advance : undefined} style={videoStyle(1)} />
         <div className="absolute inset-0 bg-black/55" />
-        <div className="absolute inset-0 bg-linear-to-b from-black/30 via-transparent to-[#1a1c1c]" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/30 via-transparent to-transparent" />
       </div>
 
       {/* Content */}
@@ -218,6 +218,14 @@ export const EditorialHero = (): React.ReactElement => {
           </div>
         </div>
       </div>
+
+      {/* Bottom fade to white background */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, transparent, oklch(1 0 0))',
+        }}
+      />
 
       <style>{`
         @keyframes marquee-masters {
