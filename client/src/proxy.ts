@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 const protectedPaths = ['/dashboard', '/profile', '/my-services', '/admin', '/create'];
 const authPaths = ['/login', '/register'];
 
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
     const { pathname } = request.nextUrl;
     const token = request.cookies.get('accessToken')?.value;
     const session = request.cookies.get('session')?.value;
