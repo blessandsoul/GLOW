@@ -50,13 +50,29 @@ function NavTab({ item, pathname, t }: {
     return (
         <Link
             href={item.href}
-            className={cn(
-                'flex flex-1 flex-col items-center justify-center gap-0.5 py-2 transition-colors duration-150',
-                active ? 'text-primary' : 'text-muted-foreground'
-            )}
+            className="flex flex-1 flex-col items-center justify-center gap-0 py-1 transition-all duration-200 active:scale-[0.92]"
         >
-            <Icon size={22} weight={active ? 'fill' : 'regular'} />
-            <span className="text-[10px] font-medium leading-none">{t(item.label)}</span>
+            <div className={cn(
+                'flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 transition-all duration-200',
+                active
+                    ? 'bg-primary/10'
+                    : 'bg-transparent',
+            )}>
+                <Icon
+                    size={20}
+                    weight={active ? 'fill' : 'regular'}
+                    className={cn(
+                        'transition-colors duration-200',
+                        active ? 'text-primary' : 'text-muted-foreground/70',
+                    )}
+                />
+                <span className={cn(
+                    'text-[10px] font-medium leading-none tracking-tight transition-colors duration-200',
+                    active ? 'text-primary' : 'text-muted-foreground/60',
+                )}>
+                    {t(item.label)}
+                </span>
+            </div>
         </Link>
     );
 }
@@ -69,27 +85,21 @@ export function MobileBottomNav(): React.ReactElement | null {
     if (isInitializing || !isAuthenticated) return null;
 
     const role = user?.role;
-
     const middleItems = role === 'MASTER' ? MASTER_ITEMS : USER_ITEMS;
+    const allItems = [...SHARED_START, ...middleItems, ...SHARED_END];
 
     return (
-        <nav
-            className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/80 backdrop-blur-xl backdrop-saturate-150 md:hidden"
+        <div
+            className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
             style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
         >
-            <div className="flex items-center">
-                {SHARED_START.map((item) => (
-                    <NavTab key={item.href} item={item} pathname={pathname} t={t} />
-                ))}
-
-                {middleItems.map((item) => (
-                    <NavTab key={item.href} item={item} pathname={pathname} t={t} />
-                ))}
-
-                {SHARED_END.map((item) => (
-                    <NavTab key={item.href} item={item} pathname={pathname} t={t} />
-                ))}
+            <div className="px-4 pb-3">
+                <nav className="flex items-center justify-around rounded-2xl border border-border/50 bg-background/90 px-1 py-1 shadow-lg shadow-black/6 backdrop-blur-xl backdrop-saturate-150 dark:shadow-black/20">
+                    {allItems.map((item) => (
+                        <NavTab key={item.href} item={item} pathname={pathname} t={t} />
+                    ))}
+                </nav>
             </div>
-        </nav>
+        </div>
     );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, HandSoap, Scissors, Sparkle, FlowerLotus, ArrowRight } from '@phosphor-icons/react';
+import { Eye, HandSoap, Scissors, Sparkle, FlowerLotus, ArrowRight, MagicWand } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
@@ -18,6 +18,7 @@ const NICHE_ICONS: Record<string, React.ComponentType<IconProps>> = {
     skincare:           FlowerLotus,
     waxing:             Sparkle,
     body:               Sparkle,
+    retouch:            MagicWand,
     other:              Sparkle,
 };
 
@@ -30,6 +31,7 @@ const NICHE_COLORS: Record<string, string> = {
     skincare:           'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
     waxing:             'bg-amber-500/10 text-amber-600 dark:text-amber-400',
     body:               'bg-teal-500/10 text-teal-600 dark:text-teal-400',
+    retouch:            'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400',
     other:              'bg-purple-500/10 text-purple-600 dark:text-purple-400',
 };
 

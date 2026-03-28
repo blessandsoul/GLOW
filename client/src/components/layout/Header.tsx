@@ -9,7 +9,8 @@ import {
     Palette, User, UserCircle, SquaresFour,
     UsersThree, Coins,
     CaretDown, Plus, ShieldCheck, ArrowsClockwise,
-    Article,
+    Article, List, X,
+    Eye, HandSoap, Scissors, Sparkle, FlowerLotus, MagicWand,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -21,6 +22,8 @@ import { cn } from '@/lib/utils';
 import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { useDailyUsage } from '@/features/jobs/hooks/useDailyUsage';
 import { useFlushDailyLimits } from '@/features/admin/hooks/useAdmin';
+import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
+import type { IconProps } from '@phosphor-icons/react';
 
 type NavItem = {
     href: string;
@@ -58,6 +61,181 @@ const NAV_GROUPS: NavGroup[] = [
 ];
 
 const ACTIVE_NAV_GROUPS = NAV_GROUPS;
+
+const NICHE_ICONS: Record<string, React.ComponentType<IconProps>> = {
+    'lashes-brows':     Eye,
+    nails:              HandSoap,
+    'permanent-makeup': Sparkle,
+    makeup:             Sparkle,
+    hair:               Scissors,
+    skincare:           FlowerLotus,
+    waxing:             Sparkle,
+    body:               Sparkle,
+    retouch:            MagicWand,
+    other:              Sparkle,
+};
+
+const NICHE_COLORS: Record<string, string> = {
+    'lashes-brows':     'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+    nails:              'bg-pink-500/10 text-pink-600 dark:text-pink-400',
+    'permanent-makeup': 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    makeup:             'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    hair:               'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    skincare:           'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    waxing:             'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    body:               'bg-teal-500/10 text-teal-600 dark:text-teal-400',
+    retouch:            'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400',
+    other:              'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+};
+
+function BurgerMenu({ t }: { t: (key: string) => string }): React.ReactElement {
+    const [open, setOpen] = useState(false);
+    const { categories: specialities, isLoading } = useServiceCategories();
+    const { isAuthenticated, user, logout } = useAuth();
+    const pathname = usePathname();
+
+    // Close on route change
+    useEffect(() => { setOpen(false); }, [pathname]);
+
+    // Lock body scroll when open
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [open]);
+
+    // Close on Escape
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e: KeyboardEvent): void => { if (e.key === 'Escape') setOpen(false); };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [open]);
+
+    return (
+        <>
+            <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                aria-label="Menu"
+                aria-expanded={open}
+                className={cn(
+                    'flex h-8 w-8 items-center justify-center rounded-md transition-all duration-150',
+                    'hover:bg-muted/40 active:scale-[0.98]',
+                    open && 'bg-muted/50',
+                )}
+            >
+                {open ? <X size={18} weight="bold" /> : <List size={18} weight="bold" />}
+            </button>
+
+            {/* Backdrop */}
+            {open && (
+                <div
+                    className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm"
+                    onClick={() => setOpen(false)}
+                    aria-hidden
+                />
+            )}
+
+            {/* Drawer */}
+            <div
+                className={cn(
+                    'fixed right-0 top-14 z-50 h-[calc(100dvh-3.5rem)] w-full max-w-xs overflow-y-auto border-l border-border/50 bg-background shadow-2xl transition-transform duration-300 ease-out',
+                    open ? 'translate-x-0' : 'translate-x-full',
+                )}
+                aria-hidden={!open}
+            >
+                <div className="flex flex-col gap-6 p-5">
+                    {/* Categories */}
+                    <div>
+                        <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                            {t('landing.categories_title')}
+                        </p>
+                        {isLoading ? (
+                            <div className="grid grid-cols-2 gap-2">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <div key={i} className="h-14 animate-pulse rounded-xl bg-muted/60" />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-2">
+                                {specialities.map((spec) => {
+                                    const Icon = NICHE_ICONS[spec.slug] ?? Sparkle;
+                                    const colorClass = NICHE_COLORS[spec.slug] ?? 'bg-primary/10 text-primary';
+                                    return (
+                                        <Link
+                                            key={spec.slug}
+                                            href={`${ROUTES.MASTERS}?niche=${spec.slug}`}
+                                            onClick={() => setOpen(false)}
+                                            className="flex items-center gap-2.5 rounded-xl border border-border/40 bg-card/60 px-3 py-2.5 transition-all duration-200 hover:border-border hover:shadow-sm active:scale-[0.98]"
+                                        >
+                                            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${colorClass}`}>
+                                                <Icon size={16} weight="duotone" />
+                                            </div>
+                                            <span className="text-xs font-semibold leading-tight text-foreground">
+                                                {spec.label}
+                                            </span>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="h-px bg-border/50" />
+
+                    {/* Blog link */}
+                    <Link
+                        href={ROUTES.BLOG}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                            'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150',
+                            pathname.startsWith(ROUTES.BLOG)
+                                ? 'bg-primary/10 text-primary'
+                                : 'text-foreground hover:bg-muted/60'
+                        )}
+                    >
+                        <Article size={16} weight={pathname.startsWith(ROUTES.BLOG) ? 'fill' : 'regular'} />
+                        {t('nav.blog')}
+                    </Link>
+
+                    {/* Auth section */}
+                    {!isAuthenticated ? (
+                        <div className="flex flex-col gap-2">
+                            <Button asChild variant="outline" className="w-full" onClick={() => setOpen(false)}>
+                                <Link href="/login">{t('auth.login')}</Link>
+                            </Button>
+                            <Button asChild className="w-full" onClick={() => setOpen(false)}>
+                                <Link href="/register">{t('auth.register')}</Link>
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2">
+                                <span className="text-sm font-medium text-foreground">{user?.firstName}</span>
+                                {IS_LAUNCH_MODE && (
+                                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                        Free
+                                    </span>
+                                )}
+                            </div>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start text-sm text-muted-foreground"
+                                onClick={() => { logout(); setOpen(false); }}
+                            >
+                                {t('auth.logout')}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </>
+    );
+}
 
 const isItemActive = (item: NavItem, pathname: string): boolean =>
     item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(item.href + '/');
@@ -426,6 +604,7 @@ export function Header(): React.ReactElement {
                     >
                         {mounted && (resolvedTheme === 'dark' ? <Moon size={16} weight="fill" /> : <Sun size={16} weight="fill" />)}
                     </Button>
+                    <BurgerMenu t={t} />
                 </div>
             </div>
 
