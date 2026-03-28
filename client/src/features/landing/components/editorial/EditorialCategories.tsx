@@ -97,7 +97,7 @@ export const EditorialCategories = (): React.ReactElement => {
 
           {/* AI რეტუში — full-width */}
           <Link
-            href="/masters"
+            href="/create"
             className="group relative col-span-2 bg-zinc-900 overflow-hidden mt-8 cursor-pointer"
             style={{ aspectRatio: '16/7' }}
           >

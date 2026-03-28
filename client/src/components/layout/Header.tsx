@@ -11,6 +11,7 @@ import {
     CaretDown, Plus, ShieldCheck, ArrowsClockwise,
     Article, List, X,
     Eye, HandSoap, Scissors, Sparkle, FlowerLotus, MagicWand,
+    CalendarBlank, Heart, Globe,
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -88,10 +89,24 @@ const NICHE_COLORS: Record<string, string> = {
     other:              'bg-purple-500/10 text-purple-600 dark:text-purple-400',
 };
 
+const BURGER_STATIC_CATEGORIES = [
+    { slug: 'lashes-brows',     label: 'წამწამები & წარბები' },
+    { slug: 'nails',            label: 'ფრჩხილები' },
+    { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი' },
+    { slug: 'makeup',           label: 'მაკიაჟი' },
+    { slug: 'hair',             label: 'თმა' },
+    { slug: 'skincare',         label: 'კანის მოვლა' },
+    { slug: 'waxing',           label: 'ეპილაცია და რუჯი' },
+    { slug: 'body',             label: 'მასაჟი და სხეული' },
+    { slug: 'other',            label: 'ცხოვრების სტილი და სხვა' },
+];
+
 function BurgerMenu({ t }: { t: (key: string) => string }): React.ReactElement {
     const [open, setOpen] = useState(false);
-    const { categories: specialities, isLoading } = useServiceCategories();
-    const { isAuthenticated, user, logout } = useAuth();
+    const { categories: apiCategories, isLoading } = useServiceCategories();
+    const specialities = apiCategories.length > 0 ? apiCategories : (!isLoading ? BURGER_STATIC_CATEGORIES : []);
+    const { isAuthenticated, isInitializing, user, logout } = useAuth();
+    const isMasterRole = user?.role === 'MASTER' || user?.role === 'SALON' || user?.role === 'ADMIN';
     const pathname = usePathname();
 
     // Close on route change
@@ -187,6 +202,84 @@ function BurgerMenu({ t }: { t: (key: string) => string }): React.ReactElement {
 
                     <div className="h-px bg-border/50" />
 
+                    {/* Role-based quick nav */}
+                    <div className="flex flex-col gap-1">
+                        {/* Masters — always */}
+                        <Link
+                            href={ROUTES.MASTERS}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                                'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150',
+                                pathname === ROUTES.MASTERS ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/60'
+                            )}
+                        >
+                            <UsersThree size={16} weight={pathname === ROUTES.MASTERS ? 'fill' : 'regular'} />
+                            {t('header.masters_link')}
+                        </Link>
+
+                        {/* USER: Appointments + Favorites */}
+                        {isAuthenticated && !isMasterRole && (
+                            <>
+                                <Link
+                                    href={ROUTES.APPOINTMENTS}
+                                    onClick={() => setOpen(false)}
+                                    className={cn(
+                                        'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150',
+                                        pathname === ROUTES.APPOINTMENTS ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/60'
+                                    )}
+                                >
+                                    <CalendarBlank size={16} weight={pathname === ROUTES.APPOINTMENTS ? 'fill' : 'regular'} />
+                                    {t('nav.appointments')}
+                                </Link>
+                                <Link
+                                    href={ROUTES.FAVORITES}
+                                    onClick={() => setOpen(false)}
+                                    className={cn(
+                                        'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150',
+                                        pathname === ROUTES.FAVORITES ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/60'
+                                    )}
+                                >
+                                    <Heart size={16} weight={pathname === ROUTES.FAVORITES ? 'fill' : 'regular'} />
+                                    {t('nav.favorites')}
+                                </Link>
+                            </>
+                        )}
+
+                        {/* MASTER/SALON/ADMIN: Create + Admin */}
+                        {isAuthenticated && isMasterRole && (
+                            <>
+                                <Link
+                                    href={ROUTES.CREATE}
+                                    onClick={() => setOpen(false)}
+                                    className={cn(
+                                        'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200',
+                                        pathname === ROUTES.CREATE
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'bg-primary/10 text-primary hover:bg-primary/15'
+                                    )}
+                                >
+                                    <Plus size={16} weight="bold" />
+                                    {t('nav.create')}
+                                </Link>
+                                {user?.role === 'ADMIN' && (
+                                    <Link
+                                        href={ROUTES.ADMIN}
+                                        onClick={() => setOpen(false)}
+                                        className={cn(
+                                            'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150',
+                                            pathname.startsWith(ROUTES.ADMIN) ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/60'
+                                        )}
+                                    >
+                                        <ShieldCheck size={16} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                                        Admin
+                                    </Link>
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    <div className="h-px bg-border/50" />
+
                     {/* Blog link */}
                     <Link
                         href={ROUTES.BLOG}
@@ -203,13 +296,15 @@ function BurgerMenu({ t }: { t: (key: string) => string }): React.ReactElement {
                     </Link>
 
                     {/* Auth section */}
-                    {!isAuthenticated ? (
+                    {isInitializing ? (
+                        <div className="h-10 w-full animate-pulse rounded-xl bg-muted/60" />
+                    ) : !isAuthenticated ? (
                         <div className="flex flex-col gap-2">
                             <Button asChild variant="outline" className="w-full" onClick={() => setOpen(false)}>
                                 <Link href="/login">{t('auth.login')}</Link>
                             </Button>
                             <Button asChild className="w-full" onClick={() => setOpen(false)}>
-                                <Link href="/register">{t('auth.register')}</Link>
+                                <Link href="/register">{t('header.start_master')}</Link>
                             </Button>
                         </div>
                     ) : (
@@ -221,7 +316,36 @@ function BurgerMenu({ t }: { t: (key: string) => string }): React.ReactElement {
                                         Free
                                     </span>
                                 )}
+                                {!IS_LAUNCH_MODE && isMasterRole && (
+                                    <Link
+                                        href={ROUTES.DASHBOARD_CREDITS}
+                                        onClick={() => setOpen(false)}
+                                        className={cn(
+                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-opacity hover:opacity-75',
+                                            (user?.credits ?? 0) >= 50
+                                                ? 'bg-warning/15 text-warning'
+                                                : (user?.credits ?? 0) >= 10
+                                                    ? 'bg-success/15 text-success'
+                                                    : 'bg-destructive/15 text-destructive',
+                                        )}
+                                    >
+                                        <Coins size={11} weight="fill" />
+                                        {user?.credits ?? 0}
+                                    </Link>
+                                )}
                             </div>
+                            {isMasterRole && user?.username && (
+                                <Link
+                                    href={ROUTES.PORTFOLIO_PUBLIC(user.username)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center gap-2 rounded-xl border border-border/40 px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/60"
+                                >
+                                    <Globe size={13} />
+                                    {t('nav.my_page')}
+                                </Link>
+                            )}
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start text-sm text-muted-foreground"
@@ -395,6 +519,7 @@ function MobileLanguageSwitcher(): React.ReactElement {
 
 export function Header(): React.ReactElement {
     const { isAuthenticated, isInitializing, user, logout } = useAuth();
+    const isMasterRole = user?.role === 'MASTER' || user?.role === 'SALON' || user?.role === 'ADMIN';
     const { t } = useLanguage();
     const { resolvedTheme, setTheme } = useTheme();
     const pathname = usePathname();
@@ -419,107 +544,170 @@ export function Header(): React.ReactElement {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden items-center gap-0.5 md:flex">
+                    {/* Masters — always visible */}
+                    <Link
+                        href={ROUTES.MASTERS}
+                        className={cn(
+                            'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                            pathname === ROUTES.MASTERS
+                                ? 'bg-primary/10 text-primary font-medium'
+                                : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                        )}
+                    >
+                        {t('header.masters_link')}
+                    </Link>
+
                     {!mounted || isInitializing ? (
                         <div className="flex items-center gap-2 transition-opacity duration-300">
                             <div className="h-4 w-20 animate-pulse rounded bg-muted" />
                             <div className="h-4 w-16 animate-pulse rounded bg-muted" />
                         </div>
                     ) : isAuthenticated ? (
-                        <div className="flex items-center gap-0.5 animate-in fade-in slide-in-from-right-2 duration-300 ease-out">
-                            {/* Create CTA — always first, always prominent */}
-                            <Link
-                                href={ROUTES.CREATE}
-                                className={cn(
-                                    'mr-1 flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98]',
-                                    pathname === ROUTES.CREATE
-                                        ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
-                                        : 'bg-primary/10 text-primary hover:bg-primary/15'
+                        isMasterRole ? (
+                            /* MASTER / SALON / ADMIN nav */
+                            <div className="flex items-center gap-0.5 animate-in fade-in slide-in-from-right-2 duration-300 ease-out">
+                                <Link
+                                    href={ROUTES.CREATE}
+                                    className={cn(
+                                        'mr-1 flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98]',
+                                        pathname === ROUTES.CREATE
+                                            ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
+                                            : 'bg-primary/10 text-primary hover:bg-primary/15'
+                                    )}
+                                >
+                                    <Plus size={14} weight="bold" />
+                                    {t('nav.create')}
+                                </Link>
+                                <div className="mx-1.5 h-5 w-px bg-border/50" />
+                                {ACTIVE_NAV_GROUPS.map((group) => (
+                                    <NavDropdown key={group.category} group={group} pathname={pathname} t={t} />
+                                ))}
+                                {user?.role === 'ADMIN' && (
+                                    <>
+                                        <Link
+                                            href={ROUTES.ADMIN}
+                                            className={cn(
+                                                'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                                                pathname.startsWith(ROUTES.ADMIN)
+                                                    ? 'bg-primary/10 text-primary font-medium'
+                                                    : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                                            )}
+                                        >
+                                            <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
+                                            Admin
+                                        </Link>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => flushLimits()}
+                                            disabled={isFlushing}
+                                            title="Reset all daily generation limits"
+                                            className="h-7 gap-1 px-2 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                        >
+                                            <ArrowsClockwise size={13} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
+                                            Flush
+                                        </Button>
+                                    </>
                                 )}
-                            >
-                                <Plus size={14} weight="bold" />
-                                {t('nav.create')}
-                            </Link>
-                            <div className="mx-1.5 h-5 w-px bg-border/50" />
-                            {ACTIVE_NAV_GROUPS.map((group) => (
-                                <NavDropdown key={group.category} group={group} pathname={pathname} t={t} />
-                            ))}
-                            {user?.role === 'ADMIN' && (
-                                <>
-                                    <Link
-                                        href={ROUTES.ADMIN}
-                                        className={cn(
-                                            'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
-                                            pathname.startsWith(ROUTES.ADMIN)
-                                                ? 'bg-primary/10 text-primary font-medium'
-                                                : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
-                                        )}
-                                    >
-                                        <ShieldCheck size={15} weight={pathname.startsWith(ROUTES.ADMIN) ? 'fill' : 'regular'} />
-                                        Admin
-                                    </Link>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => flushLimits()}
-                                        disabled={isFlushing}
-                                        title="Reset all daily generation limits"
-                                        className="h-7 gap-1 px-2 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                    >
-                                        <ArrowsClockwise size={13} weight="bold" className={isFlushing ? 'animate-spin' : ''} />
-                                        Flush
-                                    </Button>
-                                </>
-                            )}
-                            <div className="mx-2 h-5 w-px bg-border/50" />
-                            <span className="text-sm text-muted-foreground">
-                                {user?.firstName}
-                            </span>
-                            {IS_LAUNCH_MODE && (
-                                <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Free
+                                <div className="mx-2 h-5 w-px bg-border/50" />
+                                <span className="text-sm text-muted-foreground">
+                                    {user?.firstName}
                                 </span>
-                            )}
-                            {user !== null && user !== undefined && (
-                                IS_LAUNCH_MODE ? (
-                                    <span
-                                        className={cn(
-                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
-                                            dailyRemaining > 2
-                                                ? 'bg-success/15 text-success'
-                                                : dailyRemaining > 0
-                                                    ? 'bg-warning/15 text-warning'
-                                                    : 'bg-destructive/15 text-destructive',
-                                        )}
-                                    >
-                                        {dailyRemaining}/{dailyLimit}
+                                {IS_LAUNCH_MODE && (
+                                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                        Free
                                     </span>
-                                ) : (
-                                    <span
-                                        className={cn(
-                                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
-                                            (user.credits ?? 0) >= 50
-                                                ? 'bg-warning/15 text-warning'
-                                                : (user.credits ?? 0) >= 10
+                                )}
+                                {user !== null && user !== undefined && (
+                                    IS_LAUNCH_MODE ? (
+                                        <span
+                                            className={cn(
+                                                'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
+                                                dailyRemaining > 2
                                                     ? 'bg-success/15 text-success'
-                                                    : 'bg-destructive/15 text-destructive',
-                                        )}
+                                                    : dailyRemaining > 0
+                                                        ? 'bg-warning/15 text-warning'
+                                                        : 'bg-destructive/15 text-destructive',
+                                            )}
+                                        >
+                                            {dailyRemaining}/{dailyLimit}
+                                        </span>
+                                    ) : (
+                                        <Link
+                                            href={ROUTES.DASHBOARD_CREDITS}
+                                            className={cn(
+                                                'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-opacity hover:opacity-75',
+                                                (user.credits ?? 0) >= 50
+                                                    ? 'bg-warning/15 text-warning'
+                                                    : (user.credits ?? 0) >= 10
+                                                        ? 'bg-success/15 text-success'
+                                                        : 'bg-destructive/15 text-destructive',
+                                            )}
+                                        >
+                                            <Coins size={11} weight="fill" />
+                                            {user.credits ?? 0}
+                                        </Link>
+                                    )
+                                )}
+                                {user?.username && (
+                                    <Link
+                                        href={ROUTES.PORTFOLIO_PUBLIC(user.username)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors duration-150 hover:bg-muted/40 hover:text-foreground"
                                     >
-                                        <Coins size={11} weight="fill" />
-                                        {user.credits ?? 0}
-                                    </span>
-                                )
-                            )}
-                            <Button variant="ghost" size="sm" className="text-xs" onClick={logout}>
-                                {t('auth.logout')}
-                            </Button>
-                        </div>
+                                        <Globe size={13} />
+                                        {t('nav.my_page')}
+                                    </Link>
+                                )}
+                                <Button variant="ghost" size="sm" className="text-xs" onClick={logout}>
+                                    {t('auth.logout')}
+                                </Button>
+                            </div>
+                        ) : (
+                            /* USER nav */
+                            <div className="flex items-center gap-0.5 animate-in fade-in slide-in-from-right-2 duration-300 ease-out">
+                                <Link
+                                    href={ROUTES.APPOINTMENTS}
+                                    className={cn(
+                                        'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                                        pathname === ROUTES.APPOINTMENTS
+                                            ? 'bg-primary/10 text-primary font-medium'
+                                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                                    )}
+                                >
+                                    <CalendarBlank size={15} weight={pathname === ROUTES.APPOINTMENTS ? 'fill' : 'regular'} />
+                                    {t('nav.appointments')}
+                                </Link>
+                                <Link
+                                    href={ROUTES.FAVORITES}
+                                    className={cn(
+                                        'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors duration-150',
+                                        pathname === ROUTES.FAVORITES
+                                            ? 'bg-primary/10 text-primary font-medium'
+                                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                                    )}
+                                >
+                                    <Heart size={15} weight={pathname === ROUTES.FAVORITES ? 'fill' : 'regular'} />
+                                    {t('nav.favorites')}
+                                </Link>
+                                <div className="mx-2 h-5 w-px bg-border/50" />
+                                <span className="text-sm text-muted-foreground">
+                                    {user?.firstName}
+                                </span>
+                                <Button variant="ghost" size="sm" className="text-xs" onClick={logout}>
+                                    {t('auth.logout')}
+                                </Button>
+                            </div>
+                        )
                     ) : (
+                        /* Guest nav */
                         <div className="flex items-center gap-0.5 animate-in fade-in slide-in-from-left-2 duration-300 ease-out">
                             <Button variant="ghost" size="sm" asChild>
                                 <Link href="/login">{t('auth.login')}</Link>
                             </Button>
                             <Button size="sm" asChild>
-                                <Link href="/register">{t('auth.register')}</Link>
+                                <Link href="/register">{t('header.start_master')}</Link>
                             </Button>
                         </div>
                     )}
@@ -549,7 +737,7 @@ export function Header(): React.ReactElement {
 
                 {/* Mobile Header Actions */}
                 <div className="flex items-center gap-1 md:hidden">
-                    {isAuthenticated && (user?.role === 'MASTER' || user?.role === 'ADMIN') && (
+                    {isAuthenticated && isMasterRole && (
                         <Link
                             href={ROUTES.CREATE}
                             className={cn(

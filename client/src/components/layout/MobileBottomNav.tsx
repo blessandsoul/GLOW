@@ -85,7 +85,7 @@ export function MobileBottomNav(): React.ReactElement | null {
     if (isInitializing || !isAuthenticated) return null;
 
     const role = user?.role;
-    const middleItems = role === 'MASTER' ? MASTER_ITEMS : USER_ITEMS;
+    const middleItems = (role === 'MASTER' || role === 'SALON' || role === 'ADMIN') ? MASTER_ITEMS : USER_ITEMS;
     const allItems = [...SHARED_START, ...middleItems, ...SHARED_END];
 
     return (
