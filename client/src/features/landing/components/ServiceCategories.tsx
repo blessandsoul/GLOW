@@ -1,35 +1,35 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, HandSoap, Scissors, Sparkle, PaintBrush, FlowerLotus, ArrowRight } from '@phosphor-icons/react';
+import { Eye, HandSoap, Scissors, Sparkle, FlowerLotus, ArrowRight } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
 import { useNicheCounts } from '@/features/masters/hooks/useNicheCounts';
 import { ROUTES } from '@/lib/constants/routes';
 import type { IconProps } from '@phosphor-icons/react';
 
 const NICHE_ICONS: Record<string, React.ComponentType<IconProps>> = {
-    lashes: Eye,
-    nails: HandSoap,
-    brows: PaintBrush,
-    makeup: Sparkle,
-    hair: Scissors,
-    skincare: FlowerLotus,
+    'lashes-brows':     Eye,
+    nails:              HandSoap,
+    'permanent-makeup': Sparkle,
+    makeup:             Sparkle,
+    hair:               Scissors,
+    skincare:           FlowerLotus,
 };
 
 const NICHE_COLORS: Record<string, string> = {
-    lashes: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
-    nails: 'bg-pink-500/10 text-pink-600 dark:text-pink-400',
-    brows: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-    makeup: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-    hair: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
-    skincare: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    'lashes-brows':     'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+    nails:              'bg-pink-500/10 text-pink-600 dark:text-pink-400',
+    'permanent-makeup': 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    makeup:             'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    hair:               'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    skincare:           'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
 };
 
 export function ServiceCategories(): React.ReactElement | null {
     const { t } = useLanguage();
-    const { specialities, isLoading } = useSpecialities();
+    const { categories: specialities, isLoading } = useServiceCategories();
     const { counts } = useNicheCounts();
 
     if (isLoading) {
