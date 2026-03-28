@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Geist, Geist_Mono, Noto_Sans_Georgian, Playfair_Display } from 'next/font/google';
+import { Geist, Geist_Mono, Noto_Sans_Georgian, Playfair_Display, Noto_Serif, Manrope, Inter } from 'next/font/google';
 import { Agentation } from 'agentation';
 import { Providers } from './providers';
 import { RegisterPWA } from '@/components/common/RegisterPWA';
@@ -29,6 +29,28 @@ const playfairDisplay = Playfair_Display({
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-display-playfair',
+});
+
+const notoSerif = Noto_Serif({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-noto-serif',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -82,6 +104,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0" />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script
@@ -100,7 +123,7 @@ export default function RootLayout({
         )}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansGeorgian.variable} ${playfairDisplay.variable} font-sans antialiased text-foreground bg-zinc-50 dark:bg-zinc-950 selection:bg-primary/20 min-h-dvh relative overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansGeorgian.variable} ${playfairDisplay.variable} ${notoSerif.variable} ${manrope.variable} ${inter.variable} font-sans antialiased text-foreground bg-zinc-50 dark:bg-zinc-950 selection:bg-primary/20 min-h-dvh relative overflow-x-hidden`}
       >
         <Providers>
           {children}
