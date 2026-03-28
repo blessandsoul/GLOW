@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Geist, Geist_Mono, Noto_Sans_Georgian, Playfair_Display, Noto_Serif, Manrope, Inter } from 'next/font/google';
+import { Geist, Geist_Mono, Noto_Sans_Georgian, Playfair_Display, Noto_Serif, Noto_Serif_Georgian, Manrope, Inter } from 'next/font/google';
 import { Agentation } from 'agentation';
 import { Providers } from './providers';
 import { RegisterPWA } from '@/components/common/RegisterPWA';
@@ -22,6 +22,7 @@ const notoSansGeorgian = Noto_Sans_Georgian({
   subsets: ['georgian'],
   weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-noto-georgian',
+  display: 'swap',
 });
 
 const playfairDisplay = Playfair_Display({
@@ -36,6 +37,13 @@ const notoSerif = Noto_Serif({
   weight: ['400', '700'],
   style: ['normal', 'italic'],
   variable: '--font-noto-serif',
+  display: 'swap',
+});
+
+const notoSerifGeorgian = Noto_Serif_Georgian({
+  subsets: ['georgian'],
+  weight: ['400', '700'],
+  variable: '--font-noto-serif-georgian',
   display: 'swap',
 });
 
@@ -92,7 +100,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#B490F5',
+  themeColor: '#680005',
 };
 
 export default function RootLayout({
@@ -123,7 +131,7 @@ export default function RootLayout({
         )}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansGeorgian.variable} ${playfairDisplay.variable} ${notoSerif.variable} ${manrope.variable} ${inter.variable} font-sans antialiased text-foreground bg-zinc-50 dark:bg-zinc-950 selection:bg-primary/20 min-h-dvh relative overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansGeorgian.variable} ${playfairDisplay.variable} ${notoSerif.variable} ${notoSerifGeorgian.variable} ${manrope.variable} ${inter.variable} editorial-theme antialiased text-foreground bg-background selection:bg-primary/20 min-h-dvh relative overflow-x-hidden`}
       >
         <Providers>
           {children}
@@ -133,14 +141,15 @@ export default function RootLayout({
         </Providers>
         {process.env.NODE_ENV === 'development' && <Agentation />}
         {/* TOP.GE ASYNC COUNTER CODE */}
-        <footer className="border-t border-border/50 bg-background py-4">
+        <footer className="border-t border-[#e3beba]/30 bg-[#f9f9f9] py-4">
           <div className="container mx-auto flex flex-col items-center gap-3 px-4">
-            <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-              <a href="/terms" className="transition-colors hover:text-primary">Terms</a>
-              <span className="text-border">|</span>
-              <a href="/privacy" className="transition-colors hover:text-primary">Privacy</a>
-              <span className="text-border">|</span>
-              <a href="/refund" className="transition-colors hover:text-primary">Refund</a>
+            <nav className="flex items-center gap-2 text-xs tracking-widest uppercase"
+              style={{ fontFamily: 'var(--font-inter), sans-serif', color: '#524342' }}>
+              <a href="/terms" className="transition-colors hover:text-[#680005]">Terms</a>
+              <span style={{ color: '#e3beba' }}>|</span>
+              <a href="/privacy" className="transition-colors hover:text-[#680005]">Privacy</a>
+              <span style={{ color: '#e3beba' }}>|</span>
+              <a href="/refund" className="transition-colors hover:text-[#680005]">Refund</a>
             </nav>
             <div id="top-ge-counter-container" data-site-id="118567"></div>
           </div>

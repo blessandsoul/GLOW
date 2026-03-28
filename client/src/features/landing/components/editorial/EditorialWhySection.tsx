@@ -20,77 +20,49 @@ const WHY_ITEMS = [
 
 export const EditorialWhySection = (): React.ReactElement => {
   return (
-    <section
-      className="py-20 px-8"
-      style={{ backgroundColor: 'var(--ed-surface-lowest)' }}
-    >
-      {/* Header */}
-      <div className="text-center mb-16 space-y-2">
-        <span
-          className="text-[10px] uppercase tracking-[0.6em] font-bold"
-          style={{
-            color: 'var(--ed-primary)',
-            fontFamily: 'var(--font-ed-label)',
-          }}
-        >
-          The Standard
-        </span>
-        <h2
-          className="text-4xl tracking-tight"
-          style={{
-            color: 'var(--ed-on-surface)',
-            fontFamily: 'var(--font-ed-display)',
-            textWrap: 'balance',
-          }}
-        >
-          რატომ Glow.ge?
-        </h2>
-        <div
-          className="w-12 h-0.5 mx-auto mt-4"
-          style={{ backgroundColor: 'color-mix(in oklch, var(--ed-primary) 20%, transparent)' }}
-        />
-      </div>
+    <section className="py-20 px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16 space-y-2">
+          <span
+            className="text-[10px] uppercase tracking-[0.6em] font-bold text-[#680005]"
+            style={{ fontFamily: 'var(--font-inter), var(--font-noto-georgian), sans-serif' }}
+          >
+            The Standard
+          </span>
+          <h2
+            className="text-3xl text-[#1a1c1c] tracking-tight text-balance"
+            style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+          >
+            რატომ Glow.ge?
+          </h2>
+          <div className="w-12 h-0.5 bg-[#680005]/20 mx-auto mt-4" />
+        </div>
 
-      {/* Items */}
-      <div className="grid grid-cols-1 gap-12 max-w-xl mx-auto">
-        {WHY_ITEMS.map(({ icon, title, body }) => (
-          <div key={icon} className="flex items-start gap-5">
-            {/* Icon */}
-            <div
-              className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-full"
-              style={{ backgroundColor: 'color-mix(in oklch, var(--ed-primary) 5%, transparent)' }}
-            >
-              <span
-                className="material-symbols-outlined text-2xl select-none"
-                style={{ color: 'var(--ed-primary-container)' }}
-              >
-                {icon}
-              </span>
+        {/* Items */}
+        <div className="grid grid-cols-1 gap-12">
+          {WHY_ITEMS.map(({ icon, title, body }) => (
+            <div key={icon} className="flex flex-col items-center text-center space-y-4 px-4">
+              <div className="w-10 h-10 rounded-full bg-[#680005]/5 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#92000a] text-2xl">{icon}</span>
+              </div>
+              <div className="space-y-2">
+                <h3
+                  className="text-xl text-[#1a1c1c]"
+                  style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+                >
+                  {title}
+                </h3>
+                <p
+                  className="text-sm text-[#5f5e5e] leading-relaxed max-w-sm mx-auto"
+                  style={{ fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif' }}
+                >
+                  {body}
+                </p>
+              </div>
             </div>
-
-            {/* Text */}
-            <div className="space-y-1.5">
-              <p
-                className="text-base font-semibold leading-snug"
-                style={{
-                  color: 'var(--ed-on-surface)',
-                  fontFamily: 'var(--font-ed-display)',
-                }}
-              >
-                {title}
-              </p>
-              <p
-                className="text-sm leading-relaxed"
-                style={{
-                  color: 'color-mix(in oklch, var(--ed-on-surface) 60%, transparent)',
-                  fontFamily: 'var(--font-ed-body)',
-                }}
-              >
-                {body}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

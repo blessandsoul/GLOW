@@ -49,6 +49,7 @@ export interface SpecialityOption {
 
 export interface ServiceCategory {
     id: string;
+    slug: string;
     label: string;
     icon: string;
     suggestions: string[];

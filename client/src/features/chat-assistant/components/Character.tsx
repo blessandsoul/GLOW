@@ -97,6 +97,7 @@ export function Character({
                 ry="8"
                 fill="#000"
                 opacity={0.08}
+                initial={{ rx: 45, opacity: 0.08 }}
                 animate={
                     state === 'happy'
                         ? { rx: [45, 35, 45], opacity: [0.08, 0.04, 0.08] }
@@ -134,6 +135,7 @@ export function Character({
                 rx="14"
                 ry="10"
                 fill={`url(#blush-${uid})`}
+                initial={{ rx: 14, opacity: 0.5 }}
                 animate={
                     state === 'happy'
                         ? { opacity: [0.7, 1, 0.7], rx: [14, 16, 14] }
@@ -153,6 +155,7 @@ export function Character({
                 rx="14"
                 ry="10"
                 fill={`url(#blush-${uid})`}
+                initial={{ rx: 14, opacity: 0.5 }}
                 animate={
                     state === 'happy'
                         ? { opacity: [0.7, 1, 0.7], rx: [14, 16, 14] }
@@ -361,6 +364,7 @@ function Mouth({ state }: { state: CharacterState }): React.ReactElement {
                 ry="5"
                 fill="#be185d"
                 opacity="0.6"
+                initial={{ rx: 4, ry: 5 }}
                 animate={{ ry: [5, 6, 5], rx: [4, 3, 4] }}
                 transition={{
                     repeat: Infinity,
@@ -390,6 +394,7 @@ function Mouth({ state }: { state: CharacterState }): React.ReactElement {
                 ry="6"
                 fill="#be185d"
                 opacity="0.65"
+                initial={{ rx: 8, ry: 6 }}
                 animate={{
                     ry: [4, 8, 3, 7, 4],
                     rx: [8, 6, 9, 7, 8],
@@ -412,6 +417,7 @@ function Mouth({ state }: { state: CharacterState }): React.ReactElement {
                 ry="6"
                 fill="#be185d"
                 opacity="0.5"
+                initial={{ rx: 5, ry: 6, cx: 105 }}
                 animate={{ cx: [105, 103, 105] }}
                 transition={{
                     repeat: Infinity,

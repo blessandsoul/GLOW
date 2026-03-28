@@ -221,6 +221,10 @@ async function processWithOpenAI(
         logger.warn({ err }, 'OpenAI rate limit hit');
         throw new InternalError('Image processing temporarily unavailable. Please try again shortly.');
       }
+      if (err.code === 'billing_hard_limit_reached') {
+        logger.error({ err }, 'OpenAI billing hard limit reached');
+        throw new InternalError('Image processing is currently unavailable. Please try again later.');
+      }
       if (err.status === 400 && err.message?.includes('content_policy')) {
         throw new BadRequestError('Image was rejected by content safety policy', 'CONTENT_POLICY_VIOLATION');
       }

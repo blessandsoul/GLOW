@@ -488,13 +488,36 @@
   --ed-editorial-shadow: 0 20px 40px rgba(26, 28, 28, 0.06);
 
   /* Font families mapped to CSS variable fonts loaded in layout.tsx */
-  --font-ed-display: var(--font-noto-serif), 'Noto Serif', Georgia, serif;
+  --font-ed-display: var(--font-noto-serif-georgian), var(--font-noto-serif), 'Noto Serif Georgian', 'Noto Serif', Georgia, serif;
   --font-ed-body: var(--font-manrope), 'Manrope', system-ui, sans-serif;
   --font-ed-label: var(--font-inter), 'Inter', system-ui, sans-serif;
+
+  /* Remap app-wide semantic tokens to editorial palette */
+  --background: #f9f9f9;
+  --foreground: #1a1c1c;
+  --card: #ffffff;
+  --card-foreground: #1a1c1c;
+  --popover: #ffffff;
+  --popover-foreground: #1a1c1c;
+  --primary: #680005;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f3f3;
+  --secondary-foreground: #1a1c1c;
+  --muted: #f3f3f3;
+  --muted-foreground: #524342;
+  --accent: #f3f3f3;
+  --accent-foreground: #1a1c1c;
+  --border: #e3beba;
+  --input: #e3beba;
+  --ring: #680005;
+
+  /* Default body font → Manrope */
+  font-family: var(--font-manrope), 'Manrope', system-ui, sans-serif;
 }
 
 /* Dark mode editorial overrides */
-.dark .editorial-theme {
+.dark .editorial-theme,
+.dark.editorial-theme {
   --ed-surface: #1a1c1c;
   --ed-surface-low: #222424;
   --ed-surface-lowest: #151717;
@@ -509,6 +532,25 @@
   --ed-on-primary: #680005;
   --ed-outline-variant: #52413f;
   --ed-editorial-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+  /* Dark mode semantic token overrides */
+  --background: #1a1c1c;
+  --foreground: #e6e1e5;
+  --card: #222424;
+  --card-foreground: #e6e1e5;
+  --popover: #222424;
+  --popover-foreground: #e6e1e5;
+  --primary: #ffb4ab;
+  --primary-foreground: #680005;
+  --secondary: #2a2c2c;
+  --secondary-foreground: #e6e1e5;
+  --muted: #2a2c2c;
+  --muted-foreground: #a09d9c;
+  --accent: #2a2c2c;
+  --accent-foreground: #e6e1e5;
+  --border: #52413f;
+  --input: #52413f;
+  --ring: #ffb4ab;
 }
 
 /* Editorial utility classes — only active inside .editorial-theme */

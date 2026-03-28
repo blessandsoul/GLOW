@@ -10,10 +10,7 @@ import { EditorialBottomNav } from '@/features/landing/components/editorial/Edit
 
 export default function HomePage(): React.ReactElement {
   return (
-    <div
-      className="editorial-theme min-h-dvh flex flex-col overflow-x-hidden selection:bg-(--ed-primary)/20"
-      style={{ background: 'var(--ed-surface)', color: 'var(--ed-on-surface)' }}
-    >
+    <div className="min-h-dvh flex flex-col overflow-x-hidden">
       <EditorialTopBar />
       <main className="flex-1 pt-14">
         <EditorialHero />
