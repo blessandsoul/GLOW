@@ -86,6 +86,11 @@ export function GlowStarSection(): React.ReactElement | null {
         setShowPopup(false);
     }, []);
 
+    const handleConfirm = useCallback((): void => {
+        request();
+        setShowConfirm(false);
+    }, [request]);
+
     // Only show for masters and admins
     if (!user || (user.role !== 'MASTER' && user.role !== 'ADMIN')) return null;
 
@@ -105,11 +110,6 @@ export function GlowStarSection(): React.ReactElement | null {
     const hasProfile = !!(profile?.city && profile?.niche && profile?.services);
 
     const canRequest = hasPortfolio && hasInstagram && hasProfile && glowStarStatus === 'NONE';
-
-    const handleConfirm = useCallback((): void => {
-        request();
-        setShowConfirm(false);
-    }, [request]);
 
     return (
         <>
