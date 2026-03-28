@@ -1,5 +1,5 @@
-import { EditorialTopBar } from '@/features/landing/components/editorial/EditorialTopBar';
-import { EditorialBottomNav } from '@/features/landing/components/editorial/EditorialBottomNav';
+import { Header } from '@/components/layout/Header';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 
 export default function MainLayout({
     children,
@@ -8,9 +8,9 @@ export default function MainLayout({
 }): React.ReactElement {
     return (
         <div className="relative min-h-dvh pt-14">
-            <EditorialTopBar />
+            <Header />
             <main className="pb-24 md:pb-0">{children}</main>
-            <EditorialBottomNav />
+            <MobileBottomNav />
         </div>
     );
 }
