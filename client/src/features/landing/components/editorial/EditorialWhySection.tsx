@@ -2,19 +2,19 @@ import React from 'react';
 
 const WHY_ITEMS = [
   {
-    icon: 'verified_user',
-    title: '100% უსაფრთხოება',
-    body: 'ჩვენ ვამოწმებთ თითოეული მასტერის ჰიგიენის ნორმებსა და ინსტრუმენტების სტერილიზაციას.',
+    icon: 'hub',
+    title: 'ყველაფერი ერთ სივრცეში',
+    body: 'აღმოაჩინე საქართველოს გამორჩეული ბიუთი სპეციალისტები, დაათვალიერე მათი რეალური ნამუშევრები და შეიძინე შერჩეული პრემიუმ პროდუქცია მარტივად და სრული კომფორტით.',
   },
   {
     icon: 'workspace_premium',
-    title: 'ექსპერტული შერჩევა',
-    body: 'პლატფორმაზე ხვდებიან მხოლოდ დამოუკიდებელი საბჭოს მიერ აღიარებული პროფესიონალები.',
+    title: 'ნდობა, რომელიც დამსახურებულია',
+    body: 'Glow.ge-ზე რეგისტრაცია შეუძლია ყველა ბიუთი ოსტატს, თუმცა პრიორიტეტული სტატუსი, სპეციალური ბეიჯები და გამორჩეული პოზიციონირება მხოლოდ იმ პროფესიონალებს ენიჭებათ, ვინც ხარისხის, გამოცდილებისა და მომხმარებლის კმაყოფილების მაღალ სტანდარტებს აკმაყოფილებს. სწორედ ამიტომ აქ არჩევ არა უბრალოდ ოსტატს, არამედ სანდო პროფესიონალს.',
   },
   {
-    icon: 'diamond',
-    title: 'პრემიუმ მომსახურება',
-    body: 'გარანტირებული ხარისხი და ელიტური გამოცდილება ყველა სერვისზე.',
+    icon: 'filter_alt',
+    title: 'დაზოგილი დრო, იდეალური შედეგისთვის',
+    body: 'დაივიწყე სოციალურ ქსელებში საათობით ძიება, ჭკვიანი ფილტრების დახმარებით წამებში იპოვი შენს მოთხოვნებზე, ბიუჯეტსა და ლოკაციაზე მორგებულ საუკეთესო ოსტატს.',
   },
 ] as const;
 
@@ -32,10 +32,16 @@ export const EditorialWhySection = (): React.ReactElement => {
           </span>
           <h2
             className="text-3xl text-[#1a1c1c] tracking-tight text-balance"
-            style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+            style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
           >
             რატომ Glow.ge?
           </h2>
+          <p
+            className="text-sm text-[#5f5e5e] leading-relaxed max-w-xs mx-auto mt-2"
+            style={{ fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif' }}
+          >
+            მიიღე საუკეთესო გამოცდილება ერთ პრემიუმ სივრცეში.
+          </p>
           <div className="w-12 h-0.5 bg-[#680005]/20 mx-auto mt-4" />
         </div>
 
@@ -49,7 +55,7 @@ export const EditorialWhySection = (): React.ReactElement => {
               <div className="space-y-2">
                 <h3
                   className="text-xl text-[#1a1c1c]"
-                  style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+                  style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
                 >
                   {title}
                 </h3>

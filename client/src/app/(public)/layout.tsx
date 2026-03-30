@@ -10,7 +10,7 @@ export default function PublicLayout({
                     <a
                         href="/"
                         className="text-xl uppercase tracking-[0.2em] text-[#1a1c1c] transition-colors hover:text-[#680005]"
-                        style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+                        style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
                     >
                         GLOW.GE
                     </a>

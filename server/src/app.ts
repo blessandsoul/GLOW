@@ -36,6 +36,7 @@ import { reviewsRoutes } from '@/modules/reviews/reviews.routes.js';
 import { verificationRoutes } from '@/modules/verification/verification.routes.js';
 import { onboardingRoutes } from '@/modules/onboarding/onboarding.routes.js';
 import { favoritesRoutes } from '@/modules/favorites/favorites.routes.js';
+import { marketplaceRoutes } from '@/modules/marketplace/marketplace.routes.js';
 import { ZodError } from 'zod';
 
 export async function buildApp() {
@@ -185,6 +186,7 @@ export async function buildApp() {
   await app.register(verificationRoutes, { prefix: '/api/v1/verification' });
   await app.register(onboardingRoutes, { prefix: '/api/v1/onboarding' });
   await app.register(favoritesRoutes, { prefix: '/api/v1/favorites' });
+  await app.register(marketplaceRoutes, { prefix: '/api/v1/marketplace' });
 
   return app;
 }

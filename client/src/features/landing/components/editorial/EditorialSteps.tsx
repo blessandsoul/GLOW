@@ -4,8 +4,8 @@ const STEPS = [
   {
     icon: 'shield_with_heart',
     label: 'Safety Protocol',
-    title: 'ჯანმრთელობა პირველ ადგილზე',
-    body: 'ჩვენი უმკაცრესი სტანდარტი. ოსტატის პროფილზე უსაფრთხოების ნიშანი ადასტურებს, რომ მისი ინსტრუმენტების სტერილიზაცია და ჰიგიენის ნორმები ოფიციალურად გადამოწმებულია ჩვენი ადმინისტრაციის მიერ. ეს არის ფუნდამენტური მოთხოვნა ყველა სპეციალისტისთვის.',
+    title: 'უსაფრთხოება, როგორც ოქროს სტანდარტი',
+    body: 'პლატფორმაზე რეგისტრაცია ყველას შეუძლია, თუმცა Glow-ს უსაფრთხოების ბეიჯი სანდოობის უმაღლესი ნიშანია. ეს ბეიჯი ადასტურებს, რომ ოსტატის სამუშაო გარემო, ინსტრუმენტების სტერილიზაცია და მომსახურების ხარისხი Glow.ge-ის სტანდარტებით მკაცრად არის გადამოწმებული. აირჩიე ამ ბეიჯის მფლობელი ოსტატი და მიიღე მომსახურება, რომელიც სრულად შეესაბამება Glow.ge-ის უსაფრთხოების ოქროს სტანდარტს.',
     italic: false,
     ornament: false,
   },
@@ -13,7 +13,7 @@ const STEPS = [
     icon: 'diamond',
     label: 'Expert Curated',
     title: 'ექსპერტების რჩეული',
-    body: 'ხარისხი, რომელსაც თავად პროფესიონალები აღიარებენ. ამ სტატუსის მქონე ოსტატების ტექნიკა და ნამუშევრების ვიზუალი დეტალურად ფასდება სფეროს წამყვანი სპეციალისტებისგან შემდგარი დამოუკიდებელი საბჭოს მიერ. მხოლოდ უნაკლო შესრულება იღებს ამ აღიარებას.',
+    body: 'სტატუსი მხოლოდ მათთვის, ვისი ხარისხიც თავად პროფესიონალების მიერაა დადასტურებული. ექსპერტის ბეიჯი ნიშნავს, რომ ოსტატის ნამუშევრებმა გაიარა დამოუკიდებელი საბჭოს უმკაცრესი შეფასება. მოძებნე ეს ნიშანი და მიანდე შენი სილამაზე მხოლოდ სრულყოფილებას.',
     italic: false,
     ornament: false,
   },
@@ -21,7 +21,7 @@ const STEPS = [
     icon: 'star_rate',
     label: 'The Pinnacle',
     title: 'Glow Star: ელიტის არჩევანი',
-    body: 'საუკეთესოთა შორის საუკეთესო. ეს ნიშანი ინთება მხოლოდ მაშინ, როცა ოსტატი წარმატებით გაივლის „მისტიური შოპერის" ფარულ ტესტირებას რეალურ პროცესში. ეს არის იდეალური მომსახურების, კომუნიკაციისა და შედეგის 100%-იანი გარანტია პრემიუმ კლასში.',
+    body: 'ეს არ არის უბრალოდ სტატუსი ეს ინდუსტრიის უმაღლესი სტანდარტის აღიარებაა. ამ ნიშნის მფლობელმა ოსტატმა უკვე წარმატებით გაიარა „მისტიური მომხმარებლის" უმკაცრესი ფარული შეფასება რეალურ პროცესში. მოძებნე ეს ვარსკვლავი პროფილზე და მიიღე უმაღლესი სტანდარტის მომსახურება, დახვეწილი კომუნიკაცია და სრულყოფილი შედეგი.',
     italic: true,
     ornament: true,
   },
@@ -41,9 +41,9 @@ export const EditorialSteps = (): React.ReactElement => {
           </span>
           <h2
             className="text-3xl font-bold text-black leading-tight tracking-tight text-balance"
-            style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+            style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
           >
-            სამი ნაბიჯი სრულყოფილებამდე
+            სამი ნაბიჯი შენს იდეალურ ოსტატამდე
           </h2>
           <div className="flex items-center justify-center space-x-4">
             <div className="h-px w-8 bg-[#e0e0e0]" />
@@ -81,13 +81,13 @@ export const EditorialSteps = (): React.ReactElement => {
                 </span>
                 <h3
                   className="text-2xl font-bold text-black mb-5 tracking-tight leading-tight"
-                  style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+                  style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
                 >
                   {step.title}
                 </h3>
                 <p
                   className={`text-[14px] text-[#666] leading-[1.8] font-light${step.italic ? ' italic' : ''}`}
-                  style={{ fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif', textAlign: 'justify', textJustify: 'inter-word' }}
+                  style={{ fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif', textAlign: 'center' }}
                 >
                   {step.body}
                 </p>

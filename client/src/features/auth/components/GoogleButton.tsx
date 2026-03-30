@@ -24,7 +24,14 @@ export function GoogleButton({ referralCode }: GoogleButtonProps): React.ReactEl
     return (
         <a
             href={url}
-            className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-zinc-200 bg-white font-medium text-zinc-700 shadow-sm transition-all duration-200 hover:bg-zinc-50 hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+            className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--ed-primary)/30"
+            style={{
+                backgroundColor: 'var(--ed-surface-low)',
+                border: '1px solid color-mix(in oklch, var(--ed-outline-variant) 60%, transparent)',
+                color: 'var(--ed-on-surface)',
+                fontFamily: 'var(--font-manrope), sans-serif',
+                fontSize: '14px',
+            }}
         >
             <GoogleIcon />
             Continue with Google

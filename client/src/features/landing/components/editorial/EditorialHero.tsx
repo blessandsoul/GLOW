@@ -54,13 +54,13 @@ const MasterCard = ({ name, specialty, rating, reviews, initials, color }: Maste
     <div className="min-w-0">
       <p
         className="text-[#f9f9f9] text-sm font-semibold truncate leading-tight"
-        style={{ fontFamily: 'var(--font-manrope), sans-serif' }}
+        style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
       >
         {name}
       </p>
       <p
         className="text-[#f9f9f9]/50 text-xs truncate mt-0.5"
-        style={{ fontFamily: 'var(--font-manrope), sans-serif' }}
+        style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
       >
         {specialty}
       </p>
@@ -166,15 +166,15 @@ export const EditorialHero = (): React.ReactElement => {
         <div className="px-8 pt-20 space-y-4">
           <h1
             className="text-4xl md:text-7xl text-[#f9f9f9] leading-tight text-balance"
-            style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif', letterSpacing: '-0.02em' }}
+            style={{ fontFamily: 'var(--font-noto-georgian), sans-serif', letterSpacing: '-0.02em' }}
           >
-            Glow.ge — სადაც ხელოვნება ხვდება სრულყოფილებას
+            Glow.ge — სილამაზის ინდუსტრიის ლიდერთა სივრცე
           </h1>
           <p
             className="text-lg text-[#f9f9f9]/75 max-w-md leading-relaxed"
             style={{ fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif' }}
           >
-            აღმოაჩინეთ საქართველოს საუკეთესო სილამაზის პროფესიონალები.
+            მიანდე შენი ვიზუალი მათ, ვინც სილამაზის ინდუსტრიის წესებს ქმნის
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export const EditorialHero = (): React.ReactElement => {
           <div className="px-8 mb-4 flex items-center gap-3">
             <span
               className="text-xs uppercase tracking-[0.18em] text-[#f9f9f9]/40 font-medium"
-              style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-georgian), serif' }}
+              style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
             >
               ტოპ მასტერები
             </span>

@@ -4,16 +4,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { Star, SpinnerGap } from '@phosphor-icons/react';
+import { SpinnerGap } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
 import { getErrorMessage } from '@/lib/utils/error';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
-import { Logo } from '@/components/layout/Logo';
 import { GoogleButton } from './GoogleButton';
 
 type LoginFormData = {
@@ -45,34 +42,87 @@ export function LoginForm(): React.ReactElement {
     };
 
     return (
-        <Card className="border border-zinc-200/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
-            <CardHeader className="items-center gap-1 pb-6 pt-8">
-                <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-                        <Star size={20} weight="fill" />
-                    </div>
-                    <Logo size="md" href="/" />
-                </div>
-                <h1 className="text-xl font-bold text-zinc-900 dark:text-white mt-1">{t('auth.welcome_back')}</h1>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('auth.login_desc')}</p>
-            </CardHeader>
-            <CardContent className="px-8 pb-8">
+        <div
+            className="overflow-hidden rounded-2xl"
+            style={{
+                backgroundColor: 'var(--ed-surface-lowest)',
+                border: '1px solid color-mix(in oklch, var(--ed-outline-variant) 45%, transparent)',
+                boxShadow: 'var(--ed-editorial-shadow)',
+            }}
+        >
+            {/* Header */}
+            <div className="px-8 pt-9 pb-6 text-center">
+                <Link href="/" className="inline-block mb-5">
+                    <span
+                        className="text-2xl uppercase tracking-[0.22em] select-none"
+                        style={{
+                            fontFamily: 'var(--font-noto-georgian), sans-serif',
+                            color: 'var(--ed-on-surface)',
+                        }}
+                    >
+                        GLOW.GE
+                    </span>
+                </Link>
+                <h1
+                    className="text-xl font-bold leading-snug"
+                    style={{
+                        fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif',
+                        color: 'var(--ed-on-surface)',
+                    }}
+                >
+                    {t('auth.welcome_back')}
+                </h1>
+                <p
+                    className="text-sm mt-1.5"
+                    style={{
+                        fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif',
+                        color: 'color-mix(in oklch, var(--ed-on-surface) 50%, transparent)',
+                    }}
+                >
+                    {t('auth.login_desc')}
+                </p>
+            </div>
+
+            {/* Content */}
+            <div className="px-8 pb-8">
                 <div className="space-y-4">
                     <GoogleButton />
 
+                    {/* Divider */}
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+                            <div
+                                className="w-full h-px"
+                                style={{ backgroundColor: 'color-mix(in oklch, var(--ed-outline-variant) 55%, transparent)' }}
+                            />
                         </div>
                         <div className="relative flex justify-center text-xs">
-                            <span className="bg-white px-2 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-500">{t('auth.or')}</span>
+                            <span
+                                className="px-2.5 text-xs"
+                                style={{
+                                    backgroundColor: 'var(--ed-surface-lowest)',
+                                    color: 'color-mix(in oklch, var(--ed-on-surface) 38%, transparent)',
+                                    fontFamily: 'var(--font-inter), sans-serif',
+                                    letterSpacing: '0.05em',
+                                }}
+                            >
+                                {t('auth.or')}
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
                     {(loginError || googleError) && (
-                        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
+                        <div
+                            className="rounded-xl px-4 py-3 text-sm"
+                            style={{
+                                backgroundColor: 'color-mix(in oklch, var(--destructive) 8%, transparent)',
+                                border: '1px solid color-mix(in oklch, var(--destructive) 25%, transparent)',
+                                color: 'var(--destructive)',
+                                fontFamily: 'var(--font-manrope), sans-serif',
+                            }}
+                        >
                             {loginError
                                 ? getErrorMessage(loginError)
                                 : googleError === 'google_denied'
@@ -82,26 +132,60 @@ export function LoginForm(): React.ReactElement {
                         </div>
                     )}
 
-                    <div className="space-y-2">
-                        <Label htmlFor="email" className="text-zinc-700 dark:text-zinc-300">Email</Label>
+                    <div className="space-y-1.5">
+                        <label
+                            htmlFor="email"
+                            className="block text-[11px] font-semibold uppercase tracking-widest"
+                            style={{
+                                color: 'color-mix(in oklch, var(--ed-on-surface) 55%, transparent)',
+                                fontFamily: 'var(--font-inter), sans-serif',
+                            }}
+                        >
+                            Email
+                        </label>
                         <Input
                             id="email"
                             type="email"
                             placeholder="you@example.com"
                             autoComplete="email"
-                            className={`bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 focus-visible:ring-primary/20 ${errors.email ? 'border-red-500 focus-visible:ring-red-500/20' : ''}`}
+                            className="h-11 rounded-xl text-sm focus-visible:ring-(--ed-primary)/20"
+                            style={{
+                                backgroundColor: 'var(--ed-surface-low)',
+                                borderColor: errors.email
+                                    ? 'var(--destructive)'
+                                    : 'color-mix(in oklch, var(--ed-outline-variant) 60%, transparent)',
+                                color: 'var(--ed-on-surface)',
+                                fontFamily: 'var(--font-manrope), sans-serif',
+                            }}
                             {...register('email')}
                         />
                         {errors.email && (
-                            <p className="text-sm text-red-500">{errors.email.message}</p>
+                            <p
+                                className="text-xs"
+                                style={{ color: 'var(--destructive)', fontFamily: 'var(--font-inter), sans-serif' }}
+                            >
+                                {errors.email.message}
+                            </p>
                         )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-300">{t('ui.text_j84600')}</Label>
-                            <Link href="/forgot-password"
-                                className="text-xs font-medium text-primary hover:text-primary/80 transition-colors">
+                            <label
+                                htmlFor="password"
+                                className="block text-[11px] font-semibold uppercase tracking-widest"
+                                style={{
+                                    color: 'color-mix(in oklch, var(--ed-on-surface) 55%, transparent)',
+                                    fontFamily: 'var(--font-inter), sans-serif',
+                                }}
+                            >
+                                {t('ui.text_j84600')}
+                            </label>
+                            <Link
+                                href="/forgot-password"
+                                className="text-xs font-medium transition-colors duration-150"
+                                style={{ color: 'var(--ed-primary)', fontFamily: 'var(--font-inter), sans-serif' }}
+                            >
                                 {t('auth.forgot_password')}
                             </Link>
                         </div>
@@ -110,17 +194,34 @@ export function LoginForm(): React.ReactElement {
                             type="password"
                             placeholder="••••••••"
                             autoComplete="current-password"
-                            className={`bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 focus-visible:ring-primary/20 ${errors.password ? 'border-red-500 focus-visible:ring-red-500/20' : ''}`}
+                            className="h-11 rounded-xl text-sm focus-visible:ring-(--ed-primary)/20"
+                            style={{
+                                backgroundColor: 'var(--ed-surface-low)',
+                                borderColor: errors.password
+                                    ? 'var(--destructive)'
+                                    : 'color-mix(in oklch, var(--ed-outline-variant) 60%, transparent)',
+                                color: 'var(--ed-on-surface)',
+                                fontFamily: 'var(--font-manrope), sans-serif',
+                            }}
                             {...register('password')}
                         />
                         {errors.password && (
-                            <p className="text-sm text-red-500">{errors.password.message}</p>
+                            <p
+                                className="text-xs"
+                                style={{ color: 'var(--destructive)', fontFamily: 'var(--font-inter), sans-serif' }}
+                            >
+                                {errors.password.message}
+                            </p>
                         )}
                     </div>
 
                     <Button
                         type="submit"
-                        className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold transition-all active:scale-[0.98] shadow-sm rounded-xl mt-2"
+                        className="w-full h-11 rounded-xl font-semibold text-white transition-all duration-200 active:scale-[0.98] mt-2 shadow-sm"
+                        style={{
+                            backgroundColor: 'var(--ed-primary)',
+                            fontFamily: 'var(--font-manrope), sans-serif',
+                        }}
                         disabled={isLoggingIn}
                     >
                         {isLoggingIn ? (
@@ -133,15 +234,24 @@ export function LoginForm(): React.ReactElement {
                         )}
                     </Button>
 
-                    <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 pt-2">
+                    <p
+                        className="text-center text-sm pt-2"
+                        style={{
+                            color: 'color-mix(in oklch, var(--ed-on-surface) 50%, transparent)',
+                            fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif',
+                        }}
+                    >
                         {t('auth.no_account')}{' '}
-                        <Link href="/register"
-                            className="font-semibold text-primary transition-colors hover:text-primary/80">
+                        <Link
+                            href="/register"
+                            className="font-semibold transition-colors duration-150"
+                            style={{ color: 'var(--ed-primary)' }}
+                        >
                             {t('auth.create_account')}
                         </Link>
                     </p>
                 </form>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }

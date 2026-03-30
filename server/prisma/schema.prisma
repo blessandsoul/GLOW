@@ -56,6 +56,7 @@ model User {
   usernameHistory  UsernameHistory[]
   favoriteMasters          FavoriteMaster[]       @relation("userFavoriteMasters")
   favoritePortfolioItems   FavoritePortfolioItem[] @relation("userFavoritePortfolioItems")
+  products         Product[]
 
   @@map("users")
 }
@@ -262,6 +263,13 @@ model MasterProfile {
   glowStarAcceptedAt  DateTime?
   glowStarReviewedAt  DateTime?
 
+  // Marketplace seller status
+  sellerStatus         String    @default("NONE")  // NONE, PENDING, APPROVED, REJECTED
+  sellerRequestedAt    DateTime?
+  sellerApprovedAt     DateTime?
+  sellerApprovedBy     String?
+  sellerRejectedReason String?   @db.VarChar(500)
+
   user     User      @relation(fields: [userId], references: [id])
   district District? @relation(fields: [districtId], references: [id])
 
@@ -276,6 +284,33 @@ model MasterProfile {
   @@index([locationType])
   @@index([tierSortOrder])
   @@map("master_profiles")
+}
+
+// ─────────────────────────────────────────────
+// Marketplace
+// ─────────────────────────────────────────────
+
+model Product {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String   @db.VarChar(200)
+  description String?  @db.Text
+  price       Float
+  currency    String   @default("GEL")
+  category    String   // lashes | glue | tweezers | decor | tools | accessories | cosmetics | other
+  inStock     Boolean  @default(true)
+  isActive    Boolean  @default(true)
+  imageUrls   Json     // string[]
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([category, isActive])
+  @@index([isActive, inStock])
+  @@map("products")
 }
 
 model Caption {

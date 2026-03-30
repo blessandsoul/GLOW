@@ -86,7 +86,7 @@ export const EditorialTopBar = (): React.ReactElement => {
           <Link
             href="/"
             className="absolute left-1/2 -translate-x-1/2 text-2xl uppercase tracking-[0.2em] select-none"
-            style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif', color: 'var(--ed-on-surface)' }}
+            style={{ fontFamily: 'var(--font-noto-georgian), sans-serif', color: 'var(--ed-on-surface)' }}
           >
             GLOW.GE
           </Link>
@@ -199,6 +199,17 @@ export const EditorialTopBar = (): React.ReactElement => {
               onClick={() => setMenuOpen(false)}
             />
 
+            {/* Marketplace — authenticated users */}
+            {isAuthenticated && (
+              <NavLink
+                href={ROUTES.MARKETPLACE}
+                icon="shopping_bag"
+                label="Маркетплейс"
+                isActive={pathname === ROUTES.MARKETPLACE}
+                onClick={() => setMenuOpen(false)}
+              />
+            )}
+
             {/* USER: Appointments + Favorites */}
             {isAuthenticated && !isMasterRole && (
               <>
@@ -256,6 +267,13 @@ export const EditorialTopBar = (): React.ReactElement => {
                   icon="group_add"
                   label={t('nav.referrals')}
                   isActive={pathname.startsWith(ROUTES.DASHBOARD_REFERRALS)}
+                  onClick={() => setMenuOpen(false)}
+                />
+                <NavLink
+                  href="/dashboard/shop"
+                  icon="sell"
+                  label="Мой магазин"
+                  isActive={pathname.startsWith('/dashboard/shop')}
                   onClick={() => setMenuOpen(false)}
                 />
                 {!IS_LAUNCH_MODE && (

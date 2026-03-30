@@ -159,4 +159,15 @@ export const API_ENDPOINTS = {
         },
         STATUS: '/favorites/status',
     },
+    MARKETPLACE: {
+        SELLER_STATUS: '/marketplace/seller/status',
+        SELLER_APPLY: '/marketplace/seller/apply',
+        ADMIN_SELLERS: '/marketplace/admin/sellers',
+        ADMIN_REVIEW_SELLER: (userId: string) => `/marketplace/admin/sellers/${userId}/review`,
+        MY_PRODUCTS: '/marketplace/products/me',
+        PRODUCTS: '/marketplace/products',
+        PRODUCT: (id: string) => `/marketplace/products/${id}`,
+        PRODUCT_IMAGES: (id: string) => `/marketplace/products/${id}/images`,
+        SELLER_PRODUCTS: (username: string) => `/marketplace/sellers/${username}/products`,
+    },
 } as const;

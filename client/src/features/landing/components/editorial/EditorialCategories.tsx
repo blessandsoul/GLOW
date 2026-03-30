@@ -15,8 +15,13 @@ import {
 } from 'lucide-react';
 import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
 
-// TODO: replace with real photos
-const CATEGORY_IMAGES: Record<string, string> = {};
+const CATEGORY_IMAGES: Record<string, string> = {
+  'lashes-brows':     '/categories/lash.jpg',
+  nails:              '/categories/nail.jpg',
+  makeup:             '/categories/makeup.jpg',
+  hair:               '/categories/hair.jpg',
+  'permanent-makeup': '/categories/permanent.jpg',
+};
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   'lashes-brows':     Eye,
@@ -121,7 +126,7 @@ export const EditorialCategories = (): React.ReactElement => {
                 </span>
                 <h3
                   className="text-white text-3xl"
-                  style={{ fontFamily: 'var(--font-noto-serif-georgian), var(--font-noto-serif), serif' }}
+                  style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
                 >
                   AI რეტუში
                 </h3>

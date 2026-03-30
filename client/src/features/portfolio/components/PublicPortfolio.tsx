@@ -20,6 +20,7 @@ import { ReviewsSection } from './ReviewsSection';
 import { ReviewForm } from '@/features/reviews/components/ReviewForm';
 import { FavoriteButton } from '@/features/favorites/components/FavoriteButton';
 import { useFavoriteStatus } from '@/features/favorites/hooks/useFavorites';
+import { MasterProductsSection } from '@/features/marketplace/components/MasterProductsSection';
 import type { PublicPortfolioData } from '../types/portfolio.types';
 import { cn } from '@/lib/utils';
 
@@ -121,6 +122,8 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                 {portfolio.services.length > 0 && (
                     <ServicesSection services={portfolio.services} t={t} />
                 )}
+
+                <MasterProductsSection username={username} />
 
                 <div className="mx-auto max-w-2xl px-4 space-y-10 mt-16">
                     <ReviewsSection
@@ -296,7 +299,7 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
 
     return (
         <section className="mt-20 px-4 sm:px-6 max-w-screen-xl mx-auto">
-            <div className="flex items-end justify-between mb-10 pb-6 border-b border-border/20">
+            <div className="flex items-end justify-between gap-6 mb-10 pb-6 border-b border-border/20">
                 <h2 className="text-3xl font-bold tracking-tight uppercase italic text-foreground">Portfolio</h2>
                 <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                     {displayName} · {items.length} ნამუშევარი
