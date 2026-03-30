@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { CompactMasterCard } from './CompactMasterCard';
 import type { FeaturedMaster, LocationType, CatalogDistrict, CatalogBrand, CatalogStyleTag } from '../../types/masters.types';
 
-interface BadgeFilters {
+export interface BadgeFilters {
   isVerified: boolean;
   isCertified: boolean;
   isHygieneVerified: boolean;
@@ -43,7 +43,7 @@ export interface MapLeftPanelProps {
   selectedLanguage: string | undefined;
   onLanguageChange: (v: string | undefined) => void;
   selectedLocationType: LocationType | undefined;
-  onLocationTypeChange: (v: string | undefined) => void;
+  onLocationTypeChange: (v: LocationType | undefined) => void;
   selectedDistrict: string | undefined;
   onDistrictChange: (v: string | undefined) => void;
   selectedBrand: string | undefined;
@@ -207,7 +207,7 @@ export function MapLeftPanel({
         </div>
 
         {/* Niche chips */}
-        <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]">
           <NicheChip isActive={!selectedNiche} onClick={() => onNicheChange(undefined)} icon={SquaresFour} label={t('masters.all_categories')} />
           {specialities.map((spec) => {
             const meta = NICHE_META[spec.slug];
@@ -218,7 +218,7 @@ export function MapLeftPanel({
         </div>
 
         {/* Badge chips */}
-        <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]">
           <BadgeFilterChip checked={badgeFilters.isVerified} onToggle={() => onBadgeToggle('isVerified')} icon={SealCheck} label={t('catalog.filter_verified')} colorClass="text-primary" />
           <BadgeFilterChip checked={badgeFilters.isCertified} onToggle={() => onBadgeToggle('isCertified')} icon={Certificate} label={t('catalog.filter_certified')} colorClass="text-primary" />
           <BadgeFilterChip checked={badgeFilters.isHygieneVerified} onToggle={() => onBadgeToggle('isHygieneVerified')} icon={FirstAid} label={t('catalog.filter_hygiene')} colorClass="text-success" />
@@ -235,7 +235,7 @@ export function MapLeftPanel({
             { value: 'JUNIOR', label: t('masters.tier_junior') },
           ]} />
           <SelectFilterChip value={selectedLanguage} onChange={onLanguageChange} label={t('catalog.filter_language')} options={LANGUAGE_OPTIONS} />
-          <SelectFilterChip value={selectedLocationType} onChange={onLocationTypeChange} label={t('catalog.filter_location_type')} options={LOCATION_TYPE_OPTIONS.map((o) => ({ value: o.value, label: t(`catalog.location_${o.value}`) }))} />
+          <SelectFilterChip value={selectedLocationType} onChange={(v) => onLocationTypeChange(v as LocationType | undefined)} label={t('catalog.filter_location_type')} options={LOCATION_TYPE_OPTIONS.map((o) => ({ value: o.value, label: t(`catalog.location_${o.value}`) }))} />
           {districts.length > 0 && <SelectFilterChip value={selectedDistrict} onChange={onDistrictChange} label={t('catalog.filter_district')} options={districts.map((d) => ({ value: d.slug, label: d.name }))} />}
           {brands.length > 0 && <SelectFilterChip value={selectedBrand} onChange={onBrandChange} label={t('catalog.filter_brand')} options={brands.map((b) => ({ value: b.slug, label: b.name }))} />}
           {styleTags.length > 0 && <SelectFilterChip value={selectedStyleTag} onChange={onStyleTagChange} label={t('catalog.filter_style_tag')} options={styleTags.map((s) => ({ value: s.slug, label: s.name }))} />}
