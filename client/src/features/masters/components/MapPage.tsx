@@ -126,9 +126,9 @@ export function MapPage(): React.ReactElement {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] flex-col-reverse lg:flex-row overflow-hidden">
+    <div className="flex h-[calc(100dvh-9.5rem)] md:h-[calc(100dvh-3.5rem)] flex-col-reverse lg:flex-row overflow-hidden">
       {/* Left panel — bottom on mobile (flex-col-reverse), left on desktop */}
-      <div className="h-[45dvh] lg:h-full lg:w-[420px] shrink-0">
+      <div className="h-[50%] flex flex-col min-h-0 lg:h-full lg:w-[420px] shrink-0">
         <MapLeftPanel
           searchInput={searchInput}
           onSearchChange={handleSearchChange}
@@ -171,7 +171,7 @@ export function MapPage(): React.ReactElement {
       </div>
 
       {/* Right panel — map (top on mobile due to flex-col-reverse, right on desktop) */}
-      <div className="relative flex-1 h-[55dvh] lg:h-full">
+      <div className="relative flex-1 min-h-0 lg:h-full">
         <MasterMapView
           masters={masters}
           highlightedUsername={highlightedUsername}

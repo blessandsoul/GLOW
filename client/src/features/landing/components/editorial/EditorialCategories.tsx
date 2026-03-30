@@ -21,6 +21,13 @@ const CATEGORY_IMAGES: Record<string, string> = {
   makeup:             '/categories/makeup.jpg',
   hair:               '/categories/hair.jpg',
   'permanent-makeup': '/categories/permanent.jpg',
+  skincare:           '/categories/skinandbody.jpg',
+  waxing:             '/categories/skinandbody.jpg',
+  body:               '/categories/skinandbody.jpg',
+  cosmetology:        '/categories/skinandbody.jpg',
+  'tattoo-piercing':  '/categories/tattoo.jpg',
+  retouch:            '/categories/retouch.jpg',
+  other:              '/categories/tattoo.jpg',
 };
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -81,6 +88,7 @@ export const EditorialCategories = (): React.ReactElement => {
                     alt={spec.label}
                     fill
                     sizes="50vw"
+                    unoptimized
                     className="h-full w-full object-cover grayscale group-hover:grayscale-0 active:grayscale-0 transition-all duration-700 ease-in-out"
                   />
                 ) : (
