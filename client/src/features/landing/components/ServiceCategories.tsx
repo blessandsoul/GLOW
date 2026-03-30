@@ -18,8 +18,8 @@ const NICHE_IMAGES: Record<string, string> = {
     skincare:           '/categories/skinandbody.jpg',
     waxing:             '/categories/skinandbody.jpg',
     body:               '/categories/skinandbody.jpg',
-    retouch:            '/categories/makeup.jpg',
-    other:              '/categories/makeup.jpg',
+    retouch:            '/categories/retouch.jpg',
+    other:              '/categories/tattoo.jpg',
 };
 
 const NICHE_GRADIENTS: Record<string, string> = {
