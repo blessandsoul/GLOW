@@ -15,11 +15,8 @@ const NICHE_IMAGES: Record<string, string> = {
     'permanent-makeup': '/categories/permanent.jpg',
     makeup:             '/categories/makeup.jpg',
     hair:               '/categories/hair.jpg',
-    skincare:           '/categories/skinandbody.jpg',
-    waxing:             '/categories/skinandbody.jpg',
-    body:               '/categories/skinandbody.jpg',
-    retouch:            '/categories/retouch.jpg',
-    other:              '/categories/tattoo.jpg',
+    cosmetology:        '/categories/skinandbody.jpg',
+    'tattoo-piercing':  '/categories/tattoo.jpg',
 };
 
 const NICHE_GRADIENTS: Record<string, string> = {
@@ -28,11 +25,8 @@ const NICHE_GRADIENTS: Record<string, string> = {
     'permanent-makeup': 'from-rose-900/70 to-rose-700/40',
     makeup:             'from-rose-900/70 to-rose-700/40',
     hair:               'from-sky-900/70 to-sky-700/40',
-    skincare:           'from-emerald-900/70 to-emerald-700/40',
-    waxing:             'from-amber-900/70 to-amber-700/40',
-    body:               'from-teal-900/70 to-teal-700/40',
-    retouch:            'from-fuchsia-900/70 to-fuchsia-700/40',
-    other:              'from-purple-900/70 to-purple-700/40',
+    cosmetology:        'from-emerald-900/70 to-emerald-700/40',
+    'tattoo-piercing':  'from-purple-900/70 to-purple-700/40',
 };
 
 export function ServiceCategories(): React.ReactElement | null {

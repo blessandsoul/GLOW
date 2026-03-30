@@ -1,6 +1,7 @@
+import { Eye, Drop, Scissors, Sparkle, Wrench, Bag, Palette, Package } from '@phosphor-icons/react/dist/ssr';
 import { cn } from '@/lib/utils';
 import type { ProductCategory } from '../types/marketplace.types';
-import { PRODUCT_CATEGORY_LABELS, PRODUCT_CATEGORY_ICONS } from '../types/marketplace.types';
+import { PRODUCT_CATEGORY_LABELS } from '../types/marketplace.types';
 
 const CATEGORY_COLORS: Record<ProductCategory, string> = {
     lashes: 'bg-primary/10 text-primary',
@@ -13,12 +14,24 @@ const CATEGORY_COLORS: Record<ProductCategory, string> = {
     other: 'bg-muted text-muted-foreground',
 };
 
+const CATEGORY_ICONS: Record<ProductCategory, React.ElementType> = {
+    lashes: Eye,
+    glue: Drop,
+    tweezers: Scissors,
+    decor: Sparkle,
+    tools: Wrench,
+    accessories: Bag,
+    cosmetics: Palette,
+    other: Package,
+};
+
 interface ProductCategoryBadgeProps {
     category: ProductCategory;
     className?: string;
 }
 
 export function ProductCategoryBadge({ category, className }: ProductCategoryBadgeProps): React.ReactElement {
+    const Icon = CATEGORY_ICONS[category];
     return (
         <span
             className={cn(
@@ -27,7 +40,7 @@ export function ProductCategoryBadge({ category, className }: ProductCategoryBad
                 className,
             )}
         >
-            <span>{PRODUCT_CATEGORY_ICONS[category]}</span>
+            <Icon size={10} weight="fill" />
             {PRODUCT_CATEGORY_LABELS[category]}
         </span>
     );

@@ -11,22 +11,22 @@ const STATUS_CONFIG = {
         icon: Clock,
         iconClass: 'text-warning-foreground',
         bgClass: 'bg-warning/10',
-        title: 'Заявка на рассмотрении',
-        description: 'Мы рассматриваем вашу заявку. Обычно это занимает 1–2 рабочих дня.',
+        title: 'განაცხადი განხილვაშია',
+        description: 'ვიხილავთ შენს განაცხადს. ჩვეულებრივ 1–2 სამუშაო დღე სჭირდება.',
     },
     APPROVED: {
         icon: CheckCircle,
         iconClass: 'text-success',
         bgClass: 'bg-success/10',
-        title: 'Вы одобренный продавец!',
-        description: 'Теперь вы можете добавлять товары и продавать на Glow.GE.',
+        title: 'შენ დამტკიცებული გამყიდველი ხარ!',
+        description: 'ახლა შეგიძლია პროდუქტები დაამატო და გაყიდო Glow.GE-ზე.',
     },
     REJECTED: {
         icon: XCircle,
         iconClass: 'text-destructive',
         bgClass: 'bg-destructive/10',
-        title: 'Заявка отклонена',
-        description: 'Вы можете подать заявку повторно.',
+        title: 'განაცხადი უარყოფილია',
+        description: 'შეგიძლია ხელახლა შეიტანო განაცხადი.',
     },
 };
 
@@ -46,7 +46,7 @@ export function SellerApplicationStatus({ status, rejectedReason }: SellerApplic
                 <p className="mt-1.5 text-sm text-muted-foreground">{config.description}</p>
                 {status === 'REJECTED' && rejectedReason && (
                     <div className="mt-4 w-full rounded-xl bg-muted/60 p-3 text-left">
-                        <p className="text-xs font-medium text-muted-foreground">Причина отклонения:</p>
+                        <p className="text-xs font-medium text-muted-foreground">უარყოფის მიზეზი:</p>
                         <p className="mt-0.5 text-xs text-foreground">{rejectedReason}</p>
                     </div>
                 )}

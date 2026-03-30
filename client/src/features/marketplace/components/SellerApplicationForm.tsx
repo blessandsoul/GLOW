@@ -31,10 +31,10 @@ export function SellerApplicationForm({ previousStatus, rejectedReason }: Seller
                     </div>
                     <div>
                         <h2 className="text-base font-semibold text-foreground">
-                            Стать продавцом
+                            გახდი გამყიდველი
                         </h2>
                         <p className="text-xs text-muted-foreground">
-                            Заявка рассматривается администратором
+                            განაცხადს განიხილავს ადმინისტრატორი
                         </p>
                     </div>
                 </div>
@@ -42,26 +42,26 @@ export function SellerApplicationForm({ previousStatus, rejectedReason }: Seller
                 {/* Rejected notice */}
                 {previousStatus === 'REJECTED' && rejectedReason && (
                     <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 p-3">
-                        <p className="text-xs font-medium text-destructive">Предыдущая заявка отклонена</p>
+                        <p className="text-xs font-medium text-destructive">წინა განაცხადი უარყოფილია</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">{rejectedReason}</p>
                     </div>
                 )}
 
                 {/* Requirements */}
                 <div className="mb-5 space-y-1.5">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Требования</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">მოთხოვნები</p>
                     <ul className="space-y-1 text-xs text-muted-foreground">
                         <li className="flex items-center gap-1.5">
                             <span className="h-1 w-1 rounded-full bg-primary/60" />
-                            Верифицированный мастер
+                            ვერიფიცირებული ოსტატი
                         </li>
                         <li className="flex items-center gap-1.5">
                             <span className="h-1 w-1 rounded-full bg-primary/60" />
-                            Одобрение администратора
+                            ადმინისტრატორის დადასტურება
                         </li>
                         <li className="flex items-center gap-1.5">
                             <span className="h-1 w-1 rounded-full bg-primary/60" />
-                            0% комиссии — всё управляете сами
+                            0% საკომისიო — ყველაფერს თავად მართავ
                         </li>
                     </ul>
                 </div>
@@ -69,12 +69,12 @@ export function SellerApplicationForm({ previousStatus, rejectedReason }: Seller
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
                         <label className="text-xs font-medium text-foreground">
-                            Почему хотите продавать на Glow.GE?
+                            რატომ გსურს გაყიდვა Glow.GE-ზე?
                         </label>
                         <textarea
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder="Расскажите, что планируете продавать и почему..."
+                            placeholder="მოგვიყევი, რის გაყიდვას გეგმავ და რატომ..."
                             rows={4}
                             maxLength={500}
                             className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0"
@@ -83,7 +83,7 @@ export function SellerApplicationForm({ previousStatus, rejectedReason }: Seller
                             {reason.length}/500
                         </p>
                         {reason.length > 0 && reason.trim().length < 10 && (
-                            <p className="text-xs text-destructive">Минимум 10 символов</p>
+                            <p className="text-xs text-destructive">მინიმუმ 10 სიმბოლო</p>
                         )}
                     </div>
 
@@ -95,7 +95,7 @@ export function SellerApplicationForm({ previousStatus, rejectedReason }: Seller
                         {isPending ? (
                             <SpinnerGap size={16} className="animate-spin" />
                         ) : (
-                            'Отправить заявку'
+                            'განაცხადის გაგზავნა'
                         )}
                     </Button>
                 </form>

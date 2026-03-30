@@ -34,7 +34,7 @@ export function MasterProductsSection({ username }: MasterProductsSectionProps):
     return (
         <section className="px-4 py-8">
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                Товары мастера
+                ოსტატის პროდუქტები
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {products.map((product) => (

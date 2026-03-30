@@ -84,23 +84,12 @@ export interface IProductFilters {
 }
 
 export const PRODUCT_CATEGORY_LABELS: Record<ProductCategory, string> = {
-    lashes: 'Ресницы',
-    glue: 'Клей',
-    tweezers: 'Пинцеты',
-    decor: 'Декор',
-    tools: 'Инструменты',
-    accessories: 'Аксессуары',
-    cosmetics: 'Косметика',
-    other: 'Другое',
-};
-
-export const PRODUCT_CATEGORY_ICONS: Record<ProductCategory, string> = {
-    lashes: '👁',
-    glue: '🧴',
-    tweezers: '✂️',
-    decor: '✨',
-    tools: '🔧',
-    accessories: '💼',
-    cosmetics: '💄',
-    other: '📦',
+    lashes: 'წამწამები',
+    glue: 'წებო',
+    tweezers: 'პინცეტი',
+    decor: 'დეკორი',
+    tools: 'ინსტრუმენტები',
+    accessories: 'აქსესუარები',
+    cosmetics: 'კოსმეტიკა',
+    other: 'სხვა',
 };

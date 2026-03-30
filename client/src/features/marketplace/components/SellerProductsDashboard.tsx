@@ -40,7 +40,7 @@ export function SellerProductsDashboard(): React.ReactElement {
     }
 
     function handleDelete(id: string): void {
-        if (!confirm('Удалить товар?')) return;
+        if (!confirm('პროდუქტის წაშლა?')) return;
         deleteProduct(id);
     }
 
@@ -48,8 +48,8 @@ export function SellerProductsDashboard(): React.ReactElement {
         return (
             <div className="mx-auto max-w-lg">
                 <div className="mb-4 flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => setView('list')}>← Назад</Button>
-                    <h2 className="text-base font-semibold">Новый товар</h2>
+                    <Button variant="ghost" size="sm" onClick={() => setView('list')}>← უკან</Button>
+                    <h2 className="text-base font-semibold">ახალი პროდუქტი</h2>
                 </div>
                 <div className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm">
                     <ProductForm onSubmit={handleCreate} onCancel={() => setView('list')} isPending={isCreating} />
@@ -62,8 +62,8 @@ export function SellerProductsDashboard(): React.ReactElement {
         return (
             <div className="mx-auto max-w-lg">
                 <div className="mb-4 flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => { setView('list'); setEditingProduct(null); }}>← Назад</Button>
-                    <h2 className="text-base font-semibold">Редактировать товар</h2>
+                    <Button variant="ghost" size="sm" onClick={() => { setView('list'); setEditingProduct(null); }}>← უკან</Button>
+                    <h2 className="text-base font-semibold">პროდუქტის რედაქტირება</h2>
                 </div>
                 <div className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm">
                     <ProductForm product={editingProduct} onSubmit={handleUpdate} onCancel={() => { setView('list'); setEditingProduct(null); }} isPending={isUpdating} />
@@ -77,12 +77,12 @@ export function SellerProductsDashboard(): React.ReactElement {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-base font-semibold text-foreground">Мои товары</h2>
-                    <p className="text-xs text-muted-foreground">{products.length} товаров</p>
+                    <h2 className="text-base font-semibold text-foreground">ჩემი პროდუქტები</h2>
+                    <p className="text-xs text-muted-foreground">{products.length} პროდუქტი</p>
                 </div>
                 <Button size="sm" onClick={() => setView('create')}>
                     <Plus size={14} />
-                    Добавить товар
+                    პროდუქტის დამატება
                 </Button>
             </div>
 
@@ -97,11 +97,11 @@ export function SellerProductsDashboard(): React.ReactElement {
             {!isLoading && products.length === 0 && (
                 <div className="flex flex-col items-center rounded-2xl border border-dashed border-border/50 py-16 text-center">
                     <Package size={36} className="mb-3 text-muted-foreground/40" />
-                    <p className="text-sm font-medium text-foreground">Нет товаров</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Добавьте первый товар для продажи</p>
+                    <p className="text-sm font-medium text-foreground">პროდუქტები არ არის</p>
+                    <p className="mt-1 text-xs text-muted-foreground">დაამატე პირველი პროდუქტი გასაყიდად</p>
                     <Button size="sm" className="mt-4" onClick={() => setView('create')}>
                         <Plus size={14} />
-                        Добавить товар
+                        პროდუქტის დამატება
                     </Button>
                 </div>
             )}
@@ -140,7 +140,7 @@ export function SellerProductsDashboard(): React.ReactElement {
                                         'text-xs',
                                         product.inStock ? 'text-success' : 'text-muted-foreground',
                                     )}>
-                                        {product.inStock ? 'В наличии' : 'Нет'}
+                                        {product.inStock ? 'მარაგშია' : 'არ არის'}
                                     </span>
                                 </div>
                             </div>

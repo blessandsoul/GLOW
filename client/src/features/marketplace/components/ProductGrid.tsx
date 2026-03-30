@@ -1,3 +1,4 @@
+import { ShoppingBag } from '@phosphor-icons/react/dist/ssr';
 import { cn } from '@/lib/utils';
 import type { IProduct } from '../types/marketplace.types';
 import { ProductCard } from './ProductCard';
@@ -36,10 +37,12 @@ export function ProductGrid({ products, isLoading, className }: ProductGridProps
     if (products.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="mb-3 text-4xl">🛍️</div>
-                <p className="text-sm font-medium text-foreground">Товаров пока нет</p>
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted">
+                    <ShoppingBag size={24} className="text-muted-foreground/50" />
+                </div>
+                <p className="text-sm font-medium text-foreground">პროდუქტები ჯერ არ არის</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                    Мастера ещё не разместили товары
+                    ოსტატებმა ჯერ არ განათავსეს პროდუქტები
                 </p>
             </div>
         );

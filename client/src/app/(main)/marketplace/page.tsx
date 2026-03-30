@@ -50,9 +50,9 @@ function MarketplaceContent(): React.ReactElement {
         <div className="container mx-auto px-4 py-8 md:px-6">
             {/* Header */}
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-foreground">Маркетплейс</h1>
+                <h1 className="text-2xl font-bold text-foreground">მარკეტპლეისი</h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                    Профессиональные материалы от мастеров для мастеров
+                    პროფესიული მასალები ოსტატებისგან ოსტატებისთვის
                 </p>
             </div>
 
@@ -64,7 +64,7 @@ function MarketplaceContent(): React.ReactElement {
             {/* Results count */}
             {!isLoading && pagination && (
                 <p className="mb-4 text-xs text-muted-foreground">
-                    {pagination.totalItems} товаров
+                    {pagination.totalItems} პროდუქტი
                 </p>
             )}
 
@@ -79,7 +79,7 @@ function MarketplaceContent(): React.ReactElement {
                         disabled={!pagination.hasPreviousPage}
                         className="rounded-lg border border-border/50 bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                        ← Назад
+                        ← უკან
                     </button>
                     <span className="text-xs text-muted-foreground">
                         {page} / {pagination.totalPages}
@@ -89,7 +89,7 @@ function MarketplaceContent(): React.ReactElement {
                         disabled={!pagination.hasNextPage}
                         className="rounded-lg border border-border/50 bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                        Вперёд →
+                        წინ →
                     </button>
                 </div>
             )}

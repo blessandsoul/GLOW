@@ -68,7 +68,7 @@ export function ProductCard({ product, className }: ProductCardProps): React.Rea
                 {!product.inStock && (
                     <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[2px]">
                         <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                            Нет в наличии
+                            არ არის მარაგში
                         </span>
                     </div>
                 )}
@@ -114,11 +114,11 @@ export function ProductCard({ product, className }: ProductCardProps): React.Rea
                             const Icon = ICON_MAP[contact.icon];
                             return <Icon size={14} weight="fill" />;
                         })()}
-                        Написать мастеру
+                        ოსტატს დაუკავშირდი
                     </a>
                 ) : (
                     <div className="flex items-center justify-center rounded-xl bg-muted py-2 text-xs text-muted-foreground">
-                        Нет контактов
+                        საკონტაქტო ინფო არ არის
                     </div>
                 )}
             </div>

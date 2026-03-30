@@ -8,7 +8,19 @@ import { cn } from '@/lib/utils';
 import { marketplaceService } from '../services/marketplace.service';
 import { ProductImageUploader } from './ProductImageUploader';
 import type { IProduct, ICreateProductRequest, ProductCategory } from '../types/marketplace.types';
-import { PRODUCT_CATEGORIES, PRODUCT_CATEGORY_LABELS, PRODUCT_CATEGORY_ICONS } from '../types/marketplace.types';
+import { Eye, Drop, Scissors, Sparkle, Wrench, Bag, Palette, Package as PackageIcon } from '@phosphor-icons/react';
+import { PRODUCT_CATEGORIES, PRODUCT_CATEGORY_LABELS } from '../types/marketplace.types';
+
+const CATEGORY_ICONS: Record<ProductCategory, React.ElementType> = {
+    lashes: Eye,
+    glue: Drop,
+    tweezers: Scissors,
+    decor: Sparkle,
+    tools: Wrench,
+    accessories: Bag,
+    cosmetics: Palette,
+    other: PackageIcon,
+};
 
 interface ProductFormProps {
     product?: IProduct;
@@ -78,22 +90,22 @@ export function ProductForm({ product, onSubmit, onCancel, isPending }: ProductF
             />
 
             <div className="space-y-1.5">
-                <label className="text-xs font-medium text-foreground">Название товара *</label>
+                <label className="text-xs font-medium text-foreground">პროდუქტის სახელი *</label>
                 <Input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Клей для ресниц, пинцет..."
+                    placeholder="წამწამის წებო, პინცეტი..."
                     maxLength={200}
                     className="text-sm"
                 />
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-xs font-medium text-foreground">Описание</label>
+                <label className="text-xs font-medium text-foreground">აღწერა</label>
                 <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Объём, бренд, особенности..."
+                    placeholder="მოცულობა, ბრენდი, თვისებები..."
                     rows={3}
                     maxLength={2000}
                     className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0"
@@ -102,7 +114,7 @@ export function ProductForm({ product, onSubmit, onCancel, isPending }: ProductF
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-foreground">Цена (GEL) *</label>
+                    <label className="text-xs font-medium text-foreground">ფასი (GEL) *</label>
                     <Input
                         type="number"
                         value={price}
@@ -116,7 +128,7 @@ export function ProductForm({ product, onSubmit, onCancel, isPending }: ProductF
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-foreground">В наличии</label>
+                    <label className="text-xs font-medium text-foreground">მარაგი</label>
                     <button
                         type="button"
                         onClick={() => setInStock((v) => !v)}
@@ -127,47 +139,50 @@ export function ProductForm({ product, onSubmit, onCancel, isPending }: ProductF
                                 : 'border-border/50 bg-muted text-muted-foreground',
                         )}
                     >
-                        {inStock ? '✓ Есть в наличии' : '✗ Нет в наличии'}
+                        {inStock ? '✓ მარაგშია' : '✗ არ არის მარაგში'}
                     </button>
                 </div>
             </div>
 
             {/* Category */}
             <div className="space-y-1.5">
-                <label className="text-xs font-medium text-foreground">Категория *</label>
+                <label className="text-xs font-medium text-foreground">კატეგორია *</label>
                 <div className="flex flex-wrap gap-1.5">
-                    {PRODUCT_CATEGORIES.map((cat) => (
-                        <button
-                            key={cat}
-                            type="button"
-                            onClick={() => setCategory(cat)}
-                            className={cn(
-                                'flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all',
-                                category === cat
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
-                            )}
-                        >
-                            <span>{PRODUCT_CATEGORY_ICONS[cat]}</span>
-                            {PRODUCT_CATEGORY_LABELS[cat]}
-                        </button>
-                    ))}
+                    {PRODUCT_CATEGORIES.map((cat) => {
+                        const Icon = CATEGORY_ICONS[cat];
+                        return (
+                            <button
+                                key={cat}
+                                type="button"
+                                onClick={() => setCategory(cat)}
+                                className={cn(
+                                    'flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all',
+                                    category === cat
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                                )}
+                            >
+                                <Icon size={11} weight="fill" />
+                                {PRODUCT_CATEGORY_LABELS[cat]}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
             <div className="flex gap-2 pt-1">
                 {onCancel && (
                     <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-                        Отмена
+                        გაუქმება
                     </Button>
                 )}
                 <Button type="submit" className="flex-1" disabled={isPending || !isValid || isUploading}>
                     {isPending ? (
                         <SpinnerGap size={16} className="animate-spin" />
                     ) : product ? (
-                        'Сохранить'
+                        'შენახვა'
                     ) : (
-                        'Создать товар'
+                        'პროდუქტის შექმნა'
                     )}
                 </Button>
             </div>

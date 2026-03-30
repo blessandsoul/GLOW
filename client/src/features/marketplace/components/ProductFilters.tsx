@@ -2,9 +2,21 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
+import { Eye, Drop, Scissors, Sparkle, Wrench, Bag, Palette, Package } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import type { ProductCategory } from '../types/marketplace.types';
-import { PRODUCT_CATEGORIES, PRODUCT_CATEGORY_LABELS, PRODUCT_CATEGORY_ICONS } from '../types/marketplace.types';
+import { PRODUCT_CATEGORIES, PRODUCT_CATEGORY_LABELS } from '../types/marketplace.types';
+
+const CATEGORY_ICONS: Record<ProductCategory, React.ElementType> = {
+    lashes: Eye,
+    glue: Drop,
+    tweezers: Scissors,
+    decor: Sparkle,
+    tools: Wrench,
+    accessories: Bag,
+    cosmetics: Palette,
+    other: Package,
+};
 
 export function ProductFilters(): React.ReactElement {
     const router = useRouter();
@@ -48,23 +60,26 @@ export function ProductFilters(): React.ReactElement {
                             : 'bg-muted text-muted-foreground hover:bg-muted/80',
                     )}
                 >
-                    Все
+                    ყველა
                 </button>
-                {PRODUCT_CATEGORIES.map((cat) => (
-                    <button
-                        key={cat}
-                        onClick={() => handleCategory(cat)}
-                        className={cn(
-                            'flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-all',
-                            activeCategory === cat
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-muted-foreground hover:bg-muted/80',
-                        )}
-                    >
-                        <span>{PRODUCT_CATEGORY_ICONS[cat]}</span>
-                        {PRODUCT_CATEGORY_LABELS[cat]}
-                    </button>
-                ))}
+                {PRODUCT_CATEGORIES.map((cat) => {
+                    const Icon = CATEGORY_ICONS[cat];
+                    return (
+                        <button
+                            key={cat}
+                            onClick={() => handleCategory(cat)}
+                            className={cn(
+                                'flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-all',
+                                activeCategory === cat
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                            )}
+                        >
+                            <Icon size={11} weight="fill" />
+                            {PRODUCT_CATEGORY_LABELS[cat]}
+                        </button>
+                    );
+                })}
             </div>
 
             {/* In stock toggle */}
@@ -78,7 +93,7 @@ export function ProductFilters(): React.ReactElement {
                 )}
             >
                 <span className={cn('h-1.5 w-1.5 rounded-full', inStockOnly ? 'bg-success' : 'bg-muted-foreground')} />
-                Только в наличии
+                მხოლოდ მარაგშია
             </button>
         </div>
     );

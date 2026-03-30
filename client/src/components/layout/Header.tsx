@@ -69,11 +69,8 @@ const NICHE_ICONS: Record<string, React.ComponentType<IconProps>> = {
     'permanent-makeup': Sparkle,
     makeup:             Sparkle,
     hair:               Scissors,
-    skincare:           FlowerLotus,
-    waxing:             Sparkle,
-    body:               Sparkle,
-    retouch:            MagicWand,
-    other:              Sparkle,
+    cosmetology:        FlowerLotus,
+    'tattoo-piercing':  MagicWand,
 };
 
 const NICHE_COLORS: Record<string, string> = {
@@ -82,23 +79,18 @@ const NICHE_COLORS: Record<string, string> = {
     'permanent-makeup': 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
     makeup:             'bg-rose-500/10 text-rose-600 dark:text-rose-400',
     hair:               'bg-sky-500/10 text-sky-600 dark:text-sky-400',
-    skincare:           'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-    waxing:             'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-    body:               'bg-teal-500/10 text-teal-600 dark:text-teal-400',
-    retouch:            'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400',
-    other:              'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+    cosmetology:        'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    'tattoo-piercing':  'bg-purple-500/10 text-purple-600 dark:text-purple-400',
 };
 
 const BURGER_STATIC_CATEGORIES = [
-    { slug: 'lashes-brows',     label: 'წამწამები & წარბები' },
-    { slug: 'nails',            label: 'ფრჩხილები' },
+    { slug: 'lashes-brows',     label: 'წამწამები და წარბები' },
+    { slug: 'nails',            label: 'ფრჩხილის მოვლა' },
     { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი' },
     { slug: 'makeup',           label: 'მაკიაჟი' },
-    { slug: 'hair',             label: 'თმა' },
-    { slug: 'skincare',         label: 'კანის მოვლა' },
-    { slug: 'waxing',           label: 'ეპილაცია და რუჯი' },
-    { slug: 'body',             label: 'მასაჟი და სხეული' },
-    { slug: 'other',            label: 'ცხოვრების სტილი და სხვა' },
+    { slug: 'hair',             label: 'თმის მოვლა' },
+    { slug: 'cosmetology',      label: 'კოსმეტოლოგია და სხეულის მოვლა' },
+    { slug: 'tattoo-piercing',  label: 'ტატუ და პირსინგი' },
 ];
 
 function BurgerMenu({ t }: { t: (key: string) => string }): React.ReactElement {
