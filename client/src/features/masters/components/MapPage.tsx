@@ -39,7 +39,6 @@ export function MapPage(): React.ReactElement {
   const [selectedBrand, setSelectedBrand] = useState<string | undefined>(searchParams.get('brandSlug') ?? undefined);
   const [selectedStyleTag, setSelectedStyleTag] = useState<string | undefined>(searchParams.get('styleTagSlug') ?? undefined);
   const [selectedTier, setSelectedTier] = useState<string | undefined>(searchParams.get('masterTier') ?? undefined);
-  const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
   const [badgeFilters, setBadgeFilters] = useState<BadgeFilters>({
     isVerified: searchParams.get('isVerified') === 'true',
     isCertified: searchParams.get('isCertified') === 'true',
@@ -47,8 +46,6 @@ export function MapPage(): React.ReactElement {
     isQualityProducts: searchParams.get('isQualityProducts') === 'true',
     isTopRated: searchParams.get('isTopRated') === 'true',
   });
-  const [highlightedUsername, setHighlightedUsername] = useState<string | null>(null);
-
   const debouncedSearch = useDebounce(searchInput, 400);
 
   const { districts } = useDistricts();
@@ -61,7 +58,6 @@ export function MapPage(): React.ReactElement {
     if (debouncedSearch) params.set('search', debouncedSearch);
     if (selectedNiche) params.set('niche', selectedNiche);
     if (cities.length > 0) params.set('city', cities.join(','));
-    if (page > 1) params.set('page', String(page));
     if (badgeFilters.isVerified) params.set('isVerified', 'true');
     if (badgeFilters.isCertified) params.set('isCertified', 'true');
     if (badgeFilters.isHygieneVerified) params.set('isHygieneVerified', 'true');
@@ -75,15 +71,15 @@ export function MapPage(): React.ReactElement {
     if (selectedTier) params.set('masterTier', selectedTier);
     const qs = params.toString();
     router.replace(qs ? `${ROUTES.MAP}?${qs}` : ROUTES.MAP, { scroll: false });
-  }, [debouncedSearch, selectedNiche, cities, page, badgeFilters, selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, selectedTier, router]);
+  }, [debouncedSearch, selectedNiche, cities, badgeFilters, selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, selectedTier, router]);
 
   // ─── Data ─────────────────────────────────────────────────────────────────
-  const { masters, pagination, isLoading, isFetching } = useMastersCatalog({
+  const { masters } = useMastersCatalog({
     search: debouncedSearch || undefined,
     niche: selectedNiche,
     city: cities.length > 0 ? cities.join(',') : undefined,
-    page,
-    limit: 20,
+    page: 1,
+    limit: 100,
     ...(badgeFilters.isVerified && { isVerified: true }),
     ...(badgeFilters.isCertified && { isCertified: true }),
     ...(badgeFilters.isHygieneVerified && { isHygieneVerified: true }),
@@ -98,26 +94,25 @@ export function MapPage(): React.ReactElement {
   });
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
-  const handleSearchChange = useCallback((v: string): void => { setSearchInput(v); setPage(1); }, []);
-  const handleNicheChange = useCallback((v: string | undefined): void => { setSelectedNiche(v); setPage(1); }, []);
-  const handleToggleCity = useCallback((slug: string): void => { setCities((prev) => prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]); setPage(1); }, []);
-  const handleRemoveCity = useCallback((slug: string): void => { setCities((prev) => prev.filter((c) => c !== slug)); setPage(1); }, []);
-  const handleBadgeToggle = useCallback((key: keyof BadgeFilters): void => { setBadgeFilters((prev) => ({ ...prev, [key]: !prev[key] })); setPage(1); }, []);
+  const handleSearchChange = useCallback((v: string): void => { setSearchInput(v); }, []);
+  const handleNicheChange = useCallback((v: string | undefined): void => { setSelectedNiche(v); }, []);
+  const handleToggleCity = useCallback((slug: string): void => { setCities((prev) => prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]); }, []);
+  const handleRemoveCity = useCallback((slug: string): void => { setCities((prev) => prev.filter((c) => c !== slug)); }, []);
+  const handleBadgeToggle = useCallback((key: keyof BadgeFilters): void => { setBadgeFilters((prev) => ({ ...prev, [key]: !prev[key] })); }, []);
   const handleClearFilters = useCallback((): void => {
     setSearchInput(''); setSelectedNiche(undefined); setCities([]);
     setBadgeFilters({ isVerified: false, isCertified: false, isHygieneVerified: false, isQualityProducts: false, isTopRated: false });
     setSelectedLanguage(undefined); setSelectedLocationType(undefined);
     setSelectedDistrict(undefined); setSelectedBrand(undefined);
     setSelectedStyleTag(undefined); setSelectedTier(undefined);
-    setPage(1);
   }, []);
 
-  const handleTierChange = useCallback((v: string | undefined): void => { setSelectedTier(v); setPage(1); }, []);
-  const handleLanguageChange = useCallback((v: string | undefined): void => { setSelectedLanguage(v); setPage(1); }, []);
-  const handleLocationTypeChange = useCallback((v: LocationType | undefined): void => { setSelectedLocationType(v); setPage(1); }, []);
-  const handleDistrictChange = useCallback((v: string | undefined): void => { setSelectedDistrict(v); setPage(1); }, []);
-  const handleBrandChange = useCallback((v: string | undefined): void => { setSelectedBrand(v); setPage(1); }, []);
-  const handleStyleTagChange = useCallback((v: string | undefined): void => { setSelectedStyleTag(v); setPage(1); }, []);
+  const handleTierChange = useCallback((v: string | undefined): void => { setSelectedTier(v); }, []);
+  const handleLanguageChange = useCallback((v: string | undefined): void => { setSelectedLanguage(v); }, []);
+  const handleLocationTypeChange = useCallback((v: LocationType | undefined): void => { setSelectedLocationType(v); }, []);
+  const handleDistrictChange = useCallback((v: string | undefined): void => { setSelectedDistrict(v); }, []);
+  const handleBrandChange = useCallback((v: string | undefined): void => { setSelectedBrand(v); }, []);
+  const handleStyleTagChange = useCallback((v: string | undefined): void => { setSelectedStyleTag(v); }, []);
 
   const activeBadgeCount = Object.values(badgeFilters).filter(Boolean).length;
   const extraFilterCount = [selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, selectedTier].filter(Boolean).length;
@@ -126,9 +121,17 @@ export function MapPage(): React.ReactElement {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-x-0 top-14 bottom-14 flex flex-col-reverse lg:flex-row overflow-hidden md:static md:h-[calc(100dvh-3.5rem)]">
-      {/* Left panel — bottom on mobile (flex-col-reverse), left on desktop */}
-      <div className="h-[55%] flex flex-col min-h-0 lg:h-full lg:w-[420px] shrink-0">
+    <div className="fixed inset-x-0 top-14 bottom-0 overflow-hidden md:static md:h-[calc(100dvh-3.5rem)]">
+      {/* Map — full screen */}
+      <MasterMapView
+        masters={masters}
+        highlightedUsername={null}
+        onMasterHover={() => {}}
+        className="h-full w-full"
+      />
+
+      {/* Filter panel — floating overlay top-left */}
+      <div className="absolute left-3 top-3 z-1000 w-[min(420px,calc(100vw-1.5rem))]">
         <MapLeftPanel
           searchInput={searchInput}
           onSearchChange={handleSearchChange}
@@ -154,15 +157,6 @@ export function MapPage(): React.ReactElement {
           hasActiveFilters={hasActiveFilters}
           activeFilterCount={activeFilterCount}
           onClearFilters={handleClearFilters}
-          masters={masters}
-          totalItems={pagination?.totalItems ?? 0}
-          isLoading={isLoading}
-          isFetching={isFetching}
-          page={page}
-          totalPages={pagination?.totalPages ?? 1}
-          onPageChange={setPage}
-          highlightedUsername={highlightedUsername}
-          onMasterHover={setHighlightedUsername}
           specialities={specialities}
           districts={districts}
           brands={brands}
@@ -170,23 +164,14 @@ export function MapPage(): React.ReactElement {
         />
       </div>
 
-      {/* Right panel — map (top on mobile due to flex-col-reverse, right on desktop) */}
-      <div className="relative flex-1 min-h-0 lg:h-full">
-        <MasterMapView
-          masters={masters}
-          highlightedUsername={highlightedUsername}
-          onMasterHover={setHighlightedUsername}
-        />
-
-        {/* "List view" button */}
-        <Link
-          href={ROUTES.MASTERS}
-          className="absolute right-3 top-3 z-[1000] flex items-center gap-2 rounded-xl border border-border/60 bg-background/90 px-3 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background hover:shadow-md"
-        >
-          <ListBullets size={14} weight="bold" />
-          {t('catalog.btn_list')}
-        </Link>
-      </div>
+      {/* "List view" button — top-right */}
+      <Link
+        href={ROUTES.MASTERS}
+        className="absolute right-3 top-3 z-1000 flex items-center gap-2 rounded-xl border border-border/60 bg-background/90 px-3 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background hover:shadow-md"
+      >
+        <ListBullets size={14} weight="bold" />
+        {t('catalog.btn_list')}
+      </Link>
     </div>
   );
 }

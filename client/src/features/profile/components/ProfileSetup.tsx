@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Plus, UserCircle, SpinnerGap } from '@phosphor-icons/react';
+import { Plus, UserCircle, SpinnerGap, PencilSimple, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,6 +31,7 @@ function PersonalInfoSection(): React.ReactElement {
     const [firstName, setFirstName] = useState(user?.firstName ?? '');
     const [lastName, setLastName] = useState(user?.lastName ?? '');
     const [isSaving, setIsSaving] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
     const handleSave = useCallback(async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
@@ -39,44 +40,83 @@ function PersonalInfoSection(): React.ReactElement {
             const updatedUser = await usersService.updateMe({ firstName, lastName });
             dispatch(setUser(updatedUser));
             toast.success(t('ui.profile_name_updated'));
+            setIsEditing(false);
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
             setIsSaving(false);
         }
-    }, [firstName, lastName, dispatch]);
+    }, [firstName, lastName, dispatch, t]);
+
+    const handleCancel = useCallback((): void => {
+        setFirstName(user?.firstName ?? '');
+        setLastName(user?.lastName ?? '');
+        setIsEditing(false);
+    }, [user]);
 
     return (
-        <section className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
-            <p className="text-sm font-semibold text-foreground">{t('ui.profile_personal_info')}</p>
-
-            {/* Name fields */}
-            <form onSubmit={handleSave} className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-1.5">
-                        <Label htmlFor="firstName" className="text-xs text-muted-foreground">{t('ui.profile_first_name')}</Label>
-                        <Input
-                            id="firstName"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            placeholder="Anna"
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <Label htmlFor="lastName" className="text-xs text-muted-foreground">{t('ui.profile_last_name')}</Label>
-                        <Input
-                            id="lastName"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            placeholder="Beridze"
-                        />
-                    </div>
+        <section className="rounded-xl border border-border/50 bg-card p-5">
+            {/* Compact display row */}
+            <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">{t('ui.profile_personal_info')}</p>
+                    <p className="mt-0.5 text-sm font-medium text-foreground truncate">
+                        {user?.firstName} {user?.lastName}
+                    </p>
                 </div>
-                <Button type="submit" size="sm" disabled={isSaving} className="gap-1.5">
-                    {isSaving && <SpinnerGap size={14} className="animate-spin" />}
-                    {isSaving ? t('ui.text_y9fzx8') : t('ui.profile_save_name')}
-                </Button>
-            </form>
+                <button
+                    type="button"
+                    onClick={() => setIsEditing((v) => !v)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                    {isEditing ? (
+                        <>
+                            <X size={13} />
+                            {t('ui.cancel') || 'Cancel'}
+                        </>
+                    ) : (
+                        <>
+                            <PencilSimple size={13} />
+                            {t('ui.edit') || 'Edit'}
+                        </>
+                    )}
+                </button>
+            </div>
+
+            {/* Expandable edit form */}
+            {isEditing && (
+                <form onSubmit={handleSave} className="mt-4 space-y-4 border-t border-border/50 pt-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="firstName" className="text-xs text-muted-foreground">{t('ui.profile_first_name')}</Label>
+                            <Input
+                                id="firstName"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                placeholder="Anna"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="lastName" className="text-xs text-muted-foreground">{t('ui.profile_last_name')}</Label>
+                            <Input
+                                id="lastName"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                placeholder="Beridze"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button type="submit" size="sm" disabled={isSaving} className="gap-1.5">
+                            {isSaving && <SpinnerGap size={14} className="animate-spin" />}
+                            {isSaving ? t('ui.text_y9fzx8') : t('ui.profile_save_name')}
+                        </Button>
+                        <Button type="button" variant="ghost" size="sm" onClick={handleCancel} disabled={isSaving}>
+                            {t('ui.cancel') || 'Cancel'}
+                        </Button>
+                    </div>
+                </form>
+            )}
         </section>
     );
 }

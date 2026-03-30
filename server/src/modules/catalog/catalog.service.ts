@@ -10,6 +10,7 @@ export function createCatalogService() {
       const categories = await catalogRepo.findActiveServiceCategories();
       return categories.map((cat) => ({
         id: cat.slug,
+        slug: cat.slug,
         label: cat.label,
         icon: cat.icon,
         suggestions: cat.suggestions.map((s) => s.name),

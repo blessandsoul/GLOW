@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import {
-    House, MagnifyingGlass, Heart, CalendarBlank, Images, UserCircle,
+    House, MagnifyingGlass, Heart, CalendarBlank, Images,
 } from '@phosphor-icons/react';
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -20,10 +20,6 @@ type BottomNavItem = {
 const SHARED_START: BottomNavItem[] = [
     { href: ROUTES.HOME, label: 'nav.home', icon: House, exact: true },
     { href: ROUTES.SEARCH, label: 'nav.search', icon: MagnifyingGlass },
-];
-
-const SHARED_END: BottomNavItem[] = [
-    { href: ROUTES.DASHBOARD_PROFILE, label: 'nav.profile', icon: UserCircle },
 ];
 
 const USER_ITEMS: BottomNavItem[] = [
@@ -86,7 +82,7 @@ export function MobileBottomNav(): React.ReactElement | null {
 
     const role = user?.role;
     const middleItems = (role === 'MASTER' || role === 'SALON' || role === 'ADMIN') ? MASTER_ITEMS : USER_ITEMS;
-    const allItems = [...SHARED_START, ...middleItems, ...SHARED_END];
+    const allItems = [...SHARED_START, ...middleItems];
 
     return (
         <div

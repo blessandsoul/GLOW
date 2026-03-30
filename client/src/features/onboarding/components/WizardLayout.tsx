@@ -1,8 +1,11 @@
 'use client';
 
+import { createContext, useContext } from 'react';
 import { ArrowLeft, ArrowRight, SkipForward } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+
+// When true, WizardLayout hides navigation buttons (page-mode: all sections visible at once)
+export const OnboardingPageMode = createContext(false);
 
 interface WizardLayoutProps {
     title: string;
@@ -37,6 +40,8 @@ export function WizardLayout({
     showSkip = false,
     showNext = true,
 }: WizardLayoutProps): React.ReactElement {
+    const isPageMode = useContext(OnboardingPageMode);
+
     return (
         <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
             <div className="space-y-2 text-center mb-8">
@@ -52,54 +57,56 @@ export function WizardLayout({
                 {children}
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
-                <div className="shrink-0">
-                    {showBack && onBack && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={onBack}
-                            className="gap-1 text-muted-foreground px-2"
-                        >
-                            <ArrowLeft size={16} />
-                            <span className="hidden sm:inline">{backLabel}</span>
-                        </Button>
-                    )}
-                </div>
+            {!isPageMode && (
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
+                    <div className="shrink-0">
+                        {showBack && onBack && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={onBack}
+                                className="gap-1 text-muted-foreground px-2"
+                            >
+                                <ArrowLeft size={16} />
+                                <span className="hidden sm:inline">{backLabel}</span>
+                            </Button>
+                        )}
+                    </div>
 
-                <div className="flex items-center gap-2 ml-auto">
-                    {showSkip && onSkip && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={onSkip}
-                            className="gap-1 text-muted-foreground px-2"
-                        >
-                            {skipLabel}
-                            <SkipForward size={14} />
-                        </Button>
-                    )}
-                    {showNext && onNext && (
-                        <Button
-                            type="button"
-                            onClick={onNext}
-                            disabled={nextDisabled || nextLoading}
-                            className="gap-1.5"
-                        >
-                            {nextLoading ? (
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                            ) : (
-                                <>
-                                    {nextLabel}
-                                    <ArrowRight size={16} />
-                                </>
-                            )}
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-2 ml-auto">
+                        {showSkip && onSkip && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={onSkip}
+                                className="gap-1 text-muted-foreground px-2"
+                            >
+                                {skipLabel}
+                                <SkipForward size={14} />
+                            </Button>
+                        )}
+                        {showNext && onNext && (
+                            <Button
+                                type="button"
+                                onClick={onNext}
+                                disabled={nextDisabled || nextLoading}
+                                className="gap-1.5"
+                            >
+                                {nextLoading ? (
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                                ) : (
+                                    <>
+                                        {nextLabel}
+                                        <ArrowRight size={16} />
+                                    </>
+                                )}
+                            </Button>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

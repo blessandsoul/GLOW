@@ -28,6 +28,13 @@ export default function ProfilePage(): React.ReactElement {
             {/* Account status — role, email, member since */}
             <AccountStatus />
 
+            {/* Verification detail section (masters only) — high in page for motivation */}
+            {isMaster && (
+                <div id="section-verification">
+                    <VerificationSection />
+                </div>
+            )}
+
             {/* Personal info — avatar, name */}
             <PersonalInfoSection />
 
@@ -70,13 +77,6 @@ export default function ProfilePage(): React.ReactElement {
                 </div>
                 <ArrowRight size={18} className="shrink-0 text-muted-foreground" />
             </Link>
-
-            {/* Verification detail section (masters only, anchored) */}
-            {isMaster && (
-                <div id="section-verification">
-                    <VerificationSection />
-                </div>
-            )}
 
             {/* Glow Star section (masters only, anchored) */}
             {isMaster && (

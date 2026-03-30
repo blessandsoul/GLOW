@@ -2,22 +2,20 @@
 
 import { useState } from 'react';
 import {
-  MagnifyingGlass, X, MapPin, CaretDown, Check, CaretLeft, CaretRight,
+  MagnifyingGlass, X, MapPin, CaretDown, Check,
   SquaresFour, Eye, HandPalm, PaintBrush, Scissors, Drop, Sparkle,
-  SlidersHorizontal, UsersFour,
+  SlidersHorizontal,
   SealCheck, Certificate, FirstAid, Diamond, Star,
 } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { getCityOptions } from '@/lib/constants/cities';
 import { cn } from '@/lib/utils';
-import { CompactMasterCard } from './CompactMasterCard';
-import type { FeaturedMaster, LocationType, CatalogDistrict, CatalogBrand, CatalogStyleTag } from '../../types/masters.types';
+import type { LocationType, CatalogDistrict, CatalogBrand, CatalogStyleTag } from '../../types/masters.types';
 
 export interface BadgeFilters {
   isVerified: boolean;
@@ -53,16 +51,6 @@ export interface MapLeftPanelProps {
   hasActiveFilters: boolean;
   activeFilterCount: number;
   onClearFilters: () => void;
-  // Data
-  masters: FeaturedMaster[];
-  totalItems: number;
-  isLoading: boolean;
-  isFetching: boolean;
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  highlightedUsername: string | null;
-  onMasterHover: (username: string | null) => void;
   // Lookup data
   specialities: { slug: string; label: string }[];
   districts: CatalogDistrict[];
@@ -104,9 +92,6 @@ export function MapLeftPanel({
   selectedBrand, onBrandChange,
   selectedStyleTag, onStyleTagChange,
   hasActiveFilters, activeFilterCount, onClearFilters,
-  masters, totalItems, isLoading, isFetching,
-  page, totalPages, onPageChange,
-  highlightedUsername, onMasterHover,
   specialities, districts, brands, styleTags,
 }: MapLeftPanelProps): React.ReactElement {
   const { t, language } = useLanguage();
@@ -114,9 +99,7 @@ export function MapLeftPanel({
   const cityOptions = getCityOptions(language);
 
   return (
-    <div className="flex h-full flex-col overflow-hidden border-r border-border/60">
-      {/* Filter section — compact, non-scrolling */}
-      <div className="shrink-0 border-b border-border/40 p-3 space-y-2.5">
+    <div className="rounded-2xl border border-border/60 bg-background/90 backdrop-blur-md shadow-lg p-3 space-y-2.5">
         {/* Search + City row */}
         <div className="flex gap-2">
           {/* Search */}
@@ -240,77 +223,6 @@ export function MapLeftPanel({
           {brands.length > 0 && <SelectFilterChip value={selectedBrand} onChange={onBrandChange} label={t('catalog.filter_brand')} options={brands.map((b) => ({ value: b.slug, label: b.name }))} />}
           {styleTags.length > 0 && <SelectFilterChip value={selectedStyleTag} onChange={onStyleTagChange} label={t('catalog.filter_style_tag')} options={styleTags.map((s) => ({ value: s.slug, label: s.name }))} />}
         </div>
-
-      </div>
-
-      {/* Result count */}
-      {!isLoading && (
-        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 border-b border-border/40">
-          <UsersFour size={14} className="text-muted-foreground" />
-          <span className="text-xs text-muted-foreground tabular-nums">
-            {t('catalog.results_count').replace('{{count}}', String(totalItems))}
-          </span>
-          {isFetching && <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
-        </div>
-      )}
-
-      {/* Scrollable master list */}
-      <div className="flex-1 overflow-y-auto p-3">
-        {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-[72px] w-full rounded-xl" />
-            ))}
-          </div>
-        ) : masters.length === 0 ? (
-          <div className="flex h-40 flex-col items-center justify-center gap-2 text-center">
-            <UsersFour size={32} className="text-muted-foreground/30" />
-            <p className="text-sm font-medium text-foreground">{t('catalog.empty_title')}</p>
-            {hasActiveFilters && (
-              <button type="button" onClick={onClearFilters} className="text-xs text-primary hover:underline">
-                {t('catalog.clear_filters')}
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {masters.map((master) => (
-              <CompactMasterCard
-                key={master.username}
-                master={master}
-                isHighlighted={highlightedUsername === master.username}
-                onMouseEnter={() => onMasterHover(master.username)}
-                onMouseLeave={() => onMasterHover(null)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-border/40">
-            <button
-              type="button"
-              onClick={() => onPageChange(page - 1)}
-              disabled={page <= 1}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-border/50 bg-background text-muted-foreground transition-all hover:border-border hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-              aria-label="Previous page"
-            >
-              <CaretLeft size={14} weight="bold" />
-            </button>
-            <span className="text-xs text-muted-foreground tabular-nums">{page} / {totalPages}</span>
-            <button
-              type="button"
-              onClick={() => onPageChange(page + 1)}
-              disabled={page >= totalPages}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-border/50 bg-background text-muted-foreground transition-all hover:border-border hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-              aria-label="Next page"
-            >
-              <CaretRight size={14} weight="bold" />
-            </button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

@@ -12,38 +12,49 @@ interface WizardProgressProps {
 
 export function WizardProgress({ steps, currentStep, onGoToStep }: WizardProgressProps): React.ReactElement {
     return (
-        <div className="flex items-center justify-center gap-1.5">
+        <div className="flex flex-col gap-1 w-full">
             {steps.map((step, index) => {
                 const isCompleted = index < currentStep;
                 const isActive = index === currentStep;
                 const canNavigate = isCompleted && onGoToStep;
 
                 return (
-                    <div key={step.id} className="flex items-center gap-1.5">
-                        <button
-                            type="button"
-                            disabled={!canNavigate}
-                            onClick={() => canNavigate && onGoToStep(index)}
+                    <button
+                        key={step.id}
+                        type="button"
+                        disabled={!canNavigate}
+                        onClick={() => canNavigate && onGoToStep(index)}
+                        className={cn(
+                            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-200',
+                            isActive && 'bg-white/10',
+                            canNavigate && 'cursor-pointer hover:bg-white/10',
+                            !canNavigate && !isActive && 'cursor-default',
+                        )}
+                    >
+                        <div
                             className={cn(
-                                'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300',
-                                isCompleted && 'bg-primary text-primary-foreground',
-                                isActive && 'bg-primary text-primary-foreground ring-4 ring-primary/20',
-                                !isCompleted && !isActive && 'bg-muted text-muted-foreground',
-                                canNavigate && 'cursor-pointer hover:ring-4 hover:ring-primary/20',
-                                !canNavigate && 'cursor-default',
+                                'flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300',
+                                isCompleted && 'bg-white text-primary',
+                                isActive && 'bg-white text-primary ring-4 ring-white/20',
+                                !isCompleted && !isActive && 'bg-white/15 text-white/50',
                             )}
                         >
-                            {isCompleted ? <Check size={14} weight="bold" /> : index + 1}
-                        </button>
-                        {index < steps.length - 1 && (
-                            <div
-                                className={cn(
-                                    'h-0.5 w-4 rounded-full transition-colors duration-300',
-                                    index < currentStep ? 'bg-primary' : 'bg-muted',
-                                )}
-                            />
+                            {isCompleted ? <Check size={12} weight="bold" /> : index + 1}
+                        </div>
+                        <span
+                            className={cn(
+                                'text-sm font-medium transition-colors duration-200',
+                                isActive && 'text-white',
+                                isCompleted && 'text-white/70',
+                                !isCompleted && !isActive && 'text-white/40',
+                            )}
+                        >
+                            {step.label}
+                        </span>
+                        {isActive && (
+                            <div className="ml-auto h-1.5 w-1.5 rounded-full bg-white/70" />
                         )}
-                    </div>
+                    </button>
                 );
             })}
         </div>
