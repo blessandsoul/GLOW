@@ -17,7 +17,7 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { getCityOptions } from '@/lib/constants/cities';
 import { cn } from '@/lib/utils';
 import { CompactMasterCard } from './CompactMasterCard';
-import type { FeaturedMaster, CatalogDistrict, CatalogBrand, CatalogStyleTag } from '../../types/masters.types';
+import type { FeaturedMaster, LocationType, CatalogDistrict, CatalogBrand, CatalogStyleTag } from '../../types/masters.types';
 
 interface BadgeFilters {
   isVerified: boolean;
@@ -42,7 +42,7 @@ export interface MapLeftPanelProps {
   onTierChange: (v: string | undefined) => void;
   selectedLanguage: string | undefined;
   onLanguageChange: (v: string | undefined) => void;
-  selectedLocationType: string | undefined;
+  selectedLocationType: LocationType | undefined;
   onLocationTypeChange: (v: string | undefined) => void;
   selectedDistrict: string | undefined;
   onDistrictChange: (v: string | undefined) => void;
@@ -241,17 +241,18 @@ export function MapLeftPanel({
           {styleTags.length > 0 && <SelectFilterChip value={selectedStyleTag} onChange={onStyleTagChange} label={t('catalog.filter_style_tag')} options={styleTags.map((s) => ({ value: s.slug, label: s.name }))} />}
         </div>
 
-        {/* Result count */}
-        {!isLoading && (
-          <div className="flex items-center gap-1.5">
-            <UsersFour size={14} className="text-muted-foreground" />
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {t('catalog.results_count').replace('{{count}}', String(totalItems))}
-            </span>
-            {isFetching && <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
-          </div>
-        )}
       </div>
+
+      {/* Result count */}
+      {!isLoading && (
+        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 border-b border-border/40">
+          <UsersFour size={14} className="text-muted-foreground" />
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {t('catalog.results_count').replace('{{count}}', String(totalItems))}
+          </span>
+          {isFetching && <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
+        </div>
+      )}
 
       {/* Scrollable master list */}
       <div className="flex-1 overflow-y-auto p-3">
