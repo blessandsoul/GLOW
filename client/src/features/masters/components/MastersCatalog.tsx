@@ -644,9 +644,9 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                 )}
             >
                 {/* Portfolio images */}
-                <div className="relative w-full sm:w-64 md:w-72 shrink-0 aspect-square bg-muted/30">
+                <div className="relative w-full sm:w-64 md:w-72 shrink-0 aspect-square bg-muted/30 p-1.5">
                     {images.length >= 4 ? (
-                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-1 p-1">
+                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-1.5">
                             {images.slice(0, 4).map((img) => (
                                 <div key={img.id} className="relative overflow-hidden rounded-lg">
                                     <Image
@@ -662,7 +662,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                         </div>
                     ) : images.length > 0 ? (
                         <div className={cn(
-                            'grid h-full w-full gap-1 p-1',
+                            'grid h-full w-full gap-1.5',
                             images.length === 1 && 'grid-cols-1',
                             images.length === 2 && 'grid-cols-2',
                             images.length === 3 && 'grid-cols-2 grid-rows-2',

@@ -258,9 +258,9 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                 className="group flex w-64 shrink-0 snap-start flex-col rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
             >
                 {/* Image grid */}
-                <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-muted/30">
+                <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-muted/30 p-1.5">
                     {images.length >= 4 ? (
-                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-1">
+                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-1.5">
                             {images.slice(0, 4).map((img) => (
                                 <div key={img.id} className="relative overflow-hidden rounded-lg">
                                     <Image
@@ -276,7 +276,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                         </div>
                     ) : images.length > 0 ? (
                         <div className={cn(
-                            'grid h-full w-full gap-1',
+                            'grid h-full w-full gap-1.5',
                             images.length === 1 && 'grid-cols-1',
                             images.length === 2 && 'grid-cols-2',
                             images.length === 3 && 'grid-cols-2 grid-rows-2',
