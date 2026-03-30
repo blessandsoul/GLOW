@@ -2,11 +2,10 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { SealCheck, Certificate, FirstAid, Diamond, Star, Trophy, Medal, ShieldCheck } from '@phosphor-icons/react';
+import { Star, StarFour, FirstAid } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/i18n/hooks/useLanguage';
-import type { MasterBadges, MasterTier } from '../types/masters.types';
+import type { MasterBadges } from '../types/masters.types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -99,60 +98,33 @@ function BadgeItem({ icon: IconComponent, label, colorClass, size }: BadgeItemPr
 
 // ─── Master Badges Row ────────────────────────────────────────────────────────
 
-const TIER_CONFIG: Record<string, { icon: Icon; label: string; colorClass: string } | null> = {
-    TOP_MASTER: { icon: Trophy, label: 'masters.tier_top_master', colorClass: 'bg-warning/15 text-warning' },
-    PROFESSIONAL: { icon: Medal, label: 'masters.tier_professional', colorClass: 'bg-primary/15 text-primary' },
-    INTERMEDIATE: { icon: ShieldCheck, label: 'masters.tier_intermediate', colorClass: 'bg-info/15 text-info' },
-    JUNIOR: null,
-};
-
-export function MasterBadgesRow({ masterTier, isVerified, badges, size = 'sm' }: MasterBadgesRowProps): React.ReactElement | null {
-    const { t } = useLanguage();
+export function MasterBadgesRow({ badges, size = 'sm' }: MasterBadgesRowProps): React.ReactElement | null {
     const activeBadges: { icon: Icon; label: string; colorClass: string }[] = [];
 
-    // Tier badge first (skip JUNIOR — it's the default)
-    if (masterTier && TIER_CONFIG[masterTier]) {
-        const tierCfg = TIER_CONFIG[masterTier]!;
-        activeBadges.push({
-            icon: tierCfg.icon,
-            label: t(tierCfg.label),
-            colorClass: tierCfg.colorClass,
-        });
-    }
-
-    if (isVerified) {
-        activeBadges.push({
-            icon: SealCheck,
-            label: t('masters.badge_verified'),
-            colorClass: 'bg-primary/15 text-primary',
-        });
-    }
-    if (badges?.isCertified) {
-        activeBadges.push({
-            icon: Certificate,
-            label: t('masters.badge_certified'),
-            colorClass: 'bg-primary/15 text-primary',
-        });
-    }
-    if (badges?.isHygieneVerified) {
-        activeBadges.push({
-            icon: FirstAid,
-            label: t('masters.badge_hygiene'),
-            colorClass: 'bg-success/15 text-success',
-        });
-    }
-    if (badges?.isQualityProducts) {
-        activeBadges.push({
-            icon: Diamond,
-            label: t('masters.badge_quality_products'),
-            colorClass: 'bg-info/15 text-info',
-        });
-    }
+    // 1. Glow.Star
     if (badges?.isTopRated) {
         activeBadges.push({
             icon: Star,
-            label: t('masters.badge_top_rated'),
+            label: 'Glow.Star',
             colorClass: 'bg-warning/15 text-warning',
+        });
+    }
+
+    // 2. ექსპერტის რჩეული
+    if (badges?.isCertified) {
+        activeBadges.push({
+            icon: StarFour,
+            label: 'ექსპერტის რჩეული',
+            colorClass: 'bg-primary/15 text-primary',
+        });
+    }
+
+    // 3. უსაფრთხოება და ჰიგიენა
+    if (badges?.isHygieneVerified) {
+        activeBadges.push({
+            icon: FirstAid,
+            label: 'უსაფრთხოება და ჰიგიენა',
+            colorClass: 'bg-success/15 text-success',
         });
     }
 

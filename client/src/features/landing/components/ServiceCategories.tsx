@@ -1,38 +1,38 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { Eye, HandSoap, Scissors, Sparkle, FlowerLotus, ArrowRight, MagicWand } from '@phosphor-icons/react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
 import { useNicheCounts } from '@/features/masters/hooks/useNicheCounts';
 import { ROUTES } from '@/lib/constants/routes';
-import type { IconProps } from '@phosphor-icons/react';
 
-const NICHE_ICONS: Record<string, React.ComponentType<IconProps>> = {
-    'lashes-brows':     Eye,
-    nails:              HandSoap,
-    'permanent-makeup': Sparkle,
-    makeup:             Sparkle,
-    hair:               Scissors,
-    skincare:           FlowerLotus,
-    waxing:             Sparkle,
-    body:               Sparkle,
-    retouch:            MagicWand,
-    other:              Sparkle,
+const NICHE_IMAGES: Record<string, string> = {
+    'lashes-brows':     '/categories/lash.jpg',
+    nails:              '/categories/nail.jpg',
+    'permanent-makeup': '/categories/permanent.jpg',
+    makeup:             '/categories/makeup.jpg',
+    hair:               '/categories/hair.jpg',
+    skincare:           '/categories/skinandbody.jpg',
+    waxing:             '/categories/skinandbody.jpg',
+    body:               '/categories/skinandbody.jpg',
+    retouch:            '/categories/makeup.jpg',
+    other:              '/categories/makeup.jpg',
 };
 
-const NICHE_COLORS: Record<string, string> = {
-    'lashes-brows':     'bg-violet-500/10 text-violet-600 dark:text-violet-400',
-    nails:              'bg-pink-500/10 text-pink-600 dark:text-pink-400',
-    'permanent-makeup': 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-    makeup:             'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-    hair:               'bg-sky-500/10 text-sky-600 dark:text-sky-400',
-    skincare:           'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-    waxing:             'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-    body:               'bg-teal-500/10 text-teal-600 dark:text-teal-400',
-    retouch:            'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400',
-    other:              'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+const NICHE_GRADIENTS: Record<string, string> = {
+    'lashes-brows':     'from-violet-900/70 to-violet-700/40',
+    nails:              'from-pink-900/70 to-pink-700/40',
+    'permanent-makeup': 'from-rose-900/70 to-rose-700/40',
+    makeup:             'from-rose-900/70 to-rose-700/40',
+    hair:               'from-sky-900/70 to-sky-700/40',
+    skincare:           'from-emerald-900/70 to-emerald-700/40',
+    waxing:             'from-amber-900/70 to-amber-700/40',
+    body:               'from-teal-900/70 to-teal-700/40',
+    retouch:            'from-fuchsia-900/70 to-fuchsia-700/40',
+    other:              'from-purple-900/70 to-purple-700/40',
 };
 
 export function ServiceCategories(): React.ReactElement | null {
@@ -45,7 +45,7 @@ export function ServiceCategories(): React.ReactElement | null {
             <section className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted/60" />
+                        <div key={i} className="h-40 animate-pulse rounded-2xl bg-muted/60" />
                     ))}
                 </div>
             </section>
@@ -73,8 +73,8 @@ export function ServiceCategories(): React.ReactElement | null {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {specialities.map((spec, i) => {
-                    const Icon = NICHE_ICONS[spec.slug] ?? Sparkle;
-                    const colorClass = NICHE_COLORS[spec.slug] ?? 'bg-primary/10 text-primary';
+                    const imgSrc = NICHE_IMAGES[spec.slug];
+                    const gradient = NICHE_GRADIENTS[spec.slug] ?? 'from-gray-900/70 to-gray-700/40';
 
                     return (
                         <motion.div
@@ -86,22 +86,36 @@ export function ServiceCategories(): React.ReactElement | null {
                         >
                             <Link
                                 href={`${ROUTES.MASTERS}?niche=${spec.slug}`}
-                                className="group flex flex-col items-center gap-3 rounded-2xl border border-border/40 bg-card/60 p-5 transition-all duration-300 hover:border-border hover:shadow-md hover:-translate-y-0.5"
+                                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border/40 transition-all duration-300 hover:border-border hover:shadow-lg hover:-translate-y-0.5 h-40"
                             >
-                                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${colorClass} transition-transform duration-300 group-hover:scale-110`}>
-                                    <Icon size={24} weight="duotone" />
-                                </div>
-                                <span className="text-sm font-semibold text-foreground text-center leading-tight">
-                                    {spec.label}
-                                </span>
-                                {counts[spec.slug] != null && (
-                                    <span className="text-xs text-muted-foreground tabular-nums">
-                                        {counts[spec.slug]} {t('landing.categories_masters_count')}
-                                    </span>
+                                {imgSrc ? (
+                                    <Image
+                                        src={imgSrc}
+                                        alt={spec.label}
+                                        fill
+                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 bg-muted" />
                                 )}
+                                {/* gradient overlay */}
+                                <div className={`absolute inset-0 bg-gradient-to-t ${gradient}`} />
+                                {/* text */}
+                                <div className="relative z-10 p-3 flex flex-col gap-1">
+                                    <span className="text-sm font-semibold text-white leading-tight drop-shadow-sm">
+                                        {spec.label}
+                                    </span>
+                                    {counts[spec.slug] != null && (
+                                        <span className="text-[11px] text-white/70 tabular-nums">
+                                            {counts[spec.slug]} {t('landing.categories_masters_count')}
+                                        </span>
+                                    )}
+                                </div>
+                                {/* hover arrow */}
                                 <ArrowRight
                                     size={14}
-                                    className="text-muted-foreground/0 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5"
+                                    className="absolute top-3 right-3 z-10 text-white/0 transition-all duration-200 group-hover:text-white group-hover:translate-x-0.5"
                                 />
                             </Link>
                         </motion.div>

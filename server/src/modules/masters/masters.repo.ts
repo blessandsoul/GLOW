@@ -154,11 +154,25 @@ function buildWhere(opts?: {
   };
 
   if (opts?.search) {
-    where.OR = [
-      { firstName: { contains: opts.search } },
-      { lastName: { contains: opts.search } },
-      { brandingProfile: { displayName: { contains: opts.search } } },
-    ];
+    const tokens = opts.search.trim().split(/\s+/).filter(Boolean);
+    if (tokens.length >= 2) {
+      // Multi-word search: match tokens across firstName + lastName (e.g. "ნათია სამსო")
+      where.AND = tokens.map((token) => ({
+        OR: [
+          { firstName: { contains: token } },
+          { lastName: { contains: token } },
+          { username: { contains: token } },
+          { brandingProfile: { displayName: { contains: token } } },
+        ],
+      }));
+    } else {
+      where.OR = [
+        { firstName: { contains: opts.search } },
+        { lastName: { contains: opts.search } },
+        { username: { contains: opts.search } },
+        { brandingProfile: { displayName: { contains: opts.search } } },
+      ];
+    }
   }
 
   return where;
