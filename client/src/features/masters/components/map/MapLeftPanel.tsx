@@ -264,6 +264,7 @@ export function MapLeftPanel({
           </div>
         ) : masters.length === 0 ? (
           <div className="flex h-40 flex-col items-center justify-center gap-2 text-center">
+            <UsersFour size={32} className="text-muted-foreground/30" />
             <p className="text-sm font-medium text-foreground">{t('catalog.empty_title')}</p>
             {hasActiveFilters && (
               <button type="button" onClick={onClearFilters} className="text-xs text-primary hover:underline">

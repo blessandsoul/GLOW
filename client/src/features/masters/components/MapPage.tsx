@@ -112,6 +112,13 @@ export function MapPage(): React.ReactElement {
     setPage(1);
   }, []);
 
+  const handleTierChange = useCallback((v: string | undefined): void => { setSelectedTier(v); setPage(1); }, []);
+  const handleLanguageChange = useCallback((v: string | undefined): void => { setSelectedLanguage(v); setPage(1); }, []);
+  const handleLocationTypeChange = useCallback((v: LocationType | undefined): void => { setSelectedLocationType(v); setPage(1); }, []);
+  const handleDistrictChange = useCallback((v: string | undefined): void => { setSelectedDistrict(v); setPage(1); }, []);
+  const handleBrandChange = useCallback((v: string | undefined): void => { setSelectedBrand(v); setPage(1); }, []);
+  const handleStyleTagChange = useCallback((v: string | undefined): void => { setSelectedStyleTag(v); setPage(1); }, []);
+
   const activeBadgeCount = Object.values(badgeFilters).filter(Boolean).length;
   const extraFilterCount = [selectedLanguage, selectedLocationType, selectedDistrict, selectedBrand, selectedStyleTag, selectedTier].filter(Boolean).length;
   const hasActiveFilters = !!debouncedSearch || !!selectedNiche || cities.length > 0 || activeBadgeCount > 0 || extraFilterCount > 0;
@@ -133,17 +140,17 @@ export function MapPage(): React.ReactElement {
           badgeFilters={badgeFilters}
           onBadgeToggle={handleBadgeToggle}
           selectedTier={selectedTier}
-          onTierChange={(v) => { setSelectedTier(v); setPage(1); }}
+          onTierChange={handleTierChange}
           selectedLanguage={selectedLanguage}
-          onLanguageChange={(v) => { setSelectedLanguage(v); setPage(1); }}
+          onLanguageChange={handleLanguageChange}
           selectedLocationType={selectedLocationType}
-          onLocationTypeChange={(v) => { setSelectedLocationType(v); setPage(1); }}
+          onLocationTypeChange={handleLocationTypeChange}
           selectedDistrict={selectedDistrict}
-          onDistrictChange={(v) => { setSelectedDistrict(v); setPage(1); }}
+          onDistrictChange={handleDistrictChange}
           selectedBrand={selectedBrand}
-          onBrandChange={(v) => { setSelectedBrand(v); setPage(1); }}
+          onBrandChange={handleBrandChange}
           selectedStyleTag={selectedStyleTag}
-          onStyleTagChange={(v) => { setSelectedStyleTag(v); setPage(1); }}
+          onStyleTagChange={handleStyleTagChange}
           hasActiveFilters={hasActiveFilters}
           activeFilterCount={activeFilterCount}
           onClearFilters={handleClearFilters}

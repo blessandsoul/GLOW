@@ -32,6 +32,7 @@ export function CompactMasterCard({
       href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      aria-label={`View ${master.displayName}'s portfolio`}
       className={cn(
         'flex items-center gap-3 rounded-xl border border-border/50 bg-card p-3 transition-all duration-200 hover:shadow-md hover:border-border/80 hover:-translate-y-px',
         isHighlighted && 'ring-2 ring-primary/50 bg-primary/5 border-primary/30',
