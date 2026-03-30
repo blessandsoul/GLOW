@@ -141,7 +141,7 @@ export default function RootLayout({
         </Providers>
         {process.env.NODE_ENV === 'development' && <Agentation />}
         {/* TOP.GE ASYNC COUNTER CODE */}
-        <footer className="hidden md:block border-t border-[#e3beba]/30 bg-[#f9f9f9] py-4">
+        <footer className="border-t border-[#e3beba]/30 bg-[#f9f9f9] py-4">
           <div className="container mx-auto flex flex-col items-center gap-3 px-4">
             <nav className="flex items-center gap-2 text-xs tracking-widest uppercase"
               style={{ fontFamily: 'var(--font-inter), sans-serif', color: '#524342' }}>

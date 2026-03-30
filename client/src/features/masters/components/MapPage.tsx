@@ -126,9 +126,9 @@ export function MapPage(): React.ReactElement {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-[calc(100dvh-9.5rem)] md:h-[calc(100dvh-3.5rem)] flex-col-reverse lg:flex-row overflow-hidden">
+    <div className="fixed inset-x-0 top-14 bottom-14 flex flex-col-reverse lg:flex-row overflow-hidden md:static md:h-[calc(100dvh-3.5rem)]">
       {/* Left panel — bottom on mobile (flex-col-reverse), left on desktop */}
-      <div className="h-[50%] flex flex-col min-h-0 lg:h-full lg:w-[420px] shrink-0">
+      <div className="h-[55%] flex flex-col min-h-0 lg:h-full lg:w-[420px] shrink-0">
         <MapLeftPanel
           searchInput={searchInput}
           onSearchChange={handleSearchChange}

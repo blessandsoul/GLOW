@@ -11,7 +11,6 @@ import {
   Scissors,
   Droplets,
   Wand2,
-  Waves,
 } from 'lucide-react';
 import { useServiceCategories } from '@/features/profile/hooks/useCatalog';
 
@@ -36,27 +35,21 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   'permanent-makeup': Wand2,
   makeup:             Paintbrush,
   hair:               Scissors,
-  skincare:           Droplets,
-  waxing:             Waves,
-  body:               Sparkles,
-  massage:            Sparkles,
-  other:              Sparkles,
-  lifestyle:          Sparkles,
+  cosmetology:        Droplets,
+  'tattoo-piercing':  Wand2,
 };
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80';
 const DEFAULT_ICON = Sparkles;
 
 const STATIC_CATEGORIES = [
-  { slug: 'lashes-brows',     label: 'წამწამები & წარბები' },
-  { slug: 'nails',            label: 'ფრჩხილები' },
+  { slug: 'lashes-brows',     label: 'წამწამები და წარბები' },
+  { slug: 'nails',            label: 'ფრჩხილის მოვლა' },
   { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი' },
   { slug: 'makeup',           label: 'მაკიაჟი' },
-  { slug: 'hair',             label: 'თმა' },
-  { slug: 'skincare',         label: 'კანის მოვლა' },
-  { slug: 'waxing',           label: 'ეპილაცია და რუჯი' },
-  { slug: 'body',             label: 'მასაჟი და სხეული' },
-  { slug: 'other',            label: 'ცხოვრების სტილი და სხვა' },
+  { slug: 'hair',             label: 'თმის მოვლა' },
+  { slug: 'cosmetology',      label: 'კოსმეტოლოგია და სხეულის მოვლა' },
+  { slug: 'tattoo-piercing',  label: 'ტატუ და პირსინგი' },
 ];
 
 export const EditorialCategories = (): React.ReactElement => {

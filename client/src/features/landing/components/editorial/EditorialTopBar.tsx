@@ -11,15 +11,13 @@ import { IS_LAUNCH_MODE } from '@/lib/launch-mode';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
 const STATIC_CATEGORIES = [
-  { slug: 'lashes-brows',     label: 'წამწამები & წარბები' },
-  { slug: 'nails',            label: 'ფრჩხილები' },
+  { slug: 'lashes-brows',     label: 'წამწამები და წარბები' },
+  { slug: 'nails',            label: 'ფრჩხილის მოვლა' },
   { slug: 'permanent-makeup', label: 'პერმანენტული მაკიაჟი' },
   { slug: 'makeup',           label: 'მაკიაჟი' },
-  { slug: 'hair',             label: 'თმა' },
-  { slug: 'skincare',         label: 'კანის მოვლა' },
-  { slug: 'waxing',           label: 'ეპილაცია და რუჯი' },
-  { slug: 'body',             label: 'მასაჟი და სხეული' },
-  { slug: 'other',            label: 'ცხოვრების სტილი და სხვა' },
+  { slug: 'hair',             label: 'თმის მოვლა' },
+  { slug: 'cosmetology',      label: 'კოსმეტოლოგია და სხეულის მოვლა' },
+  { slug: 'tattoo-piercing',  label: 'ტატუ და პირსინგი' },
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -28,10 +26,8 @@ const CATEGORY_ICONS: Record<string, string> = {
   'permanent-makeup': 'auto_fix_high',
   makeup:             'brush',
   hair:               'content_cut',
-  skincare:           'water_drop',
-  waxing:             'waves',
-  body:               'spa',
-  other:              'auto_awesome',
+  cosmetology:        'water_drop',
+  'tattoo-piercing':  'edit',
 };
 
 export const EditorialTopBar = (): React.ReactElement => {
@@ -93,21 +89,6 @@ export const EditorialTopBar = (): React.ReactElement => {
 
           {/* Right — profile / login */}
           <div className="flex-1 flex justify-end items-center gap-2">
-            {!isInitializing && isAuthenticated && isMasterRole && (
-              <Link
-                href={ROUTES.CREATE}
-                className="flex items-center justify-center transition-all duration-300 active:scale-95 rounded-full w-9 h-9"
-                style={{
-                  backgroundColor: pathname === ROUTES.CREATE
-                    ? 'var(--ed-primary)'
-                    : 'color-mix(in oklch, var(--ed-primary) 12%, transparent)',
-                  color: pathname === ROUTES.CREATE ? '#fff' : 'var(--ed-primary)',
-                }}
-                aria-label={t('nav.create')}
-              >
-                <span className="material-symbols-outlined text-[20px]">add</span>
-              </Link>
-            )}
             <Link
               href={isAuthenticated ? ROUTES.DASHBOARD_PROFILE : ROUTES.LOGIN}
               className="flex items-center justify-center bg-[#680005] text-white hover:bg-[#92000a] transition-all duration-300 active:scale-95 rounded-full w-10 h-10"
