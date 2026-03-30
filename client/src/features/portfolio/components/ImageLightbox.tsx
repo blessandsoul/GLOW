@@ -39,13 +39,54 @@ export function ImageLightbox({ images, initialIndex, open, onClose, editable = 
         if (open) setCurrentIndex(initialIndex);
     }, [open, initialIndex]);
 
-    // Lock body scroll
+    // Lock body scroll + setup image server connection
     useEffect(() => {
         if (!open) return;
         const original = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
+
+        // Preconnect to image server
+        const preconnect = document.createElement('link');
+        preconnect.rel = 'preconnect';
+        preconnect.href = new URL(getServerImageUrl(images[0]?.imageUrl || '')).origin;
+        document.head.appendChild(preconnect);
+
         return () => { document.body.style.overflow = original; };
-    }, [open]);
+    }, [open, images]);
+
+    // Preload all images aggressively
+    useEffect(() => {
+        if (!open || images.length === 0) return;
+
+        // Preload current and next 3 images immediately
+        const indicesToPreload = [
+            currentIndex,
+            currentIndex + 1,
+            currentIndex + 2,
+            currentIndex + 3,
+        ].filter(i => i >= 0 && i < images.length);
+
+        indicesToPreload.forEach((i, priority) => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = getServerImageUrl(images[i].imageUrl);
+            link.fetchPriority = priority === 0 ? 'high' : 'low';
+            document.head.appendChild(link);
+        });
+
+        // Also preload previous 2 images
+        [currentIndex - 1, currentIndex - 2]
+            .filter(i => i >= 0 && i < images.length)
+            .forEach(i => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = 'image';
+                link.href = getServerImageUrl(images[i].imageUrl);
+                link.fetchPriority = 'low';
+                document.head.appendChild(link);
+            });
+    }, [currentIndex, open, images]);
 
     const goNext = useCallback((): void => {
         setCurrentIndex((i) => {
@@ -206,20 +247,18 @@ export function ImageLightbox({ images, initialIndex, open, onClose, editable = 
             >
                 <div
                     className={cn(
-                        'relative h-full w-full max-w-lg',
+                        'relative h-full w-full max-w-lg flex items-center justify-center',
                         !isDragging.current && 'transition-transform duration-150 ease-out',
                     )}
                     style={{ transform: `translateX(${translateX}px)` }}
                 >
-                    <Image
+                    <img
                         key={safeIndex}
                         src={getServerImageUrl(current.imageUrl)}
                         alt={current.title ?? 'Portfolio image'}
-                        fill
-                        className="object-contain will-change-transform"
-                        sizes="100vw"
-                        priority
-                        unoptimized
+                        className="max-h-full max-w-full object-contain will-change-transform"
+                        loading="eager"
+                        decoding="async"
                     />
                 </div>
             </div>
