@@ -306,82 +306,35 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                 </span>
             </div>
 
-            {/* Editorial grid */}
-            <div className="grid grid-cols-12 grid-rows-2 gap-2 sm:gap-3 h-[70dvh] sm:h-[80dvh] max-h-[900px]">
-                {/* Large hero cell */}
-                <button
-                    type="button"
-                    onClick={() => onOpenLightbox(0)}
-                    className="col-span-12 sm:col-span-6 row-span-2 relative overflow-hidden rounded-2xl bg-muted cursor-zoom-in group"
-                >
-                    <Image
-                        src={getThumbUrl(large.imageUrl, 1200)}
-                        alt={large.title ?? displayName}
-                        fill
-                        className="object-cover transition-all duration-700"
-                        sizes="(max-width: 640px) 100vw, 66vw"
-                        unoptimized
-                    />
-                    {large.title && (
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 pb-4 pt-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <span className="text-xs font-medium text-white uppercase tracking-wider">{large.title}</span>
-                        </div>
-                    )}
-                </button>
-
-                {/* Side cells — top */}
-                {rest[0] && (
+            {/* Square grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+                {items.map((item, index) => (
                     <button
+                        key={item.id}
                         type="button"
-                        onClick={() => onOpenLightbox(1)}
-                        className="col-span-6 sm:col-span-6 row-span-1 relative overflow-hidden rounded-2xl bg-muted cursor-zoom-in group"
+                        onClick={() => onOpenLightbox(index)}
+                        className="relative aspect-square overflow-hidden rounded-2xl bg-muted cursor-zoom-in group"
                     >
                         <Image
-                            src={getThumbUrl(rest[0].imageUrl, 600)}
-                            alt={rest[0].title ?? ''}
+                            src={getThumbUrl(item.imageUrl, 512)}
+                            alt={item.title ?? displayName}
                             fill
-                            className="object-cover transition-all duration-700"
-                            sizes="(max-width: 640px) 50vw, 34vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             unoptimized
                         />
+                        {item.title && (
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span className="text-xs font-medium text-white truncate block">{item.title}</span>
+                            </div>
+                        )}
+                        {index === items.length - 1 && items.length > 8 && (
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-all duration-300">
+                                <span className="text-white text-lg font-bold tabular-nums">+{items.length - 8}</span>
+                            </div>
+                        )}
                     </button>
-                )}
-
-                {/* Side cells — bottom row, split into 2 */}
-                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden rounded-2xl bg-muted group">
-                    {rest[1] && (
-                        <button type="button" onClick={() => onOpenLightbox(2)} className="w-full h-full cursor-zoom-in">
-                            <Image
-                                src={getThumbUrl(rest[1].imageUrl, 400)}
-                                alt={rest[1].title ?? ''}
-                                fill
-                                className="object-cover transition-all duration-700"
-                                sizes="25vw"
-                                unoptimized
-                            />
-                        </button>
-                    )}
-                </div>
-                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden rounded-2xl bg-muted group">
-                    {rest[2] ? (
-
-                        <button type="button" onClick={() => onOpenLightbox(3)} className="w-full h-full cursor-zoom-in">
-                            <Image
-                                src={getThumbUrl(rest[2].imageUrl, 400)}
-                                alt={rest[2].title ?? ''}
-                                fill
-                                className="object-cover transition-all duration-700"
-                                sizes="25vw"
-                                unoptimized
-                            />
-                            {items.length > 4 && (
-                                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-all duration-300">
-                                    <span className="text-white text-base font-bold tabular-nums">+{items.length - 4}</span>
-                                </div>
-                            )}
-                        </button>
-                    ) : null}
-                </div>
+                ))}
             </div>
         </section>
     );
