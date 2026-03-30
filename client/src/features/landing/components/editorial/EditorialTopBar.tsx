@@ -51,6 +51,13 @@ export const EditorialTopBar = (): React.ReactElement => {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
+    // Move focus out of drawer when closing to avoid aria-hidden focus trap
+    if (!menuOpen && document.activeElement instanceof HTMLElement) {
+      const drawer = document.querySelector('[data-drawer]');
+      if (drawer?.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    }
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
@@ -111,11 +118,14 @@ export const EditorialTopBar = (): React.ReactElement => {
 
       {/* Drawer */}
       <div
+        data-drawer
         className="fixed left-0 top-14 z-50 h-[calc(100dvh-3.5rem)] w-80 overflow-y-auto border-r border-(--ed-outline-variant)/20 transition-transform duration-300 ease-out"
         style={{
           backgroundColor: 'var(--ed-surface)',
           transform: menuOpen ? 'translateX(0)' : 'translateX(-100%)',
         }}
+        // @ts-expect-error -- React 18 doesn't type `inert` yet
+        inert={!menuOpen ? '' : undefined}
         aria-hidden={!menuOpen}
       >
         <div className="flex flex-col gap-5 p-5">

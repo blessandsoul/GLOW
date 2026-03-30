@@ -82,6 +82,23 @@ export const EditorialHero = (): React.ReactElement => {
   const indexRef = useRef(0);
   const transitioningRef = useRef(false);
 
+  // Preload the next video into a hidden element so it's cached by the browser
+  const preloadRef = useRef<HTMLVideoElement | null>(null);
+
+  const preloadNext = useCallback((index: number) => {
+    const nextIndex = (index + 1) % VIDEOS.length;
+    if (!preloadRef.current) {
+      const el = document.createElement('video');
+      el.muted = true;
+      el.preload = 'auto';
+      el.style.display = 'none';
+      document.body.appendChild(el);
+      preloadRef.current = el;
+    }
+    preloadRef.current.src = VIDEOS[nextIndex];
+    preloadRef.current.load();
+  }, []);
+
   const advance = useCallback(() => {
     if (transitioningRef.current) return;
     transitioningRef.current = true;
@@ -101,15 +118,27 @@ export const EditorialHero = (): React.ReactElement => {
       setActiveSlot(nextSlot as 0 | 1);
       indexRef.current = nextIndex;
 
+      // Preload the video after next
+      preloadNext(nextIndex);
+
       setTimeout(() => {
         transitioningRef.current = false;
       }, FADE_MS);
     }, 50);
-  }, [activeSlot]);
+  }, [activeSlot, preloadNext]);
 
   useEffect(() => {
     refA.current?.play().catch(() => {});
-  }, []);
+    // Preload second video after first starts
+    preloadNext(0);
+
+    return () => {
+      if (preloadRef.current) {
+        preloadRef.current.remove();
+        preloadRef.current = null;
+      }
+    };
+  }, [preloadNext]);
 
   const videoStyle = (slot: 0 | 1): React.CSSProperties => ({
     position: 'absolute',
@@ -153,8 +182,8 @@ export const EditorialHero = (): React.ReactElement => {
     <section className="relative h-187.75 w-full overflow-hidden bg-[#1a1c1c]">
       {/* Background videos */}
       <div className="absolute inset-0">
-        <video ref={refA} src={srcA} muted playsInline onEnded={activeSlot === 0 ? advance : undefined} style={videoStyle(0)} />
-        <video ref={refB} src={srcB} muted playsInline onEnded={activeSlot === 1 ? advance : undefined} style={videoStyle(1)} />
+        <video ref={refA} src={srcA} muted playsInline preload="auto" onEnded={activeSlot === 0 ? advance : undefined} style={videoStyle(0)} />
+        <video ref={refB} src={srcB} muted playsInline preload="none" onEnded={activeSlot === 1 ? advance : undefined} style={videoStyle(1)} />
         <div className="absolute inset-0 bg-black/55" />
         <div className="absolute inset-0 bg-linear-to-b from-black/30 via-transparent to-transparent" />
       </div>

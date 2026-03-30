@@ -131,7 +131,7 @@ export function MapPage(): React.ReactElement {
       />
 
       {/* Filter panel — floating overlay top-left */}
-      <div className="absolute left-3 top-3 z-1000 w-[min(420px,calc(100vw-1.5rem))]">
+      <div className="absolute left-3 top-5 z-1000 w-[min(420px,calc(100vw-1.5rem))]">
         <MapLeftPanel
           searchInput={searchInput}
           onSearchChange={handleSearchChange}
@@ -167,7 +167,7 @@ export function MapPage(): React.ReactElement {
       {/* "List view" button — top-right */}
       <Link
         href={ROUTES.MASTERS}
-        className="absolute right-3 top-3 z-1000 flex items-center gap-2 rounded-xl border border-border/60 bg-background/90 px-3 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background hover:shadow-md"
+        className="absolute right-3 top-5 z-1000 flex items-center gap-2 rounded-xl border border-border/60 bg-background/90 px-3 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background hover:shadow-md"
       >
         <ListBullets size={14} weight="bold" />
         {t('catalog.btn_list')}

@@ -489,7 +489,7 @@
 
   /* Font families mapped to CSS variable fonts loaded in layout.tsx */
   --font-ed-display: var(--font-noto-serif-georgian), var(--font-noto-serif), 'Noto Serif Georgian', 'Noto Serif', Georgia, serif;
-  --font-ed-body: var(--font-manrope), 'Manrope', system-ui, sans-serif;
+  --font-ed-body: var(--font-manrope), 'Manrope', var(--font-noto-georgian), 'Noto Sans Georgian', system-ui, sans-serif;
   --font-ed-label: var(--font-inter), 'Inter', system-ui, sans-serif;
 
   /* Remap app-wide semantic tokens to editorial palette */
@@ -511,8 +511,8 @@
   --input: #e3beba;
   --ring: #680005;
 
-  /* Default body font → Manrope */
-  font-family: var(--font-manrope), 'Manrope', system-ui, sans-serif;
+  /* Default body font → Manrope (with Georgian fallback) */
+  font-family: var(--font-manrope), 'Manrope', var(--font-noto-georgian), 'Noto Sans Georgian', system-ui, sans-serif;
 }
 
 /* Dark mode editorial overrides */

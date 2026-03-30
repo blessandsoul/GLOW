@@ -66,19 +66,6 @@ const NICHE_META: Record<string, { icon: Icon }> = {
   skincare: { icon: Drop },
 };
 
-const LANGUAGE_OPTIONS = [
-  { value: 'ka', label: 'ქართული' },
-  { value: 'ru', label: 'Русский' },
-  { value: 'en', label: 'English' },
-  { value: 'tr', label: 'Türkçe' },
-];
-
-const LOCATION_TYPE_OPTIONS = [
-  { value: 'salon' },
-  { value: 'home_studio' },
-  { value: 'mobile' },
-  { value: 'client_visit' },
-];
 
 export function MapLeftPanel({
   searchInput, onSearchChange,
@@ -209,20 +196,6 @@ export function MapLeftPanel({
           <BadgeFilterChip checked={badgeFilters.isTopRated} onToggle={() => onBadgeToggle('isTopRated')} icon={Star} label={t('catalog.filter_top_rated')} colorClass="text-warning" />
         </div>
 
-        {/* Extra select filters */}
-        <div className="flex gap-1.5 flex-wrap">
-          <SelectFilterChip value={selectedTier} onChange={onTierChange} label={t('catalog.filter_tier')} options={[
-            { value: 'TOP_MASTER', label: t('masters.tier_top_master') },
-            { value: 'PROFESSIONAL', label: t('masters.tier_professional') },
-            { value: 'INTERMEDIATE', label: t('masters.tier_intermediate') },
-            { value: 'JUNIOR', label: t('masters.tier_junior') },
-          ]} />
-          <SelectFilterChip value={selectedLanguage} onChange={onLanguageChange} label={t('catalog.filter_language')} options={LANGUAGE_OPTIONS} />
-          <SelectFilterChip value={selectedLocationType} onChange={(v) => onLocationTypeChange(v as LocationType | undefined)} label={t('catalog.filter_location_type')} options={LOCATION_TYPE_OPTIONS.map((o) => ({ value: o.value, label: t(`catalog.location_${o.value}`) }))} />
-          {districts.length > 0 && <SelectFilterChip value={selectedDistrict} onChange={onDistrictChange} label={t('catalog.filter_district')} options={districts.map((d) => ({ value: d.slug, label: d.name }))} />}
-          {brands.length > 0 && <SelectFilterChip value={selectedBrand} onChange={onBrandChange} label={t('catalog.filter_brand')} options={brands.map((b) => ({ value: b.slug, label: b.name }))} />}
-          {styleTags.length > 0 && <SelectFilterChip value={selectedStyleTag} onChange={onStyleTagChange} label={t('catalog.filter_style_tag')} options={styleTags.map((s) => ({ value: s.slug, label: s.name }))} />}
-        </div>
     </div>
   );
 }
@@ -276,56 +249,3 @@ function BadgeFilterChip({ checked, onToggle, icon: IconComponent, label, colorC
   );
 }
 
-// ─── SelectFilterChip ────────────────────────────────────────────────────────
-
-function SelectFilterChip({ value, onChange, label, options }: {
-  value: string | undefined;
-  onChange: (v: string | undefined) => void;
-  label: string;
-  options: { value: string; label: string }[];
-}): React.ReactElement {
-  const [open, setOpen] = useState(false);
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={cn(
-            'shrink-0 flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200 cursor-pointer border',
-            value
-              ? 'bg-primary/8 text-foreground border-primary/40 shadow-sm'
-              : 'bg-background text-muted-foreground border-border/50 hover:border-border hover:text-foreground',
-          )}
-        >
-          {value ? options.find((o) => o.value === value)?.label ?? label : label}
-          <CaretDown size={11} className="text-muted-foreground" />
-          {value && (
-            <X size={9} weight="bold" className="ml-0.5 cursor-pointer hover:text-destructive" onClick={(e) => { e.stopPropagation(); onChange(undefined); }} />
-          )}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-44 p-0" align="start">
-        <Command>
-          <CommandInput placeholder={label} />
-          <CommandList>
-            <CommandEmpty>—</CommandEmpty>
-            <CommandGroup>
-              {options.map((opt) => (
-                <CommandItem
-                  key={opt.value}
-                  value={opt.label}
-                  onSelect={() => { onChange(value === opt.value ? undefined : opt.value); setOpen(false); }}
-                >
-                  <div className={cn('mr-1 flex h-4 w-4 items-center justify-center rounded border border-primary/40', value === opt.value ? 'bg-primary border-primary' : 'bg-transparent')}>
-                    {value === opt.value && <Check size={10} weight="bold" className="text-primary-foreground" />}
-                  </div>
-                  {opt.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}

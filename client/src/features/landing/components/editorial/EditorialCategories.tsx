@@ -82,7 +82,7 @@ export const EditorialCategories = (): React.ReactElement => {
                     fill
                     sizes="50vw"
                     unoptimized
-                    className="h-full w-full object-cover grayscale group-hover:grayscale-0 active:grayscale-0 transition-all duration-700 ease-in-out"
+                    className="h-full w-full object-cover transition-all duration-700 ease-in-out"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-[#ececec]">
@@ -108,11 +108,11 @@ export const EditorialCategories = (): React.ReactElement => {
             style={{ aspectRatio: '16/7' }}
           >
             <Image
-              src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=800&q=80"
+              src="/categories/retouch.jpg"
               alt="AI რეტუში"
               fill
               sizes="100vw"
-              className="h-full w-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+              className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-1000"
             />
             <div
               className="absolute inset-0 flex items-center px-12"

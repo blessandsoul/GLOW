@@ -15,6 +15,7 @@ export const LanguageContext = createContext<LanguageContextType | undefined>(un
 export function LanguageProvider({ children }: { children: React.ReactNode }): React.ReactElement {
     const [language, setLanguageState] = useState<SupportedLanguage>(defaultLanguage);
     const [transitioning, setTransitioning] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const pendingLang = useRef<SupportedLanguage | null>(null);
     const isInitialized = useRef(false);
 
@@ -27,6 +28,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }): R
             document.documentElement.lang = defaultLanguage;
         }
         isInitialized.current = true;
+        setMounted(true);
     }, []);
 
     const setLanguage = useCallback((lang: SupportedLanguage) => {
@@ -103,9 +105,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }): R
             <div
                 className="motion-safe:transition-[opacity,transform] motion-safe:duration-200 motion-safe:ease-out"
                 style={{
-                    opacity: transitioning ? 0 : 1,
+                    opacity: transitioning || !mounted ? 0 : 1,
                     transform: transitioning ? 'translateY(4px)' : 'none',
                 }}
+                suppressHydrationWarning
             >
                 {children}
             </div>

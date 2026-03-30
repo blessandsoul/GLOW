@@ -143,37 +143,32 @@ function buildWhere(opts?: {
     ? { is: profileConditions }
     : { isNot: null };
 
-  const where: Prisma.UserWhereInput = {
-    isActive: true,
-    deletedAt: null,
-    username: { not: null },
-    masterProfile: masterProfileFilter,
-    portfolioItems: {
-      some: { isPublished: true },
-    },
-  };
+  const andConditions: Prisma.UserWhereInput[] = [
+    { isActive: true },
+    { deletedAt: null },
+    { username: { not: null } },
+    { masterProfile: masterProfileFilter },
+  ];
+
+  if (!opts?.search) {
+    andConditions.push({ portfolioItems: { some: { isPublished: true } } });
+  }
 
   if (opts?.search) {
     const tokens = opts.search.trim().split(/\s+/).filter(Boolean);
-    if (tokens.length >= 2) {
-      // Multi-word search: match tokens across firstName + lastName (e.g. "ნათია სამსო")
-      where.AND = tokens.map((token) => ({
+    for (const token of tokens) {
+      andConditions.push({
         OR: [
           { firstName: { contains: token } },
           { lastName: { contains: token } },
           { username: { contains: token } },
           { brandingProfile: { displayName: { contains: token } } },
         ],
-      }));
-    } else {
-      where.OR = [
-        { firstName: { contains: opts.search } },
-        { lastName: { contains: opts.search } },
-        { username: { contains: opts.search } },
-        { brandingProfile: { displayName: { contains: opts.search } } },
-      ];
+      });
     }
   }
+
+  const where: Prisma.UserWhereInput = { AND: andConditions };
 
   return where;
 }

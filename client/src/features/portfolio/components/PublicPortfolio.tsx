@@ -193,7 +193,7 @@ function HeroSection({ portfolio, language }: HeroSectionProps): React.ReactElem
                         src={getThumbUrl(heroImage, 800)}
                         alt={portfolio.displayName}
                         fill
-                        className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
+                        className="object-cover object-center transition-all duration-700"
                         sizes="(max-width: 768px) 100vw, 50vw"
                         priority
                         unoptimized
@@ -203,7 +203,7 @@ function HeroSection({ portfolio, language }: HeroSectionProps): React.ReactElem
                         src={getThumbUrl(portfolio.avatar, 800)}
                         alt={portfolio.displayName}
                         fill
-                        className="object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
+                        className="object-cover object-center transition-all duration-700"
                         sizes="(max-width: 768px) 100vw, 50vw"
                         priority
                         unoptimized
@@ -312,13 +312,13 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                 <button
                     type="button"
                     onClick={() => onOpenLightbox(0)}
-                    className="col-span-12 sm:col-span-8 row-span-2 relative overflow-hidden bg-muted cursor-zoom-in group"
+                    className="col-span-12 sm:col-span-6 row-span-2 relative overflow-hidden bg-muted cursor-zoom-in group"
                 >
                     <Image
                         src={getThumbUrl(large.imageUrl, 1200)}
                         alt={large.title ?? displayName}
                         fill
-                        className="object-cover grayscale contrast-110 hover:grayscale-0 transition-all duration-700"
+                        className="object-cover transition-all duration-700"
                         sizes="(max-width: 640px) 100vw, 66vw"
                         unoptimized
                     />
@@ -334,13 +334,13 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                     <button
                         type="button"
                         onClick={() => onOpenLightbox(1)}
-                        className="col-span-6 sm:col-span-4 row-span-1 relative overflow-hidden bg-muted cursor-zoom-in group"
+                        className="col-span-6 sm:col-span-6 row-span-1 relative overflow-hidden bg-muted cursor-zoom-in group"
                     >
                         <Image
                             src={getThumbUrl(rest[0].imageUrl, 600)}
                             alt={rest[0].title ?? ''}
                             fill
-                            className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                            className="object-cover transition-all duration-700"
                             sizes="(max-width: 640px) 50vw, 34vw"
                             unoptimized
                         />
@@ -348,28 +348,29 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                 )}
 
                 {/* Side cells — bottom row, split into 2 */}
-                <div className="col-span-6 sm:col-span-2 row-span-1 relative overflow-hidden bg-muted group">
+                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden bg-muted group">
                     {rest[1] && (
                         <button type="button" onClick={() => onOpenLightbox(2)} className="w-full h-full cursor-zoom-in">
                             <Image
                                 src={getThumbUrl(rest[1].imageUrl, 400)}
                                 alt={rest[1].title ?? ''}
                                 fill
-                                className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                                className="object-cover transition-all duration-700"
                                 sizes="25vw"
                                 unoptimized
                             />
                         </button>
                     )}
                 </div>
-                <div className="col-span-6 sm:col-span-2 row-span-1 relative overflow-hidden bg-muted group">
+                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden bg-muted group">
                     {rest[2] ? (
+
                         <button type="button" onClick={() => onOpenLightbox(3)} className="w-full h-full cursor-zoom-in">
                             <Image
                                 src={getThumbUrl(rest[2].imageUrl, 400)}
                                 alt={rest[2].title ?? ''}
                                 fill
-                                className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                                className="object-cover transition-all duration-700"
                                 sizes="25vw"
                                 unoptimized
                             />
