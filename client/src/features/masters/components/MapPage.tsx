@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useMastersCatalog } from '../hooks/useMastersCatalog';
 import { useSpecialities } from '@/features/profile/hooks/useCatalog';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useDistricts, useBrands, useStyleTags } from '../hooks/useCatalogLookups';
 import { useDebounce } from '@/hooks/useDebounce';
 import { ROUTES } from '@/lib/constants/routes';
@@ -23,6 +24,7 @@ export function MapPage(): React.ReactElement {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { specialities } = useSpecialities();
+  const { t } = useLanguage();
 
   // ─── Filter state ─────────────────────────────────────────────────────────
   const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '');
@@ -175,7 +177,7 @@ export function MapPage(): React.ReactElement {
           className="absolute right-3 top-3 z-[1000] flex items-center gap-2 rounded-xl border border-border/60 bg-background/90 px-3 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background hover:shadow-md"
         >
           <ListBullets size={14} weight="bold" />
-          Список
+          {t('catalog.btn_list')}
         </Link>
       </div>
     </div>
