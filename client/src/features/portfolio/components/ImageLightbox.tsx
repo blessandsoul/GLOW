@@ -48,11 +48,17 @@ export function ImageLightbox({ images, initialIndex, open, onClose, editable = 
     }, [open]);
 
     const goNext = useCallback((): void => {
-        setCurrentIndex((i) => (i < images.length - 1 ? i + 1 : i));
+        setCurrentIndex((i) => {
+            const next = i < images.length - 1 ? i + 1 : i;
+            return next;
+        });
     }, [images.length]);
 
     const goPrev = useCallback((): void => {
-        setCurrentIndex((i) => (i > 0 ? i - 1 : i));
+        setCurrentIndex((i) => {
+            const prev = i > 0 ? i - 1 : i;
+            return prev;
+        });
     }, []);
 
     // Keyboard navigation
@@ -192,7 +198,7 @@ export function ImageLightbox({ images, initialIndex, open, onClose, editable = 
 
             {/* Image area with swipe */}
             <div
-                className="flex h-full w-full items-center justify-center px-4 py-12 sm:px-14 sm:py-14"
+                className="flex h-full w-full items-center justify-center px-4 py-12 sm:px-14 sm:py-14 will-change-transform"
                 onClick={(e) => e.stopPropagation()}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -201,15 +207,16 @@ export function ImageLightbox({ images, initialIndex, open, onClose, editable = 
                 <div
                     className={cn(
                         'relative h-full w-full max-w-lg',
-                        !isDragging.current && 'transition-transform duration-200 ease-out',
+                        !isDragging.current && 'transition-transform duration-150 ease-out',
                     )}
                     style={{ transform: `translateX(${translateX}px)` }}
                 >
                     <Image
+                        key={safeIndex}
                         src={getServerImageUrl(current.imageUrl)}
                         alt={current.title ?? 'Portfolio image'}
                         fill
-                        className="object-contain"
+                        className="object-contain will-change-transform"
                         sizes="100vw"
                         priority
                         unoptimized
