@@ -644,16 +644,16 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                 )}
             >
                 {/* Portfolio images */}
-                <div className="relative w-full sm:w-72 md:w-80 shrink-0 aspect-4/3 sm:aspect-auto sm:h-48 bg-muted/30">
+                <div className="relative w-full sm:w-64 md:w-72 shrink-0 aspect-square bg-muted/30">
                     {images.length >= 4 ? (
-                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px">
+                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-1 p-1">
                             {images.slice(0, 4).map((img) => (
-                                <div key={img.id} className="relative overflow-hidden">
+                                <div key={img.id} className="relative overflow-hidden rounded-lg">
                                     <Image
                                         src={getThumbUrl(img.imageUrl, 256)}
                                         alt={img.title ?? ''}
                                         fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                                         sizes="(max-width: 640px) 100vw, 320px"
                                         unoptimized
                                     />
@@ -662,7 +662,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                         </div>
                     ) : images.length > 0 ? (
                         <div className={cn(
-                            'grid h-full w-full gap-px',
+                            'grid h-full w-full gap-1 p-1',
                             images.length === 1 && 'grid-cols-1',
                             images.length === 2 && 'grid-cols-2',
                             images.length === 3 && 'grid-cols-2 grid-rows-2',
@@ -671,7 +671,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                                 <div
                                     key={img.id}
                                     className={cn(
-                                        'relative overflow-hidden',
+                                        'relative overflow-hidden rounded-lg',
                                         images.length === 3 && i === 0 && 'row-span-2',
                                     )}
                                 >
@@ -679,7 +679,7 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                                         src={getThumbUrl(img.imageUrl, 256)}
                                         alt={img.title ?? ''}
                                         fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                                         sizes="(max-width: 640px) 100vw, 320px"
                                         unoptimized
                                     />
@@ -695,8 +695,9 @@ function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouse
                     )}
 
                     {master.totalItems > 4 && (
-                        <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-                            +{master.totalItems - 4}
+                        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-xl bg-black/70 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+                            <span>+</span>
+                            <span className="tabular-nums">{master.totalItems - 4}</span>
                         </div>
                     )}
 

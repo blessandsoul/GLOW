@@ -307,12 +307,12 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
             </div>
 
             {/* Editorial grid */}
-            <div className="grid grid-cols-12 grid-rows-2 gap-1 sm:gap-2 h-[70dvh] sm:h-[80dvh] max-h-[800px]">
+            <div className="grid grid-cols-12 grid-rows-2 gap-2 sm:gap-3 h-[70dvh] sm:h-[80dvh] max-h-[900px]">
                 {/* Large hero cell */}
                 <button
                     type="button"
                     onClick={() => onOpenLightbox(0)}
-                    className="col-span-12 sm:col-span-6 row-span-2 relative overflow-hidden bg-muted cursor-zoom-in group"
+                    className="col-span-12 sm:col-span-6 row-span-2 relative overflow-hidden rounded-2xl bg-muted cursor-zoom-in group"
                 >
                     <Image
                         src={getThumbUrl(large.imageUrl, 1200)}
@@ -334,7 +334,7 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                     <button
                         type="button"
                         onClick={() => onOpenLightbox(1)}
-                        className="col-span-6 sm:col-span-6 row-span-1 relative overflow-hidden bg-muted cursor-zoom-in group"
+                        className="col-span-6 sm:col-span-6 row-span-1 relative overflow-hidden rounded-2xl bg-muted cursor-zoom-in group"
                     >
                         <Image
                             src={getThumbUrl(rest[0].imageUrl, 600)}
@@ -348,7 +348,7 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                 )}
 
                 {/* Side cells — bottom row, split into 2 */}
-                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden bg-muted group">
+                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden rounded-2xl bg-muted group">
                     {rest[1] && (
                         <button type="button" onClick={() => onOpenLightbox(2)} className="w-full h-full cursor-zoom-in">
                             <Image
@@ -362,7 +362,7 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                         </button>
                     )}
                 </div>
-                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden bg-muted group">
+                <div className="col-span-6 sm:col-span-3 row-span-1 relative overflow-hidden rounded-2xl bg-muted group">
                     {rest[2] ? (
 
                         <button type="button" onClick={() => onOpenLightbox(3)} className="w-full h-full cursor-zoom-in">
@@ -375,8 +375,8 @@ function PortfolioGrid({ items, displayName, onOpenLightbox }: PortfolioGridProp
                                 unoptimized
                             />
                             {items.length > 4 && (
-                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                    <span className="text-white text-sm font-bold">+{items.length - 4}</span>
+                                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-all duration-300">
+                                    <span className="text-white text-base font-bold tabular-nums">+{items.length - 4}</span>
                                 </div>
                             )}
                         </button>

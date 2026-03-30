@@ -255,20 +255,20 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
         >
             <Link
                 href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
-                className="group flex w-55 sm:w-65 shrink-0 snap-start flex-col rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
+                className="group flex w-64 shrink-0 snap-start flex-col rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-border/80"
             >
                 {/* Image grid */}
-                <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-muted/30">
+                <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-muted/30">
                     {images.length >= 4 ? (
-                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px">
+                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-1">
                             {images.slice(0, 4).map((img) => (
-                                <div key={img.id} className="relative overflow-hidden">
+                                <div key={img.id} className="relative overflow-hidden rounded-lg">
                                     <Image
                                         src={getThumbUrl(img.imageUrl, 256)}
                                         alt={img.title ?? ''}
                                         fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        sizes="130px"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        sizes="100px"
                                         unoptimized
                                     />
                                 </div>
@@ -276,7 +276,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                         </div>
                     ) : images.length > 0 ? (
                         <div className={cn(
-                            'grid h-full w-full gap-px',
+                            'grid h-full w-full gap-1',
                             images.length === 1 && 'grid-cols-1',
                             images.length === 2 && 'grid-cols-2',
                             images.length === 3 && 'grid-cols-2 grid-rows-2',
@@ -285,7 +285,7 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                                 <div
                                     key={img.id}
                                     className={cn(
-                                        'relative overflow-hidden',
+                                        'relative overflow-hidden rounded-lg',
                                         images.length === 3 && i === 0 && 'row-span-2',
                                     )}
                                 >
@@ -293,8 +293,8 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                                         src={getThumbUrl(img.imageUrl, 256)}
                                         alt={img.title ?? ''}
                                         fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        sizes="260px"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        sizes="100px"
                                         unoptimized
                                     />
                                 </div>
@@ -309,8 +309,9 @@ function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
                     )}
 
                     {master.totalItems > 4 && (
-                        <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-                            +{master.totalItems - 4}
+                        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-xl bg-black/70 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+                            <span>+</span>
+                            <span className="tabular-nums">{master.totalItems - 4}</span>
                         </div>
                     )}
 
