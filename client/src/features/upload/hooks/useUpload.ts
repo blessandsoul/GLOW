@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { jobService } from '@/features/jobs/services/job.service';
 import { getErrorMessage, isErrorCode } from '@/lib/utils/error';
 import { useAppDispatch } from '@/store/hooks';
@@ -30,6 +30,8 @@ export function useUpload(options?: UseUploadOptions): UseUploadReturn {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const dispatch = useAppDispatch();
+    const optionsRef = useRef(options);
+    optionsRef.current = options;
 
     const uploadFile = useCallback(
         async ({ file, settings }: UploadPayload) => {
@@ -38,7 +40,7 @@ export function useUpload(options?: UseUploadOptions): UseUploadReturn {
             try {
                 const data = await jobService.uploadPhoto(file, settings);
                 setJob(data);
-                options?.onJobCreated?.(data);
+                optionsRef.current?.onJobCreated?.(data);
                 // Sync credit balance in Redux after successful upload
                 if (data.creditsRemaining !== undefined) {
                     dispatch(updateCredits(data.creditsRemaining));

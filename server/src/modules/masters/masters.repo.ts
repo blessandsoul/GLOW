@@ -173,8 +173,9 @@ function buildWhere(opts?: {
   return where;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapMaster(m: any) {
+type MasterPayload = Prisma.UserGetPayload<{ select: typeof MASTER_SELECT }>;
+
+function mapMaster(m: MasterPayload) {
   const p = m.masterProfile;
   return {
     masterProfileId: p?.id ?? null,

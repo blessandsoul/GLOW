@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function ReferralsPage(): React.ReactElement {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-10">
+    <div className="container mx-auto max-w-3xl px-4 py-10 md:px-6 lg:px-8">
       <ReferralDashboard />
     </div>
   );

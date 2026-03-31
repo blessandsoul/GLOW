@@ -117,15 +117,15 @@ export const EditorialHero = (): React.ReactElement => {
       <div className="relative h-full flex flex-col justify-between">
 
         {/* TOP — headline */}
-        <div className="px-8 pt-20 space-y-4">
+        <div className="px-8 lg:px-16 xl:px-24 pt-20 space-y-4">
           <h1
-            className="text-4xl md:text-7xl text-[#f9f9f9] leading-tight text-balance"
+            className="text-4xl md:text-7xl lg:text-8xl text-[#f9f9f9] leading-tight text-balance"
             style={{ fontFamily: 'var(--font-noto-georgian), sans-serif', letterSpacing: '-0.02em' }}
           >
             Glow.ge — სილამაზის ინდუსტრიის ლიდერთა სივრცე
           </h1>
           <p
-            className="text-lg text-[#f9f9f9]/75 max-w-md leading-relaxed"
+            className="text-lg text-[#f9f9f9]/75 max-w-md lg:max-w-lg leading-relaxed"
             style={{ fontFamily: 'var(--font-manrope), var(--font-noto-georgian), sans-serif' }}
           >
             მიანდე შენი ვიზუალი მათ, ვინც სილამაზის ინდუსტრიის წესებს ქმნის
@@ -135,7 +135,7 @@ export const EditorialHero = (): React.ReactElement => {
         {/* BOTTOM — top masters slider */}
         <div className="pb-32">
           {/* Label */}
-          <div className="px-8 mb-4 flex items-center gap-3">
+          <div className="px-8 lg:px-16 mb-4 flex items-center gap-3">
             <span
               className="text-xs uppercase tracking-[0.18em] text-[#f9f9f9]/40 font-medium"
               style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
@@ -159,7 +159,7 @@ export const EditorialHero = (): React.ReactElement => {
             onPointerLeave={onPointerUp}
           >
             <div
-              className="flex gap-3 px-8"
+              className="flex gap-3 px-8 lg:px-16"
               style={{
                 animation: paused ? 'none' : 'marquee-masters 40s linear infinite',
                 width: 'max-content',

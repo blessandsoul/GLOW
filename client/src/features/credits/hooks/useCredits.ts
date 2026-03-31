@@ -19,7 +19,7 @@ export function useCreditsBalance() {
             const res = await creditsService.getBalance();
             setData(res);
         } catch (error) {
-            console.error(error);
+            toast.error(getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }
@@ -87,7 +87,7 @@ export function useCreditHistory(page: number = 1, limit: number = 10, type?: 'e
             const res = await creditsService.getHistory(page, limit, type);
             setData(res);
         } catch (error) {
-            console.error(error);
+            toast.error(getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }

@@ -20,7 +20,7 @@ const WHY_ITEMS = [
 
 export const EditorialWhySection = (): React.ReactElement => {
   return (
-    <section className="py-20 px-8 bg-white">
+    <section className="py-20 px-8 md:px-12 lg:px-16 bg-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 space-y-2">
@@ -46,7 +46,7 @@ export const EditorialWhySection = (): React.ReactElement => {
         </div>
 
         {/* Items */}
-        <div className="grid grid-cols-1 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {WHY_ITEMS.map(({ icon, title, body }) => (
             <div key={icon} className="flex flex-col items-center text-center space-y-4 px-4">
               <div className="w-10 h-10 rounded-full bg-[#680005]/5 flex items-center justify-center">

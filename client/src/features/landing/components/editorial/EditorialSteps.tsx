@@ -29,8 +29,8 @@ const STEPS = [
 
 export const EditorialSteps = (): React.ReactElement => {
   return (
-    <section className="py-24 px-10 bg-white">
-      <div className="max-w-screen-md mx-auto">
+    <section className="py-24 px-10 md:px-12 lg:px-16 bg-white">
+      <div className="max-w-screen-md lg:max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <span
@@ -58,11 +58,11 @@ export const EditorialSteps = (): React.ReactElement => {
         </div>
 
         {/* Steps */}
-        <div className="space-y-0">
+        <div className="space-y-0 lg:grid lg:grid-cols-3 lg:gap-16">
           {STEPS.map((step, i) => (
             <div
               key={step.icon}
-              className={`py-12${i < STEPS.length - 1 ? ' border-b border-[#f0f0f0]' : ''}`}
+              className={`py-12 lg:py-0${i < STEPS.length - 1 ? ' border-b border-[#f0f0f0] lg:border-b-0 lg:border-r lg:pr-16' : ''}`}
             >
               <div className="flex flex-col items-center text-center max-w-lg mx-auto">
                 <div className="mb-6">

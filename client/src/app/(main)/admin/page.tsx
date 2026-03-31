@@ -25,20 +25,20 @@ function AdminPageContent(): React.ReactElement {
     const { stats, isLoading: statsLoading } = useAdminStats();
 
     if (isInitializing) {
-        return <div className="container mx-auto max-w-6xl px-4 py-12" />;
+        return <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-8" />;
     }
 
     if (user?.role !== 'ADMIN') {
         router.replace(ROUTES.DASHBOARD);
         return (
-            <div className="container mx-auto max-w-6xl px-4 py-24 text-center">
+            <div className="container mx-auto max-w-6xl px-4 py-24 text-center md:px-6 lg:px-8">
                 <p className="text-muted-foreground">{t('admin.unauthorized')}</p>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto max-w-6xl px-4 py-8 space-y-8">
+        <div className="container mx-auto max-w-6xl px-4 py-8 space-y-8 md:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold tracking-tight">{t('admin.title')}</h1>
 
             <AdminStatsCards stats={stats} isLoading={statsLoading} />

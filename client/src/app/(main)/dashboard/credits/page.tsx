@@ -766,7 +766,7 @@ export default function CreditsPage(): React.ReactElement {
                 />
             )}
 
-        <div className="container mx-auto space-y-10 px-4 py-10">
+        <div className="container mx-auto space-y-10 px-4 py-10 md:px-6 lg:px-8">
 
             {/* Balance */}
             <div className="flex items-center justify-between rounded-2xl border border-border/50 bg-card px-6 py-5 shadow-sm">

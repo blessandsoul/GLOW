@@ -114,7 +114,7 @@ export const creditsRepo = {
     amount: number,
     reason: string,
     jobId?: string,
-  ): Promise<number> {
+  ): Promise<{ creditsRemaining: number; transactionId: string }> {
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { id: userId },
@@ -134,7 +134,7 @@ export const creditsRepo = {
         select: { credits: true },
       });
 
-      await tx.creditTransaction.create({
+      const transaction = await tx.creditTransaction.create({
         data: {
           userId,
           delta: -amount,
@@ -143,10 +143,17 @@ export const creditsRepo = {
         },
       });
 
-      return updatedUser.credits;
+      return { creditsRemaining: updatedUser.credits, transactionId: transaction.id };
     });
 
     return result;
+  },
+
+  async linkTransactionToJob(transactionId: string, jobId: string): Promise<void> {
+    await prisma.creditTransaction.update({
+      where: { id: transactionId },
+      data: { jobId },
+    });
   },
 
   async refundCredits(

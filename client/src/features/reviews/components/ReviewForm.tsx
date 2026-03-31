@@ -106,10 +106,9 @@ export function ReviewForm({ masterId }: ReviewFormProps): React.ReactElement | 
             <div className="rounded-xl border border-border/50 bg-card px-4 py-4">
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">{t('portfolio.review_login_prompt')}</p>
-                    <Button variant="outline" size="sm" className="gap-1.5" asChild>
-                        <Link href="/login">
-                            <SignIn size={14} />
-                            {t('portfolio.review_login_prompt')}
+                    <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" asChild>
+                        <Link href="/login" aria-label={t('portfolio.review_login_prompt')}>
+                            <SignIn size={16} />
                         </Link>
                     </Button>
                 </div>

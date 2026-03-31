@@ -7,7 +7,7 @@ export default function AppointmentsPage(): React.ReactElement {
     const { t } = useLanguage();
 
     return (
-        <div className="container mx-auto flex min-h-[60dvh] flex-col items-center justify-center px-4">
+        <div className="container mx-auto flex min-h-[60dvh] flex-col items-center justify-center px-4 md:px-6 lg:px-8">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
                 <CalendarBlank size={32} className="text-primary" />
             </div>

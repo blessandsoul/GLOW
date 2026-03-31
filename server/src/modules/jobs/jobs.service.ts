@@ -156,15 +156,15 @@ export const jobsService = {
       await checkDailyLimit(userId);
     }
 
-    // In normal mode, pre-check credit balance before creating the job
-    // to avoid orphaned PROCESSING jobs when credits are insufficient.
-    if (!isLaunchMode() && userId) {
-      const balance = await creditsRepo.getBalance(userId);
-      if (balance < creditCost) {
-        throw new BadRequestError(
-          `Insufficient credits. Need ${creditCost}, have ${balance}.`,
-          'INSUFFICIENT_CREDITS',
-        );
+    // Deduct credits or track daily usage BEFORE creating the job
+    // to avoid orphaned PROCESSING jobs and prevent TOCTOU race conditions.
+    let deductResult: { creditsRemaining: number; transactionId: string } | undefined;
+    let dailyUsage: { used: number; limit: number; bonusRemaining: number; resetsAt: string } | undefined;
+    if (userId) {
+      if (isLaunchMode()) {
+        dailyUsage = await incrementDailyUsage(userId);
+      } else {
+        deductResult = await creditsService.deductForJob(userId, processingType);
       }
     }
 
@@ -177,21 +177,10 @@ export const jobsService = {
       creditCost,
     });
 
-    // Deduct credits or track daily usage depending on mode
-    let creditsRemaining: number | undefined;
-    let dailyUsage: { used: number; limit: number; bonusRemaining: number; resetsAt: string } | undefined;
-    if (userId) {
-      if (isLaunchMode()) {
-        dailyUsage = await incrementDailyUsage(userId);
-      } else {
-        try {
-          creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
-        } catch (err) {
-          // Credit deduction failed (e.g., race condition) — clean up orphaned job
-          await jobsRepo.updateJob(job.id, { status: 'FAILED', results: [] }).catch(() => {});
-          throw err;
-        }
-      }
+    // Link the credit transaction to the newly created job by exact transaction ID
+    if (userId && !isLaunchMode() && deductResult) {
+      await creditsService.linkTransactionToJob(deductResult.transactionId, job.id)
+        .catch((err) => logger.warn({ err, jobId: job.id }, 'Failed to link credit transaction to job'));
     }
 
     // Resolve prompt: filter ID lookup → settings-based → default
@@ -254,7 +243,7 @@ export const jobsService = {
         }
       });
 
-    return { id: job.id, status: job.status, originalUrl: job.originalUrl, creditsRemaining, dailyUsage };
+    return { id: job.id, status: job.status, originalUrl: job.originalUrl, creditsRemaining: deductResult?.creditsRemaining, dailyUsage };
   },
 
   async createGuestJob(
@@ -596,7 +585,7 @@ export const jobsService = {
 
       // Deduct credits after job creation (skip in launch mode)
       if (!isLaunchMode()) {
-        creditsRemaining = await creditsService.deductForJob(userId, processingType, job.id);
+        creditsRemaining = (await creditsService.deductForJob(userId, processingType, job.id)).creditsRemaining;
       }
 
       // Process with AI asynchronously (fire-and-forget)

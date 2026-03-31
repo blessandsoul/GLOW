@@ -195,7 +195,7 @@ export function useStudioState(): StudioState {
 
     const handleDownload = useCallback(async (url: string, jobId: string, variantIndex: number, branded: boolean = false, upscale: boolean = false) => {
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
+            const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/api/v1';
             if (upscale) {
                 const { prepareAndDownloadHD } = await import('@/lib/utils/download');
                 const prepareUrl = `${apiBase}/jobs/${jobId}/prepare-hd?variant=${variantIndex}`;

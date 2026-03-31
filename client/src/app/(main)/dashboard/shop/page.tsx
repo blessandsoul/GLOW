@@ -1,3 +1,4 @@
+// TODO: Replace hardcoded Georgian strings with t() from i18n dictionaries
 'use client';
 
 import { useEffect } from 'react';
@@ -38,11 +39,11 @@ export default function DashboardShopPage(): React.ReactElement {
     const status = sellerStatus?.sellerStatus ?? 'NONE';
 
     return (
-        <div className="container mx-auto px-4 py-8 md:px-6">
+        <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-foreground">Мой магазин</h1>
+                <h1 className="text-2xl font-bold text-foreground">ჩემი მაღაზია</h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                    Управляйте своими товарами на Glow.GE Marketplace
+                    მართეთ თქვენი პროდუქცია Glow.GE მარკეტზე
                 </p>
             </div>
 

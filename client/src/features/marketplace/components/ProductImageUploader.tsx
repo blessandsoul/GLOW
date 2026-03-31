@@ -1,3 +1,4 @@
+// TODO: Replace hardcoded Georgian strings with t() from i18n dictionaries
 'use client';
 
 import { useRef } from 'react';
@@ -33,12 +34,12 @@ export function ProductImageUploader({
     return (
         <div className="space-y-1.5">
             <label className="text-xs font-medium text-foreground">
-                Фотографии <span className="text-muted-foreground">({images.length}/{maxImages})</span>
+                ფოტოები <span className="text-muted-foreground">({images.length}/{maxImages})</span>
             </label>
             <div className="flex flex-wrap gap-2">
                 {images.map((url, i) => (
                     <div key={i} className="relative h-20 w-20 overflow-hidden rounded-xl border border-border/50 bg-muted">
-                        <Image src={url} alt={`Фото ${i + 1}`} fill className="object-cover" sizes="80px" />
+                        <Image src={url} alt={`ფოტო ${i + 1}`} fill className="object-cover" sizes="80px" />
                         <button
                             type="button"
                             onClick={() => onRemove(i)}
@@ -66,7 +67,7 @@ export function ProductImageUploader({
                         ) : (
                             <>
                                 <Plus size={16} />
-                                <span className="text-[10px]">Добавить</span>
+                                <span className="text-[10px]">დამატება</span>
                             </>
                         )}
                     </button>
@@ -80,7 +81,7 @@ export function ProductImageUploader({
                 onChange={handleFileChange}
             />
             {images.length === 0 && (
-                <p className="text-xs text-destructive">Минимум 1 фото</p>
+                <p className="text-xs text-destructive">მინიმუმ 1 ფოტო</p>
             )}
         </div>
     );

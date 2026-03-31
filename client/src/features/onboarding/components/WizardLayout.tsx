@@ -43,7 +43,7 @@ export function WizardLayout({
     const isPageMode = useContext(OnboardingPageMode);
 
     return (
-        <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
+        <div className="mx-auto max-w-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300">
             <div className="space-y-2 text-center mb-8">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground text-wrap-balance">
                     {title}

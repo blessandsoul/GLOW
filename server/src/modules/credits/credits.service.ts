@@ -106,9 +106,13 @@ export const creditsService = {
     return creditsRepo.getTransactions(userId, page, limit, type);
   },
 
-  async deductForJob(userId: string, processingType: string, jobId?: string): Promise<number> {
+  async deductForJob(userId: string, processingType: string, jobId?: string): Promise<{ creditsRemaining: number; transactionId: string }> {
     const cost = creditsService.getCost(processingType);
     return creditsRepo.deductCredits(userId, cost, 'JOB_PROCESSING', jobId);
+  },
+
+  async linkTransactionToJob(transactionId: string, jobId: string): Promise<void> {
+    await creditsRepo.linkTransactionToJob(transactionId, jobId);
   },
 
   async refundForJob(userId: string, creditCost: number, jobId: string): Promise<number> {

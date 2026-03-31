@@ -71,7 +71,7 @@ function hasExpert(master: FeaturedMaster): boolean {
 
 function ArtistCardSkeleton(): React.ReactElement {
   return (
-    <div className="flex-none w-[280px] snap-center">
+    <div className="flex-none w-[280px] lg:w-[320px] snap-center">
       <div className="p-1" style={{ backgroundColor: 'var(--ed-surface-lowest, var(--background))' }}>
         <Skeleton
           className="w-full"
@@ -109,7 +109,7 @@ function ArtistCard({ master }: ArtistCardProps): React.ReactElement {
   const expert = hasExpert(master);
 
   return (
-    <div className="flex-none w-[280px] snap-center group">
+    <div className="flex-none w-[280px] lg:w-[320px] snap-center group">
       <div
         className="p-1"
         style={{
@@ -125,7 +125,7 @@ function ArtistCard({ master }: ArtistCardProps): React.ReactElement {
               alt={master.displayName}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="280px"
+              sizes="(min-width:1024px) 320px, 280px"
               unoptimized
             />
           ) : (
@@ -311,7 +311,7 @@ export function EditorialArtists(): React.ReactElement {
       style={{ backgroundColor: 'var(--ed-surface-low, var(--background))' }}
     >
       {/* Section heading */}
-      <div className="px-8 mb-12">
+      <div className="px-8 md:px-12 lg:px-16 mb-12 max-w-7xl mx-auto">
         <h2
           className="font-[family-name:var(--font-ed-display)] text-3xl"
           style={{ color: 'var(--ed-on-surface, var(--foreground))' }}
@@ -321,7 +321,7 @@ export function EditorialArtists(): React.ReactElement {
       </div>
 
       {/* Sub-header row */}
-      <div className="mb-6 px-8 flex justify-between items-end">
+      <div className="mb-6 px-8 md:px-12 lg:px-16 flex justify-between items-end max-w-7xl mx-auto">
         <h3
           className="font-[family-name:var(--font-ed-label)] font-bold"
           style={{
@@ -361,7 +361,7 @@ export function EditorialArtists(): React.ReactElement {
       {/* Horizontal scroll track */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory px-8 space-x-6 pb-2"
+        className="flex overflow-x-auto snap-x snap-mandatory px-8 md:px-12 lg:px-16 space-x-6 pb-2"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
       >
         {showSkeletons

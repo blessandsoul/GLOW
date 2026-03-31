@@ -93,7 +93,7 @@ export function ChatWindow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 16 }}
             transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-            className="absolute bottom-20 right-0 flex h-[520px] max-h-[70vh] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl shadow-primary/5"
+            className="absolute bottom-20 right-0 flex h-[520px] max-h-[70vh] w-[380px] md:w-[420px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl shadow-primary/5"
         >
             {/* Header — gradient mesh with glassmorphism */}
             <div className="relative shrink-0 overflow-hidden border-b border-primary/10">

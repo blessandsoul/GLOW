@@ -26,8 +26,10 @@ export function useAutoSaveProfile(initialData: ProfileFormData): {
 
     // Sync when initial data changes (e.g., after fetch)
     useEffect(() => {
+        const serialized = JSON.stringify(initialData);
+        if (serialized === lastSavedRef.current) return;
         setForm(initialData);
-        lastSavedRef.current = JSON.stringify(initialData);
+        lastSavedRef.current = serialized;
         isInitialMount.current = true;
     }, [initialData]);
 

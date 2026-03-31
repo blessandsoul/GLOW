@@ -57,15 +57,15 @@ export const EditorialCategories = (): React.ReactElement => {
   const specialities = apiCategories.length > 0 ? apiCategories : (!isLoading ? STATIC_CATEGORIES : []);
 
   return (
-    <section className="py-16 px-8 bg-[#f9f9f9]">
+    <section className="py-16 px-8 md:px-12 lg:px-16 bg-[#f9f9f9]">
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-12">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className={`aspect-4/5 bg-[#e8e8e8] animate-pulse${i % 2 === 1 ? ' translate-y-8' : ''}`} />
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-12">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className={`aspect-4/5 bg-[#e8e8e8] animate-pulse${i % 2 === 1 ? ' translate-y-8 md:translate-y-0' : ''}`} />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-12">
           {specialities.map((spec, i) => {
             const image = CATEGORY_IMAGES[spec.slug];
             const Icon = CATEGORY_ICONS[spec.slug] ?? DEFAULT_ICON;
@@ -73,14 +73,14 @@ export const EditorialCategories = (): React.ReactElement => {
               <Link
                 key={spec.slug}
                 href={`/masters?niche=${spec.slug}`}
-                className={`group relative aspect-4/5 bg-[#f3f3f3] overflow-hidden cursor-pointer${i % 2 === 1 ? ' translate-y-8' : ''}`}
+                className={`group relative aspect-4/5 bg-[#f3f3f3] overflow-hidden cursor-pointer${i % 2 === 1 ? ' translate-y-8 md:translate-y-0' : ''}`}
               >
                 {image ? (
                   <Image
                     src={image}
                     alt={spec.label}
                     fill
-                    sizes="50vw"
+                    sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
                     unoptimized
                     className="h-full w-full object-cover transition-all duration-700 ease-in-out"
                   />
@@ -104,7 +104,7 @@ export const EditorialCategories = (): React.ReactElement => {
           {/* AI რეტუში — full-width */}
           <Link
             href="/create"
-            className="group relative col-span-2 bg-zinc-900 overflow-hidden mt-8 cursor-pointer"
+            className="group relative col-span-2 md:col-span-3 lg:col-span-4 bg-zinc-900 overflow-hidden mt-8 cursor-pointer"
             style={{ aspectRatio: '16/7' }}
           >
             <Image

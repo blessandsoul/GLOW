@@ -46,7 +46,7 @@ export function SellerProductsDashboard(): React.ReactElement {
 
     if (view === 'create') {
         return (
-            <div className="mx-auto max-w-lg">
+            <div className="mx-auto max-w-lg lg:max-w-2xl">
                 <div className="mb-4 flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={() => setView('list')}>← უკან</Button>
                     <h2 className="text-base font-semibold">ახალი პროდუქტი</h2>
@@ -60,7 +60,7 @@ export function SellerProductsDashboard(): React.ReactElement {
 
     if (view === 'edit' && editingProduct) {
         return (
-            <div className="mx-auto max-w-lg">
+            <div className="mx-auto max-w-lg lg:max-w-2xl">
                 <div className="mb-4 flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={() => { setView('list'); setEditingProduct(null); }}>← უკან</Button>
                     <h2 className="text-base font-semibold">პროდუქტის რედაქტირება</h2>

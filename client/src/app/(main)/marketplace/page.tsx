@@ -47,7 +47,7 @@ function MarketplaceContent(): React.ReactElement {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 md:px-6">
+        <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-foreground">მარკეტპლეისი</h1>

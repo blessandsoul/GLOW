@@ -21,6 +21,7 @@ import { useDeleteJob } from '@/features/jobs/hooks/useDashboard';
 import { useBeforeAfter } from '@/features/before-after/hooks/useBeforeAfter';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { toast } from 'sonner';
 import { ROUTES } from '@/lib/constants/routes';
 import { downloadImage } from '@/lib/utils/download';
 
@@ -54,7 +55,7 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
     }, [deleteTarget, deleteJob, router]);
 
     const handleDownload = async (url: string, id: string, variantIndex: number, branded: boolean = false, upscale: boolean = false): Promise<void> => {
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api/v1';
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/api/v1';
         try {
             if (upscale) {
                 const { prepareAndDownloadHD } = await import('@/lib/utils/download');
@@ -64,8 +65,9 @@ export function ResultsPageClient({ jobId }: ResultsPageClientProps): React.Reac
                 const downloadUrl = `${apiBase}/jobs/${id}/download?variant=${variantIndex}&branded=${branded ? 1 : 0}`;
                 await downloadImage(downloadUrl, `glowge-${Date.now()}.jpg`);
             }
-        } catch {
-            // User cancelled share sheet or download failed — silently ignore
+        } catch (err) {
+            if (err instanceof Error && err.name === 'AbortError') return;
+            toast.error(t('ui.download_hd_failed'));
         }
     };
 

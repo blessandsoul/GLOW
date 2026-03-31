@@ -14,7 +14,7 @@ export function AdminStatsCards({ stats, isLoading }: AdminStatsCardsProps): Rea
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
                 {Array.from({ length: 5 }).map((_, i) => (
                     <div key={i} className="rounded-xl border border-border/50 bg-card p-5">
                         <Skeleton className="mb-2 h-4 w-24" />
@@ -40,7 +40,7 @@ export function AdminStatsCards({ stats, isLoading }: AdminStatsCardsProps): Rea
     ];
 
     return (
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             {cards.map((card) => (
                 <div
                     key={card.label}

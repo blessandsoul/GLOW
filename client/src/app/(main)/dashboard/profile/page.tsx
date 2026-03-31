@@ -21,7 +21,7 @@ export default function ProfilePage(): React.ReactElement {
     const isMaster = user?.role === 'MASTER' || user?.role === 'ADMIN';
 
     return (
-        <div className="container mx-auto max-w-2xl px-4 py-10 space-y-8">
+        <div className="container mx-auto max-w-2xl px-4 py-10 space-y-8 md:px-6 lg:px-8">
             {/* Welcome hero */}
             <ProfileHeroCard />
 

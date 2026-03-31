@@ -1,3 +1,4 @@
+// TODO: Replace hardcoded Georgian strings with t() from i18n dictionaries
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -195,7 +196,7 @@ export const EditorialTopBar = (): React.ReactElement => {
               <NavLink
                 href={ROUTES.MARKETPLACE}
                 icon="shopping_bag"
-                label="Маркетплейс"
+                label="მარკეტი"
                 isActive={pathname === ROUTES.MARKETPLACE}
                 onClick={() => setMenuOpen(false)}
               />
@@ -263,7 +264,7 @@ export const EditorialTopBar = (): React.ReactElement => {
                 <NavLink
                   href="/dashboard/shop"
                   icon="sell"
-                  label="Мой магазин"
+                  label="ჩემი მაღაზია"
                   isActive={pathname.startsWith('/dashboard/shop')}
                   onClick={() => setMenuOpen(false)}
                 />
