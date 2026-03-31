@@ -1,15 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-
-const VIDEOS = [
-  '/hero-video-1.mp4',
-  '/hero-video-2.mp4',
-  '/hero-video-3.mp4',
-  '/hero-video-4.mp4',
-];
-
-const FADE_MS = 1000;
+import React, { useState, useRef, useCallback } from 'react';
 
 const TOP_MASTERS = [
   { id: '1', name: 'ნინო ბერიძე',    specialty: 'ბოლქვოვანი შუქი',   rating: 4.9, reviews: 312, initials: 'НБ', color: '#c084fc' },
@@ -74,81 +65,7 @@ const MasterCard = ({ name, specialty, rating, reviews, initials, color }: Maste
 );
 
 export const EditorialHero = (): React.ReactElement => {
-  const [activeSlot, setActiveSlot] = useState<0 | 1>(0);
-  const [srcA, setSrcA] = useState(VIDEOS[0]);
-  const [srcB, setSrcB] = useState(VIDEOS[1]);
-  const refA = useRef<HTMLVideoElement>(null);
-  const refB = useRef<HTMLVideoElement>(null);
-  const indexRef = useRef(0);
-  const transitioningRef = useRef(false);
-
-  // Preload the next video into a hidden element so it's cached by the browser
-  const preloadRef = useRef<HTMLVideoElement | null>(null);
-
-  const preloadNext = useCallback((index: number) => {
-    const nextIndex = (index + 1) % VIDEOS.length;
-    if (!preloadRef.current) {
-      const el = document.createElement('video');
-      el.muted = true;
-      el.preload = 'auto';
-      el.style.display = 'none';
-      document.body.appendChild(el);
-      preloadRef.current = el;
-    }
-    preloadRef.current.src = VIDEOS[nextIndex];
-    preloadRef.current.load();
-  }, []);
-
-  const advance = useCallback(() => {
-    if (transitioningRef.current) return;
-    transitioningRef.current = true;
-
-    const nextIndex = (indexRef.current + 1) % VIDEOS.length;
-    const nextSlot = activeSlot === 0 ? 1 : 0;
-    const nextVideo = nextSlot === 0 ? refA.current : refB.current;
-
-    if (nextSlot === 0) setSrcA(VIDEOS[nextIndex]);
-    else setSrcB(VIDEOS[nextIndex]);
-
-    setTimeout(() => {
-      if (nextVideo) {
-        nextVideo.currentTime = 0;
-        nextVideo.play().catch(() => {});
-      }
-      setActiveSlot(nextSlot as 0 | 1);
-      indexRef.current = nextIndex;
-
-      // Preload the video after next
-      preloadNext(nextIndex);
-
-      setTimeout(() => {
-        transitioningRef.current = false;
-      }, FADE_MS);
-    }, 50);
-  }, [activeSlot, preloadNext]);
-
-  useEffect(() => {
-    refA.current?.play().catch(() => {});
-    // Preload second video after first starts
-    preloadNext(0);
-
-    return () => {
-      if (preloadRef.current) {
-        preloadRef.current.remove();
-        preloadRef.current = null;
-      }
-    };
-  }, [preloadNext]);
-
-  const videoStyle = (slot: 0 | 1): React.CSSProperties => ({
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    opacity: activeSlot === slot ? 1 : 0,
-    transition: `opacity ${FADE_MS}ms ease-in-out`,
-  });
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const doubled = [...TOP_MASTERS, ...TOP_MASTERS];
 
@@ -180,10 +97,18 @@ export const EditorialHero = (): React.ReactElement => {
 
   return (
     <section className="relative h-187.75 w-full overflow-hidden bg-[#1a1c1c]">
-      {/* Background videos */}
+      {/* Background video */}
       <div className="absolute inset-0">
-        <video ref={refA} src={srcA} muted playsInline preload="auto" onEnded={activeSlot === 0 ? advance : undefined} style={videoStyle(0)} />
-        <video ref={refB} src={srcB} muted playsInline preload="none" onEnded={activeSlot === 1 ? advance : undefined} style={videoStyle(1)} />
+        <video
+          ref={videoRef}
+          src="/hero-video.mp4"
+          muted
+          autoPlay
+          loop
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-black/55" />
         <div className="absolute inset-0 bg-linear-to-b from-black/30 via-transparent to-transparent" />
       </div>
