@@ -1,98 +1,121 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-
-const TOP_MASTERS = [
-  { id: '1', name: 'ნინო ბერიძე',    specialty: 'ბოლქვოვანი შუქი',   rating: 4.9, reviews: 312, initials: 'НБ', color: '#c084fc' },
-  { id: '2', name: 'მარიამ კობახიძე', specialty: 'კლასიკური ლაშები',  rating: 4.8, reviews: 278, initials: 'МК', color: '#f9a8d4' },
-  { id: '3', name: 'ანა გელაშვილი',  specialty: 'მეგა-ვოლუმი',       rating: 5.0, reviews: 401, initials: 'АГ', color: '#6ee7b7' },
-  { id: '4', name: 'სოფო ჯაჯანიძე',  specialty: 'ვეט-ლუქი',          rating: 4.9, reviews: 187, initials: 'СД', color: '#fcd34d' },
-  { id: '5', name: 'თამარ ელიავა',   specialty: 'ბუნებრივი სტილი',   rating: 4.7, reviews: 234, initials: 'ТЭ', color: '#93c5fd' },
-  { id: '6', name: 'ლიკა ჩხეიძე',   specialty: 'წამწამების ლამინირება', rating: 4.9, reviews: 156, initials: 'ЛЧ', color: '#fb923c' },
-  { id: '7', name: 'ქეთი ქარჩავა',  specialty: 'კატ-აი ეფექტი',     rating: 4.8, reviews: 298, initials: 'КК', color: '#e879f9' },
-  { id: '8', name: 'სალომე ვაჩნაძე', specialty: 'ფოქსი-ეფექტი',      rating: 5.0, reviews: 362, initials: 'СВ', color: '#34d399' },
-];
+import Link from 'next/link';
+import Image from 'next/image';
+import { useFeaturedMasters } from '@/features/masters/hooks/useFeaturedMasters';
+import { getThumbUrl } from '@/lib/utils/image';
+import { ROUTES } from '@/lib/constants/routes';
+import type { FeaturedMaster } from '@/features/masters/types/masters.types';
 
 interface MasterCardProps {
-  name: string;
-  specialty: string;
-  rating: number;
-  reviews: number;
-  initials: string;
-  color: string;
+  master: FeaturedMaster;
 }
 
-const MasterCard = ({ name, specialty, rating, reviews, initials, color }: MasterCardProps): React.ReactElement => (
-  <div
-    className="shrink-0 flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer group"
-    style={{
-      background: 'rgba(255,255,255,0.06)',
-      border: '1px solid rgba(255,255,255,0.1)',
-      backdropFilter: 'blur(12px)',
-      transition: 'background 0.2s, border-color 0.2s',
-      width: 220,
-    }}
-  >
-    {/* Avatar */}
-    <div
-      className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-[#1a1c1c]"
-      style={{ background: color, boxShadow: `0 0 16px ${color}55` }}
-    >
-      {initials}
-    </div>
+const MasterCard = ({ master }: MasterCardProps): React.ReactElement => {
+  const imageUrl = master.avatar ? getThumbUrl(master.avatar, 80) : null;
 
-    {/* Info */}
-    <div className="min-w-0">
-      <p
-        className="text-[#f9f9f9] text-sm font-semibold truncate leading-tight"
-        style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
-      >
-        {name}
-      </p>
-      <p
-        className="text-[#f9f9f9]/50 text-xs truncate mt-0.5"
-        style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
-      >
-        {specialty}
-      </p>
-      <div className="flex items-center gap-1 mt-1">
-        <span className="text-[#fcd34d] text-xs">★</span>
-        <span className="text-[#f9f9f9]/80 text-xs font-medium">{rating}</span>
-        <span className="text-[#f9f9f9]/30 text-xs">· {reviews}</span>
+  return (
+    <Link
+      href={ROUTES.PORTFOLIO_PUBLIC(master.username)}
+      className="shrink-0 flex items-center gap-3 px-4 py-3 rounded-2xl group"
+      style={{
+        background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        backdropFilter: 'blur(12px)',
+        transition: 'background 0.2s, border-color 0.2s',
+        width: 220,
+      }}
+      draggable={false}
+    >
+      {/* Avatar */}
+      <div className="shrink-0 w-11 h-11 rounded-full overflow-hidden flex items-center justify-center bg-primary/20">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={master.displayName}
+            width={44}
+            height={44}
+            className="w-full h-full object-cover"
+            unoptimized
+          />
+        ) : (
+          <span className="text-sm font-bold text-primary-foreground">
+            {master.displayName.charAt(0).toUpperCase()}
+          </span>
+        )}
       </div>
-    </div>
-  </div>
-);
+
+      {/* Info */}
+      <div className="min-w-0">
+        <p
+          className="text-[#f9f9f9] text-sm font-semibold truncate leading-tight"
+          style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
+        >
+          {master.displayName}
+        </p>
+        {master.niche && (
+          <p
+            className="text-[#f9f9f9]/50 text-xs truncate mt-0.5"
+            style={{ fontFamily: 'var(--font-noto-georgian), sans-serif' }}
+          >
+            {master.niche}
+          </p>
+        )}
+        {master.masterTier === 'TOP_MASTER' && (
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-[#fcd34d] text-xs">★</span>
+            <span className="text-[#f9f9f9]/80 text-xs font-medium">Glow Star</span>
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+};
 
 export const EditorialHero = (): React.ReactElement => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { masters, isLoading } = useFeaturedMasters();
 
-  const doubled = [...TOP_MASTERS, ...TOP_MASTERS];
+  // Double for infinite marquee effect
+  const doubled = masters.length > 0 ? [...masters, ...masters] : [];
 
   // Drag-to-scroll: pause auto-scroll on user interaction
   const marqueeRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   const isDragging = useRef(false);
+  const dragMoved = useRef(false);
   const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const scrollLeftRef = useRef(0);
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!marqueeRef.current) return;
     isDragging.current = true;
+    dragMoved.current = false;
     setPaused(true);
     startX.current = e.clientX - marqueeRef.current.getBoundingClientRect().left;
-    scrollLeft.current = marqueeRef.current.scrollLeft;
+    scrollLeftRef.current = marqueeRef.current.scrollLeft;
     marqueeRef.current.setPointerCapture(e.pointerId);
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging.current || !marqueeRef.current) return;
     const x = e.clientX - marqueeRef.current.getBoundingClientRect().left;
-    marqueeRef.current.scrollLeft = scrollLeft.current - (x - startX.current);
+    const diff = x - startX.current;
+    if (Math.abs(diff) > 3) dragMoved.current = true;
+    marqueeRef.current.scrollLeft = scrollLeftRef.current - diff;
   }, []);
 
   const onPointerUp = useCallback(() => {
     isDragging.current = false;
+  }, []);
+
+  // Prevent click navigation when dragging
+  const onClickCapture = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (dragMoved.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }, []);
 
   return (
@@ -146,30 +169,33 @@ export const EditorialHero = (): React.ReactElement => {
           </div>
 
           {/* Marquee */}
-          <div
-            ref={marqueeRef}
-            className="overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing select-none"
-            style={{
-              maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
-              scrollbarWidth: 'none',
-            }}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerLeave={onPointerUp}
-          >
+          {!isLoading && doubled.length > 0 && (
             <div
-              className="flex gap-3 px-8 lg:px-16"
+              ref={marqueeRef}
+              className="overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing select-none"
               style={{
-                animation: paused ? 'none' : 'marquee-masters 40s linear infinite',
-                width: 'max-content',
+                maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
+                scrollbarWidth: 'none',
               }}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerLeave={onPointerUp}
+              onClickCapture={onClickCapture}
             >
-              {doubled.map((master, i) => (
-                <MasterCard key={`${master.id}-${i}`} {...master} />
-              ))}
+              <div
+                className="flex gap-3 px-8 lg:px-16"
+                style={{
+                  animation: paused ? 'none' : 'marquee-masters 40s linear infinite',
+                  width: 'max-content',
+                }}
+              >
+                {doubled.map((master, i) => (
+                  <MasterCard key={`${master.username}-${i}`} master={master} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

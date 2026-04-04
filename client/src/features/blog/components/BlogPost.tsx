@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronRightIcon, HomeIcon } from 'lucide-react'
 import { motion } from 'motion/react'
-import DOMPurify from 'dompurify'
+import { sanitize } from 'isomorphic-dompurify'
 import { cn } from '@/lib/utils'
 import { TableOfContents } from './TableOfContents'
 import { getBlogPath, formatBlogDate } from '../lib/utils'
@@ -163,7 +163,7 @@ export function BlogPost({ post, locale, translations }: BlogPostProps): React.R
             'prose-hr:border-border/30',
             '[&>*:first-child]:!mt-0',
           )}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content, {
+          dangerouslySetInnerHTML={{ __html: sanitize(post.content, {
             ALLOWED_TAGS: [
               'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
               'p', 'br', 'hr',
