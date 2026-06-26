@@ -134,6 +134,52 @@ export const onboardingRepo = {
     });
   },
 
+  async completeAsModel(
+    userId: string,
+    profileData: {
+      displayName: string;
+      city: string;
+      birthDate: string;
+      niches?: string[];
+      bio?: string;
+      phone?: string;
+      instagram?: string;
+    },
+    consents: { smsAppointments: boolean; smsPromotions: boolean; smsNews: boolean },
+  ) {
+    return prisma.$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: { id: userId },
+        data: {
+          role: 'MODEL',
+          onboardingCompleted: true,
+          metadata: { consents },
+        },
+        select: USER_SELECT,
+      });
+
+      const profileFields = {
+        displayName: profileData.displayName,
+        city: profileData.city,
+        birthDate: new Date(profileData.birthDate),
+        niches: (profileData.niches ?? []) as unknown as Prisma.InputJsonValue,
+        bio: profileData.bio ?? null,
+        phone: profileData.phone ?? null,
+        instagram: profileData.instagram ?? null,
+        consentVersion: 'model-release-v1',
+        consentAt: new Date(),
+      };
+
+      await tx.modelProfile.upsert({
+        where: { userId },
+        create: { userId, ...profileFields },
+        update: profileFields,
+      });
+
+      return user;
+    });
+  },
+
   async isOnboardingCompleted(userId: string): Promise<boolean> {
     const user = await prisma.user.findUnique({
       where: { id: userId },

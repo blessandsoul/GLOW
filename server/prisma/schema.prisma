@@ -57,6 +57,8 @@ model User {
   favoriteMasters          FavoriteMaster[]       @relation("userFavoriteMasters")
   favoritePortfolioItems   FavoritePortfolioItem[] @relation("userFavoritePortfolioItems")
   products         Product[]
+  modelProfile     ModelProfile?
+  favoriteModels   FavoriteModel[]        @relation("userFavoriteModels")
 
   @@map("users")
 }
@@ -277,6 +279,7 @@ model MasterProfile {
   brands    MasterBrand[]
   styleTags MasterStyleTag[]
   favoritedBy FavoriteMaster[]
+  waitlistEntries WaitlistEntry[]
 
   @@index([verificationStatus])
   @@index([districtId])
@@ -480,6 +483,7 @@ model District {
   updatedAt DateTime @updatedAt
 
   masterProfiles MasterProfile[]
+  modelProfiles  ModelProfile[]
 
   @@index([citySlug, isActive, sortOrder])
   @@map("districts")
@@ -629,4 +633,127 @@ model FavoritePortfolioItem {
   @@index([userId])
   @@index([portfolioItemId])
   @@map("favorite_portfolio_items")
+}
+
+// ─────────────────────────────────────────────
+// Waitlist (pre-booking date primitive)
+// ─────────────────────────────────────────────
+
+model WaitlistEntry {
+  id              String   @id @default(uuid())
+  masterProfileId String
+
+  // Client identity, NO User row is created (guest pattern, mirrors Job.userId? guest rows).
+  // Identity = a verified phone.
+  clientName    String   @db.VarChar(100)
+  clientPhone   String   @db.VarChar(20)
+  phoneVerified Boolean  @default(false)
+
+  // Request details
+  requestedDate DateTime @db.Date            // the specific day the client waits for (date-only)
+  serviceName   String?  @db.VarChar(100)    // snapshot of a name in the master's services JSON
+  preferredTime String?  @db.VarChar(5)      // "HH:MM"
+  note          String?  @db.VarChar(300)
+
+  // Lifecycle
+  status      String    @default("WAITING") // WAITING | NOTIFIED | CONVERTED | CANCELLED | EXPIRED
+  otpRequestId String?  @db.VarChar(255)
+  notifiedAt  DateTime?
+  expiresAt   DateTime?                      // end-of-requestedDate; sweep flips stale rows to EXPIRED
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+
+  // One active pre-registration per phone+master+date; CANCELLED/EXPIRED rows are reactivated.
+  @@unique([masterProfileId, clientPhone, requestedDate])
+  @@index([masterProfileId, requestedDate])
+  @@index([masterProfileId, status])
+  @@index([status, expiresAt])
+  @@map("waitlist_entries")
+}
+
+// ─────────────────────────────────────────────
+// Faces (model catalog, women list themselves as models for masters)
+// ─────────────────────────────────────────────
+
+model ModelProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+
+  displayName String?
+  birthDate   DateTime?            // 18+ enforced in schema + service
+  city        String?  @default("tbilisi")
+  districtId  String?
+
+  heightCm     Int?
+  measurements String?  @db.VarChar(60)
+  hairColor    String?  @db.VarChar(40)
+  eyeColor     String?  @db.VarChar(40)
+  bio          String?  @db.Text
+  niches       Json?                // work she is open to model for
+
+  // Contact, revealed to a master only after that master likes her.
+  phone     String?
+  whatsapp  String?
+  telegram  String?
+  instagram String?
+
+  // Consent / likeness (model-release).
+  consentVersion   String?
+  consentAt        DateTime?
+  aiTrainingOptOut Boolean @default(true)
+
+  // Moderation lifecycle.
+  verificationStatus String   @default("NONE")  // NONE, PENDING, VERIFIED, REJECTED
+  rejectionReason    String?  @db.VarChar(500)
+  verifiedAt         DateTime?
+  verifiedBy         String?
+  isActive           Boolean  @default(true)
+  blurredAt          DateTime?
+  withdrawnAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User            @relation(fields: [userId], references: [id])
+  district     District?       @relation(fields: [districtId], references: [id])
+  photos       ModelPhoto[]
+  interestedBy FavoriteModel[]
+
+  @@index([verificationStatus])
+  @@index([city])
+  @@index([districtId])
+  @@index([isActive])
+  @@map("model_profiles")
+}
+
+model ModelPhoto {
+  id               String   @id @default(uuid())
+  modelProfileId   String
+  imageUrl         String   @db.VarChar(1000)  // /uploads/faces/...
+  isPrimary        Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  moderationStatus String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt        DateTime @default(now())
+
+  modelProfile ModelProfile @relation(fields: [modelProfileId], references: [id], onDelete: Cascade)
+
+  @@index([modelProfileId, moderationStatus])
+  @@map("model_photos")
+}
+
+model FavoriteModel {
+  id             String   @id @default(uuid())
+  userId         String                       // the MASTER expressing interest
+  modelProfileId String
+  createdAt      DateTime @default(now())
+
+  user         User         @relation("userFavoriteModels", fields: [userId], references: [id], onDelete: Cascade)
+  modelProfile ModelProfile @relation(fields: [modelProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, modelProfileId])
+  @@index([userId])
+  @@index([modelProfileId])
+  @@map("favorite_models")
 }

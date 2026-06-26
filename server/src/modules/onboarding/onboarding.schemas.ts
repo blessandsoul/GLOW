@@ -37,6 +37,28 @@ const MasterOnboardingSchema = z.object({
   portfolioItemIds: z.array(z.string().uuid()).min(3).max(50),
 }).merge(ConsentsSchema);
 
+function isAdult(dateStr: string): boolean {
+  const dob = new Date(dateStr);
+  if (Number.isNaN(dob.getTime())) return false;
+  const now = new Date();
+  let age = now.getUTCFullYear() - dob.getUTCFullYear();
+  const m = now.getUTCMonth() - dob.getUTCMonth();
+  if (m < 0 || (m === 0 && now.getUTCDate() < dob.getUTCDate())) age--;
+  return age >= 18;
+}
+
+const ModelOnboardingSchema = z.object({
+  role: z.literal('MODEL'),
+  displayName: z.string().min(1).max(100),
+  city: z.string().min(1).max(100),
+  birthDate: z.string().refine(isAdult, 'You must be at least 18 years old'),
+  niches: z.array(z.string().min(1).max(100)).max(10).optional(),
+  bio: z.string().max(1000).optional(),
+  phone: z.string().regex(/^\+995\d{9}$/).optional(),
+  instagram: z.string().max(100).optional(),
+  consent: z.literal(true, { message: 'Model-release consent is required' }),
+}).merge(ConsentsSchema);
+
 const SalonOnboardingSchema = z.object({
   role: z.literal('SALON'),
   salonName: z.string().min(1).max(200),
@@ -52,6 +74,7 @@ export const CompleteOnboardingSchema = z.discriminatedUnion('role', [
   UserOnboardingSchema,
   MasterOnboardingSchema,
   SalonOnboardingSchema,
+  ModelOnboardingSchema,
 ]);
 
 export type CompleteOnboardingInput = z.infer<typeof CompleteOnboardingSchema>;

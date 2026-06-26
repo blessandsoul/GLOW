@@ -16,6 +16,15 @@ export function proxy(request: NextRequest): NextResponse {
     );
     const isOnboardingPath = pathname === '/onboarding';
     const isAuthPath = authPaths.some((path) => pathname.startsWith(path));
+    const isFacesPath = pathname.startsWith('/faces');
+
+    // Faces (model catalog) requires auth but NOT the generic onboarding gate
+    // (model onboarding lives at /faces/join). Role enforcement happens in the page + API.
+    if (isFacesPath && !isAuthenticated) {
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('from', pathname);
+        return NextResponse.redirect(loginUrl);
+    }
 
     // Authenticated users who haven't completed onboarding → send to /onboarding
     if (isAuthenticated && !onboardingCompleted && isProtectedPath) {
@@ -56,6 +65,8 @@ export const config = {
         '/my-services/:path*',
         '/admin/:path*',
         '/create',
+        '/faces',
+        '/faces/:path*',
         '/login',
         '/register',
         '/verify-phone',
