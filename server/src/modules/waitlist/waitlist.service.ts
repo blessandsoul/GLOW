@@ -106,10 +106,12 @@ export function createWaitlistService() {
 
     // Step 2, verify the OTP and create/reactivate the entry.
     async verifyAndJoin(username: string, input: JoinInput) {
-      await verifyOtp(input.clientPhone, input.otpRequestId, input.code);
-
+      // Validate master + service BEFORE consuming the OTP, so invalid input
+      // does not burn an already-verified code.
       const master = await resolveMaster(username);
       assertServiceValid(master.masterProfile?.services, input.serviceName);
+
+      await verifyOtp(input.clientPhone, input.otpRequestId, input.code);
 
       const masterProfileId = master.masterProfile!.id;
       const requestedDate = toDateOnly(input.requestedDate);
@@ -119,7 +121,9 @@ export function createWaitlistService() {
         input.clientPhone,
         requestedDate,
       );
-      if (existing && (existing.status === 'WAITING' || existing.status === 'NOTIFIED')) {
+      // Only a CANCELLED or EXPIRED row may be reactivated. WAITING/NOTIFIED is an
+      // active duplicate; CONVERTED is a real booking that must not silently revert.
+      if (existing && existing.status !== 'CANCELLED' && existing.status !== 'EXPIRED') {
         throw new ConflictError('You are already on the waitlist for this date', 'ALREADY_ON_WAITLIST');
       }
 

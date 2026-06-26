@@ -215,6 +215,16 @@ export const facesService = {
 
   async adminReview(targetUserId: string, adminId: string, action: 'approve' | 'reject', reason?: string) {
     if (action === 'approve') {
+      // Only approve a profile that is actually awaiting review. Re-approving an
+      // already-VERIFIED model would bulk-approve any photos uploaded after
+      // verification, pushing unmoderated images public.
+      const profile = await facesRepo.findStatusByUserId(targetUserId);
+      if (!profile) {
+        throw new NotFoundError('Model profile not found', 'MODEL_PROFILE_NOT_FOUND');
+      }
+      if (profile.verificationStatus !== 'PENDING') {
+        throw new BadRequestError('Model is not pending review', 'ALREADY_REVIEWED');
+      }
       logger.info({ targetUserId, adminId }, 'Admin approving model profile');
       const result = await facesRepo.approveByUserId(targetUserId, adminId);
       notifyModelBySms(targetUserId, SMS.APPROVED);

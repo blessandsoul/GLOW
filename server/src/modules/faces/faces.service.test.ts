@@ -16,6 +16,7 @@ vi.mock('./faces.repo.js', () => ({
     checkInterestStatus: vi.fn(),
     findIdByUserId: vi.fn(),
     findOwnProfile: vi.fn(),
+    findStatusByUserId: vi.fn(),
     countPhotos: vi.fn(),
     getPhotoMaxSort: vi.fn(),
     addPhoto: vi.fn(),
@@ -186,7 +187,8 @@ describe('facesService.requestReview', () => {
 });
 
 describe('facesService.adminReview', () => {
-  it('approves and SMSes the model', async () => {
+  it('approves a PENDING model and SMSes them', async () => {
+    repo.findStatusByUserId.mockResolvedValue({ id: 'mp-1', verificationStatus: 'PENDING' });
     repo.approveByUserId.mockResolvedValue({ id: 'mp-1', verificationStatus: 'VERIFIED' });
     repo.findUserPhoneByModelUserId.mockResolvedValue({ phone: '+995599000000', phoneVerified: true });
 
@@ -195,6 +197,15 @@ describe('facesService.adminReview', () => {
     expect(repo.approveByUserId).toHaveBeenCalledWith('model-user', 'admin-1');
     // SMS is fire-and-forget, wait for the async notify to flush.
     await vi.waitFor(() => expect(mockSendSms).toHaveBeenCalledTimes(1));
+  });
+
+  it('refuses to re-approve an already-VERIFIED model (keeps post-verification photos moderated)', async () => {
+    repo.findStatusByUserId.mockResolvedValue({ id: 'mp-1', verificationStatus: 'VERIFIED' });
+
+    await expect(facesService.adminReview('model-user', 'admin-1', 'approve')).rejects.toMatchObject({
+      code: 'ALREADY_REVIEWED',
+    });
+    expect(repo.approveByUserId).not.toHaveBeenCalled();
   });
 
   it('requires a reason to reject', async () => {

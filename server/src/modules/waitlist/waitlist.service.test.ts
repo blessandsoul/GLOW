@@ -182,6 +182,18 @@ describe('waitlistService.verifyAndJoin', () => {
     expect(result.id).toBe('entry-9');
   });
 
+  it('does NOT reactivate a CONVERTED entry (would erase a real booking)', async () => {
+    repo.findMasterByUsername.mockResolvedValue(masterFixture());
+    repo.findEntryByTriple.mockResolvedValue({ id: 'entry-7', status: 'CONVERTED' });
+    mockVerifyOtp.mockResolvedValue(true);
+
+    await expect(waitlistService.verifyAndJoin(USERNAME, validJoin)).rejects.toMatchObject({
+      code: 'ALREADY_ON_WAITLIST',
+    });
+    expect(repo.reactivateEntry).not.toHaveBeenCalled();
+    expect(repo.createEntry).not.toHaveBeenCalled();
+  });
+
   it('maps a Prisma unique-constraint race to ALREADY_ON_WAITLIST', async () => {
     repo.findMasterByUsername.mockResolvedValue(masterFixture());
     repo.findEntryByTriple.mockResolvedValue(null);

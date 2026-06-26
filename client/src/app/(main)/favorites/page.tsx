@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FavoriteMastersGrid } from '@/features/favorites/components/FavoriteMastersGrid';
@@ -7,7 +8,7 @@ import { FavoritePortfolioGrid } from '@/features/favorites/components/FavoriteP
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import type { FavoriteTab } from '@/features/favorites/types/favorites.types';
 
-export default function FavoritesPage(): React.ReactElement {
+function FavoritesContent(): React.ReactElement {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { t } = useLanguage();
@@ -38,5 +39,13 @@ export default function FavoritesPage(): React.ReactElement {
                 </TabsContent>
             </Tabs>
         </div>
+    );
+}
+
+export default function FavoritesPage(): React.ReactElement {
+    return (
+        <Suspense>
+            <FavoritesContent />
+        </Suspense>
     );
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const protectedPaths = ['/dashboard', '/profile', '/my-services', '/admin', '/create'];
+const protectedPaths = ['/dashboard', '/profile', '/my-services', '/admin', '/create', '/favorites', '/appointments'];
 const authPaths = ['/login', '/register'];
 
 export function proxy(request: NextRequest): NextResponse {
@@ -65,6 +65,8 @@ export const config = {
         '/my-services/:path*',
         '/admin/:path*',
         '/create',
+        '/favorites',
+        '/appointments',
         '/faces',
         '/faces/:path*',
         '/login',

@@ -116,21 +116,23 @@ export const creditsRepo = {
     jobId?: string,
   ): Promise<{ creditsRemaining: number; transactionId: string }> {
     const result = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.findUnique({
-        where: { id: userId },
-        select: { credits: true },
+      // Atomic conditional decrement: the WHERE clause guards the balance in the
+      // same statement, so two concurrent deductions can't both pass a stale read
+      // and drive credits negative.
+      const decremented = await tx.user.updateMany({
+        where: { id: userId, credits: { gte: amount } },
+        data: { credits: { decrement: amount } },
       });
 
-      if (!user || user.credits < amount) {
+      if (decremented.count === 0) {
         throw new BadRequestError(
           'Insufficient credits',
           'INSUFFICIENT_CREDITS',
         );
       }
 
-      const updatedUser = await tx.user.update({
+      const updatedUser = await tx.user.findUniqueOrThrow({
         where: { id: userId },
-        data: { credits: { decrement: amount } },
         select: { credits: true },
       });
 

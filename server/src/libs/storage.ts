@@ -43,6 +43,21 @@ const EXTENSION_TO_MIME: Record<string, AllowedImageType> = {
   '.tif': 'image/tiff',
 };
 
+// Reverse map: stored extension is derived from the VALIDATED mime, never from
+// the client-supplied filename (prevents a spoofed image/jpeg + x.svg from being
+// stored + served as image/svg+xml -> stored XSS).
+const MIME_TO_EXTENSION: Record<AllowedImageType, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/heic': '.heic',
+  'image/heif': '.heif',
+  'image/avif': '.avif',
+  'image/gif': '.gif',
+  'image/bmp': '.bmp',
+  'image/tiff': '.tiff',
+};
+
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 /**
@@ -63,7 +78,9 @@ function resolveImageMime(file: StorageFile): string {
  * Save a file buffer to `uploads/{folder}/{uuid}.{ext}` and return the URL path.
  */
 export async function uploadFile(file: StorageFile, folder: string): Promise<string> {
-  const ext = extname(file.filename) || '.jpg';
+  // Derive the extension from the validated mime, not the client filename.
+  const mime = resolveImageMime(file);
+  const ext = MIME_TO_EXTENSION[mime as AllowedImageType] ?? '.jpg';
   const uniqueName = `${randomUUID()}${ext}`;
   const dirPath = join(UPLOAD_ROOT, folder);
 

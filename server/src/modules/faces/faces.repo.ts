@@ -238,6 +238,13 @@ export const facesRepo = {
     });
   },
 
+  async findStatusByUserId(userId: string) {
+    return prisma.modelProfile.findUnique({
+      where: { userId },
+      select: { id: true, verificationStatus: true },
+    });
+  },
+
   async approveByUserId(userId: string, adminId: string) {
     return prisma.$transaction(async (tx) => {
       const profile = await tx.modelProfile.update({

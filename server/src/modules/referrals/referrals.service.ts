@@ -32,6 +32,9 @@ export const referralsService = {
     phone?: string,
   ): Promise<void> {
     if (!referralCode) return;
+    // No phone, no referral: the anti-abuse dedup is phone-keyed, so an empty
+    // phone would create an unbounded, un-deduped (farmable) referral.
+    if (!phone) return;
     try {
       const referrer = await referralsRepo.findByCode(referralCode);
       if (!referrer || referrer.id === newUserId) return;

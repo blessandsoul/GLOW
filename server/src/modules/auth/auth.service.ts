@@ -46,11 +46,6 @@ function parseExpiryToMs(expiry: string): number {
   }
 }
 
-function maskPhone(phone: string): string {
-  // +995599123456 -> "+995 5** *** *56"
-  return `+995 ${phone[4]}** *** *${phone.slice(-2)}`;
-}
-
 export function createAuthService(app: FastifyInstance) {
   function signAccessToken(payload: JwtPayload): string {
     return app.jwt.sign(payload, { expiresIn: env.JWT_ACCESS_EXPIRY });
@@ -135,6 +130,12 @@ export function createAuthService(app: FastifyInstance) {
       const isPasswordValid = await bcrypt.compare(input.password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedError('Invalid email or password', 'INVALID_CREDENTIALS');
+      }
+
+      // A deactivated/soft-deleted account must not get fresh tokens.
+      // (refresh + Google paths already guard this; login did not.)
+      if (!user.isActive || user.deletedAt) {
+        throw new UnauthorizedError('Account is deactivated', 'ACCOUNT_DEACTIVATED');
       }
 
       const accessToken = signAccessToken({ id: user.id, role: user.role });
@@ -446,13 +447,19 @@ export function createAuthService(app: FastifyInstance) {
     },
 
     async recoverPasswordRequest(input: RecoverPasswordRequestInput) {
+      // Uniform response shape regardless of whether the email exists or has a
+      // verified phone, so this endpoint can't be used to enumerate accounts or
+      // leak phone digits. Real OTP/token work happens only for a qualifying user;
+      // a non-qualifying request gets a synthetic token that simply fails at verify.
+      const GENERIC_MASKED = '+995 *** *** ***';
       const user = await authRepo.findUserByEmail(input.email);
 
       if (!user || !user.phone || !user.phoneVerified) {
-        throw new BadRequestError(
-          'Password recovery requires a verified phone number',
-          'PHONE_NOT_VERIFIED',
-        );
+        return {
+          recoveryToken: randomUUID(),
+          requestId: randomUUID(),
+          maskedPhone: GENERIC_MASKED,
+        };
       }
 
       const otpResult = await sendOtp(user.phone);
@@ -466,7 +473,7 @@ export function createAuthService(app: FastifyInstance) {
       return {
         recoveryToken,
         requestId: otpResult.requestId,
-        maskedPhone: maskPhone(user.phone),
+        maskedPhone: GENERIC_MASKED,
       };
     },
 

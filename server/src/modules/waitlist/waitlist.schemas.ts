@@ -21,11 +21,12 @@ const time = z
 
 const requestedDate = z.coerce.date().refine(
   (d) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const day = new Date(d);
-    day.setHours(0, 0, 0, 0);
-    return day.getTime() >= today.getTime();
+    // Compare in UTC to match storage normalization (toDateOnly uses Date.UTC),
+    // so a non-UTC server does not reject "today" near the midnight boundary.
+    const now = new Date();
+    const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    const dayUtc = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    return dayUtc >= todayUtc;
   },
   { message: 'Date must be today or in the future' },
 );

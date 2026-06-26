@@ -1,10 +1,13 @@
 // TODO: Replace hardcoded Georgian strings with t() from i18n dictionaries
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Plus, X, SpinnerGap } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 interface ProductImageUploaderProps {
     images: string[];
@@ -22,13 +25,23 @@ export function ProductImageUploader({
     maxImages = 5,
 }: ProductImageUploaderProps): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [error, setError] = useState<string | null>(null);
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>): void {
         const file = e.target.files?.[0];
-        if (file) {
-            onAdd(file);
-            e.target.value = '';
+        e.target.value = '';
+        if (!file) return;
+        // The accept attribute is only a hint; validate size + MIME for real.
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            setError('JPEG, PNG ან WebP');
+            return;
         }
+        if (file.size > MAX_UPLOAD_BYTES) {
+            setError('მაქსიმუმ 5MB');
+            return;
+        }
+        setError(null);
+        onAdd(file);
     }
 
     return (
@@ -80,7 +93,8 @@ export function ProductImageUploader({
                 className="hidden"
                 onChange={handleFileChange}
             />
-            {images.length === 0 && (
+            {error && <p className="text-xs text-destructive">{error}</p>}
+            {!error && images.length === 0 && (
                 <p className="text-xs text-destructive">მინიმუმ 1 ფოტო</p>
             )}
         </div>

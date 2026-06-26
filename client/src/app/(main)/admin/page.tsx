@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useAppSelector } from '@/store/hooks';
@@ -24,12 +24,17 @@ function AdminPageContent(): React.ReactElement {
 
     const { stats, isLoading: statsLoading } = useAdminStats();
 
+    useEffect(() => {
+        if (!isInitializing && user?.role !== 'ADMIN') {
+            router.replace(ROUTES.DASHBOARD);
+        }
+    }, [isInitializing, user, router]);
+
     if (isInitializing) {
         return <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-8" />;
     }
 
     if (user?.role !== 'ADMIN') {
-        router.replace(ROUTES.DASHBOARD);
         return (
             <div className="container mx-auto max-w-6xl px-4 py-24 text-center md:px-6 lg:px-8">
                 <p className="text-muted-foreground">{t('admin.unauthorized')}</p>

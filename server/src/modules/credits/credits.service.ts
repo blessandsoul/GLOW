@@ -1,5 +1,6 @@
 import { creditsRepo } from './credits.repo.js';
 import { NotFoundError, BadRequestError } from '../../shared/errors/errors.js';
+import { env } from '../../config/env.js';
 
 export const PROCESSING_COSTS: Record<string, number> = {
   ENHANCE: 1,
@@ -66,6 +67,12 @@ export const creditsService = {
   },
 
   async purchasePackage(userId: string, packageId: string): Promise<number> {
+    // No payment gateway is wired yet: refuse to grant paid credits for free
+    // until PAYMENTS_ENABLED is turned on.
+    if (!env.PAYMENTS_ENABLED) {
+      throw new BadRequestError('Payments are not enabled', 'PAYMENTS_DISABLED');
+    }
+
     // Try DB lookup first (UUID-based packages)
     const pkg = await creditsRepo.getPackageById(packageId);
 

@@ -53,7 +53,8 @@ export function PhoneVerificationStep({ state, dispatch, goNext, goBack }: StepP
     const handleVerify = async (code: string): Promise<void> => {
         const reqId = otpRequestId ?? sessionStorage.getItem('otp_request_id');
         if (!reqId) return;
-        await verifyPhone(reqId, code);
+        // Stay in the wizard: the isPhoneVerified effect above advances the step.
+        await verifyPhone(reqId, code, false);
     };
 
     const handleResend = async (): Promise<void> => {

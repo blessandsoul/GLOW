@@ -48,6 +48,11 @@ const envSchema = z.object({
   LAUNCH_MODE: z.coerce.boolean().default(false),
   LAUNCH_DAILY_LIMIT: z.coerce.number().int().min(1).default(5),
 
+  // Payments gate. While false (default), paid credit purchases + paid
+  // subscriptions are blocked so production never grants paid value for free
+  // until a real payment gateway is wired in. The free LAUNCH_MODE path is separate.
+  PAYMENTS_ENABLED: z.coerce.boolean().default(false),
+
   // Watermark & Download Quality
   // Master switch for ALL watermarks (Glow.GE + custom branding). Set false to disable completely.
   WATERMARK_ENABLED: z.coerce.boolean().default(false),

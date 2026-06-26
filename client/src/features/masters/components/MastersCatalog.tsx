@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -123,6 +123,14 @@ export function MastersCatalog(): React.ReactElement {
         brandSlug: selectedBrand,
         styleTagSlug: selectedStyleTag,
     });
+
+    // Batch all favorite-status lookups into ONE request for the whole page
+    // (each card calling its own would be an N+1).
+    const masterProfileIds = useMemo(
+        () => masters.map((m) => m.masterProfileId).filter((id): id is string => !!id),
+        [masters],
+    );
+    const { status: favoriteStatus } = useFavoriteStatus(masterProfileIds, []);
 
     const handleNicheChange = useCallback((niche: string | undefined): void => {
         setSelectedNiche(niche);
@@ -482,6 +490,11 @@ export function MastersCatalog(): React.ReactElement {
                                     key={master.username}
                                     master={master}
                                     index={index}
+                                    isFavorited={
+                                        master.masterProfileId
+                                            ? favoriteStatus?.masters[master.masterProfileId] ?? false
+                                            : false
+                                    }
                                     isHighlighted={highlightedUsername === master.username}
                                     onMouseEnter={() => setHighlightedUsername(master.username)}
                                     onMouseLeave={() => setHighlightedUsername(null)}
@@ -614,17 +627,15 @@ interface CatalogMasterCardProps {
         experienceYears?: number | null;
     };
     index: number;
+    isFavorited: boolean;
     isHighlighted?: boolean;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
 }
 
-function CatalogMasterCard({ master, index, isHighlighted, onMouseEnter, onMouseLeave }: CatalogMasterCardProps): React.ReactElement {
+function CatalogMasterCard({ master, index, isFavorited, isHighlighted, onMouseEnter, onMouseLeave }: CatalogMasterCardProps): React.ReactElement {
     const { language } = useLanguage();
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const masterIds = master.masterProfileId ? [master.masterProfileId] : [];
-    const { status } = useFavoriteStatus(masterIds, []);
-    const isFavorited = master.masterProfileId ? status?.masters[master.masterProfileId] ?? false : false;
     const images = master.portfolioImages;
     const cityDisplay = master.city ? getCityLabel(master.city, language) : null;
 

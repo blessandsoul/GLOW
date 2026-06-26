@@ -266,11 +266,12 @@ model MasterProfile {
   glowStarReviewedAt  DateTime?
 
   // Marketplace seller status
-  sellerStatus         String    @default("NONE")  // NONE, PENDING, APPROVED, REJECTED
-  sellerRequestedAt    DateTime?
-  sellerApprovedAt     DateTime?
-  sellerApprovedBy     String?
-  sellerRejectedReason String?   @db.VarChar(500)
+  sellerStatus            String    @default("NONE")  // NONE, PENDING, APPROVED, REJECTED
+  sellerApplicationReason String?   @db.VarChar(500)
+  sellerRequestedAt       DateTime?
+  sellerApprovedAt        DateTime?
+  sellerApprovedBy        String?
+  sellerRejectedReason    String?   @db.VarChar(500)
 
   user     User      @relation(fields: [userId], references: [id])
   district District? @relation(fields: [districtId], references: [id])

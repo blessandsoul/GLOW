@@ -37,10 +37,14 @@ export async function jobsRoutes(app: FastifyInstance): Promise<void> {
     jobsController.download,
   );
 
-  // Prepare HD (upscaled) image — saves to disk and returns URL
+  // Prepare HD (upscaled) image, saves to disk and returns URL.
+  // Rate-limited: each call hits the paid Replicate upscale API.
   app.post(
     '/:jobId/prepare-hd',
-    { preHandler: [optionalAuth] },
+    {
+      preHandler: [optionalAuth],
+      config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
+    },
     jobsController.prepareHD,
   );
 
