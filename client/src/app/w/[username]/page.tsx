@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { JoinWaitlistForm } from '@/features/waitlist/components/JoinWaitlistForm';
+import { BookingFlow } from '@/features/booking/components/BookingFlow';
 
 export const metadata: Metadata = {
-    title: 'მოლოდინის სია',
-    description: 'ჩაეწერეთ მოლოდინის სიაში და მიიღეთ შეტყობინება, როცა ადგილი გათავისუფლდება.',
+    title: 'ონლაინ ჯავშანი',
+    description: 'აირჩიეთ სერვისი, თარიღი და თავისუფალი დრო და დაჯავშნეთ ვიზიტი.',
 };
 
-export default async function WaitlistJoinPage({
+export default async function BookingPage({
     params,
 }: {
     params: Promise<{ username: string }>;
@@ -15,7 +15,7 @@ export default async function WaitlistJoinPage({
 
     return (
         <main className="flex min-h-dvh items-center justify-center bg-muted/20 px-4 py-10">
-            <JoinWaitlistForm username={username} />
+            <BookingFlow username={username} />
         </main>
     );
 }

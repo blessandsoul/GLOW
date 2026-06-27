@@ -20,6 +20,7 @@ export const ROUTES = {
     DASHBOARD_MODEL: '/dashboard/model',
     WAITLIST_JOIN: (username: string) => `/w/${username}` as const,
     DASHBOARD_WAITLIST: '/dashboard/waitlist',
+    DASHBOARD_BOOKINGS: '/dashboard/bookings',
     SEARCH: '/search',
     FAVORITES: '/favorites',
     APPOINTMENTS: '/appointments',

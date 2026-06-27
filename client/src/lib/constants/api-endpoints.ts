@@ -159,6 +159,16 @@ export const API_ENDPOINTS = {
         },
         STATUS: '/favorites/status',
     },
+    BOOKING: {
+        PUBLIC_SERVICES: (username: string) => `/booking/public/${username}/services`,
+        SLOTS: (username: string) => `/booking/public/${username}/slots`,
+        REQUEST_OTP: (username: string) => `/booking/public/${username}/request-otp`,
+        BOOK: (username: string) => `/booking/public/${username}/book`,
+        MINE: '/booking/me',
+        MINE_SUMMARY: '/booking/me/summary',
+        UPDATE_STATUS: (id: string) => `/booking/me/${id}/status`,
+        DEPOSIT_RECEIVED: (id: string) => `/booking/me/${id}/deposit-received`,
+    },
     FACES: {
         CATALOG: '/faces/catalog',
         DETAIL: (id: string) => `/faces/${id}`,

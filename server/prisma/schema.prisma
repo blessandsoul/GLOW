@@ -265,6 +265,12 @@ model MasterProfile {
   glowStarAcceptedAt  DateTime?
   glowStarReviewedAt  DateTime?
 
+  // Booking / availability (slot-based)
+  bookingEnabled           Boolean @default(false)
+  bookingPrepaymentEnabled Boolean @default(false)
+  bookingPrepaymentAmount  Int?    @default(20)   // GEL, whole units
+  bookingPaymentInfo       String? @db.VarChar(500) // shown to client: pay-to instructions
+
   // Marketplace seller status
   sellerStatus            String    @default("NONE")  // NONE, PENDING, APPROVED, REJECTED
   sellerApplicationReason String?   @db.VarChar(500)
@@ -281,6 +287,7 @@ model MasterProfile {
   styleTags MasterStyleTag[]
   favoritedBy FavoriteMaster[]
   waitlistEntries WaitlistEntry[]
+  bookings    Booking[]
 
   @@index([verificationStatus])
   @@index([districtId])
@@ -672,6 +679,50 @@ model WaitlistEntry {
   @@index([masterProfileId, status])
   @@index([status, expiresAt])
   @@map("waitlist_entries")
+}
+
+// ─────────────────────────────────────────────
+// Booking (slot-based appointments)
+// ─────────────────────────────────────────────
+
+model Booking {
+  id              String   @id @default(uuid())
+  masterProfileId String
+
+  // Client identity, NO User row (guest pattern, verified phone).
+  clientName    String   @db.VarChar(100)
+  clientPhone   String   @db.VarChar(20)
+  phoneVerified Boolean  @default(false)
+
+  // The booked slot.
+  serviceName     String   @db.VarChar(100)
+  durationMinutes Int                          // snapshot at booking time
+  date            DateTime @db.Date
+  startTime       String   @db.VarChar(5)      // "HH:MM"
+  endTime         String   @db.VarChar(5)      // "HH:MM"
+
+  // Lifecycle.
+  status String @default("PENDING") // PENDING | CONFIRMED | CANCELLED | COMPLETED | NO_SHOW
+
+  // Off-platform deposit for now (real auto-payment wired later, pending bank).
+  prepaymentRequired Boolean @default(false)
+  prepaymentAmount   Int?
+  depositStatus      String  @default("NONE") // NONE | AWAITING | RECEIVED
+
+  otpRequestId String?  @db.VarChar(255)
+  note         String?  @db.VarChar(300)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+
+  // One booking per master+date+startTime slot.
+  @@unique([masterProfileId, date, startTime])
+  @@index([masterProfileId, date])
+  @@index([masterProfileId, status])
+  @@index([date, status])
+  @@index([clientPhone, date])
+  @@map("bookings")
 }
 
 // ─────────────────────────────────────────────

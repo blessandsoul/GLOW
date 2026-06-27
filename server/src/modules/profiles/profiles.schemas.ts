@@ -45,6 +45,10 @@ export const UpdateProfileSchema = z.object({
   latitude: z.number().min(-90).max(90).optional().nullable(),
   longitude: z.number().min(-180).max(180).optional().nullable(),
   isManualLocation: z.boolean().optional(),
+  bookingEnabled: z.boolean().optional(),
+  bookingPrepaymentEnabled: z.boolean().optional(),
+  bookingPrepaymentAmount: z.number().int().min(0).max(100000).optional().nullable(),
+  bookingPaymentInfo: z.string().max(500).optional().nullable(),
 });
 
 export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;

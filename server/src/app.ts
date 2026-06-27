@@ -39,6 +39,7 @@ import { favoritesRoutes } from '@/modules/favorites/favorites.routes.js';
 import { marketplaceRoutes } from '@/modules/marketplace/marketplace.routes.js';
 import { waitlistRoutes } from '@/modules/waitlist/waitlist.routes.js';
 import { facesRoutes } from '@/modules/faces/faces.routes.js';
+import { bookingRoutes } from '@/modules/booking/booking.routes.js';
 import { ZodError } from 'zod';
 import { Prisma } from '@prisma/client';
 
@@ -215,6 +216,7 @@ export async function buildApp() {
   await app.register(marketplaceRoutes, { prefix: '/api/v1/marketplace' });
   await app.register(waitlistRoutes, { prefix: '/api/v1/waitlist' });
   await app.register(facesRoutes, { prefix: '/api/v1/faces' });
+  await app.register(bookingRoutes, { prefix: '/api/v1/booking' });
 
   return app;
 }
