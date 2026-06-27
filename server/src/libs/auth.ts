@@ -55,11 +55,17 @@ export async function requirePhoneVerified(
 
   const user = await prisma.user.findUnique({
     where: { id: request.user.id },
-    select: { phone: true, phoneVerified: true },
+    select: { phone: true, phoneVerified: true, isActive: true, deletedAt: true },
   });
 
   if (!user) {
     throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
+  }
+
+  // Reject a deactivated/soft-deleted account even while its access token is still
+  // within its TTL (the access token only carries id+role, so this is the choke point).
+  if (!user.isActive || user.deletedAt) {
+    throw new UnauthorizedError('Account is deactivated', 'ACCOUNT_DEACTIVATED');
   }
 
   // C4 fix: block ALL unverified users, not just those with a phone set.

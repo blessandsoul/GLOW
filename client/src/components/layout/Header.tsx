@@ -49,6 +49,8 @@ const NAV_GROUPS: NavGroup[] = [
     {
         category: 'nav.cat_business',
         items: [
+            { href: ROUTES.DASHBOARD_WAITLIST, label: 'nav.waitlist', icon: CalendarBlank },
+            { href: ROUTES.FACES, label: 'nav.faces', icon: Sparkle },
             { href: ROUTES.DASHBOARD_REFERRALS, label: 'nav.referrals', icon: UsersThree },
         ],
     },

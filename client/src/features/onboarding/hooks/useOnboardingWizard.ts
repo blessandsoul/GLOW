@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useEffect, useCallback, useMemo } from 'react';
+import { useReducer, useEffect, useState, useCallback, useMemo } from 'react';
 import type { OnboardingState, OnboardingAction, OnboardingRole, StepConfig } from '../types/onboarding.types';
 import { INITIAL_STATE } from '../types/onboarding.types';
 
@@ -100,14 +100,26 @@ export function clearOnboardingStorage(): void {
 }
 
 export function useOnboardingWizard() {
-    const saved = typeof window !== 'undefined' ? loadFromStorage() : null;
-    // Clamp currentStep to valid range on restore
-    const initial = saved ? { ...saved, currentStep: Math.min(saved.currentStep, getSteps(saved.role).length - 1) } : INITIAL_STATE;
-    const [state, dispatch] = useReducer(onboardingReducer, initial);
+    const [state, dispatch] = useReducer(onboardingReducer, INITIAL_STATE);
+    const [hydrated, setHydrated] = useState(false);
 
+    // Restore any saved draft AFTER mount, so SSR and the first client render both
+    // start from INITIAL_STATE (no hydration mismatch when a draft exists).
     useEffect(() => {
+        const saved = loadFromStorage();
+        if (saved) {
+            const currentStep = Math.min(saved.currentStep, getSteps(saved.role).length - 1);
+            dispatch({ type: 'SET_FIELD', payload: { ...saved, currentStep } });
+        }
+        setHydrated(true);
+    }, []);
+
+    // Persist only after restore, so the initial INITIAL_STATE render does not
+    // clobber a saved draft on disk.
+    useEffect(() => {
+        if (!hydrated) return;
         saveToStorage(state);
-    }, [state]);
+    }, [state, hydrated]);
 
     const steps = useMemo(() => getSteps(state.role), [state.role]);
     const currentStepConfig = steps[state.currentStep] ?? null;

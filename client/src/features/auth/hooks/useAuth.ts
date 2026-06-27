@@ -81,14 +81,19 @@ export const useAuth = () => {
         }
     };
 
-    const verifyPhone = async (requestId: string, code: string): Promise<void> => {
+    const verifyPhone = async (requestId: string, code: string, redirect = true): Promise<void> => {
         setIsVerifying(true);
         setVerifyError(null);
         try {
             const res = await authService.verifyPhone({ requestId, code });
             dispatch(setUser(res.user));
             sessionStorage.removeItem('otp_request_id');
-            router.push('/dashboard');
+            // The onboarding wizard's phone step passes redirect=false and unlocks
+            // the next section via Redux isPhoneVerified, so it must not navigate to
+            // /dashboard (mid-onboarding that bounces back to /onboarding).
+            if (redirect) {
+                router.push('/dashboard');
+            }
         } catch (error) {
             setVerifyError(error instanceof Error ? error : new Error('Verification failed'));
         } finally {

@@ -52,6 +52,23 @@ export function createOnboardingService() {
           break;
         }
 
+        case 'MODEL': {
+          rawUser = await onboardingRepo.completeAsModel(
+            userId,
+            {
+              displayName: input.displayName,
+              city: input.city,
+              birthDate: input.birthDate,
+              niches: input.niches,
+              bio: input.bio,
+              phone: input.phone,
+              instagram: input.instagram,
+            },
+            consents,
+          );
+          break;
+        }
+
         case 'SALON': {
           rawUser = await onboardingRepo.completeAsSalon(
             userId,

@@ -37,7 +37,10 @@ import { verificationRoutes } from '@/modules/verification/verification.routes.j
 import { onboardingRoutes } from '@/modules/onboarding/onboarding.routes.js';
 import { favoritesRoutes } from '@/modules/favorites/favorites.routes.js';
 import { marketplaceRoutes } from '@/modules/marketplace/marketplace.routes.js';
+import { waitlistRoutes } from '@/modules/waitlist/waitlist.routes.js';
+import { facesRoutes } from '@/modules/faces/faces.routes.js';
 import { ZodError } from 'zod';
+import { Prisma } from '@prisma/client';
 
 export async function buildApp() {
   const app = Fastify({
@@ -84,6 +87,10 @@ export async function buildApp() {
     root: join(process.cwd(), 'uploads'),
     prefix: '/uploads/',
     decorateReply: false,
+    setHeaders: (res) => {
+      // Never let a browser MIME-sniff an uploaded file into an executable type.
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+    },
   });
 
   // ── Global error handler ──
@@ -124,6 +131,25 @@ export async function buildApp() {
         },
       });
       return;
+    }
+
+    // Prisma known request errors that weren't pre-checked in a service
+    // (e.g. a unique-constraint race or a missing-record update/delete).
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        reply.status(409).send({
+          success: false,
+          error: { code: 'CONFLICT', message: 'This record already exists' },
+        });
+        return;
+      }
+      if (error.code === 'P2025') {
+        reply.status(404).send({
+          success: false,
+          error: { code: 'RESOURCE_NOT_FOUND', message: 'Resource not found' },
+        });
+        return;
+      }
     }
 
     // Fastify's own HTTP errors (empty body with Content-Type: application/json,
@@ -187,6 +213,8 @@ export async function buildApp() {
   await app.register(onboardingRoutes, { prefix: '/api/v1/onboarding' });
   await app.register(favoritesRoutes, { prefix: '/api/v1/favorites' });
   await app.register(marketplaceRoutes, { prefix: '/api/v1/marketplace' });
+  await app.register(waitlistRoutes, { prefix: '/api/v1/waitlist' });
+  await app.register(facesRoutes, { prefix: '/api/v1/faces' });
 
   return app;
 }

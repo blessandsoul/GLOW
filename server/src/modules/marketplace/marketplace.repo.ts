@@ -71,6 +71,7 @@ export const marketplaceRepo = {
       where: { userId },
       data: {
         sellerStatus: 'PENDING',
+        sellerApplicationReason: reason,
         sellerRequestedAt: new Date(),
         sellerRejectedReason: null,
       },

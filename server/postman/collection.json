@@ -6,20 +6,70 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
-    { "key": "userId", "value": "" },
-    { "key": "jobId", "value": "" },
-    { "key": "portfolioId", "value": "" },
-    { "key": "packageId", "value": "" },
-    { "key": "username", "value": "" },
-    { "key": "otpRequestId", "value": "" },
-    { "key": "recoveryToken", "value": "" },
-    { "key": "masterId", "value": "" },
-    { "key": "reviewId", "value": "" },
-    { "key": "masterProfileId", "value": "" },
-    { "key": "portfolioItemId", "value": "" },
-    { "key": "productId", "value": "" },
-    { "key": "sellerUserId", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1"
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "jobId",
+      "value": ""
+    },
+    {
+      "key": "portfolioId",
+      "value": ""
+    },
+    {
+      "key": "packageId",
+      "value": ""
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "otpRequestId",
+      "value": ""
+    },
+    {
+      "key": "recoveryToken",
+      "value": ""
+    },
+    {
+      "key": "masterId",
+      "value": ""
+    },
+    {
+      "key": "reviewId",
+      "value": ""
+    },
+    {
+      "key": "masterProfileId",
+      "value": ""
+    },
+    {
+      "key": "portfolioItemId",
+      "value": ""
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "sellerUserId",
+      "value": ""
+    },
+    {
+      "key": "waitlistUsername",
+      "value": "nino-lashes"
+    },
+    {
+      "key": "waitlistEntryId",
+      "value": ""
+    }
   ],
   "item": [
     {
@@ -31,12 +81,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -71,12 +129,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -110,8 +176,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "refresh"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
             }
           }
         },
@@ -122,8 +193,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
             }
           }
         },
@@ -132,12 +208,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/request-password-reset",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "request-password-reset"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "request-password-reset"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -150,12 +234,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/reset-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "reset-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -168,12 +260,21 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/recover-password/request",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "recover-password", "request"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "recover-password",
+                "request"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -203,12 +304,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/recover-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "recover-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "recover-password"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -221,12 +330,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/verify-phone",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "verify-phone"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-phone"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -257,8 +374,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/resend-otp",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "resend-otp"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "resend-otp"
+              ]
             }
           },
           "event": [
@@ -285,10 +407,19 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/google?ref=",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "google"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ],
               "query": [
-                { "key": "ref", "value": "", "description": "Optional referral code" }
+                {
+                  "key": "ref",
+                  "value": "",
+                  "description": "Optional referral code"
+                }
               ]
             },
             "description": "Redirects to Google OAuth consent screen. Open in browser, not Postman runner."
@@ -299,12 +430,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/set-phone",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "set-phone"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "set-phone"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -342,8 +481,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
             }
           }
         },
@@ -352,12 +496,21 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/change-password/request-otp",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "change-password", "request-otp"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "change-password",
+                "request-otp"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -387,12 +540,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/change-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "change-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -412,12 +573,20 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -432,8 +601,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/me/delete-request-otp",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me", "delete-request-otp"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me",
+                "delete-request-otp"
+              ]
             }
           },
           "event": [
@@ -463,8 +638,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -479,8 +659,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/me/avatar",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me", "avatar"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me",
+                "avatar"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -508,8 +694,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/profiles/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["profiles", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "profiles",
+                "me"
+              ]
             }
           }
         },
@@ -518,12 +709,20 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/profiles/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["profiles", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "profiles",
+                "me"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -544,8 +743,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/branding/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["branding", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "branding",
+                "me"
+              ]
             }
           }
         },
@@ -556,18 +760,49 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/branding/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["branding", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "branding",
+                "me"
+              ]
             },
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "displayName", "value": "Lash Pro Studio", "type": "text" },
-                { "key": "instagramHandle", "value": "@lashpro_tbilisi", "type": "text" },
-                { "key": "primaryColor", "value": "#d4738a", "type": "text" },
-                { "key": "watermarkStyle", "value": "FRAMED", "description": "MINIMAL | FRAMED | STORIES_TEMPLATE | DIAGONAL | BADGE | SPLIT", "type": "text" },
-                { "key": "watermarkOpacity", "value": "0.8", "type": "text" },
-                { "key": "logo", "type": "file", "src": "", "description": "Optional logo image (JPEG/PNG/WebP, max 5MB)" }
+                {
+                  "key": "displayName",
+                  "value": "Lash Pro Studio",
+                  "type": "text"
+                },
+                {
+                  "key": "instagramHandle",
+                  "value": "@lashpro_tbilisi",
+                  "type": "text"
+                },
+                {
+                  "key": "primaryColor",
+                  "value": "#d4738a",
+                  "type": "text"
+                },
+                {
+                  "key": "watermarkStyle",
+                  "value": "FRAMED",
+                  "description": "MINIMAL | FRAMED | STORIES_TEMPLATE | DIAGONAL | BADGE | SPLIT",
+                  "type": "text"
+                },
+                {
+                  "key": "watermarkOpacity",
+                  "value": "0.8",
+                  "type": "text"
+                },
+                {
+                  "key": "logo",
+                  "type": "file",
+                  "src": "",
+                  "description": "Optional logo image (JPEG/PNG/WebP, max 5MB)"
+                }
               ]
             }
           }
@@ -579,8 +814,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/branding/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["branding", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "branding",
+                "me"
+              ]
             }
           }
         }
@@ -597,8 +837,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/portfolio/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["portfolio", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "portfolio",
+                "me"
+              ]
             }
           }
         },
@@ -607,12 +852,19 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/portfolio",
-              "host": ["{{baseUrl}}"],
-              "path": ["portfolio"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "portfolio"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -641,12 +893,20 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/portfolio/{{portfolioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["portfolio", "{{portfolioId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "portfolio",
+                "{{portfolioId}}"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -661,8 +921,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/portfolio/{{portfolioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["portfolio", "{{portfolioId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "portfolio",
+                "{{portfolioId}}"
+              ]
             }
           }
         },
@@ -673,8 +938,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/portfolio/public/{{username}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["portfolio", "public", "{{username}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "portfolio",
+                "public",
+                "{{username}}"
+              ]
             }
           }
         }
@@ -691,8 +962,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -736,8 +1011,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs/guest",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "guest"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "guest"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -787,8 +1067,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs/batch",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "batch"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "batch"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -816,11 +1101,21 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -832,8 +1127,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs/{{jobId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "{{jobId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{jobId}}"
+              ]
             }
           }
         },
@@ -844,11 +1144,25 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs/{{jobId}}/download?variant=0&upscale=0",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "{{jobId}}", "download"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{jobId}}",
+                "download"
+              ],
               "query": [
-                { "key": "variant", "value": "0", "description": "Variant index (0-based)" },
-                { "key": "upscale", "value": "0", "description": "Set to 1 for 4x HD upscale via Real-ESRGAN" }
+                {
+                  "key": "variant",
+                  "value": "0",
+                  "description": "Variant index (0-based)"
+                },
+                {
+                  "key": "upscale",
+                  "value": "0",
+                  "description": "Set to 1 for 4x HD upscale via Real-ESRGAN"
+                }
               ]
             }
           }
@@ -866,8 +1180,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/credits/balance",
-              "host": ["{{baseUrl}}"],
-              "path": ["credits", "balance"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "credits",
+                "balance"
+              ]
             }
           }
         },
@@ -878,8 +1197,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/credits/packages",
-              "host": ["{{baseUrl}}"],
-              "path": ["credits", "packages"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "credits",
+                "packages"
+              ]
             }
           },
           "event": [
@@ -904,12 +1228,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/credits/purchase",
-              "host": ["{{baseUrl}}"],
-              "path": ["credits", "purchase"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "credits",
+                "purchase"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -924,11 +1256,22 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/credits/history?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["credits", "history"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "credits",
+                "history"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -946,8 +1289,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/showcase/{{jobId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["showcase", "{{jobId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "showcase",
+                "{{jobId}}"
+              ]
             }
           }
         },
@@ -956,12 +1304,21 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/showcase/{{jobId}}/review",
-              "host": ["{{baseUrl}}"],
-              "path": ["showcase", "{{jobId}}", "review"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "showcase",
+                "{{jobId}}",
+                "review"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -982,8 +1339,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/referrals/my",
-              "host": ["{{baseUrl}}"],
-              "path": ["referrals", "my"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "referrals",
+                "my"
+              ]
             }
           }
         }
@@ -1000,8 +1362,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/trends/current",
-              "host": ["{{baseUrl}}"],
-              "path": ["trends", "current"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trends",
+                "current"
+              ]
             }
           }
         },
@@ -1012,11 +1379,22 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/trends/archive?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["trends", "archive"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trends",
+                "archive"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -1034,8 +1412,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/filters",
-              "host": ["{{baseUrl}}"],
-              "path": ["filters"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "filters"
+              ]
             }
           }
         }
@@ -1052,8 +1434,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/subscriptions/plans",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "plans"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subscriptions",
+                "plans"
+              ]
             }
           }
         },
@@ -1064,8 +1451,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/subscriptions/current",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "current"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subscriptions",
+                "current"
+              ]
             }
           }
         },
@@ -1074,12 +1466,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/subscriptions/subscribe",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "subscribe"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subscriptions",
+                "subscribe"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1094,8 +1494,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/subscriptions/cancel",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "cancel"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subscriptions",
+                "cancel"
+              ]
             }
           }
         },
@@ -1106,8 +1511,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/subscriptions/reactivate",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "reactivate"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subscriptions",
+                "reactivate"
+              ]
             }
           }
         }
@@ -1122,12 +1532,20 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/decorations/suggest",
-              "host": ["{{baseUrl}}"],
-              "path": ["decorations", "suggest"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decorations",
+                "suggest"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1142,8 +1560,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/decorations/pool-status",
-              "host": ["{{baseUrl}}"],
-              "path": ["decorations", "pool-status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decorations",
+                "pool-status"
+              ]
             },
             "description": "Get current decoration suggestion pool counts per niche"
           }
@@ -1155,8 +1578,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/decorations/replenish",
-              "host": ["{{baseUrl}}"],
-              "path": ["decorations", "replenish"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decorations",
+                "replenish"
+              ]
             },
             "description": "Trigger manual replenishment of decoration suggestion pools (admin only)"
           }
@@ -1174,8 +1602,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["health"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
             }
           }
         }
@@ -1192,8 +1624,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/catalog/specialities",
-              "host": ["{{baseUrl}}"],
-              "path": ["catalog", "specialities"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "catalog",
+                "specialities"
+              ]
             }
           }
         },
@@ -1204,8 +1641,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/catalog/service-categories",
-              "host": ["{{baseUrl}}"],
-              "path": ["catalog", "service-categories"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "catalog",
+                "service-categories"
+              ]
             }
           }
         }
@@ -1222,11 +1664,24 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/images/thumb?url=/uploads/jobs/example.jpg&w=128",
-              "host": ["{{baseUrl}}"],
-              "path": ["images", "thumb"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "images",
+                "thumb"
+              ],
               "query": [
-                { "key": "url", "value": "/uploads/jobs/example.jpg", "description": "Relative path to the original image (must start with /uploads/)" },
-                { "key": "w", "value": "128", "description": "Thumbnail width in pixels (16-512, default 128)" }
+                {
+                  "key": "url",
+                  "value": "/uploads/jobs/example.jpg",
+                  "description": "Relative path to the original image (must start with /uploads/)"
+                },
+                {
+                  "key": "w",
+                  "value": "128",
+                  "description": "Thumbnail width in pixels (16-512, default 128)"
+                }
               ]
             }
           }
@@ -1244,11 +1699,25 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/masters/featured?limit=12",
-              "host": ["{{baseUrl}}"],
-              "path": ["masters", "featured"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "masters",
+                "featured"
+              ],
               "query": [
-                { "key": "limit", "value": "12", "description": "Max number of masters to return (1-30, default 12)" },
-                { "key": "niche", "value": "", "description": "Filter by speciality slug (e.g. lashes, nails, brows)", "disabled": true }
+                {
+                  "key": "limit",
+                  "value": "12",
+                  "description": "Max number of masters to return (1-30, default 12)"
+                },
+                {
+                  "key": "niche",
+                  "value": "",
+                  "description": "Filter by speciality slug (e.g. lashes, nails, brows)",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -1260,14 +1729,42 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/masters/catalog?page=1&limit=12",
-              "host": ["{{baseUrl}}"],
-              "path": ["masters", "catalog"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "masters",
+                "catalog"
+              ],
               "query": [
-                { "key": "page", "value": "1", "description": "Page number (min 1)" },
-                { "key": "limit", "value": "12", "description": "Items per page (1-100, default 12)" },
-                { "key": "niche", "value": "", "description": "Filter by speciality slug", "disabled": true },
-                { "key": "city", "value": "", "description": "Filter by city (partial match)", "disabled": true },
-                { "key": "search", "value": "", "description": "Search by name", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (min 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "12",
+                  "description": "Items per page (1-100, default 12)"
+                },
+                {
+                  "key": "niche",
+                  "value": "",
+                  "description": "Filter by speciality slug",
+                  "disabled": true
+                },
+                {
+                  "key": "city",
+                  "value": "",
+                  "description": "Filter by city (partial match)",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -1285,11 +1782,23 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/reviews/master/{{masterId}}?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["reviews", "master", "{{masterId}}"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "master",
+                "{{masterId}}"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -1301,8 +1810,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/reviews/my/{{masterId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["reviews", "my", "{{masterId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "my",
+                "{{masterId}}"
+              ]
             }
           }
         },
@@ -1311,12 +1826,19 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/reviews",
-              "host": ["{{baseUrl}}"],
-              "path": ["reviews"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1345,12 +1867,20 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/reviews/{{reviewId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["reviews", "{{reviewId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1365,8 +1895,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/reviews/{{reviewId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["reviews", "{{reviewId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
             }
           }
         }
@@ -1383,8 +1918,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/state",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "state"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "state"
+              ]
             }
           }
         },
@@ -1393,18 +1933,28 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/verification/request",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "request"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "request"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"experienceYears\": 5\n}",
               "options": {
-                "raw": { "language": "json" }
+                "raw": {
+                  "language": "json"
+                }
               }
             }
           }
@@ -1416,8 +1966,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/upload-id",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "upload-id"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "upload-id"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -1439,8 +1994,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/upload-certificate",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "upload-certificate"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "upload-certificate"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -1462,8 +2022,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/upload-hygiene",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "upload-hygiene"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "upload-hygiene"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -1485,8 +2050,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/upload-quality-products",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "upload-quality-products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "upload-quality-products"
+              ]
             },
             "body": {
               "mode": "formdata",
@@ -1508,11 +2078,23 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/admin/pending?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "admin", "pending"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "admin",
+                "pending"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -1524,12 +2106,27 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/verification/admin/all?page=1&limit=10&status=PENDING",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "admin", "all"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "admin",
+                "all"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" },
-                { "key": "status", "value": "PENDING" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
               ]
             }
           }
@@ -1539,18 +2136,30 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/verification/admin/{{userId}}/review",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "admin", "{{userId}}", "review"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "admin",
+                "{{userId}}",
+                "review"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"action\": \"approve\"\n}\n\n// To reject:\n// {\n//   \"action\": \"reject\",\n//   \"rejectionReason\": \"ID document is not readable\"\n// }",
               "options": {
-                "raw": { "language": "json" }
+                "raw": {
+                  "language": "json"
+                }
               }
             }
           }
@@ -1560,18 +2169,30 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/verification/admin/{{userId}}/badge",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "admin", "{{userId}}", "badge"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "admin",
+                "{{userId}}",
+                "badge"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"badge\": \"isCertified\",\n  \"granted\": true\n}",
               "options": {
-                "raw": { "language": "json" }
+                "raw": {
+                  "language": "json"
+                }
               }
             }
           }
@@ -1581,18 +2202,30 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/verification/admin/{{userId}}/tier",
-              "host": ["{{baseUrl}}"],
-              "path": ["verification", "admin", "{{userId}}", "tier"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "verification",
+                "admin",
+                "{{userId}}",
+                "tier"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tier\": \"PROFESSIONAL\"\n}",
               "options": {
-                "raw": { "language": "json" }
+                "raw": {
+                  "language": "json"
+                }
               }
             }
           }
@@ -1602,7 +2235,16 @@
     {
       "name": "Favorites",
       "description": "Manage favorite masters and portfolio items for the authenticated user.",
-      "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{accessToken}}",
+            "type": "string"
+          }
+        ]
+      },
       "item": [
         {
           "name": "Add Master to Favorites",
@@ -1611,8 +2253,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/masters/{{masterProfileId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "masters", "{{masterProfileId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "masters",
+                "{{masterProfileId}}"
+              ]
             }
           }
         },
@@ -1623,8 +2271,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/masters/{{masterProfileId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "masters", "{{masterProfileId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "masters",
+                "{{masterProfileId}}"
+              ]
             }
           }
         },
@@ -1635,11 +2289,22 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/masters?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "masters"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "masters"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -1651,8 +2316,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/portfolio/{{portfolioItemId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "portfolio", "{{portfolioItemId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "portfolio",
+                "{{portfolioItemId}}"
+              ]
             }
           }
         },
@@ -1663,8 +2334,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/portfolio/{{portfolioItemId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "portfolio", "{{portfolioItemId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "portfolio",
+                "{{portfolioItemId}}"
+              ]
             }
           }
         },
@@ -1675,11 +2352,22 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/portfolio?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "portfolio"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "portfolio"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -1691,11 +2379,24 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/favorites/status?masterIds={{masterProfileId}}&portfolioItemIds={{portfolioItemId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["favorites", "status"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "status"
+              ],
               "query": [
-                { "key": "masterIds", "value": "{{masterProfileId}}", "description": "Comma-separated master profile IDs" },
-                { "key": "portfolioItemIds", "value": "{{portfolioItemId}}", "description": "Comma-separated portfolio item IDs" }
+                {
+                  "key": "masterIds",
+                  "value": "{{masterProfileId}}",
+                  "description": "Comma-separated master profile IDs"
+                },
+                {
+                  "key": "portfolioItemIds",
+                  "value": "{{portfolioItemId}}",
+                  "description": "Comma-separated portfolio item IDs"
+                }
               ]
             }
           }
@@ -1713,8 +2414,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/seller/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "seller", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "seller",
+                "status"
+              ]
             }
           }
         },
@@ -1722,11 +2429,22 @@
           "name": "Apply as Seller",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/marketplace/seller/apply",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "seller", "apply"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "seller",
+                "apply"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1741,8 +2459,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products",
+                "me"
+              ]
             }
           }
         },
@@ -1750,11 +2474,21 @@
           "name": "Create Product",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1783,13 +2517,24 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products/{{productId}}/images",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products", "{{productId}}", "images"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products",
+                "{{productId}}",
+                "images"
+              ]
             },
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "file", "type": "file", "src": "" }
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
               ]
             }
           }
@@ -1798,11 +2543,22 @@
           "name": "Update Product",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products", "{{productId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products",
+                "{{productId}}"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1817,8 +2573,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products", "{{productId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products",
+                "{{productId}}"
+              ]
             }
           }
         },
@@ -1829,14 +2591,37 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
-                { "key": "category", "value": "glue", "disabled": true },
-                { "key": "inStock", "value": "true", "disabled": true },
-                { "key": "userId", "value": "{{userId}}", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "category",
+                  "value": "glue",
+                  "disabled": true
+                },
+                {
+                  "key": "inStock",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -1848,8 +2633,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "products", "{{productId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "products",
+                "{{productId}}"
+              ]
             }
           }
         },
@@ -1860,8 +2651,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/sellers/{{username}}/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "sellers", "{{username}}", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "sellers",
+                "{{username}}",
+                "products"
+              ]
             }
           }
         },
@@ -1872,12 +2670,29 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/marketplace/admin/sellers?status=PENDING",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "admin", "sellers"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "admin",
+                "sellers"
+              ],
               "query": [
-                { "key": "status", "value": "PENDING" },
-                { "key": "page", "value": "1", "disabled": true },
-                { "key": "limit", "value": "20", "disabled": true }
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -1886,11 +2701,24 @@
           "name": "Admin — Approve Seller",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/marketplace/admin/sellers/{{sellerUserId}}/review",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "admin", "sellers", "{{sellerUserId}}", "review"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "admin",
+                "sellers",
+                "{{sellerUserId}}",
+                "review"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -1902,15 +2730,234 @@
           "name": "Admin — Reject Seller",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/marketplace/admin/sellers/{{sellerUserId}}/review",
-              "host": ["{{baseUrl}}"],
-              "path": ["marketplace", "admin", "sellers", "{{sellerUserId}}", "review"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "marketplace",
+                "admin",
+                "sellers",
+                "{{sellerUserId}}",
+                "review"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Недостаточно информации о продаваемых товарах.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Waitlist",
+      "description": "Pre-booking waitlist. Public join is OTP-gated + rate-limited; master endpoints require MASTER role.",
+      "item": [
+        {
+          "name": "Get Public Services",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/waitlist/public/{{waitlistUsername}}/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "waitlist",
+                "public",
+                "{{waitlistUsername}}",
+                "services"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Request Join OTP",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Mariam\",\n  \"clientPhone\": \"+995577000001\",\n  \"requestedDate\": \"2099-07-14\",\n  \"serviceName\": \"კლასიკური წამწამები\",\n  \"preferredTime\": \"14:00\",\n  \"consent\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/waitlist/public/{{waitlistUsername}}/request-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "waitlist",
+                "public",
+                "{{waitlistUsername}}",
+                "request-otp"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Join Waitlist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set(\"waitlistEntryId\", res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Mariam\",\n  \"clientPhone\": \"+995577000001\",\n  \"requestedDate\": \"2099-07-14\",\n  \"serviceName\": \"კლასიკური წამწამები\",\n  \"preferredTime\": \"14:00\",\n  \"consent\": true,\n  \"otpRequestId\": \"{{otpRequestId}}\",\n  \"code\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/waitlist/public/{{waitlistUsername}}/join",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "waitlist",
+                "public",
+                "{{waitlistUsername}}",
+                "join"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List My Waitlist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const items = pm.response.json().data.items;",
+                  "  if (items && items.length) pm.collectionVariables.set(\"waitlistEntryId\", items[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/waitlist/me?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "waitlist",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "My Waitlist Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/waitlist/me/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "waitlist",
+                "me",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Entry Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"NOTIFIED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/waitlist/me/{{waitlistEntryId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "waitlist",
+                "me",
+                "{{waitlistEntryId}}",
+                "status"
+              ]
             }
           }
         }

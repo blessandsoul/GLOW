@@ -11,6 +11,7 @@ const ROLE_STYLE: Record<UserRole, { icon: React.ElementType; className: string 
     MASTER: { icon: Star, className: 'bg-primary/10 text-primary' },
     ADMIN: { icon: ShieldCheck, className: 'bg-destructive/10 text-destructive' },
     SALON: { icon: Buildings, className: 'bg-success/10 text-success' },
+    MODEL: { icon: User, className: 'bg-primary/10 text-primary' },
 };
 
 const ROLE_LABEL_KEY: Record<UserRole, string> = {
@@ -18,6 +19,7 @@ const ROLE_LABEL_KEY: Record<UserRole, string> = {
     MASTER: 'ui.profile_role_master',
     ADMIN: 'ui.profile_role_admin',
     SALON: 'ui.profile_role_salon',
+    MODEL: 'ui.profile_role_model',
 };
 
 export function AccountStatus(): React.ReactElement {

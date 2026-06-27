@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { WhatsappLogo, InstagramLogo, TelegramLogo, Package } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import { getServerImageUrl } from '@/lib/utils/image';
 import type { IProduct } from '../types/marketplace.types';
 import { ProductCategoryBadge } from './ProductCategoryBadge';
 
@@ -52,9 +53,10 @@ export function ProductCard({ product, className }: ProductCardProps): React.Rea
             <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-muted">
                 {firstImage ? (
                     <Image
-                        src={firstImage}
+                        src={getServerImageUrl(firstImage)}
                         alt={product.title}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />

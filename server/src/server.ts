@@ -6,6 +6,7 @@ import { connectRedis, disconnectRedis } from '@/libs/redis.js';
 import { emailWorker } from '@/libs/queue.js';
 import { subscriptionWorker, startSubscriptionRenewalSchedule } from '@/libs/subscription-worker.js';
 import { decorationWorker, startDecorationReplenishmentSchedule } from '@/libs/decoration-worker.js';
+import { waitlistWorker, startWaitlistExpirySchedule } from '@/libs/waitlist-worker.js';
 import { jobsService } from '@/modules/jobs/jobs.service.js';
 
 async function main(): Promise<void> {
@@ -16,6 +17,7 @@ async function main(): Promise<void> {
     await emailWorker.close();
     await subscriptionWorker.close();
     await decorationWorker.close();
+    await waitlistWorker.close();
   });
 
   // Connect Database
@@ -52,6 +54,10 @@ async function main(): Promise<void> {
 
     startDecorationReplenishmentSchedule().catch((err) => {
       logger.warn({ err }, 'Failed to start decoration replenishment schedule');
+    });
+
+    startWaitlistExpirySchedule().catch((err) => {
+      logger.warn({ err }, 'Failed to start waitlist expiry schedule');
     });
   }
 

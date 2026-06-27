@@ -10,6 +10,7 @@ import {
   ConflictError,
 } from '@/shared/errors/errors.js';
 import { prisma } from '@/libs/prisma.js';
+import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import type {
   SubscriptionPlan,
@@ -81,6 +82,12 @@ export const subscriptionsService = {
     plan: SubscriptionPlan,
     quality: SubscriptionQuality,
   ): Promise<SubscriptionResponse> {
+    // No payment gateway yet: do not hand out a paid plan + its monthly credits
+    // for free until PAYMENTS_ENABLED is on.
+    if (!env.PAYMENTS_ENABLED) {
+      throw new BadRequestError('Payments are not enabled', 'PAYMENTS_DISABLED');
+    }
+
     const existing = await subscriptionsRepo.findByUserId(userId);
 
     if (

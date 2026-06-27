@@ -22,7 +22,7 @@ type RegisterFormData = {
     phone: string;
     password: string;
     confirmPassword: string;
-    agreeToTerms: true;
+    agreeToTerms: boolean;
 };
 
 export function RegisterForm(): React.ReactElement {
@@ -44,7 +44,7 @@ export function RegisterForm(): React.ReactElement {
                 .regex(/[a-z]/, t('validation.password_lower'))
                 .regex(/[0-9]/, t('validation.password_number')),
             confirmPassword: z.string().min(1, t('validation.confirm_password_required')),
-            agreeToTerms: z.literal(true, { error: t('validation.agree_required') }),
+            agreeToTerms: z.boolean().refine((v) => v === true, t('validation.agree_required')),
         })
         .refine((data) => data.password === data.confirmPassword, {
             message: t('validation.passwords_mismatch'),
@@ -60,7 +60,7 @@ export function RegisterForm(): React.ReactElement {
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
-            agreeToTerms: true,
+            agreeToTerms: false,
         },
     });
 

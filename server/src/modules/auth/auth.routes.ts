@@ -7,7 +7,10 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   const authService = createAuthService(app);
   const controller = createAuthController(authService);
 
-  app.post('/register', controller.register);
+  // Register sends an OTP SMS (gosms.ge cost). Throttle to stop SMS flooding.
+  app.post('/register', {
+    config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
+  }, controller.register);
   // C5 fix: login brute-force — 10 attempts per IP per 15 min
   app.post('/login', {
     config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },

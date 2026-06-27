@@ -121,7 +121,6 @@ export function RetouchEditor({ imageUrl, onSubmit, isProcessing }: RetouchEdito
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                         {points.map((point, i) => {
-                            const { t } = useLanguage();
                             const meta = RETOUCH_TYPE_LABELS[point.type];
                             return (
                                 <div

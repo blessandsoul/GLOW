@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -35,6 +35,13 @@ export function FeaturedMasters(): React.ReactElement | null {
     const [selectedNiche, setSelectedNiche] = useState<string | undefined>(undefined);
     const { specialities } = useSpecialities();
     const { masters, isLoading, isSuccess } = useFeaturedMasters(selectedNiche);
+
+    // One batched favorite-status request for the whole row (avoids an N+1).
+    const masterProfileIds = useMemo(
+        () => masters.map((m) => m.masterProfileId).filter((id): id is string => !!id),
+        [masters],
+    );
+    const { status: favoriteStatus } = useFavoriteStatus(masterProfileIds, []);
     const scrollRef = useRef<HTMLDivElement>(null);
     const showSkeletons = isLoading || (!isSuccess && masters.length === 0);
 
@@ -166,7 +173,16 @@ export function FeaturedMasters(): React.ReactElement | null {
                                 <p className="text-sm text-muted-foreground">{t('masters.no_results')}</p>
                             </motion.div>
                         ) : masters.map((master, index) => (
-                            <MasterCard key={master.username} master={master} index={index} />
+                            <MasterCard
+                                key={master.username}
+                                master={master}
+                                index={index}
+                                isFavorited={
+                                    master.masterProfileId
+                                        ? favoriteStatus?.masters[master.masterProfileId] ?? false
+                                        : false
+                                }
+                            />
                         ))}
                 </AnimatePresence>
             </div>
@@ -236,14 +252,12 @@ interface MasterCardProps {
         experienceYears?: number | null;
     };
     index: number;
+    isFavorited: boolean;
 }
 
-function MasterCard({ master, index }: MasterCardProps): React.ReactElement {
+function MasterCard({ master, index, isFavorited }: MasterCardProps): React.ReactElement {
     const { language } = useLanguage();
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const masterIds = master.masterProfileId ? [master.masterProfileId] : [];
-    const { status } = useFavoriteStatus(masterIds, []);
-    const isFavorited = master.masterProfileId ? status?.masters[master.masterProfileId] ?? false : false;
     const images = master.portfolioImages;
 
     return (

@@ -38,6 +38,66 @@ async function main(): Promise<void> {
     },
   });
 
+  // ─── Seeded master with services + waitlist entries (for waitlist QA) ─────
+  const masterPassword = await bcrypt.hash('Master123!', 12);
+  const masterUser = await prisma.user.upsert({
+    where: { email: 'master@glow.ge' },
+    update: {},
+    create: {
+      email: 'master@glow.ge',
+      password: masterPassword,
+      firstName: 'Nino',
+      lastName: 'Master',
+      username: 'nino-lashes',
+      role: 'MASTER',
+      emailVerified: true,
+      phone: '+995599100100',
+      phoneVerified: true,
+      credits: 10,
+    },
+  });
+
+  const masterProfile = await prisma.masterProfile.upsert({
+    where: { userId: masterUser.id },
+    update: {},
+    create: {
+      userId: masterUser.id,
+      city: 'tbilisi',
+      niche: 'lashes-brows',
+      bio: 'წამწამებისა და წარბების ოსტატი.',
+      phone: '+995599100100',
+      verificationStatus: 'VERIFIED',
+      services: [
+        { name: 'კლასიკური წამწამები', category: 'lashes', price: 80, duration: 120 },
+        { name: '2D მოცულობა', category: 'lashes', price: 100, duration: 150 },
+        { name: 'წარბების ლამინაცია', category: 'brows', price: 60, duration: 60 },
+      ],
+    },
+  });
+
+  const waitlistDate = new Date(Date.UTC(2099, 6, 14)); // far future, stays WAITING
+  await prisma.waitlistEntry.upsert({
+    where: {
+      masterProfileId_clientPhone_requestedDate: {
+        masterProfileId: masterProfile.id,
+        clientPhone: '+995577000001',
+        requestedDate: waitlistDate,
+      },
+    },
+    update: {},
+    create: {
+      masterProfileId: masterProfile.id,
+      clientName: 'მარიამი',
+      clientPhone: '+995577000001',
+      phoneVerified: true,
+      requestedDate: waitlistDate,
+      serviceName: 'კლასიკური წამწამები',
+      preferredTime: '14:00',
+      status: 'WAITING',
+      expiresAt: new Date(Date.UTC(2099, 6, 14, 23, 59, 59)),
+    },
+  });
+
   // ─── Credit packages pricing model ───────────────────────────────────────
   // Model: gpt-image-1.5 via OpenAI API, 2 AI variants per credit
   // 1 credit = 1 photo upload → 2 generated variants
