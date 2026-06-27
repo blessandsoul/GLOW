@@ -14,6 +14,7 @@ import { AdminVariablePool } from '@/features/admin/components/AdminVariablePool
 import { AdminVerificationQueue } from '@/features/admin/components/AdminVerificationQueue';
 import { AdminGlowStarQueue } from '@/features/admin/components/AdminGlowStarQueue';
 import { AdminSellerQueue } from '@/features/admin/components/AdminSellerQueue';
+import { AdminModelsQueue } from '@/features/admin/components/AdminModelsQueue';
 import { ROUTES } from '@/lib/constants/routes';
 
 function AdminPageContent(): React.ReactElement {
@@ -53,6 +54,8 @@ function AdminPageContent(): React.ReactElement {
             <AdminGlowStarQueue />
 
             <AdminSellerQueue />
+
+            <AdminModelsQueue />
 
             <AdminDecorationPool />
 

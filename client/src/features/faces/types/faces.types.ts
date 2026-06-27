@@ -75,6 +75,22 @@ export interface FacesCatalogFilters {
     search?: string;
 }
 
+export interface PendingModelPhoto {
+    id: string;
+    imageUrl: string;
+    moderationStatus: ModerationStatus;
+}
+
+export interface PendingModel {
+    id: string;
+    userId: string;
+    displayName: string | null;
+    city: string | null;
+    birthDate: string | null;
+    consentAt: string | null;
+    photos: PendingModelPhoto[];
+}
+
 export interface ModelOnboardingPayload {
     role: 'MODEL';
     displayName: string;

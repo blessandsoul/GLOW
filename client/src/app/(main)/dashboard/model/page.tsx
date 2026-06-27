@@ -18,7 +18,13 @@ export default function DashboardModelPage(): React.ReactElement {
     }, [isAuthenticated, isInitializing, router]);
 
     useEffect(() => {
-        if (!isInitializing && isAuthenticated && user && user.role !== 'MODEL') {
+        if (
+            !isInitializing &&
+            isAuthenticated &&
+            user &&
+            user.role !== 'MODEL' &&
+            user.role !== 'ADMIN'
+        ) {
             router.replace(ROUTES.DASHBOARD);
         }
     }, [isAuthenticated, isInitializing, user, router]);

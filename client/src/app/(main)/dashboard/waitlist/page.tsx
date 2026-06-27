@@ -21,7 +21,13 @@ export default function DashboardWaitlistPage(): React.ReactElement {
     }, [isAuthenticated, isInitializing, router]);
 
     useEffect(() => {
-        if (!isInitializing && isAuthenticated && user?.role !== 'MASTER') {
+        if (
+            !isInitializing &&
+            isAuthenticated &&
+            user &&
+            user.role !== 'MASTER' &&
+            user.role !== 'ADMIN'
+        ) {
             router.replace(ROUTES.DASHBOARD);
         }
     }, [isAuthenticated, isInitializing, user, router]);

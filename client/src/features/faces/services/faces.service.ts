@@ -8,6 +8,8 @@ import type {
     OwnerPhoto,
     FacesCatalogFilters,
     ModelOnboardingPayload,
+    PendingModel,
+    ModerationStatus,
 } from '../types/faces.types';
 
 class FacesService {
@@ -78,6 +80,23 @@ class FacesService {
 
     async onboard(payload: ModelOnboardingPayload): Promise<void> {
         await apiClient.post(API_ENDPOINTS.ONBOARDING.COMPLETE, payload);
+    }
+
+    // ── Admin moderation ──
+    async adminGetPending(page = 1, limit = 20): Promise<PaginatedApiResponse<PendingModel>['data']> {
+        const { data } = await apiClient.get<PaginatedApiResponse<PendingModel>>(
+            API_ENDPOINTS.FACES.ADMIN_PENDING,
+            { params: { page, limit } },
+        );
+        return data.data;
+    }
+
+    async adminReview(userId: string, action: 'approve' | 'reject', reason?: string): Promise<void> {
+        await apiClient.post(API_ENDPOINTS.FACES.ADMIN_REVIEW(userId), { action, reason });
+    }
+
+    async adminPhotoReview(photoId: string, status: ModerationStatus): Promise<void> {
+        await apiClient.post(API_ENDPOINTS.FACES.ADMIN_PHOTO_REVIEW(photoId), { status });
     }
 }
 
