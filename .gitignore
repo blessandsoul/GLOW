@@ -37,3 +37,4 @@ prisma/generated/
 
 # Test coverage
 coverage/
+.gitnexus
