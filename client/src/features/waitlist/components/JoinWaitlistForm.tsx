@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { SpinnerGap, CheckCircle, CalendarHeart } from '@phosphor-icons/react';
+import { startOfToday } from 'date-fns';
+import { SpinnerGap, CheckCircle, CalendarHeart, CalendarBlank } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
     Select,
     SelectContent,
@@ -18,19 +21,15 @@ import {
 import { OtpInput } from '@/components/common/OtpInput';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { getErrorMessage } from '@/lib/utils/error';
+import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/constants/routes';
 import { useWaitlistServices, useJoinWaitlist } from '../hooks/useJoinWaitlist';
 import type { RequestOtpPayload } from '../types/waitlist.types';
 
 type Step = 'form' | 'otp' | 'done';
 
-function todayISO(): string {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
 export function JoinWaitlistForm({ username }: { username: string }): React.ReactElement {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { data: master, isLoading, isError } = useWaitlistServices(username);
     const { requestOtp, join, isRequestingOtp, isJoining } = useJoinWaitlist(username);
 
@@ -38,6 +37,7 @@ export function JoinWaitlistForm({ username }: { username: string }): React.Reac
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [date, setDate] = useState('');
+    const [dateOpen, setDateOpen] = useState(false);
     const [serviceName, setServiceName] = useState('');
     const [time, setTime] = useState('');
     const [consent, setConsent] = useState(false);
@@ -47,6 +47,22 @@ export function JoinWaitlistForm({ username }: { username: string }): React.Reac
     const [otpKey, setOtpKey] = useState(0);
 
     const services = master?.services ?? [];
+
+    // Date picker helpers
+    const dateValue = date ? new Date(date + 'T00:00:00') : undefined;
+    const handleDateSelect = (selected: Date | undefined): void => {
+        if (selected) {
+            const year = selected.getFullYear();
+            const month = String(selected.getMonth() + 1).padStart(2, '0');
+            const day = String(selected.getDate()).padStart(2, '0');
+            setDate(`${year}-${month}-${day}`);
+            setDateOpen(false);
+        }
+    };
+    const locale = language === 'ka' ? 'ka-GE' : language === 'ru' ? 'ru-RU' : 'en-US';
+    const formattedDate = dateValue
+        ? new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(dateValue)
+        : null;
 
     function buildPayload(): RequestOtpPayload | null {
         if (name.trim().length < 2) return fail('waitlist.err_name');
@@ -194,7 +210,30 @@ export function JoinWaitlistForm({ username }: { username: string }): React.Reac
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-2">
                                 <Label htmlFor="wl-date">{t('waitlist.field_date')}</Label>
-                                <Input id="wl-date" type="date" min={todayISO()} value={date} onChange={(e) => setDate(e.target.value)} />
+                                <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            id="wl-date"
+                                            variant="outline"
+                                            className={cn(
+                                                'w-full justify-start text-left font-normal h-10',
+                                                !date && 'text-muted-foreground',
+                                            )}
+                                        >
+                                            <CalendarBlank size={16} className="mr-2 shrink-0" />
+                                            {formattedDate ?? t('waitlist.field_date')}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={dateValue}
+                                            onSelect={handleDateSelect}
+                                            disabled={{ before: startOfToday() }}
+                                            defaultMonth={startOfToday()}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="wl-time">{t('waitlist.field_time')}</Label>
