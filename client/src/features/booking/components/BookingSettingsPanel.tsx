@@ -8,11 +8,18 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useBookingSettings } from '../hooks/useBookingSettings';
 import { WorkingHoursEditor } from './WorkingHoursEditor';
 import { ServiceDurations } from './ServiceDurations';
-import type { WorkingHours, ProfileServiceItem } from '../types/booking.types';
+import type { WorkingHours, ProfileServiceItem, PaymentMode } from '../types/booking.types';
 
 function defaultWorkingHours(): WorkingHours {
     const day = [{ open: '10:00', close: '19:00' }];
@@ -32,7 +39,7 @@ export function BookingSettingsPanel(): React.ReactElement {
     const { settings, isLoading, save, isSaving } = useBookingSettings();
 
     const [enabled, setEnabled] = useState(false);
-    const [prepayEnabled, setPrepayEnabled] = useState(false);
+    const [mode, setMode] = useState<PaymentMode>('NONE');
     const [amount, setAmount] = useState(20);
     const [paymentInfo, setPaymentInfo] = useState('');
     const [hours, setHours] = useState<WorkingHours>(defaultWorkingHours);
@@ -41,7 +48,7 @@ export function BookingSettingsPanel(): React.ReactElement {
     useEffect(() => {
         if (!settings) return;
         setEnabled(settings.bookingEnabled);
-        setPrepayEnabled(settings.bookingPrepaymentEnabled);
+        setMode(settings.bookingPaymentMode);
         setAmount(settings.bookingPrepaymentAmount ?? 20);
         setPaymentInfo(settings.bookingPaymentInfo ?? '');
         setHours(settings.workingHours ?? defaultWorkingHours());
@@ -51,7 +58,7 @@ export function BookingSettingsPanel(): React.ReactElement {
     async function handleSave(): Promise<void> {
         await save({
             bookingEnabled: enabled,
-            bookingPrepaymentEnabled: prepayEnabled,
+            bookingPaymentMode: mode,
             bookingPrepaymentAmount: amount,
             bookingPaymentInfo: paymentInfo.trim() ? paymentInfo.trim() : null,
             workingHours: hours,
@@ -101,42 +108,61 @@ export function BookingSettingsPanel(): React.ReactElement {
             </Card>
 
             <Card className="rounded-xl border-border/50">
+                <CardHeader className="pb-0">
+                    <h3 className="text-sm font-semibold text-foreground">{t('booking.setting_payment')}</h3>
+                    <p className="text-xs text-muted-foreground">{t('booking.setting_payment_hint')}</p>
+                </CardHeader>
                 <CardContent className="space-y-4 p-5">
-                    <ToggleRow
-                        label={t('booking.setting_deposit')}
-                        hint={t('booking.setting_deposit_hint')}
-                        checked={prepayEnabled}
-                        onChange={setPrepayEnabled}
-                    />
-                    {prepayEnabled && (
-                        <div className="space-y-4 border-t border-border/50 pt-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="bk-amount">{t('booking.setting_amount')}</Label>
-                                <div className="flex w-40 items-center gap-2">
-                                    <Input
-                                        id="bk-amount"
-                                        type="number"
-                                        min={0}
-                                        max={100000}
-                                        value={amount}
-                                        onChange={(e) => setAmount(Math.max(0, Number(e.target.value) || 0))}
-                                        className="tabular-nums"
-                                    />
-                                    <span className="text-sm text-muted-foreground">₾</span>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="bk-payinfo">{t('booking.setting_payment_info')}</Label>
-                                <Textarea
-                                    id="bk-payinfo"
-                                    value={paymentInfo}
-                                    onChange={(e) => setPaymentInfo(e.target.value)}
-                                    maxLength={500}
-                                    rows={3}
-                                    placeholder={t('booking.setting_payment_info_ph')}
+                    <div className="space-y-2">
+                        <Label htmlFor="bk-mode">{t('booking.setting_payment_mode')}</Label>
+                        <Select value={mode} onValueChange={(v) => setMode(v as PaymentMode)}>
+                            <SelectTrigger id="bk-mode" className="w-full sm:w-72">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="NONE">{t('booking.pay_mode_none')}</SelectItem>
+                                <SelectItem value="DEPOSIT">{t('booking.pay_mode_deposit')}</SelectItem>
+                                <SelectItem value="FULL">{t('booking.pay_mode_full')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {mode === 'DEPOSIT' && (
+                        <div className="space-y-2">
+                            <Label htmlFor="bk-amount">{t('booking.setting_amount')}</Label>
+                            <div className="flex w-40 items-center gap-2">
+                                <Input
+                                    id="bk-amount"
+                                    type="number"
+                                    min={0}
+                                    max={100000}
+                                    value={amount}
+                                    onChange={(e) => setAmount(Math.max(0, Number(e.target.value) || 0))}
+                                    className="tabular-nums"
                                 />
-                                <p className="text-xs text-muted-foreground">{t('booking.setting_payment_info_note')}</p>
+                                <span className="text-sm text-muted-foreground">₾</span>
                             </div>
+                        </div>
+                    )}
+
+                    {mode === 'FULL' && (
+                        <p className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+                            {t('booking.setting_full_note')}
+                        </p>
+                    )}
+
+                    {mode !== 'NONE' && (
+                        <div className="space-y-2">
+                            <Label htmlFor="bk-payinfo">{t('booking.setting_payment_info')}</Label>
+                            <Textarea
+                                id="bk-payinfo"
+                                value={paymentInfo}
+                                onChange={(e) => setPaymentInfo(e.target.value)}
+                                maxLength={500}
+                                rows={3}
+                                placeholder={t('booking.setting_payment_info_ph')}
+                            />
+                            <p className="text-xs text-muted-foreground">{t('booking.setting_payment_info_note')}</p>
                         </div>
                     )}
                 </CardContent>

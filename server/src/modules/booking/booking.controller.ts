@@ -41,6 +41,17 @@ export function createBookingController(service: BookingService) {
       reply.status(201).send(successResponse('Booked', booking));
     },
 
+    // Flitt server-to-server callback. Auto-confirms the booking on a verified, approved payment.
+    // The JSON API delivers the callback as { "response": {...} }; unwrap it before verifying.
+    async paymentCallback(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+      const raw = (request.body ?? {}) as Record<string, unknown>;
+      const data = (
+        raw.response && typeof raw.response === 'object' ? raw.response : raw
+      ) as Record<string, unknown>;
+      await service.handlePaymentCallback(data);
+      reply.send(successResponse('ok', null));
+    },
+
     async listMine(request: FastifyRequest, reply: FastifyReply): Promise<void> {
       const query = MasterListQuerySchema.parse(request.query);
       const { items, totalItems } = await service.listForMaster(request.user!.id, query);

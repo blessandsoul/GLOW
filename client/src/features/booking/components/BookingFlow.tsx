@@ -54,6 +54,7 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
     const [otpRequestId, setOtpRequestId] = useState('');
     const [otpKey, setOtpKey] = useState(0);
     const [result, setResult] = useState<BookResult | null>(null);
+    const [redirecting, setRedirecting] = useState(false);
 
     const isoDate = day ? toISODate(day) : null;
     const { data: slotData, isLoading: slotsLoading } = useBookingSlots(
@@ -66,6 +67,13 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
         () => info?.services.find((s) => s.name === serviceName) ?? null,
         [info, serviceName],
     );
+
+    const payable =
+        info?.paymentMode === 'FULL'
+            ? selectedService?.price ?? null
+            : info?.paymentMode === 'DEPOSIT'
+              ? info?.depositAmount ?? null
+              : null;
 
     const emptyLabel = slotData?.dayClosed ? t('booking.day_closed') : t('booking.no_slots');
 
@@ -113,6 +121,11 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
         }
         try {
             const res = await book({ ...payload, otpRequestId, code });
+            if (res.redirectUrl) {
+                setRedirecting(true);
+                window.location.href = res.redirectUrl; // hand off to the Flitt checkout page
+                return;
+            }
             setResult(res);
             setStep('done');
         } catch (e) {
@@ -172,14 +185,19 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
                             disabled={isBooking}
                             digitLabel={t('auth.digit')}
                         />
-                        {isBooking && (
-                            <div className="flex justify-center">
+                        {(isBooking || redirecting) && (
+                            <div className="flex flex-col items-center gap-2">
                                 <SpinnerGap size={20} className="animate-spin text-muted-foreground" />
+                                {redirecting && (
+                                    <p className="text-sm text-muted-foreground">{t('booking.redirecting')}</p>
+                                )}
                             </div>
                         )}
-                        <Button type="button" variant="ghost" className="w-full" onClick={() => setStep('pick')}>
-                            {t('booking.back')}
-                        </Button>
+                        {!redirecting && (
+                            <Button type="button" variant="ghost" className="w-full" onClick={() => setStep('pick')}>
+                                {t('booking.back')}
+                            </Button>
+                        )}
                     </div>
                 ) : (
                     <div className="space-y-5">
@@ -273,7 +291,9 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
                                     <SpinnerGap size={18} className="mr-2 animate-spin" />
                                     {t('booking.sending')}
                                 </>
-                            ) : selectedService && slot ? (
+                            ) : slot && payable !== null ? (
+                                t('booking.submit_pay').replace('{{amount}}', String(payable))
+                            ) : slot ? (
                                 t('booking.submit_with_time').replace('{{time}}', slot)
                             ) : (
                                 t('booking.submit')
@@ -354,9 +374,14 @@ function BookingDone({ result, t }: { result: BookResult; t: (key: string) => st
                 <div className="mt-2 w-full space-y-2 rounded-xl border border-warning/30 bg-warning/5 p-4 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                         <Wallet size={18} weight="fill" className="text-warning" />
-                        {t('booking.deposit_title').replace('{{amount}}', String(result.prepaymentAmount ?? ''))}
+                        {t(result.paymentMode === 'FULL' ? 'booking.full_title' : 'booking.deposit_title').replace(
+                            '{{amount}}',
+                            String(result.prepaymentAmount ?? ''),
+                        )}
                     </div>
-                    <p className="text-sm text-muted-foreground">{t('booking.deposit_desc')}</p>
+                    <p className="text-sm text-muted-foreground">
+                        {t(result.paymentMode === 'FULL' ? 'booking.full_desc' : 'booking.deposit_desc')}
+                    </p>
                     {result.paymentInfo && (
                         <p className="whitespace-pre-wrap rounded-lg bg-muted/50 p-3 text-sm text-foreground">
                             {result.paymentInfo}

@@ -20,6 +20,8 @@ export async function bookingRoutes(app: FastifyInstance): Promise<void> {
     { config: { rateLimit: { max: 8, timeWindow: '15 minutes' } } },
     controller.book,
   );
+  // Flitt payment webhook (server-to-server, signature-verified inside the service, no auth/rate-limit).
+  app.post('/payment/callback', controller.paymentCallback);
 
   // ── Master-facing ──
   app.get('/me', { preHandler: masterGuard }, controller.listMine);

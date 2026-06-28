@@ -1,5 +1,6 @@
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW';
 export type DepositStatus = 'NONE' | 'AWAITING' | 'RECEIVED';
+export type PaymentMode = 'NONE' | 'DEPOSIT' | 'FULL';
 
 export interface BookingServiceOption {
     name: string;
@@ -10,8 +11,8 @@ export interface BookingServiceOption {
 export interface PublicBookingInfo {
     masterName: string;
     username: string | null;
-    prepaymentEnabled: boolean;
-    prepaymentAmount: number | null;
+    paymentMode: PaymentMode;
+    depositAmount: number | null;
     paymentInfo: string | null;
     services: BookingServiceOption[];
 }
@@ -44,10 +45,12 @@ export interface BookResult {
     startTime: string;
     endTime: string;
     serviceName: string;
+    paymentMode: PaymentMode;
     prepaymentRequired: boolean;
     prepaymentAmount: number | null;
     depositStatus: DepositStatus;
     paymentInfo: string | null;
+    redirectUrl: string | null;
 }
 
 export interface MasterBooking {
@@ -60,6 +63,7 @@ export interface MasterBooking {
     startTime: string;
     endTime: string;
     status: BookingStatus;
+    paymentMode: PaymentMode;
     prepaymentRequired: boolean;
     prepaymentAmount: number | null;
     depositStatus: DepositStatus;
@@ -95,7 +99,7 @@ export interface ProfileServiceItem {
 
 export interface BookingSettings {
     bookingEnabled: boolean;
-    bookingPrepaymentEnabled: boolean;
+    bookingPaymentMode: PaymentMode;
     bookingPrepaymentAmount: number | null;
     bookingPaymentInfo: string | null;
     workingHours: WorkingHours | null;
@@ -104,7 +108,7 @@ export interface BookingSettings {
 
 export interface BookingSettingsPayload {
     bookingEnabled?: boolean;
-    bookingPrepaymentEnabled?: boolean;
+    bookingPaymentMode?: PaymentMode;
     bookingPrepaymentAmount?: number | null;
     bookingPaymentInfo?: string | null;
     workingHours?: WorkingHours | null;

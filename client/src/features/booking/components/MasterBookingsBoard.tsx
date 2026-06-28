@@ -75,7 +75,7 @@ function BookingRow({ booking, t }: { booking: MasterBooking; t: (key: string) =
     const { markReceived, isPending: isMarking } = useMarkDepositReceived();
     const busy = isPending || isMarking;
     const open = booking.status === 'PENDING' || booking.status === 'CONFIRMED';
-    const showDeposit = booking.prepaymentRequired && booking.depositStatus !== 'NONE';
+    const showPay = booking.paymentMode !== 'NONE' && booking.depositStatus !== 'NONE';
 
     return (
         <Card className="rounded-xl border-border/50">
@@ -86,14 +86,15 @@ function BookingRow({ booking, t }: { booking: MasterBooking; t: (key: string) =
                         <Badge variant={STATUS_VARIANT[booking.status]} className="text-[10px]">
                             {t(`booking.status_${booking.status.toLowerCase()}`)}
                         </Badge>
-                        {showDeposit && (
+                        {showPay && (
                             <Badge
                                 variant={booking.depositStatus === 'RECEIVED' ? 'default' : 'outline'}
                                 className="flex items-center gap-1 text-[10px]"
                             >
                                 <Wallet size={11} />
-                                {t(`booking.deposit_${booking.depositStatus.toLowerCase()}`)}
+                                {t(`booking.pay_${booking.paymentMode.toLowerCase()}`)}
                                 {typeof booking.prepaymentAmount === 'number' ? ` ${booking.prepaymentAmount}₾` : ''}
+                                {` · ${t(`booking.deposit_${booking.depositStatus.toLowerCase()}`)}`}
                             </Badge>
                         )}
                     </div>

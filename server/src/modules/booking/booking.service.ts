@@ -1,7 +1,15 @@
 import { Prisma } from '@prisma/client';
+import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '@/shared/errors/errors.js';
 import { sendOtp, verifyOtp, sendSms } from '@/libs/otp.js';
+import {
+  createFlittCheckout,
+  isFlittConfigured,
+  verifyFlittCallback,
+  isFlittApproved,
+  isFlittTerminalFailure,
+} from '@/libs/flitt.js';
 import { bookingRepo } from './booking.repo.js';
 import type { BookInput, MasterListQueryInput, RequestOtpInput } from './booking.schemas.js';
 
@@ -157,8 +165,8 @@ export function createBookingService() {
       return {
         masterName: master.firstName,
         username: master.username,
-        prepaymentEnabled: master.masterProfile!.bookingPrepaymentEnabled,
-        prepaymentAmount: master.masterProfile!.bookingPrepaymentAmount,
+        paymentMode: master.masterProfile!.bookingPaymentMode,
+        depositAmount: master.masterProfile!.bookingPrepaymentAmount,
         paymentInfo: master.masterProfile!.bookingPaymentInfo,
         services: mapServices(master.masterProfile!.services),
       };
@@ -211,7 +219,17 @@ export function createBookingService() {
 
       await verifyOtp(input.clientPhone, input.otpRequestId, input.code);
 
-      const prepay = mp.bookingPrepaymentEnabled;
+      const svc = findService(mp.services, input.serviceName);
+      const mode = mp.bookingPaymentMode; // NONE | DEPOSIT | FULL
+      const prepay = mode !== 'NONE';
+      const amount =
+        mode === 'DEPOSIT'
+          ? mp.bookingPrepaymentAmount ?? null
+          : mode === 'FULL'
+            ? typeof svc.price === 'number'
+              ? svc.price
+              : null
+            : null;
       const date = toDateOnly(input.date);
 
       let booking;
@@ -225,8 +243,9 @@ export function createBookingService() {
           date,
           startTime: input.startTime,
           endTime,
+          paymentMode: mode,
           prepaymentRequired: prepay,
-          prepaymentAmount: prepay ? mp.bookingPrepaymentAmount : null,
+          prepaymentAmount: prepay ? amount : null,
           depositStatus: prepay ? 'AWAITING' : 'NONE',
           status: prepay ? 'PENDING' : 'CONFIRMED',
           otpRequestId: input.otpRequestId,
@@ -239,6 +258,41 @@ export function createBookingService() {
         throw err;
       }
 
+      const result = {
+        id: booking.id,
+        status: booking.status,
+        date: booking.date,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        serviceName: booking.serviceName,
+        paymentMode: booking.paymentMode,
+        prepaymentRequired: booking.prepaymentRequired,
+        prepaymentAmount: booking.prepaymentAmount,
+        depositStatus: booking.depositStatus,
+        paymentInfo: prepay ? mp.bookingPaymentInfo : null,
+      };
+
+      // Online payment (Flitt): hold the slot as PENDING and redirect the client to pay.
+      // The booking auto-confirms on the verified server callback, not on a manual click.
+      if (prepay && amount !== null && isFlittConfigured()) {
+        try {
+          const payment = await bookingRepo.createPayment({ bookingId: booking.id, amount, currency: 'GEL' });
+          const redirectUrl = await createFlittCheckout({
+            orderId: payment.id,
+            amountGel: amount,
+            description: `${input.serviceName} ${dateKey(date)} ${input.startTime}`,
+            responseUrl: `${env.APP_URL}/booking/return?b=${booking.id}`,
+            serverCallbackUrl: `${env.PUBLIC_SERVER_URL}/api/v1/booking/payment/callback`,
+          });
+          logger.info({ username, bookingId: booking.id, paymentId: payment.id }, 'Booking awaiting payment');
+          return { ...result, redirectUrl };
+        } catch (err) {
+          logger.error({ err, bookingId: booking.id }, 'Flitt checkout failed, falling back to off-platform');
+        }
+      }
+
+      // Off-platform path (gateway not configured, no chargeable amount, or checkout failed):
+      // notify the master now; the prepayment, if any, is handled manually.
       const masterPhone = mp.phone ?? master.phone;
       if (masterPhone) {
         sendSms(
@@ -248,18 +302,41 @@ export function createBookingService() {
       }
 
       logger.info({ username, bookingId: booking.id }, 'Booking created');
-      return {
-        id: booking.id,
-        status: booking.status,
-        date: booking.date,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        serviceName: booking.serviceName,
-        prepaymentRequired: booking.prepaymentRequired,
-        prepaymentAmount: booking.prepaymentAmount,
-        depositStatus: booking.depositStatus,
-        paymentInfo: prepay ? mp.bookingPaymentInfo : null,
-      };
+      return { ...result, redirectUrl: null };
+    },
+
+    async handlePaymentCallback(body: Record<string, unknown>) {
+      if (!verifyFlittCallback(body)) {
+        throw new BadRequestError('Invalid payment signature', 'INVALID_SIGNATURE');
+      }
+      const orderId = typeof body.order_id === 'string' ? body.order_id : '';
+      const payment = orderId ? await bookingRepo.findPaymentWithBooking(orderId) : null;
+      if (!payment || !payment.booking) {
+        logger.warn({ orderId }, 'Flitt callback for unknown payment');
+        return; // ack so Flitt stops retrying
+      }
+      if (payment.status === 'PAID') return; // idempotent: already processed
+
+      const paidCoins = Number(body.amount);
+      const amountMatches = Number.isFinite(paidCoins) && Math.round(payment.amount * 100) === paidCoins;
+      const b = payment.booking;
+      const masterPhone = b.masterProfile?.phone ?? b.masterProfile?.user?.phone ?? null;
+      const flittPaymentId = typeof body.payment_id === 'string' ? body.payment_id : String(body.payment_id ?? '') || null;
+
+      if (isFlittApproved(body) && amountMatches) {
+        await bookingRepo.markPaymentPaid(payment.id, b.id, flittPaymentId);
+        if (masterPhone) {
+          sendSms(masterPhone, `Glow.GE: გადახდილი ჯავშანი ${dateKey(b.date)} ${b.startTime}, ${b.serviceName}.`).catch(() => {});
+        }
+        sendSms(b.clientPhone, `Glow.GE: გადახდა მიღებულია, ჯავშანი დადასტურდა ${dateKey(b.date)} ${b.startTime}.`).catch(() => {});
+        logger.info({ paymentId: payment.id, bookingId: b.id }, 'Payment approved, booking confirmed');
+        return;
+      }
+
+      if (isFlittTerminalFailure(body) || (isFlittApproved(body) && !amountMatches)) {
+        await bookingRepo.markPaymentFailed(payment.id, b.id, true);
+        logger.warn({ paymentId: payment.id, bookingId: b.id, status: body.order_status, amountMatches }, 'Payment failed, booking cancelled');
+      }
     },
 
     async listForMaster(userId: string, query: MasterListQueryInput) {

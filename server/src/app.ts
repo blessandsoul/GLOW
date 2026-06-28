@@ -94,6 +94,21 @@ export async function buildApp() {
     },
   });
 
+  // Some payment webhooks (Flitt among them) may POST application/x-www-form-urlencoded.
+  // Parse it with the built-in URLSearchParams so the callback never silently fails for
+  // want of a body parser. JSON routes are unaffected (default JSON parser still applies).
+  app.addContentTypeParser(
+    'application/x-www-form-urlencoded',
+    { parseAs: 'string' },
+    (_req, body, done) => {
+      try {
+        done(null, Object.fromEntries(new URLSearchParams(body as string).entries()));
+      } catch (err) {
+        done(err as Error, undefined);
+      }
+    },
+  );
+
   // ── Global error handler ──
   app.setErrorHandler((error: Error, request, reply) => {
     // AppError (our typed errors)

@@ -78,7 +78,7 @@ class BookingService {
         const p = (data.data ?? {}) as Partial<BookingSettings>;
         return {
             bookingEnabled: p.bookingEnabled ?? false,
-            bookingPrepaymentEnabled: p.bookingPrepaymentEnabled ?? false,
+            bookingPaymentMode: p.bookingPaymentMode ?? 'NONE',
             bookingPrepaymentAmount: p.bookingPrepaymentAmount ?? 20,
             bookingPaymentInfo: p.bookingPaymentInfo ?? null,
             workingHours: p.workingHours ?? null,

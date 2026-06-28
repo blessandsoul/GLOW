@@ -266,10 +266,10 @@ model MasterProfile {
   glowStarReviewedAt  DateTime?
 
   // Booking / availability (slot-based)
-  bookingEnabled           Boolean @default(false)
-  bookingPrepaymentEnabled Boolean @default(false)
-  bookingPrepaymentAmount  Int?    @default(20)   // GEL, whole units
-  bookingPaymentInfo       String? @db.VarChar(500) // shown to client: pay-to instructions
+  bookingEnabled          Boolean @default(false)
+  bookingPaymentMode      String  @default("NONE")    // NONE | DEPOSIT | FULL
+  bookingPrepaymentAmount Int?    @default(20)         // GEL, deposit amount when mode = DEPOSIT
+  bookingPaymentInfo      String? @db.VarChar(500)     // shown to client: pay-to instructions
 
   // Marketplace seller status
   sellerStatus            String    @default("NONE")  // NONE, PENDING, APPROVED, REJECTED
@@ -702,9 +702,10 @@ model Booking {
   endTime         String   @db.VarChar(5)      // "HH:MM"
 
   // Lifecycle.
-  status String @default("PENDING") // PENDING | CONFIRMED | CANCELLED | COMPLETED | NO_SHOW
+  status      String @default("PENDING") // PENDING | CONFIRMED | CANCELLED | COMPLETED | NO_SHOW
+  paymentMode String @default("NONE")    // NONE | DEPOSIT | FULL (snapshot of master config)
 
-  // Off-platform deposit for now (real auto-payment wired later, pending bank).
+  // Off-platform payment for now (real auto-payment wired later, pending bank).
   prepaymentRequired Boolean @default(false)
   prepaymentAmount   Int?
   depositStatus      String  @default("NONE") // NONE | AWAITING | RECEIVED
@@ -715,6 +716,7 @@ model Booking {
   updatedAt    DateTime @updatedAt
 
   masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  payment       Payment?
 
   // One booking per master+date+startTime slot.
   @@unique([masterProfileId, date, startTime])
@@ -723,6 +725,29 @@ model Booking {
   @@index([date, status])
   @@index([clientPhone, date])
   @@map("bookings")
+}
+
+// ─────────────────────────────────────────────
+// Payment (Flitt gateway, one per prepaid booking)
+// ─────────────────────────────────────────────
+
+model Payment {
+  id        String @id @default(uuid())
+  bookingId String @unique
+
+  provider String @default("flitt")
+  amount   Int // GEL whole units (the charged prepayment: deposit or full price)
+  currency String @default("GEL")
+  status   String @default("PENDING") // PENDING | PAID | FAILED
+
+  flittPaymentId String?  @db.VarChar(64) // Flitt payment_id from the callback
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@map("payments")
 }
 
 // ─────────────────────────────────────────────

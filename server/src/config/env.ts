@@ -76,6 +76,14 @@ const envSchema = z.object({
   // Telegram notifications (problem reports)
   TELEGRAM_BOT_TOKEN: z.string().default(''),
   TELEGRAM_CHAT_ID: z.string().default(''),
+
+  // Flitt payment gateway (booking prepayment / full payment).
+  // Empty merchant id = gateway not configured; booking prepay falls back to off-platform.
+  FLITT_MERCHANT_ID: z.coerce.number().int().default(0),
+  FLITT_SECRET_KEY: z.string().default(''),
+  FLITT_API_URL: z.string().url().default('https://pay.flitt.com/api/checkout/url/'),
+  // Public base URL of THIS API (for the Flitt server-to-server callback), e.g. https://api.glow.ge
+  PUBLIC_SERVER_URL: z.string().url().default('http://localhost:4000'),
 });
 
 const parsed = envSchema.safeParse(process.env);

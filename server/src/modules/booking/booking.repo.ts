@@ -13,6 +13,7 @@ const BOOKING_SELECT = {
   startTime: true,
   endTime: true,
   status: true,
+  paymentMode: true,
   prepaymentRequired: true,
   prepaymentAmount: true,
   depositStatus: true,
@@ -29,6 +30,7 @@ interface CreateBookingData {
   date: Date;
   startTime: string;
   endTime: string;
+  paymentMode: string;
   prepaymentRequired: boolean;
   prepaymentAmount: number | null;
   depositStatus: string;
@@ -53,7 +55,7 @@ export const bookingRepo = {
             services: true,
             workingHours: true,
             bookingEnabled: true,
-            bookingPrepaymentEnabled: true,
+            bookingPaymentMode: true,
             bookingPrepaymentAmount: true,
             bookingPaymentInfo: true,
           },
@@ -101,6 +103,7 @@ export const bookingRepo = {
         startTime: data.startTime,
         endTime: data.endTime,
         status: data.status,
+        paymentMode: data.paymentMode,
         prepaymentRequired: data.prepaymentRequired,
         prepaymentAmount: data.prepaymentAmount,
         depositStatus: data.depositStatus,
@@ -177,5 +180,55 @@ export const bookingRepo = {
       data: { depositStatus: 'RECEIVED', status: 'CONFIRMED' },
       select: BOOKING_SELECT,
     });
+  },
+
+  // ── Flitt payment ────────────────────────────────────────────────
+  async createPayment(data: { bookingId: string; amount: number; currency: string }) {
+    return prisma.payment.create({
+      data: { bookingId: data.bookingId, amount: data.amount, currency: data.currency },
+      select: { id: true },
+    });
+  },
+
+  async findPaymentWithBooking(id: string) {
+    return prisma.payment.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        bookingId: true,
+        amount: true,
+        status: true,
+        booking: {
+          select: {
+            id: true,
+            clientPhone: true,
+            date: true,
+            startTime: true,
+            serviceName: true,
+            masterProfile: { select: { phone: true, user: { select: { phone: true } } } },
+          },
+        },
+      },
+    });
+  },
+
+  async markPaymentPaid(paymentId: string, bookingId: string, flittPaymentId: string | null) {
+    await prisma.$transaction([
+      prisma.payment.update({ where: { id: paymentId }, data: { status: 'PAID', flittPaymentId } }),
+      prisma.booking.update({
+        where: { id: bookingId },
+        data: { status: 'CONFIRMED', depositStatus: 'RECEIVED' },
+      }),
+    ]);
+  },
+
+  async markPaymentFailed(paymentId: string, bookingId: string, cancelBooking: boolean) {
+    const ops: Prisma.PrismaPromise<unknown>[] = [
+      prisma.payment.update({ where: { id: paymentId }, data: { status: 'FAILED' } }),
+    ];
+    if (cancelBooking) {
+      ops.push(prisma.booking.update({ where: { id: bookingId }, data: { status: 'CANCELLED' } }));
+    }
+    await prisma.$transaction(ops);
   },
 };

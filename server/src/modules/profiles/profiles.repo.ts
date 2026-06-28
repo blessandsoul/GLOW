@@ -22,7 +22,7 @@ const PROFILE_SELECT = {
   longitude: true,
   isManualLocation: true,
   bookingEnabled: true,
-  bookingPrepaymentEnabled: true,
+  bookingPaymentMode: true,
   bookingPrepaymentAmount: true,
   bookingPaymentInfo: true,
   verificationStatus: true,
