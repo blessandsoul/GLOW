@@ -2,8 +2,27 @@ import { Prisma } from '@prisma/client';
 import { logger } from '@/libs/logger.js';
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '@/shared/errors/errors.js';
 import { sendOtp, verifyOtp, sendSms } from '@/libs/otp.js';
+import { assertOtpPhoneAllowed } from '@/shared/rate-limit/otp-throttle.js';
 import { waitlistRepo } from './waitlist.repo.js';
+import { WAITLIST_STATUSES, type WaitlistStatus } from './waitlist.schemas.js';
 import type { JoinInput, MasterListQueryInput, RequestOtpInput } from './waitlist.schemas.js';
+
+// Legal master-driven status transitions. WAITING/NOTIFIED are active; CONVERTED/CANCELLED/
+// EXPIRED are terminal (no outgoing edges) so a real booking (CONVERTED) can't be reverted
+// and a cancelled/expired row can't be revived through this path (re-joining goes through
+// verifyAndJoin, which reactivates a CANCELLED/EXPIRED row deliberately). A master never
+// sets WAITING/EXPIRED by hand (guarded again by the MASTER_UPDATABLE_STATUSES Zod enum).
+const WAITLIST_TRANSITIONS: Record<WaitlistStatus, readonly WaitlistStatus[]> = {
+  WAITING: ['NOTIFIED', 'CONVERTED', 'CANCELLED'],
+  NOTIFIED: ['CONVERTED', 'CANCELLED'],
+  CONVERTED: [],
+  CANCELLED: [],
+  EXPIRED: [],
+};
+
+function isWaitlistStatus(s: string): s is WaitlistStatus {
+  return (WAITLIST_STATUSES as readonly string[]).includes(s);
+}
 
 interface ServiceOption {
   name: string;
@@ -99,6 +118,8 @@ export function createWaitlistService() {
       const master = await resolveMaster(username);
       assertServiceValid(master.masterProfile?.services, input.serviceName);
 
+      // Per-phone SMS-bomb throttle (in addition to the per-IP route limit).
+      await assertOtpPhoneAllowed('waitlist', input.clientPhone);
       const { requestId } = await sendOtp(input.clientPhone);
       logger.info({ username }, 'Waitlist OTP requested');
       return { requestId };
@@ -208,6 +229,21 @@ export function createWaitlistService() {
       }
       if (entry.masterProfileId !== profile.id) {
         throw new ForbiddenError('You do not own this waitlist entry', 'NOT_OWNER');
+      }
+
+      // ── Status-transition guard ──────────────────────────────────────
+      const current = entry.status;
+      if (!isWaitlistStatus(current) || !isWaitlistStatus(status)) {
+        throw new BadRequestError('Unknown waitlist status', 'INVALID_STATUS');
+      }
+      if (current === status) {
+        throw new ConflictError(`Entry is already ${current}`, 'STATUS_UNCHANGED');
+      }
+      if (!WAITLIST_TRANSITIONS[current].includes(status)) {
+        throw new ConflictError(
+          `Cannot change a ${current} waitlist entry to ${status}`,
+          'ILLEGAL_STATUS_TRANSITION',
+        );
       }
 
       const updated = await waitlistRepo.updateStatus(

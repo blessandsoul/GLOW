@@ -12,6 +12,10 @@ vi.mock('../../libs/otp.js', () => ({
   sendSms: vi.fn(),
 }));
 
+vi.mock('../../shared/rate-limit/otp-throttle.js', () => ({
+  assertOtpPhoneAllowed: vi.fn(),
+}));
+
 vi.mock('./waitlist.repo.js', () => ({
   waitlistRepo: {
     findMasterByUsername: vi.fn(),
@@ -31,11 +35,13 @@ vi.mock('./waitlist.repo.js', () => ({
 import { waitlistService } from './waitlist.service.js';
 import { waitlistRepo } from './waitlist.repo.js';
 import { sendOtp, verifyOtp, sendSms } from '../../libs/otp.js';
+import { assertOtpPhoneAllowed } from '../../shared/rate-limit/otp-throttle.js';
 
 const repo = vi.mocked(waitlistRepo);
 const mockSendOtp = vi.mocked(sendOtp);
 const mockVerifyOtp = vi.mocked(verifyOtp);
 const mockSendSms = vi.mocked(sendSms);
+const mockAssertOtpPhone = vi.mocked(assertOtpPhoneAllowed);
 
 const USERNAME = 'lashqueen';
 const PHONE = '+995555123456';
@@ -89,6 +95,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   // sendSms is fire-and-forget, the service calls `.catch()` on its promise.
   mockSendSms.mockResolvedValue(undefined);
+  mockAssertOtpPhone.mockResolvedValue(undefined);
 });
 
 describe('waitlistService.requestJoinOtp', () => {
@@ -251,6 +258,52 @@ describe('waitlistService.updateEntryStatus', () => {
       expect.objectContaining({ notifiedAt: expect.any(Date) }),
     );
     expect(mockSendSms).toHaveBeenCalledWith(PHONE, expect.stringContaining('Glow.GE'));
+  });
+
+  function ownEntry(status: string) {
+    repo.findMasterProfileByUserId.mockResolvedValue({ id: 'mp-1' });
+    repo.findEntryById.mockResolvedValue({
+      id: 'entry-1', masterProfileId: 'mp-1', clientName: 'Mariam',
+      clientPhone: PHONE, status, requestedDate: FUTURE, serviceName: 'Classic Lashes',
+    });
+  }
+
+  it('FORBIDS reviving a terminal CANCELLED entry → ILLEGAL_STATUS_TRANSITION', async () => {
+    ownEntry('CANCELLED');
+    await expect(waitlistService.updateEntryStatus('user-1', 'entry-1', 'CONVERTED')).rejects.toMatchObject({ code: 'ILLEGAL_STATUS_TRANSITION' });
+    expect(repo.updateStatus).not.toHaveBeenCalled();
+  });
+
+  it('FORBIDS reverting a CONVERTED entry (would erase a real booking)', async () => {
+    ownEntry('CONVERTED');
+    await expect(waitlistService.updateEntryStatus('user-1', 'entry-1', 'CANCELLED')).rejects.toMatchObject({ code: 'ILLEGAL_STATUS_TRANSITION' });
+  });
+
+  it('FORBIDS reviving an EXPIRED entry via the status path', async () => {
+    ownEntry('EXPIRED');
+    await expect(waitlistService.updateEntryStatus('user-1', 'entry-1', 'NOTIFIED')).rejects.toMatchObject({ code: 'ILLEGAL_STATUS_TRANSITION' });
+  });
+
+  it('rejects a no-op transition (same status) → STATUS_UNCHANGED', async () => {
+    ownEntry('WAITING');
+    await expect(waitlistService.updateEntryStatus('user-1', 'entry-1', 'WAITING' as never)).rejects.toMatchObject({ code: 'STATUS_UNCHANGED' });
+  });
+
+  it('allows the legal WAITING → CONVERTED move', async () => {
+    ownEntry('WAITING');
+    repo.updateStatus.mockResolvedValue(entryFixture({ status: 'CONVERTED' }));
+    await waitlistService.updateEntryStatus('user-1', 'entry-1', 'CONVERTED');
+    expect(repo.updateStatus).toHaveBeenCalledWith('entry-1', 'CONVERTED', undefined);
+  });
+
+  it('allows NOTIFIED → CANCELLED but FORBIDS NOTIFIED → WAITING', async () => {
+    ownEntry('NOTIFIED');
+    repo.updateStatus.mockResolvedValue(entryFixture({ status: 'CANCELLED' }));
+    await waitlistService.updateEntryStatus('user-1', 'entry-1', 'CANCELLED');
+    expect(repo.updateStatus).toHaveBeenCalledWith('entry-1', 'CANCELLED', undefined);
+
+    ownEntry('NOTIFIED');
+    await expect(waitlistService.updateEntryStatus('user-1', 'entry-1', 'WAITING' as never)).rejects.toMatchObject({ code: 'ILLEGAL_STATUS_TRANSITION' });
   });
 });
 

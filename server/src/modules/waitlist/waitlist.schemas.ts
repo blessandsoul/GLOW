@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isTbilisiTodayOrFuture } from '@/shared/time/tbilisi.js';
 
 export const WAITLIST_STATUSES = [
   'WAITING',
@@ -19,17 +20,11 @@ const time = z
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Time must be HH:MM')
   .optional();
 
-const requestedDate = z.coerce.date().refine(
-  (d) => {
-    // Compare in UTC to match storage normalization (toDateOnly uses Date.UTC),
-    // so a non-UTC server does not reject "today" near the midnight boundary.
-    const now = new Date();
-    const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-    const dayUtc = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-    return dayUtc >= todayUtc;
-  },
-  { message: 'Date must be today or in the future' },
-);
+// "Today" is Tbilisi wall-clock (same helper the booking schema + slot generator use),
+// so the accept/reject boundary matches the local calendar day rather than UTC's.
+const requestedDate = z.coerce.date().refine((d) => isTbilisiTodayOrFuture(d), {
+  message: 'Date must be today or in the future',
+});
 
 // Body for both request-otp and join (join adds the OTP fields).
 const JoinBase = {

@@ -9,7 +9,12 @@ export async function waitlistRoutes(app: FastifyInstance): Promise<void> {
   const masterGuard = [authenticate, authorize('MASTER'), requirePhoneVerified];
 
   // ── Public (UNauthenticated), rate-limited + OTP-gated ──
-  app.get('/public/:username/services', controller.getPublicServices);
+  // Per-IP limit on the public GET too, to blunt username enumeration + service scraping.
+  app.get(
+    '/public/:username/services',
+    { config: { rateLimit: { max: 60, timeWindow: '15 minutes' } } },
+    controller.getPublicServices,
+  );
 
   app.post(
     '/public/:username/request-otp',
