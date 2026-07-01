@@ -14,6 +14,29 @@ interface GoSmsErrorResponse {
   message: string;
 }
 
+/**
+ * gosms.ge /api/otp/verify response body.
+ *
+ * ASSUMED CONTRACT (needs a real-gateway confirmation — see verifyOtp).
+ * A live pentest proved gosms returns HTTP 200 even for a hash it never issued and
+ * for a WRONG code, so the transport status is NOT a trust signal for verification.
+ * We therefore require an EXPLICIT positive flag in the body. gosms is not consistent
+ * across its endpoints about which key it uses, so we fail-closed unless one of the
+ * known positive shapes is explicitly truthy:
+ *   - success: true
+ *   - verified: true
+ *   - status: "verified" | "success" | "ok"
+ * Any other body (missing/false flag, an errorCode, an unknown shape) = verification
+ * FAILURE. All fields optional because we treat their ABSENCE as failure, not success.
+ */
+interface GoSmsOtpVerifyResponse {
+  success?: boolean;
+  verified?: boolean;
+  status?: string;
+  errorCode?: number;
+  message?: string;
+}
+
 function formatPhone(phoneNumber: string): string {
   // gosms.ge expects "995XXXXXXXXX" — strip leading "+" if present
   return phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber;
@@ -102,7 +125,7 @@ export async function sendBulkSms(
     try {
       const response = await gosmsPost<GoSmsBulkResponse>('/api/sendbulk', {
         api_key: env.OTP_API_KEY,
-        from: 'GLOW',
+        from: env.SMS_SENDER_ID,
         to: batch,
         text: message,
       });
@@ -136,7 +159,7 @@ export async function sendSms(phoneNumber: string, message: string): Promise<voi
   try {
     await gosmsPost('/api/sendbulk', {
       api_key: env.OTP_API_KEY,
-      from: 'GLOW',
+      from: env.SMS_SENDER_ID,
       to: [formatPhone(phoneNumber)],
       text: message,
     });
@@ -164,20 +187,66 @@ export async function sendOtp(phoneNumber: string): Promise<{ requestId: string 
 }
 
 /**
+ * FAIL-CLOSED gate over the gosms.ge verify body.
+ *
+ * Returns true ONLY when the body carries an EXPLICIT positive verification flag and
+ * carries no error indicator. Everything else — a missing flag, `success:false`, an
+ * `errorCode`, or an unrecognized shape — returns false so the caller rejects the code.
+ * See GoSmsOtpVerifyResponse for the assumed contract.
+ */
+function isGoSmsVerifySuccess(body: GoSmsOtpVerifyResponse): boolean {
+  // An explicit failure/error indicator vetoes success outright.
+  if (body.success === false) return false;
+  if (typeof body.errorCode === 'number') return false;
+
+  const status = typeof body.status === 'string' ? body.status.toLowerCase() : '';
+  return (
+    body.success === true ||
+    body.verified === true ||
+    status === 'verified' ||
+    status === 'success' ||
+    status === 'ok'
+  );
+}
+
+/**
  * Verify an OTP code against the stored hash via gosms.ge.
- * Returns true if the code is valid.
+ * Returns true only if gosms explicitly confirms the code is valid.
+ *
+ * SECURITY (fail-closed): gosms /api/otp/verify returns HTTP 200 even for a hash it
+ * never issued and for a wrong code, so a non-throwing response is NOT proof of a
+ * valid code (this was the account-takeover bug). We parse the response BODY and
+ * require an explicit positive verification flag (see isGoSmsVerifySuccess); a missing
+ * or false flag, or an unknown-hash response, is treated as verification FAILURE and
+ * raises the same typed INVALID_OTP error as the wrong-code path.
+ *
+ * NOTE: the exact success field gosms returns is UNCONFIRMED against a live gateway —
+ * this accepts any of the known positive shapes and fails closed on everything else.
+ * Confirm the real field on a live gosms.ge verify round-trip and tighten if needed.
  */
 export async function verifyOtp(phone: string, requestId: string, code: string): Promise<boolean> {
+  let body: GoSmsOtpVerifyResponse;
   try {
-    await gosmsPost('/api/otp/verify', {
+    body = await gosmsPost<GoSmsOtpVerifyResponse>('/api/otp/verify', {
       api_key: env.OTP_API_KEY,
       phone: formatPhone(phone),
       hash: requestId,
       code,
     });
-
-    return true;
   } catch (error) {
+    // Non-2xx (gosms errorCode path, e.g. 111 expired / 112 invalid code) → typed error.
     handleGoSmsError(error, 'verify');
   }
+
+  if (!isGoSmsVerifySuccess(body)) {
+    // HTTP 200 but no explicit positive flag (or an unknown-hash / wrong-code body).
+    // Fail closed with the same error the gosms 112 wrong-code path raises.
+    logger.warn(
+      { phone, hasSuccess: body.success, hasVerified: body.verified, status: body.status, errorCode: body.errorCode },
+      'gosms verify returned no explicit success flag — rejecting OTP',
+    );
+    throw new BadRequestError('Invalid verification code', 'INVALID_OTP');
+  }
+
+  return true;
 }
