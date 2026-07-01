@@ -193,6 +193,19 @@ export async function buildApp() {
     });
   });
 
+  // ── 404 handler ──
+  // Unmatched routes must return our standard envelope, not Fastify's raw
+  // { message, error, statusCode } 404 shape (create-tigra template gap).
+  app.setNotFoundHandler((request, reply) => {
+    reply.status(404).send({
+      success: false,
+      error: {
+        code: 'ROUTE_NOT_FOUND',
+        message: `Route ${request.method} ${request.url} not found`,
+      },
+    });
+  });
+
   // ── Health check ──
   app.get('/api/v1/health', async (_request, reply) => {
     reply.send(
