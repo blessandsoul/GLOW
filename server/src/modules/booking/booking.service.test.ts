@@ -16,6 +16,9 @@ vi.mock('../../libs/flitt.js', () => ({
   isFlittApproved: vi.fn(),
   isFlittTerminalFailure: vi.fn(),
 }));
+vi.mock('../../shared/rate-limit/otp-throttle.js', () => ({
+  assertOtpPhoneAllowed: vi.fn(),
+}));
 vi.mock('./booking.repo.js', () => ({
   bookingRepo: {
     findMasterByUsername: vi.fn(),
@@ -29,6 +32,7 @@ vi.mock('./booking.repo.js', () => ({
     updateStatus: vi.fn(),
     setDepositReceived: vi.fn(),
     createPayment: vi.fn(),
+    createOfflinePayment: vi.fn(),
     findPaymentWithBooking: vi.fn(),
     markPaymentPaid: vi.fn(),
     markPaymentFailed: vi.fn(),
@@ -37,7 +41,7 @@ vi.mock('./booking.repo.js', () => ({
 
 import { computeSlots, bookingService } from './booking.service.js';
 import { bookingRepo } from './booking.repo.js';
-import { sendOtp, verifyOtp, sendSms } from '../../libs/otp.js';
+import { verifyOtp, sendSms } from '../../libs/otp.js';
 import {
   createFlittCheckout,
   isFlittConfigured,
@@ -45,9 +49,10 @@ import {
   isFlittApproved,
   isFlittTerminalFailure,
 } from '../../libs/flitt.js';
+import { assertOtpPhoneAllowed } from '../../shared/rate-limit/otp-throttle.js';
 
 const repo = vi.mocked(bookingRepo);
-const mockSendOtp = vi.mocked(sendOtp);
+const mockAssertOtpPhone = vi.mocked(assertOtpPhoneAllowed);
 const mockVerifyOtp = vi.mocked(verifyOtp);
 const mockSendSms = vi.mocked(sendSms);
 const mockCreateCheckout = vi.mocked(createFlittCheckout);
@@ -123,6 +128,8 @@ const validBook = {
 beforeEach(() => {
   vi.clearAllMocks();
   mockSendSms.mockResolvedValue(undefined);
+  mockAssertOtpPhone.mockResolvedValue(undefined);
+  repo.createOfflinePayment.mockResolvedValue({ id: 'offpay-1' } as never);
   // Default: gateway OFF, so the base prepay tests take the off-platform path.
   mockIsConfigured.mockReturnValue(false);
   mockIsApproved.mockReturnValue(false);
@@ -226,11 +233,124 @@ describe('bookingService.verifyAndBook', () => {
 });
 
 describe('bookingService.updateStatus', () => {
-  it('forbids updating a booking the master does not own', async () => {
+  function ownedBooking(over: Record<string, unknown> = {}) {
+    return {
+      id: 'b-1', masterProfileId: 'mp-1', clientName: 'X', clientPhone: PHONE,
+      status: 'PENDING', paymentMode: 'NONE', depositStatus: 'NONE',
+      date: FUTURE, startTime: '10:00', serviceName: 'Classic Lashes', ...over,
+    };
+  }
+  function ownProfile() {
     repo.findMasterProfileByUserId.mockResolvedValue({ id: 'mp-1' });
-    repo.findById.mockResolvedValue({ id: 'b-1', masterProfileId: 'OTHER', clientName: 'X', clientPhone: PHONE, status: 'PENDING', date: FUTURE, startTime: '10:00', serviceName: 'Classic Lashes' });
+  }
+
+  it('forbids updating a booking the master does not own', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ masterProfileId: 'OTHER' }));
     await expect(bookingService.updateStatus('user-1', 'b-1', 'CONFIRMED')).rejects.toMatchObject({ code: 'NOT_OWNER' });
     expect(repo.updateStatus).not.toHaveBeenCalled();
+  });
+
+  it('confirms a NONE-mode PENDING booking (legal edge, no prepay gate)', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'PENDING', paymentMode: 'NONE' }));
+    repo.updateStatus.mockResolvedValue({} as never);
+    await bookingService.updateStatus('user-1', 'b-1', 'CONFIRMED');
+    expect(repo.updateStatus).toHaveBeenCalledWith('b-1', 'CONFIRMED');
+  });
+
+  it('BLOCKS confirming an unpaid prepay (DEPOSIT, deposit AWAITING) → PREPAYMENT_NOT_RECEIVED', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'PENDING', paymentMode: 'DEPOSIT', depositStatus: 'AWAITING' }));
+    await expect(bookingService.updateStatus('user-1', 'b-1', 'CONFIRMED')).rejects.toMatchObject({ code: 'PREPAYMENT_NOT_RECEIVED' });
+    expect(repo.updateStatus).not.toHaveBeenCalled();
+  });
+
+  it('allows confirming a prepay booking once the deposit is RECEIVED', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'PENDING', paymentMode: 'DEPOSIT', depositStatus: 'RECEIVED' }));
+    repo.updateStatus.mockResolvedValue({} as never);
+    await bookingService.updateStatus('user-1', 'b-1', 'CONFIRMED');
+    expect(repo.updateStatus).toHaveBeenCalledWith('b-1', 'CONFIRMED');
+  });
+
+  it('FORBIDS reviving a terminal CANCELLED booking → ILLEGAL_STATUS_TRANSITION', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'CANCELLED' }));
+    await expect(bookingService.updateStatus('user-1', 'b-1', 'CONFIRMED')).rejects.toMatchObject({ code: 'ILLEGAL_STATUS_TRANSITION' });
+    expect(repo.updateStatus).not.toHaveBeenCalled();
+  });
+
+  it('FORBIDS moving a COMPLETED booking anywhere', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'COMPLETED' }));
+    await expect(bookingService.updateStatus('user-1', 'b-1', 'CANCELLED')).rejects.toMatchObject({ code: 'ILLEGAL_STATUS_TRANSITION' });
+  });
+
+  it('rejects a no-op transition (same status) → STATUS_UNCHANGED', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'CONFIRMED', paymentMode: 'NONE' }));
+    await expect(bookingService.updateStatus('user-1', 'b-1', 'CONFIRMED')).rejects.toMatchObject({ code: 'STATUS_UNCHANGED' });
+  });
+
+  it('allows CONFIRMED → COMPLETED (legal terminal move)', async () => {
+    ownProfile();
+    repo.findById.mockResolvedValue(ownedBooking({ status: 'CONFIRMED', paymentMode: 'NONE' }));
+    repo.updateStatus.mockResolvedValue({} as never);
+    await bookingService.updateStatus('user-1', 'b-1', 'COMPLETED');
+    expect(repo.updateStatus).toHaveBeenCalledWith('b-1', 'COMPLETED');
+  });
+});
+
+describe('bookingService.verifyAndBook — off-platform prepay hold (#7) + null-amount guard (#14)', () => {
+  it('creates an offline PENDING payment when a prepay booking falls off-platform (gateway OFF)', async () => {
+    repo.findMasterByUsername.mockResolvedValue(masterFixture({ bookingPaymentMode: 'DEPOSIT', bookingPrepaymentAmount: 20 }));
+    repo.findActiveBookingsForDay.mockResolvedValue([]);
+    repo.createBooking.mockResolvedValue({
+      id: 'b-off', status: 'PENDING', date: FUTURE, startTime: '10:00', endTime: '11:00',
+      serviceName: 'Classic Lashes', paymentMode: 'DEPOSIT', prepaymentRequired: true, prepaymentAmount: 20, depositStatus: 'AWAITING',
+    } as never);
+    mockVerifyOtp.mockResolvedValue(true);
+    mockIsConfigured.mockReturnValue(false);
+
+    const res = await bookingService.verifyAndBook(USERNAME, validBook);
+
+    expect(res.redirectUrl).toBeNull();
+    expect(repo.createOfflinePayment).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 'b-off', amount: 20, currency: 'GEL' }));
+  });
+
+  it('does NOT create an offline payment for a NONE-mode (already CONFIRMED) booking', async () => {
+    repo.findMasterByUsername.mockResolvedValue(masterFixture()); // NONE mode
+    repo.findActiveBookingsForDay.mockResolvedValue([]);
+    repo.createBooking.mockResolvedValue({
+      id: 'b-free', status: 'CONFIRMED', date: FUTURE, startTime: '10:00', endTime: '11:00',
+      serviceName: 'Classic Lashes', paymentMode: 'NONE', prepaymentRequired: false, prepaymentAmount: null, depositStatus: 'NONE',
+    } as never);
+    mockVerifyOtp.mockResolvedValue(true);
+
+    await bookingService.verifyAndBook(USERNAME, validBook);
+    expect(repo.createOfflinePayment).not.toHaveBeenCalled();
+  });
+
+  it('rejects a DEPOSIT booking with no configured amount → PAYMENT_AMOUNT_UNCONFIGURED (no booking created)', async () => {
+    repo.findMasterByUsername.mockResolvedValue(masterFixture({ bookingPaymentMode: 'DEPOSIT', bookingPrepaymentAmount: null }));
+    repo.findActiveBookingsForDay.mockResolvedValue([]);
+    mockVerifyOtp.mockResolvedValue(true);
+
+    await expect(bookingService.verifyAndBook(USERNAME, validBook)).rejects.toMatchObject({ code: 'PAYMENT_AMOUNT_UNCONFIGURED' });
+    expect(repo.createBooking).not.toHaveBeenCalled();
+  });
+
+  it('rejects a FULL booking when the service has no price → PAYMENT_AMOUNT_UNCONFIGURED', async () => {
+    repo.findMasterByUsername.mockResolvedValue(masterFixture({
+      bookingPaymentMode: 'FULL',
+      services: [{ name: 'Classic Lashes', category: 'lashes', duration: 60 }], // no price
+    }));
+    repo.findActiveBookingsForDay.mockResolvedValue([]);
+    mockVerifyOtp.mockResolvedValue(true);
+
+    await expect(bookingService.verifyAndBook(USERNAME, validBook)).rejects.toMatchObject({ code: 'PAYMENT_AMOUNT_UNCONFIGURED' });
+    expect(repo.createBooking).not.toHaveBeenCalled();
   });
 });
 
@@ -277,7 +397,7 @@ describe('bookingService.handlePaymentCallback', () => {
   const approvedBody = { order_id: 'pay-1', order_status: 'approved', amount: '8000', payment_id: 'flitt-77', signature: 'sig' };
   function paymentFixture(overrides: Record<string, unknown> = {}) {
     return {
-      id: 'pay-1', bookingId: 'b-9', amount: 80, status: 'PENDING',
+      id: 'pay-1', bookingId: 'b-9', amount: 80, currency: 'GEL', status: 'PENDING',
       booking: {
         id: 'b-9', clientPhone: PHONE, date: FUTURE, startTime: '10:00', serviceName: 'Classic Lashes',
         masterProfile: { phone: '+995599111111', user: { phone: '+995599000000' } },
@@ -311,6 +431,39 @@ describe('bookingService.handlePaymentCallback', () => {
     await bookingService.handlePaymentCallback(approvedBody);
 
     expect(repo.markPaymentPaid).not.toHaveBeenCalled();
+  });
+
+  it('treats FAILED as terminal: a late "approved" after a decline does NOT re-confirm', async () => {
+    mockVerifyCallback.mockReturnValue(true);
+    mockIsApproved.mockReturnValue(true);
+    repo.findPaymentWithBooking.mockResolvedValue(paymentFixture({ status: 'FAILED' }) as never);
+
+    await bookingService.handlePaymentCallback(approvedBody);
+
+    expect(repo.markPaymentPaid).not.toHaveBeenCalled();
+    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+  });
+
+  it('a reversal/refund on an already-PAID payment is not silently dropped and does not cancel', async () => {
+    mockVerifyCallback.mockReturnValue(true);
+    mockIsTerminalFailure.mockReturnValue(true); // reversed
+    repo.findPaymentWithBooking.mockResolvedValue(paymentFixture({ status: 'PAID' }) as never);
+
+    await bookingService.handlePaymentCallback({ ...approvedBody, order_status: 'reversed' });
+
+    // No auto-cancel of a confirmed+paid booking (refund path is a deliberate TODO).
+    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+  });
+
+  it('ignores an approved callback whose currency does not match the payment currency', async () => {
+    mockVerifyCallback.mockReturnValue(true);
+    mockIsApproved.mockReturnValue(true);
+    repo.findPaymentWithBooking.mockResolvedValue(paymentFixture({ currency: 'GEL' }) as never);
+
+    await bookingService.handlePaymentCallback({ ...approvedBody, currency: 'USD' });
+
+    expect(repo.markPaymentPaid).not.toHaveBeenCalled();
+    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
   });
 
   it('cancels the booking on a terminal failure', async () => {

@@ -71,12 +71,29 @@ export async function createFlittCheckout(p: FlittCheckoutParams): Promise<strin
 
 /** Verify the signature on an inbound Flitt server callback. */
 export function verifyFlittCallback(body: Record<string, unknown>): boolean {
+  // Fail closed when the gateway is not configured. With an empty FLITT_SECRET_KEY the
+  // expected signature would be sha1('' | values) — a value any attacker can reproduce,
+  // so a forged "approved" callback would validate. Never verify over an empty secret.
+  if (!isFlittConfigured()) {
+    logger.warn('Flitt callback received while gateway is not configured (empty secret) — rejecting');
+    return false;
+  }
   const provided = typeof body.signature === 'string' ? body.signature : '';
   if (!provided) return false;
   const expected = flittSignature(env.FLITT_SECRET_KEY, body);
   const a = Buffer.from(provided);
   const b = Buffer.from(expected);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+  const ok = a.length === b.length && crypto.timingSafeEqual(a, b);
+  if (!ok) {
+    // Keep the caller's 400 (so a real forgery is rejected), but make a genuine
+    // mis-key operationally visible: a mis-keyed gateway will otherwise retry forever
+    // with no signal in the logs. Never log the secret or the expected signature.
+    logger.warn(
+      { orderId: typeof body.order_id === 'string' ? body.order_id : undefined },
+      'Flitt callback signature verification FAILED — forged callback or FLITT_SECRET_KEY mismatch',
+    );
+  }
+  return ok;
 }
 
 export function isFlittApproved(body: Record<string, unknown>): boolean {

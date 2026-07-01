@@ -159,6 +159,8 @@ export const bookingRepo = {
         clientName: true,
         clientPhone: true,
         status: true,
+        paymentMode: true,
+        depositStatus: true,
         date: true,
         startTime: true,
         serviceName: true,
@@ -190,6 +192,25 @@ export const bookingRepo = {
     });
   },
 
+  // Off-platform hold: a PENDING Payment with provider 'offline' anchors a prepay booking
+  // that never reached the gateway (unconfigured or checkout failed) so the stale-PENDING
+  // sweep has a timestamped row to age out. Booking-Payment is 1:1 (Payment.bookingId is
+  // @unique); if a Flitt payment already exists this is a no-op-safe upsert.
+  async createOfflinePayment(data: { bookingId: string; amount: number; currency: string }) {
+    return prisma.payment.upsert({
+      where: { bookingId: data.bookingId },
+      create: {
+        bookingId: data.bookingId,
+        amount: data.amount,
+        currency: data.currency,
+        provider: 'offline',
+        status: 'PENDING',
+      },
+      update: {},
+      select: { id: true },
+    });
+  },
+
   async findPaymentWithBooking(id: string) {
     return prisma.payment.findUnique({
       where: { id },
@@ -197,6 +218,7 @@ export const bookingRepo = {
         id: true,
         bookingId: true,
         amount: true,
+        currency: true,
         status: true,
         booking: {
           select: {
@@ -212,23 +234,39 @@ export const bookingRepo = {
     });
   },
 
+  // The Payment update is scoped to a still-PENDING row (updateMany + WHERE status), so a
+  // duplicate/out-of-order 'approved' callback that raced past the service's read-check
+  // flips exactly zero rows and skips the booking write — closing the read-then-write
+  // idempotency race. The booking is confirmed only when the payment actually transitioned
+  // AND the booking is still PENDING (so a late 'approved' can't resurrect a CANCELLED one).
   async markPaymentPaid(paymentId: string, bookingId: string, flittPaymentId: string | null) {
-    await prisma.$transaction([
-      prisma.payment.update({ where: { id: paymentId }, data: { status: 'PAID', flittPaymentId } }),
-      prisma.booking.update({
-        where: { id: bookingId },
+    await prisma.$transaction(async (tx) => {
+      const res = await tx.payment.updateMany({
+        where: { id: paymentId, status: 'PENDING' },
+        data: { status: 'PAID', flittPaymentId },
+      });
+      if (res.count === 0) return; // already terminal — nothing to confirm
+      await tx.booking.updateMany({
+        where: { id: bookingId, status: 'PENDING' },
         data: { status: 'CONFIRMED', depositStatus: 'RECEIVED' },
-      }),
-    ]);
+      });
+    });
   },
 
   async markPaymentFailed(paymentId: string, bookingId: string, cancelBooking: boolean) {
-    const ops: Prisma.PrismaPromise<unknown>[] = [
-      prisma.payment.update({ where: { id: paymentId }, data: { status: 'FAILED' } }),
-    ];
-    if (cancelBooking) {
-      ops.push(prisma.booking.update({ where: { id: bookingId }, data: { status: 'CANCELLED' } }));
-    }
-    await prisma.$transaction(ops);
+    await prisma.$transaction(async (tx) => {
+      const res = await tx.payment.updateMany({
+        where: { id: paymentId, status: 'PENDING' },
+        data: { status: 'FAILED' },
+      });
+      if (res.count === 0) return; // already terminal — do not touch the booking
+      if (cancelBooking) {
+        // Only cancel a still-PENDING booking: never flip a CONFIRMED/COMPLETED one.
+        await tx.booking.updateMany({
+          where: { id: bookingId, status: 'PENDING' },
+          data: { status: 'CANCELLED' },
+        });
+      }
+    });
   },
 };

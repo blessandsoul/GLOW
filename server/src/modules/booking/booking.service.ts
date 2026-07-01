@@ -10,11 +10,13 @@ import {
   isFlittApproved,
   isFlittTerminalFailure,
 } from '@/libs/flitt.js';
+import { tbilisiNow } from '@/shared/time/tbilisi.js';
+import { assertOtpPhoneAllowed } from '@/shared/rate-limit/otp-throttle.js';
 import { bookingRepo } from './booking.repo.js';
+import { BOOKING_STATUSES, type BookingStatus } from './booking.schemas.js';
 import type { BookInput, MasterListQueryInput, RequestOtpInput } from './booking.schemas.js';
 
-// Georgia is UTC+4 (no DST). "HH:MM" working hours are local Tbilisi time.
-const TZ_OFFSET_MIN = 240;
+// "HH:MM" working hours are local Tbilisi wall-clock time (see @/shared/time/tbilisi).
 const DEFAULT_DURATION = 60;
 
 type WeekdayKey =
@@ -25,6 +27,22 @@ interface ServiceOption {
   name: string;
   durationMinutes: number;
   price?: number;
+}
+
+// Legal master-driven status transitions. Terminal states (CANCELLED/COMPLETED/NO_SHOW)
+// have NO outgoing edges — once there, the booking is frozen. PENDING may confirm/cancel/
+// no-show; a CONFIRMED booking may complete/cancel/no-show. A master never sets PENDING.
+// (The payment callback drives PENDING→CONFIRMED / PENDING→CANCELLED on its own path.)
+const BOOKING_TRANSITIONS: Record<BookingStatus, readonly BookingStatus[]> = {
+  PENDING: ['CONFIRMED', 'CANCELLED', 'NO_SHOW'],
+  CONFIRMED: ['COMPLETED', 'CANCELLED', 'NO_SHOW'],
+  CANCELLED: [],
+  COMPLETED: [],
+  NO_SHOW: [],
+};
+
+function isBookingStatus(s: string): s is BookingStatus {
+  return (BOOKING_STATUSES as readonly string[]).includes(s);
 }
 
 function pad(n: number): string {
@@ -46,12 +64,6 @@ function dateKey(d: Date): string {
 
 function toDateOnly(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-}
-
-// Current Tbilisi wall-clock as a date key + minutes-since-midnight.
-function tbilisiNow(): { dayKey: string; minutes: number } {
-  const g = new Date(Date.now() + TZ_OFFSET_MIN * 60_000);
-  return { dayKey: dateKey(g), minutes: g.getUTCHours() * 60 + g.getUTCMinutes() };
 }
 
 function mapServices(services: unknown): ServiceOption[] {
@@ -108,7 +120,10 @@ export function computeSlots(opts: {
       slots.push(toHHMM(start));
     }
   }
-  return slots;
+  // Dedup (overlapping working intervals can emit the same start) and globally sort so
+  // the emitted grid is stable regardless of interval order. "HH:MM" strings sort
+  // lexicographically in chronological order (zero-padded, 24h).
+  return [...new Set(slots)].sort();
 }
 
 export function createBookingService() {
@@ -200,6 +215,8 @@ export function createBookingService() {
         input.date,
         input.startTime,
       );
+      // Per-phone SMS-bomb throttle (in addition to the per-IP route limit).
+      await assertOtpPhoneAllowed('booking', input.clientPhone);
       const { requestId } = await sendOtp(input.clientPhone);
       logger.info({ username }, 'Booking OTP requested');
       return { requestId };
@@ -230,6 +247,17 @@ export function createBookingService() {
               ? svc.price
               : null
             : null;
+
+      // A prepay booking with no resolvable amount would silently downgrade to an
+      // unpriced off-platform hold (deposit misconfigured, or a FULL service with no
+      // price). Refuse it up-front so the master fixes the config instead of taking a
+      // booking they cannot charge for.
+      if (prepay && amount === null) {
+        throw new BadRequestError(
+          'This master has not set a prepayment amount for the selected service',
+          'PAYMENT_AMOUNT_UNCONFIGURED',
+        );
+      }
       const date = toDateOnly(input.date);
 
       let booking;
@@ -274,12 +302,13 @@ export function createBookingService() {
 
       // Online payment (Flitt): hold the slot as PENDING and redirect the client to pay.
       // The booking auto-confirms on the verified server callback, not on a manual click.
-      if (prepay && amount !== null && isFlittConfigured()) {
+      // `amount` is guaranteed non-null here for a prepay booking (guarded above).
+      if (prepay && isFlittConfigured()) {
         try {
-          const payment = await bookingRepo.createPayment({ bookingId: booking.id, amount, currency: 'GEL' });
+          const payment = await bookingRepo.createPayment({ bookingId: booking.id, amount: amount!, currency: 'GEL' });
           const redirectUrl = await createFlittCheckout({
             orderId: payment.id,
-            amountGel: amount,
+            amountGel: amount!,
             description: `${input.serviceName} ${dateKey(date)} ${input.startTime}`,
             responseUrl: `${env.APP_URL}/booking/return?b=${booking.id}`,
             serverCallbackUrl: `${env.PUBLIC_SERVER_URL}/api/v1/booking/payment/callback`,
@@ -291,8 +320,22 @@ export function createBookingService() {
         }
       }
 
-      // Off-platform path (gateway not configured, no chargeable amount, or checkout failed):
-      // notify the master now; the prepayment, if any, is handled manually.
+      // Off-platform path (gateway not configured, or online checkout failed).
+      // For a PREPAY booking this leaves a PENDING booking holding the slot with no
+      // gateway timeout to release it. Anchor it with an `offline` PENDING Payment so the
+      // stale-PENDING sweep (src/jobs) has a concrete, timestamped row to age out — the
+      // sweep expires bookings whose offline payment has sat PENDING past its grace window.
+      // (A NONE-mode booking is already CONFIRMED and needs no hold.)
+      if (prepay) {
+        try {
+          await bookingRepo.createOfflinePayment({ bookingId: booking.id, amount: amount!, currency: 'GEL' });
+        } catch (err) {
+          // Never fail the booking on the hold-record write; log for the sweep's sake.
+          logger.error({ err, bookingId: booking.id }, 'Failed to create offline payment hold');
+        }
+      }
+
+      // Notify the master now; the prepayment, if any, is settled manually off-platform.
       const masterPhone = mp.phone ?? master.phone;
       if (masterPhone) {
         sendSms(
@@ -315,7 +358,39 @@ export function createBookingService() {
         logger.warn({ orderId }, 'Flitt callback for unknown payment');
         return; // ack so Flitt stops retrying
       }
-      if (payment.status === 'PAID') return; // idempotent: already processed
+
+      // Terminal-state guard: BOTH PAID and FAILED are terminal. Once a payment has
+      // settled either way, a later out-of-order callback (a stray 'approved' after a
+      // 'declined', or a duplicate 'approved') must not re-drive the booking. A 'reversed'
+      // /refund arriving after PAID is handled explicitly below.
+      if (payment.status === 'PAID' || payment.status === 'FAILED') {
+        if (isFlittTerminalFailure(body) && payment.status === 'PAID') {
+          // Money was captured then reversed/refunded on the gateway. We do NOT auto-cancel
+          // the (already CONFIRMED) booking here — a refund needs a deliberate operational
+          // path (notify master, decide slot release). Surfaced loudly for follow-up.
+          logger.warn(
+            { paymentId: payment.id, bookingId: payment.booking.id, orderStatus: body.order_status },
+            'REFUND/REVERSAL received on an already-PAID booking — manual refund/cancel path required (not yet built)',
+          );
+        }
+        return; // idempotent: already terminal
+      }
+
+      // Signature already proves the payload came from Flitt; additionally pin the
+      // merchant and currency so a callback for a different merchant/currency can't confirm.
+      const bodyMerchantId = Number(body.merchant_id);
+      if (Number.isFinite(bodyMerchantId) && bodyMerchantId !== env.FLITT_MERCHANT_ID) {
+        logger.warn({ paymentId: payment.id, bodyMerchantId }, 'Flitt callback merchant_id mismatch — ignored');
+        return;
+      }
+      const bodyCurrency = typeof body.currency === 'string' ? body.currency : null;
+      if (bodyCurrency && bodyCurrency !== payment.currency) {
+        logger.warn(
+          { paymentId: payment.id, bodyCurrency, expected: payment.currency },
+          'Flitt callback currency mismatch — ignored',
+        );
+        return;
+      }
 
       const paidCoins = Number(body.amount);
       const amountMatches = Number.isFinite(paidCoins) && Math.round(payment.amount * 100) === paidCoins;
@@ -324,6 +399,8 @@ export function createBookingService() {
       const flittPaymentId = typeof body.payment_id === 'string' ? body.payment_id : String(body.payment_id ?? '') || null;
 
       if (isFlittApproved(body) && amountMatches) {
+        // markPaymentPaid is scoped to a still-PENDING payment (repo WHERE guard), so two
+        // concurrent 'approved' callbacks that both pass the read-check can't both confirm.
         await bookingRepo.markPaymentPaid(payment.id, b.id, flittPaymentId);
         if (masterPhone) {
           sendSms(masterPhone, `Glow.GE: გადახდილი ჯავშანი ${dateKey(b.date)} ${b.startTime}, ${b.serviceName}.`).catch(() => {});
@@ -373,6 +450,35 @@ export function createBookingService() {
       if (booking.masterProfileId !== profile.id) {
         throw new ForbiddenError('You do not own this booking', 'NOT_OWNER');
       }
+
+      // ── Status-transition guard ──────────────────────────────────────
+      // A booking may only move along a legal edge; terminal states are frozen.
+      const current = booking.status;
+      const next = status;
+      if (!isBookingStatus(current) || !isBookingStatus(next)) {
+        throw new BadRequestError('Unknown booking status', 'INVALID_STATUS');
+      }
+      if (current === next) {
+        throw new ConflictError(`Booking is already ${current}`, 'STATUS_UNCHANGED');
+      }
+      if (!BOOKING_TRANSITIONS[current].includes(next)) {
+        throw new ConflictError(
+          `Cannot change a ${current} booking to ${next}`,
+          'ILLEGAL_STATUS_TRANSITION',
+        );
+      }
+      // Confirming a prepay booking requires the money to have actually landed.
+      // NONE-mode books confirm freely; DEPOSIT/FULL confirm only once the deposit
+      // is RECEIVED (marked by the Flitt callback or the manual deposit-received path).
+      if (next === 'CONFIRMED' && booking.paymentMode !== 'NONE' && booking.depositStatus !== 'RECEIVED') {
+        throw new ConflictError(
+          'Cannot confirm a booking before its prepayment is received',
+          'PREPAYMENT_NOT_RECEIVED',
+        );
+      }
+      // Keep depositStatus coherent: confirming a NONE-mode booking never touches the
+      // deposit; the RECEIVED case is already RECEIVED. No override needed here.
+
       const updated = await bookingRepo.updateStatus(bookingId, status);
       if (status === 'CONFIRMED' || status === 'CANCELLED') {
         const msg =

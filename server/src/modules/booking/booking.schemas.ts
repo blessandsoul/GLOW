@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isTbilisiTodayOrFuture } from '@/shared/time/tbilisi.js';
 
 export const BOOKING_STATUSES = [
   'PENDING',
@@ -16,15 +17,12 @@ export const MASTER_UPDATABLE_STATUSES = ['CONFIRMED', 'CANCELLED', 'COMPLETED',
 const phone = z.string().regex(/^\+995\d{9}$/, 'Enter a valid Georgian phone (+995XXXXXXXXX)');
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Time must be HH:MM');
 
-const futureDate = z.coerce.date().refine(
-  (d) => {
-    const now = new Date();
-    const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-    const dayUtc = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-    return dayUtc >= todayUtc;
-  },
-  { message: 'Date must be today or in the future' },
-);
+// "Today" is Tbilisi wall-clock, matching the slot generator's boundary (computeSlots
+// drops past slots using tbilisiNow). Sharing one helper closes the 00:00–04:00 window
+// where a UTC "today" still accepted a fully-elapsed Tbilisi day.
+const futureDate = z.coerce.date().refine((d) => isTbilisiTodayOrFuture(d), {
+  message: 'Date must be today or in the future',
+});
 
 export const UsernameParamSchema = z.object({ username: z.string().min(1) });
 export const BookingIdParamSchema = z.object({ id: z.string().uuid() });
