@@ -67,6 +67,9 @@ const envSchema = z.object({
 
   // OTP (phone verification)
   OTP_API_KEY: z.string().min(1),
+  // SMS sender ID (the "from" shown on the SMS). Must be a sender registered with
+  // gosms.ge; defaults to the GLOW brand.
+  SMS_SENDER_ID: z.string().min(1).default('GLOW'),
 
   // Google OAuth
   GOOGLE_CLIENT_ID: z.string().min(1).default(''),
@@ -82,8 +85,21 @@ const envSchema = z.object({
   FLITT_MERCHANT_ID: z.coerce.number().int().default(0),
   FLITT_SECRET_KEY: z.string().default(''),
   FLITT_API_URL: z.string().url().default('https://pay.flitt.com/api/checkout/url/'),
-  // Public base URL of THIS API (for the Flitt server-to-server callback), e.g. https://api.glow.ge
-  PUBLIC_SERVER_URL: z.string().url().default('http://localhost:4000'),
+  // How long (minutes) a booking may sit with a PENDING Flitt payment before the
+  // stale-payment sweep fails the payment and cancels the booking to release the slot.
+  // Should match / exceed the Flitt hosted-checkout order lifetime (~45 min).
+  // Applies ONLY to provider='flitt' PENDING payments (abandoned hosted checkout).
+  BOOKING_PAYMENT_TIMEOUT_MIN: z.coerce.number().int().min(1).default(45),
+  // How long (minutes) a booking may hold a PENDING provider='offline' payment before
+  // the sweep ages it out. These are OFF-PLATFORM prepay bookings the master manages
+  // manually (deposit/full paid directly to the master), so the window is much longer
+  // (default 1440 = 24h) than the Flitt online window — it must not auto-cancel a
+  // master-managed booking that is simply awaiting manual confirmation.
+  OFFLINE_PAYMENT_TIMEOUT_MIN: z.coerce.number().int().min(1).default(1440),
+  // Public base URL of THIS API (for the Flitt server-to-server callback), e.g. https://api.glow.ge.
+  // Default aligns to the real local API port (PORT=8111) — the previous :4000 default built the
+  // Flitt server_callback_url against a port nothing listens on when the env was unset.
+  PUBLIC_SERVER_URL: z.string().url().default('http://localhost:8111'),
 });
 
 const parsed = envSchema.safeParse(process.env);
