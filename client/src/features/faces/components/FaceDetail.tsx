@@ -5,6 +5,7 @@ import { SpinnerGap, Heart, LockSimple, WhatsappLogo, InstagramLogo, TelegramLog
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/common/EmptyState';
+import { useAppSelector } from '@/store/hooks';
 import { cn } from '@/lib/utils';
 import { getThumbUrl } from '@/lib/utils/image';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
@@ -23,6 +24,8 @@ function contactLinks(contact: ModelContact): { href: string; label: string; ico
 
 export function FaceDetail({ id }: { id: string }): React.ReactElement {
     const { t } = useLanguage();
+    const role = useAppSelector((s) => s.auth.user?.role);
+    const isAdmin = role === 'ADMIN';
     const { model, isLoading, isError } = useFaceDetail(id);
     const likedMap = useInterestStatus([id]);
     const { toggle, isPending } = useToggleInterest();
@@ -110,20 +113,22 @@ export function FaceDetail({ id }: { id: string }): React.ReactElement {
                     <div className="rounded-2xl border border-dashed border-border p-4">
                         <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
                             <LockSimple size={16} />
-                            {t('faces.contact_locked')}
+                            {isAdmin ? t('faces.admin_interest_blocked') : t('faces.contact_locked')}
                         </div>
-                        <Button
-                            onClick={() => toggle(id, liked)}
-                            disabled={isPending}
-                            className="rounded-xl transition-all active:scale-[0.98]"
-                        >
-                            <Heart size={16} weight="fill" className="mr-2" />
-                            {t('faces.interest_add')}
-                        </Button>
+                        {!isAdmin && (
+                            <Button
+                                onClick={() => toggle(id, liked)}
+                                disabled={isPending}
+                                className="rounded-xl transition-all active:scale-[0.98]"
+                            >
+                                <Heart size={16} weight="fill" className="mr-2" />
+                                {t('faces.interest_add')}
+                            </Button>
+                        )}
                     </div>
                 )}
 
-                {model.contactRevealed && (
+                {model.contactRevealed && !isAdmin && (
                     <Button
                         variant="ghost"
                         size="sm"

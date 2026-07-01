@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { startOfToday } from 'date-fns';
-import { SpinnerGap, CheckCircle, CalendarHeart, CalendarBlank } from '@phosphor-icons/react';
+import { SpinnerGap, CheckCircle, CalendarHeart, CalendarBlank, ArrowClockwise } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -45,8 +46,17 @@ export function JoinWaitlistForm({ username }: { username: string }): React.Reac
     const [otpError, setOtpError] = useState('');
     const [otpRequestId, setOtpRequestId] = useState('');
     const [otpKey, setOtpKey] = useState(0);
+    const [resendCooldown, setResendCooldown] = useState(0);
+    const [isResending, setIsResending] = useState(false);
 
     const services = master?.services ?? [];
+
+    // Count the OTP resend cooldown down to 0 (matches the booking + verify-phone rail).
+    useEffect(() => {
+        if (resendCooldown <= 0) return;
+        const timer = setInterval(() => setResendCooldown((c) => c - 1), 1000);
+        return (): void => clearInterval(timer);
+    }, [resendCooldown]);
 
     // Date picker helpers
     const dateValue = date ? new Date(date + 'T00:00:00') : undefined;
@@ -92,9 +102,30 @@ export function JoinWaitlistForm({ username }: { username: string }): React.Reac
         try {
             const { requestId } = await requestOtp(payload);
             setOtpRequestId(requestId);
+            setOtpError('');
+            setResendCooldown(60);
             setStep('otp');
         } catch (e) {
             setFormError(getErrorMessage(e));
+        }
+    }
+
+    async function handleResendOtp(): Promise<void> {
+        const payload = buildPayload();
+        if (!payload) return;
+        setIsResending(true);
+        setOtpError('');
+        try {
+            const { requestId } = await requestOtp(payload);
+            setOtpRequestId(requestId);
+            setResendCooldown(60);
+            setOtpKey((k) => k + 1);
+            toast.success(t('auth.code_sent'));
+        } catch (e) {
+            // Rate-limit / cooldown hit → surface the server message.
+            setOtpError(getErrorMessage(e));
+        } finally {
+            setIsResending(false);
         }
     }
 
@@ -167,13 +198,37 @@ export function JoinWaitlistForm({ username }: { username: string }): React.Reac
                             digitLabel={t('auth.digit')}
                         />
                         {isJoining && (
-                            <div className="flex justify-center">
+                            <div className="flex justify-center" aria-live="polite">
                                 <SpinnerGap size={20} className="animate-spin text-muted-foreground" />
                             </div>
                         )}
-                        <Button type="button" variant="ghost" className="w-full" onClick={() => setStep('form')}>
-                            {t('waitlist.back')}
-                        </Button>
+                        <div className="flex flex-col items-center gap-1">
+                            {resendCooldown > 0 ? (
+                                <p className="text-sm text-muted-foreground">
+                                    {t('auth.resend_in')}{' '}
+                                    <span className="font-medium tabular-nums">{resendCooldown}s</span>
+                                </p>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleResendOtp}
+                                    disabled={isResending}
+                                    className="text-sm text-primary hover:text-primary/80"
+                                >
+                                    {isResending ? (
+                                        <SpinnerGap size={16} className="mr-1.5 animate-spin" />
+                                    ) : (
+                                        <ArrowClockwise size={16} className="mr-1.5" />
+                                    )}
+                                    {t('auth.resend_code')}
+                                </Button>
+                            )}
+                            <Button type="button" variant="ghost" className="w-full" onClick={() => setStep('form')}>
+                                {t('waitlist.back')}
+                            </Button>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-5">

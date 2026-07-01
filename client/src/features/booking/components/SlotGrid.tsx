@@ -10,9 +10,10 @@ interface SlotGridProps {
     onSelect: (slot: string) => void;
     isLoading: boolean;
     emptyLabel: string;
+    ariaLabel: string;
 }
 
-export function SlotGrid({ slots, selected, onSelect, isLoading, emptyLabel }: SlotGridProps): React.ReactElement {
+export function SlotGrid({ slots, selected, onSelect, isLoading, emptyLabel, ariaLabel }: SlotGridProps): React.ReactElement {
     if (isLoading) {
         return (
             <div className="flex flex-wrap gap-2">
@@ -32,7 +33,7 @@ export function SlotGrid({ slots, selected, onSelect, isLoading, emptyLabel }: S
     }
 
     return (
-        <div className="flex flex-wrap gap-2" role="listbox" aria-label="time slots">
+        <div className="flex flex-wrap gap-2" role="listbox" aria-label={ariaLabel}>
             {slots.map((slot) => {
                 const isActive = slot === selected;
                 return (

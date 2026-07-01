@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { SpinnerGap, Plus, Star, Trash, Heart, Eye, EyeSlash } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ import { getThumbUrl } from '@/lib/utils/image';
 import { ROUTES } from '@/lib/constants/routes';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useMyModelProfile, useModelProfileActions } from '../hooks/useMyModelProfile';
+import { validatePhotoFile } from '../lib/photoValidation';
 import type { ModerationStatus, ModelVerificationStatus } from '../types/faces.types';
 
 const STATUS_VARIANT: Record<ModelVerificationStatus, 'default' | 'secondary' | 'outline' | 'destructive'> = {
@@ -61,8 +63,14 @@ export function ModelDashboard(): React.ReactElement {
 
     function handleFile(e: React.ChangeEvent<HTMLInputElement>): void {
         const file = e.target.files?.[0];
-        if (file) actions.uploadPhoto(file);
         e.target.value = '';
+        if (!file) return;
+        const errorKey = validatePhotoFile(file);
+        if (errorKey) {
+            toast.error(t(errorKey));
+            return;
+        }
+        actions.uploadPhoto(file);
     }
 
     return (
@@ -141,7 +149,13 @@ export function ModelDashboard(): React.ReactElement {
                     {actions.isUploading ? <SpinnerGap size={24} className="animate-spin" /> : <Plus size={24} />}
                     <span className="text-xs">{t('faces.add_photo')}</span>
                 </button>
-                <input ref={fileInput} type="file" accept="image/*" hidden onChange={handleFile} />
+                <input
+                    ref={fileInput}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                    onChange={handleFile}
+                />
             </div>
 
             {/* Actions */}

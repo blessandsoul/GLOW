@@ -12,10 +12,10 @@ export function ShareWaitlistLink({ username }: { username: string }): React.Rea
     const { t } = useLanguage();
     const [copied, setCopied] = useState(false);
 
-    const link =
-        typeof window !== 'undefined'
-            ? `${window.location.origin}${ROUTES.WAITLIST_JOIN(username)}`
-            : ROUTES.WAITLIST_JOIN(username);
+    // `/w/:username` renders the booking flow (which can have open slots). Append the explicit
+    // waitlist intent so the shared link always lands the client on the waitlist form, not booking.
+    const path = `${ROUTES.WAITLIST_JOIN(username)}?waitlist=1`;
+    const link = typeof window !== 'undefined' ? `${window.location.origin}${path}` : path;
 
     async function handleCopy(): Promise<void> {
         try {

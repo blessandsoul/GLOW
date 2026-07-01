@@ -20,25 +20,22 @@ export default function DashboardBookingsPage(): React.ReactElement {
     const { isAuthenticated, user, isInitializing } = useAppSelector((s) => s.auth);
     const [tab, setTab] = useState<TabKey>('bookings');
 
-    useEffect(() => {
-        if (!isInitializing && !isAuthenticated) {
-            router.replace(ROUTES.LOGIN);
-        }
-    }, [isAuthenticated, isInitializing, router]);
+    const allowed = user?.role === 'MASTER' || user?.role === 'ADMIN';
 
     useEffect(() => {
-        if (
-            !isInitializing &&
-            isAuthenticated &&
-            user &&
-            user.role !== 'MASTER' &&
-            user.role !== 'ADMIN'
-        ) {
+        if (isInitializing) return;
+        if (!isAuthenticated) {
+            router.replace(ROUTES.LOGIN);
+            return;
+        }
+        if (!allowed) {
             router.replace(ROUTES.DASHBOARD);
         }
-    }, [isAuthenticated, isInitializing, user, router]);
+    }, [isAuthenticated, isInitializing, allowed, router]);
 
-    if (isInitializing) {
+    // Gate rendering on auth + role so unauthorized users never see the board flash
+    // or fire the 401-bound board queries before the redirect lands.
+    if (isInitializing || !isAuthenticated || !allowed) {
         return (
             <div className="flex min-h-[50vh] items-center justify-center">
                 <SpinnerGap size={24} className="animate-spin text-muted-foreground" />

@@ -1,7 +1,9 @@
 'use client';
 
 import { Heart } from '@phosphor-icons/react';
+import { useAppSelector } from '@/store/hooks';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useToggleInterest } from '../hooks/useFaceInterest';
 
 interface InterestButtonProps {
@@ -11,14 +13,20 @@ interface InterestButtonProps {
     size?: number;
 }
 
-export function InterestButton({ modelId, liked, className, size = 18 }: InterestButtonProps): React.ReactElement {
+export function InterestButton({ modelId, liked, className, size = 18 }: InterestButtonProps): React.ReactElement | null {
+    const { t } = useLanguage();
+    const role = useAppSelector((s) => s.auth.user?.role);
     const { toggle, isPending } = useToggleInterest();
+
+    // Admins moderate the catalog, they don't express interest — the interest API
+    // forbids them (403/404). Hide the control entirely so no error toast can fire.
+    if (role === 'ADMIN') return null;
 
     return (
         <button
             type="button"
             aria-pressed={liked}
-            aria-label={liked ? 'Remove interest' : 'Express interest'}
+            aria-label={liked ? t('faces.interest_remove') : t('faces.interest_add')}
             disabled={isPending}
             onClick={(e) => {
                 e.preventDefault();

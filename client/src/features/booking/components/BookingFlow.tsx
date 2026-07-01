@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { SpinnerGap, CheckCircle, CalendarCheck, Wallet } from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { SpinnerGap, CheckCircle, CalendarCheck, Wallet, ArrowClockwise } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +24,7 @@ import { getErrorMessage } from '@/lib/utils/error';
 import { ROUTES } from '@/lib/constants/routes';
 import { useBookingInfo, useBookingSlots, useBookingActions } from '../hooks/useBooking';
 import { SlotGrid } from './SlotGrid';
+import type { SupportedLanguage } from '@/i18n/config';
 import type { RequestOtpPayload, BookResult } from '../types/booking.types';
 
 type Step = 'pick' | 'otp' | 'done';
@@ -36,12 +38,18 @@ function toISODate(d: Date): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-export function BookingFlow({ username }: { username: string }): React.ReactElement {
-    const { t } = useLanguage();
+export function BookingFlow({
+    username,
+    initialWaitlist = false,
+}: {
+    username: string;
+    initialWaitlist?: boolean;
+}): React.ReactElement {
+    const { t, language } = useLanguage();
     const { data: info, isLoading, isError } = useBookingInfo(username);
     const { requestOtp, book, isRequestingOtp, isBooking } = useBookingActions(username);
 
-    const [waitlistMode, setWaitlistMode] = useState(false);
+    const [waitlistMode, setWaitlistMode] = useState(initialWaitlist);
     const [step, setStep] = useState<Step>('pick');
     const [serviceName, setServiceName] = useState('');
     const [day, setDay] = useState<Date | undefined>(undefined);
@@ -53,8 +61,25 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
     const [otpError, setOtpError] = useState('');
     const [otpRequestId, setOtpRequestId] = useState('');
     const [otpKey, setOtpKey] = useState(0);
+    const [resendCooldown, setResendCooldown] = useState(0);
+    const [isResending, setIsResending] = useState(false);
     const [result, setResult] = useState<BookResult | null>(null);
     const [redirecting, setRedirecting] = useState(false);
+    const [redirectStalled, setRedirectStalled] = useState(false);
+
+    // Count the OTP resend cooldown down to 0 (matches VerifyPhoneForm's 60s rail).
+    useEffect(() => {
+        if (resendCooldown <= 0) return;
+        const timer = setInterval(() => setResendCooldown((c) => c - 1), 1000);
+        return (): void => clearInterval(timer);
+    }, [resendCooldown]);
+
+    // If the Flitt hand-off stalls, surface a retry/back affordance after 8s.
+    useEffect(() => {
+        if (!redirecting) return;
+        const timer = setTimeout(() => setRedirectStalled(true), 8000);
+        return (): void => clearTimeout(timer);
+    }, [redirecting]);
 
     const isoDate = day ? toISODate(day) : null;
     const { data: slotData, isLoading: slotsLoading } = useBookingSlots(
@@ -106,10 +131,37 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
         try {
             const { requestId } = await requestOtp(payload);
             setOtpRequestId(requestId);
+            setOtpError('');
+            setResendCooldown(60);
             setStep('otp');
         } catch (e) {
             setFormError(getErrorMessage(e));
         }
+    }
+
+    async function handleResendOtp(): Promise<void> {
+        const payload = buildPayload();
+        if (!payload) return;
+        setIsResending(true);
+        setOtpError('');
+        try {
+            const { requestId } = await requestOtp(payload);
+            setOtpRequestId(requestId);
+            setResendCooldown(60);
+            setOtpKey((k) => k + 1);
+            toast.success(t('auth.code_sent'));
+        } catch (e) {
+            // Rate-limit / cooldown hit → surface the server message so the user isn't left guessing.
+            setOtpError(getErrorMessage(e));
+        } finally {
+            setIsResending(false);
+        }
+    }
+
+    function startCheckout(url: string): void {
+        setRedirecting(true);
+        setRedirectStalled(false);
+        window.location.href = url; // hand off to the Flitt checkout page
     }
 
     async function handleOtpComplete(code: string): Promise<void> {
@@ -121,16 +173,29 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
         }
         try {
             const res = await book({ ...payload, otpRequestId, code });
-            if (res.redirectUrl) {
-                setRedirecting(true);
-                window.location.href = res.redirectUrl; // hand off to the Flitt checkout page
+            setResult(res);
+            if (res.prepaymentRequired && res.redirectUrl) {
+                startCheckout(res.redirectUrl);
                 return;
             }
+            // prepaymentRequired but no redirect URL = off-platform path (or gateway off):
+            // fall through to the success screen, which shows the pay-to instructions.
             setResult(res);
             setStep('done');
         } catch (e) {
             setOtpError(getErrorMessage(e));
             setOtpKey((k) => k + 1);
+        }
+    }
+
+    function retryCheckout(): void {
+        if (result?.redirectUrl) {
+            startCheckout(result.redirectUrl);
+        } else {
+            // No URL to retry with — return the user to the picker so they can rebook.
+            setRedirecting(false);
+            setRedirectStalled(false);
+            setStep('pick');
         }
     }
 
@@ -173,7 +238,7 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
 
             <CardContent className="px-6 pb-8 sm:px-8">
                 {step === 'done' && result ? (
-                    <BookingDone result={result} t={t} />
+                    <BookingDone result={result} t={t} language={language} />
                 ) : step === 'otp' ? (
                     <div className="space-y-6">
                         {otpError && <ErrorBox message={otpError} />}
@@ -182,22 +247,68 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
                             key={otpKey}
                             onComplete={handleOtpComplete}
                             error={otpError || null}
-                            disabled={isBooking}
+                            disabled={isBooking || redirecting}
                             digitLabel={t('auth.digit')}
                         />
                         {(isBooking || redirecting) && (
-                            <div className="flex flex-col items-center gap-2">
-                                <SpinnerGap size={20} className="animate-spin text-muted-foreground" />
-                                {redirecting && (
+                            <div className="flex flex-col items-center gap-2" aria-live="polite">
+                                {!redirectStalled && <SpinnerGap size={20} className="animate-spin text-muted-foreground" />}
+                                {redirecting && !redirectStalled && (
                                     <p className="text-sm text-muted-foreground">{t('booking.redirecting')}</p>
+                                )}
+                                {redirectStalled && (
+                                    <p className="text-center text-sm text-muted-foreground">{t('booking.redirect_stalled')}</p>
                                 )}
                             </div>
                         )}
-                        {!redirecting && (
-                            <Button type="button" variant="ghost" className="w-full" onClick={() => setStep('pick')}>
-                                {t('booking.back')}
-                            </Button>
-                        )}
+                        {redirectStalled ? (
+                            <div className="flex flex-col gap-2">
+                                <Button type="button" className="w-full" onClick={retryCheckout}>
+                                    <ArrowClockwise size={16} className="mr-2" />
+                                    {t('booking.retry_payment')}
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    className="w-full"
+                                    onClick={() => {
+                                        setRedirecting(false);
+                                        setRedirectStalled(false);
+                                        setStep('pick');
+                                    }}
+                                >
+                                    {t('booking.back')}
+                                </Button>
+                            </div>
+                        ) : !redirecting ? (
+                            <div className="flex flex-col items-center gap-1">
+                                {resendCooldown > 0 ? (
+                                    <p className="text-sm text-muted-foreground">
+                                        {t('auth.resend_in')}{' '}
+                                        <span className="font-medium tabular-nums">{resendCooldown}s</span>
+                                    </p>
+                                ) : (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleResendOtp}
+                                        disabled={isResending}
+                                        className="text-sm text-primary hover:text-primary/80"
+                                    >
+                                        {isResending ? (
+                                            <SpinnerGap size={16} className="mr-1.5 animate-spin" />
+                                        ) : (
+                                            <ArrowClockwise size={16} className="mr-1.5" />
+                                        )}
+                                        {t('auth.resend_code')}
+                                    </Button>
+                                )}
+                                <Button type="button" variant="ghost" className="w-full" onClick={() => setStep('pick')}>
+                                    {t('booking.back')}
+                                </Button>
+                            </div>
+                        ) : null}
                     </div>
                 ) : (
                     <div className="space-y-5">
@@ -254,6 +365,7 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
                                     onSelect={setSlot}
                                     isLoading={slotsLoading}
                                     emptyLabel={emptyLabel}
+                                    ariaLabel={t('booking.slots_aria')}
                                 />
                                 {!slotsLoading && (slotData?.slots.length ?? 0) === 0 && (
                                     <Button
@@ -299,6 +411,19 @@ export function BookingFlow({ username }: { username: string }): React.ReactElem
                                 t('booking.submit')
                             )}
                         </Button>
+
+                        {/* Always reachable: the waitlist must not depend on the master having zero slots. */}
+                        <div className="border-t border-border/50 pt-4 text-center">
+                            <p className="text-sm text-muted-foreground">{t('booking.waitlist_prompt')}</p>
+                            <Button
+                                type="button"
+                                variant="link"
+                                className="h-auto p-0 text-sm font-medium"
+                                onClick={() => setWaitlistMode(true)}
+                            >
+                                {t('booking.join_waitlist')}
+                            </Button>
+                        </div>
                     </div>
                 )}
             </CardContent>
@@ -362,22 +487,40 @@ function BookingDetails({ name, phone, consent, onName, onPhone, onConsent, t }:
     );
 }
 
-function BookingDone({ result, t }: { result: BookResult; t: (key: string) => string }): React.ReactElement {
+function formatBookingDate(iso: string, language: SupportedLanguage): string {
+    // result.date is a YYYY-MM-DD (or ISO datetime) string — render it in the active locale.
+    const d = new Date(iso.length <= 10 ? `${iso}T00:00:00` : iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    const locale = language === 'ka' ? 'ka-GE' : language === 'ru' ? 'ru-RU' : 'en-US';
+    return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+}
+
+function BookingDone({
+    result,
+    t,
+    language,
+}: {
+    result: BookResult;
+    t: (key: string) => string;
+    language: SupportedLanguage;
+}): React.ReactElement {
     return (
         <div className="flex flex-col items-center gap-3 py-6 text-center">
             <CheckCircle size={48} weight="fill" className="text-success" />
             <h2 className="text-lg font-semibold text-foreground">{t('booking.success_title')}</h2>
             <p className="text-sm text-muted-foreground tabular-nums">
-                {result.date} · {result.startTime}-{result.endTime} · {result.serviceName}
+                {formatBookingDate(result.date, language)} · {result.startTime}-{result.endTime} · {result.serviceName}
             </p>
             {result.prepaymentRequired ? (
                 <div className="mt-2 w-full space-y-2 rounded-xl border border-warning/30 bg-warning/5 p-4 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                         <Wallet size={18} weight="fill" className="text-warning" />
-                        {t(result.paymentMode === 'FULL' ? 'booking.full_title' : 'booking.deposit_title').replace(
-                            '{{amount}}',
-                            String(result.prepaymentAmount ?? ''),
-                        )}
+                        {typeof result.prepaymentAmount === 'number'
+                            ? t(result.paymentMode === 'FULL' ? 'booking.full_title' : 'booking.deposit_title').replace(
+                                  '{{amount}}',
+                                  String(result.prepaymentAmount),
+                              )
+                            : t(result.paymentMode === 'FULL' ? 'booking.full_title_noamount' : 'booking.deposit_title_noamount')}
                     </div>
                     <p className="text-sm text-muted-foreground">
                         {t(result.paymentMode === 'FULL' ? 'booking.full_desc' : 'booking.deposit_desc')}
