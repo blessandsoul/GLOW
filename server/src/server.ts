@@ -7,6 +7,7 @@ import { emailWorker } from '@/libs/queue.js';
 import { subscriptionWorker, startSubscriptionRenewalSchedule } from '@/libs/subscription-worker.js';
 import { decorationWorker, startDecorationReplenishmentSchedule } from '@/libs/decoration-worker.js';
 import { waitlistWorker, startWaitlistExpirySchedule } from '@/libs/waitlist-worker.js';
+import { bookingPaymentSweepWorker, startBookingPaymentSweepSchedule } from '@/libs/booking-payment-sweep-worker.js';
 import { jobsService } from '@/modules/jobs/jobs.service.js';
 
 async function main(): Promise<void> {
@@ -18,6 +19,7 @@ async function main(): Promise<void> {
     await subscriptionWorker.close();
     await decorationWorker.close();
     await waitlistWorker.close();
+    await bookingPaymentSweepWorker.close();
   });
 
   // Connect Database
@@ -58,6 +60,10 @@ async function main(): Promise<void> {
 
     startWaitlistExpirySchedule().catch((err) => {
       logger.warn({ err }, 'Failed to start waitlist expiry schedule');
+    });
+
+    startBookingPaymentSweepSchedule().catch((err) => {
+      logger.warn({ err }, 'Failed to start booking payment sweep schedule');
     });
   }
 
