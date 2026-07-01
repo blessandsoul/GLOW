@@ -46,9 +46,9 @@ export const facesController = {
   },
 
   async getInterestStatus(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    // Schema validates + caps + UUID-checks; it yields a ready string[] of model ids.
     const { modelIds } = InterestStatusQuerySchema.parse(request.query);
-    const ids = modelIds ? modelIds.split(',').filter(Boolean) : [];
-    const status = await facesService.getInterestStatus(request.user!.id, ids);
+    const status = await facesService.getInterestStatus(request.user!.id, modelIds);
     reply.send(successResponse('Interest status retrieved', status));
   },
 

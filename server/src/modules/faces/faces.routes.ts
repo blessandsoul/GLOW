@@ -15,9 +15,14 @@ export async function facesRoutes(app: FastifyInstance): Promise<void> {
   app.delete('/photos/:photoId', { preHandler: ownerGuard }, facesController.deletePhoto);
   app.patch('/photos/:photoId/primary', { preHandler: ownerGuard }, facesController.setPrimaryPhoto);
   app.post('/request-review', { preHandler: ownerGuard }, facesController.requestReview);
-  app.post('/blur', { preHandler: [authenticate] }, facesController.blur);
-  app.post('/unblur', { preHandler: [authenticate] }, facesController.unblur);
-  app.post('/withdraw', { preHandler: [authenticate] }, facesController.withdraw);
+  // State-changing model self-service actions use the same ownerGuard (authenticate +
+  // requirePhoneVerified) as the other model routes above — previously blur/unblur/withdraw
+  // ran on bare authenticate, letting an unverified account mutate its model profile state.
+  // (There is no distinct MODEL role in this app; a "model" is any user with a ModelProfile,
+  // and the service already scopes every action to the caller's own profile.)
+  app.post('/blur', { preHandler: ownerGuard }, facesController.blur);
+  app.post('/unblur', { preHandler: ownerGuard }, facesController.unblur);
+  app.post('/withdraw', { preHandler: ownerGuard }, facesController.withdraw);
 
   // ── Admin moderation ──
   app.get('/admin/pending', { preHandler: adminGuard }, facesController.adminGetPending);

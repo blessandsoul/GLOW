@@ -96,7 +96,9 @@ export const facesRepo = {
       prisma.modelProfile.findMany({
         where,
         select: CARD_SELECT,
-        orderBy: [{ interestedBy: { _count: 'desc' } }, { updatedAt: 'desc' }],
+        // `id` is the final tiebreaker so rows with equal interest-count + updatedAt keep a
+        // stable order across skip/take pages (otherwise a page boundary can repeat/drop a row).
+        orderBy: [{ interestedBy: { _count: 'desc' } }, { updatedAt: 'desc' }, { id: 'asc' }],
         skip,
         take: filters.limit,
       }),
@@ -176,12 +178,32 @@ export const facesRepo = {
   async findPhotoById(photoId: string) {
     return prisma.modelPhoto.findUnique({
       where: { id: photoId },
-      select: { id: true, modelProfileId: true, imageUrl: true },
+      select: { id: true, modelProfileId: true, imageUrl: true, isPrimary: true, moderationStatus: true },
     });
   },
 
-  async deletePhoto(photoId: string) {
-    return prisma.modelPhoto.delete({ where: { id: photoId } });
+  // Delete a photo and, if it was the primary, promote a replacement in ONE transaction so
+  // the profile never ends up with zero primaries. Replacement = the remaining photo with the
+  // lowest sortOrder, preferring an APPROVED one (only APPROVED photos are ever shown publicly).
+  async deletePhoto(photoId: string, modelProfileId: string, wasPrimary: boolean) {
+    return prisma.$transaction(async (tx) => {
+      await tx.modelPhoto.delete({ where: { id: photoId } });
+      if (!wasPrimary) return;
+      const next =
+        (await tx.modelPhoto.findFirst({
+          where: { modelProfileId, moderationStatus: 'APPROVED' },
+          orderBy: { sortOrder: 'asc' },
+          select: { id: true },
+        })) ??
+        (await tx.modelPhoto.findFirst({
+          where: { modelProfileId },
+          orderBy: { sortOrder: 'asc' },
+          select: { id: true },
+        }));
+      if (next) {
+        await tx.modelPhoto.update({ where: { id: next.id }, data: { isPrimary: true } });
+      }
+    });
   },
 
   async setPrimaryPhoto(modelProfileId: string, photoId: string) {
@@ -289,7 +311,8 @@ export const facesRepo = {
         where,
         skip,
         take: limit,
-        orderBy: { updatedAt: 'asc' },
+        // `id` tiebreaker keeps the moderation queue stable across paginated fetches.
+        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
         select: {
           id: true,
           userId: true,

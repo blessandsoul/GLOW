@@ -46,8 +46,17 @@ export const PhotoReviewSchema = z.object({
   status: z.enum(['APPROVED', 'REJECTED']),
 });
 
+// modelIds is a comma-separated list; cap the count and validate each is a UUID so a caller
+// can't probe an unbounded/garbage id set in one request. Parsed here (not in the controller)
+// so the bound and shape are enforced by Zod and surface as a 422, consistent with the rest.
+export const MAX_INTEREST_STATUS_IDS = 100;
+
 export const InterestStatusQuerySchema = z.object({
-  modelIds: z.string().optional(),
+  modelIds: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : []))
+    .pipe(z.array(z.string().uuid()).max(MAX_INTEREST_STATUS_IDS)),
 });
 
 export const AdminPendingQuerySchema = z.object({

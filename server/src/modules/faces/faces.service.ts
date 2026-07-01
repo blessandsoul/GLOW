@@ -2,6 +2,7 @@ import { logger } from '@/libs/logger.js';
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '@/shared/errors/errors.js';
 import { sendSms } from '@/libs/otp.js';
 import { deleteFile } from '@/libs/storage.js';
+import { assertContactRevealAllowed } from '@/shared/rate-limit/reveal-throttle.js';
 import { facesRepo } from './faces.repo.js';
 import type { CatalogQueryInput, UpdateModelProfileInput } from './faces.schemas.js';
 
@@ -82,6 +83,8 @@ export const facesService = {
   },
 
   // ── Interest ──
+  // Expressing interest ("liking") a model unlocks her private contact for this master.
+  // It is the actual contact-reveal action, so it is throttled per-master and audited.
   async addInterest(userId: string, modelProfileId: string) {
     const model = await facesRepo.findVerificationStatus(modelProfileId);
     if (!model || model.verificationStatus !== 'VERIFIED') {
@@ -91,7 +94,13 @@ export const facesService = {
     if (existing) {
       throw new ConflictError('You already expressed interest', 'ALREADY_INTERESTED');
     }
-    return facesRepo.addInterest(userId, modelProfileId);
+    // Bound how many distinct models a single master can unlock per window (anti-harvest).
+    await assertContactRevealAllowed(userId);
+    const result = await facesRepo.addInterest(userId, modelProfileId);
+    // Audit trail: the FavoriteModel row itself (userId + modelProfileId + createdAt) is the
+    // durable record; this line makes each reveal visible in the app logs as well.
+    logger.info({ userId, modelProfileId }, 'Contact revealed via interest');
+    return result;
   },
 
   async removeInterest(userId: string, modelProfileId: string) {
@@ -150,8 +159,10 @@ export const facesService = {
     if (photo.modelProfileId !== own.id) {
       throw new ForbiddenError('You do not own this photo', 'NOT_OWNER');
     }
+    // Delete + (if this was the primary) promote a replacement atomically, so the profile
+    // never loses its primary photo. File removal happens after the DB txn commits.
+    await facesRepo.deletePhoto(photoId, own.id, photo.isPrimary);
     await deleteFile(photo.imageUrl);
-    await facesRepo.deletePhoto(photoId);
   },
 
   async setPrimaryPhoto(userId: string, photoId: string) {
@@ -162,6 +173,11 @@ export const facesService = {
     const photo = await facesRepo.findPhotoById(photoId);
     if (!photo || photo.modelProfileId !== own.id) {
       throw new ForbiddenError('You do not own this photo', 'NOT_OWNER');
+    }
+    // Only an APPROVED photo may be made primary — the primary is the card/detail hero, and
+    // a PENDING/REJECTED image must never be surfaced as the public face of the profile.
+    if (photo.moderationStatus !== 'APPROVED') {
+      throw new BadRequestError('Only an approved photo can be set as primary', 'PHOTO_NOT_APPROVED');
     }
     await facesRepo.setPrimaryPhoto(own.id, photoId);
   },
