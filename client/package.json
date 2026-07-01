@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "fetch-covers": "node scripts/fetch-covers.mjs",
     "fetch-covers:force": "node scripts/fetch-covers.mjs --force"
   },

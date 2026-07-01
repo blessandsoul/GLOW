@@ -26,6 +26,8 @@
     "db:truncate": "tsx prisma/truncate.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:api": "vitest run -c vitest.api.config.ts",
+    "test:pentest": "vitest run -c vitest.pentest.config.ts",
     "lint": "eslint src/",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
