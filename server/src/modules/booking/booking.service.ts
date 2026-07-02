@@ -309,8 +309,8 @@ export function createBookingService() {
           const redirectUrl = await createFlittCheckout({
             orderId: payment.id,
             amountGel: amount!,
-            description: `${input.serviceName} ${dateKey(date)} ${input.startTime}`,
-            responseUrl: `${env.APP_URL}/booking/return?b=${booking.id}`,
+            description: `Glow Booking ${booking.id.slice(0, 8)}`,
+            responseUrl: `${env.APP_URL}/booking/return`,
             serverCallbackUrl: `${env.PUBLIC_SERVER_URL}/api/v1/booking/payment/callback`,
           });
           logger.info({ username, bookingId: booking.id, paymentId: payment.id }, 'Booking awaiting payment');

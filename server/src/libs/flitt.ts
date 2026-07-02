@@ -7,7 +7,7 @@ import { logger } from '@/libs/logger.js';
 // Signature = sha1( secret_key | non-empty-param-values-sorted-by-key, joined by "|" ), lowercase.
 // "signature" and "response_signature_string" are excluded from the calculation.
 
-const FLITT_VERSION = '1.0.1';
+const FLITT_VERSION = '1.0';
 
 export interface FlittCheckoutParams {
   orderId: string;
@@ -42,13 +42,15 @@ export async function createFlittCheckout(p: FlittCheckoutParams): Promise<strin
   const request: Record<string, unknown> = {
     version: FLITT_VERSION,
     order_id: p.orderId,
-    merchant_id: env.FLITT_MERCHANT_ID,
+    merchant_id: String(env.FLITT_MERCHANT_ID),
     order_desc: p.description,
-    amount: Math.round(p.amountGel * 100), // Flitt amount is in coins (GEL x 100)
+    amount: String(Math.round(p.amountGel * 100)), // Flitt amount is in coins (GEL x 100)
     currency: p.currency ?? 'GEL',
     response_url: p.responseUrl,
     server_callback_url: p.serverCallbackUrl,
   };
+  const sigBase = flittSignatureBase(env.FLITT_SECRET_KEY, request);
+  logger.info({ sigBase, signature: flittSignature(env.FLITT_SECRET_KEY, request) }, 'Calculated Flitt signature details');
   request.signature = flittSignature(env.FLITT_SECRET_KEY, request);
 
   const res = await fetch(env.FLITT_API_URL, {

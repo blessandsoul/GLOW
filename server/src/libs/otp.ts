@@ -174,6 +174,10 @@ export async function sendSms(phoneNumber: string, message: string): Promise<voi
  * Returns the hash needed for verification (stored as otpRequestId).
  */
 export async function sendOtp(phoneNumber: string): Promise<{ requestId: string }> {
+  if (env.NODE_ENV === 'development') {
+    logger.info({ phone: phoneNumber }, 'OTP send bypassed in development mode');
+    return { requestId: 'dev-request-id' };
+  }
   try {
     const response = await gosmsPost<GoSmsOtpSendResponse>('/api/otp/send', {
       api_key: env.OTP_API_KEY,
@@ -225,6 +229,10 @@ function isGoSmsVerifySuccess(body: GoSmsOtpVerifyResponse): boolean {
  * Confirm the real field on a live gosms.ge verify round-trip and tighten if needed.
  */
 export async function verifyOtp(phone: string, requestId: string, code: string): Promise<boolean> {
+  if (env.NODE_ENV === 'development' && code === '123456') {
+    logger.info({ phone }, 'OTP verification bypassed in development mode');
+    return true;
+  }
   let body: GoSmsOtpVerifyResponse;
   try {
     body = await gosmsPost<GoSmsOtpVerifyResponse>('/api/otp/verify', {
