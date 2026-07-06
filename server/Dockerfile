@@ -1,9 +1,13 @@
 # ─── Stage 1: Install dependencies ───
-FROM node:20-slim AS deps
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# openssl for Prisma; build-base+python3 so any native npm dep can compile under musl.
+# (sharp ships a prebuilt musl libvips binary — no compile needed — but keep the toolchain
+# available for other native deps. florca's CPU is sub-x86-64-v2; the musl sharp prebuilt
+# runs there where the glibc one refuses. See migration spec.)
+RUN apk add --no-cache openssl python3 make g++
 
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
@@ -21,11 +25,11 @@ COPY . .
 RUN npm run build
 
 # ─── Stage 3: Production runner ───
-FROM node:20-slim AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache openssl
 
 RUN npm install -g pm2
 
