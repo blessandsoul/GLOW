@@ -25,19 +25,29 @@ untouched rollback until the operator is satisfied.
 - Redis is **pure cache** → florca starts with empty Redis (nothing copied).
 - Cutover downtime window ~5–15 min is acceptable.
 
-## Step 0 — AVX gate (BLOCKING)
+## Step 0 — sharp/CPU prerequisite (RESOLVED 2026-07-06, not a blocker)
 
-florca's CPU has **no AVX** (QEMU qemu64, SSE3 only) — this already killed mshenebeli's Skia PDF path
-(SIGILL). GLOW's server uses **`sharp`** (native libvips/SIMD) in `server/src/libs/storage.ts`,
-`server/src/libs/watermark.ts`, `server/src/modules/images/images.service.ts` — image upload +
-watermark is **core** functionality.
+florca's CPU is emulated **sub-x86-64-v2** (has sse3/cx16, missing ssse3/sse4/popcnt/avx). Investigated
+(and a first false alarm corrected — see memory `florca-cpu-no-avx-skia-sigill`):
 
-**Gate:** before anything else, run a minimal `sharp` resize + watermark on florca (node container on
-the real CPU, on a real GLOW-style image). 
-- **Green** → proceed.
-- **SIGILL / Illegal instruction** → **STOP.** Migration blocked until we either rebuild libvips for
-  the CPU baseline, use a non-SIMD sharp/libvips build, or swap the image-processing path. Do not
-  provision anything until this passes.
+- **Verified fact:** the **glibc** sharp ≥0.33 prebuilt (`@img/sharp-linux-x64`) hard-refuses to load on
+  this CPU (`require v2 microarchitecture`). GLOW ships `sharp ^0.34.5` on a **glibc** base
+  (`server/Dockerfile` = `FROM node:20-slim`), so **as-built GLOW would fail to boot on florca**.
+- **Also verified:** the **musl/Alpine** sharp prebuilt (`@img/sharp-linuxmusl-x64`, libvips 8.17 +
+  Highway runtime SIMD dispatch) runs **sharp 0.34.5 fine on florca** — proven by multiple live Coolify
+  apps already on florca (`require('sharp')` + real `.resize().blur().jpeg()` = `PROCESS-OK`).
+
+**So this is a one-time build tweak, not a CPU wall.** Before provisioning GLOW on florca, apply ONE of
+(operator's choice, tracked as a pre-req task):
+- **(a) Switch GLOW server image `node:20-slim` → `node:20-alpine`** — matches the apps already working
+  on florca. Also requires flipping Prisma `binaryTargets` to `linux-musl-openssl-3.0.x` and
+  re-validating any other native deps under musl.
+- **(b) Pin `sharp` to `0.32.6`** (glibc prebuilt loads on sub-v2) — smallest diff; older sharp.
+- **(c) Keep glibc, build sharp from system libvips** (`apt-get install libvips-dev` + build-from-source
+  / `SHARP_FORCE_GLOBAL_LIBVIPS=1`) — keeps 0.34.5; heavier build image.
+
+Gate: after the chosen tweak, deploy on florca and confirm image upload + watermark actually process
+(not just load). No hypervisor/CPU-model change or host reboot is required.
 
 ## Phase 1 — stand up on florca (fake domain)
 
@@ -90,7 +100,8 @@ Split into two operator-approved runs (empty first, then data).
 
 ## Open items / risks
 
-- **AVX/sharp (Step 0)** — the whole migration is gated on this. Highest risk.
+- **sharp/CPU (Step 0)** — RESOLVED: not a blocker, needs a one-time GLOW build tweak (Alpine base, or
+  pin sharp, or build-from-source) because GLOW is glibc-slim + sharp ≥0.33 on florca's sub-v2 CPU.
 - **florca capacity** — healthy now (7.6 GiB avail, ~181 GB disk free); GLOW + its MySQL/Redis must fit
   alongside existing florca tenants (mshenebeli etc.). Re-check headroom after provisioning.
 - **Data drift between Phase 1 copy and Phase 2 cutover** — resolved by the Phase-2 final re-sync +
