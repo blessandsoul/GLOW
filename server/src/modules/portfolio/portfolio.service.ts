@@ -119,7 +119,7 @@ export function createPortfolioService() {
     },
 
     async getPublicPortfolio(username: string) {
-      let user = await portfolioRepo.findUserByUsername(username);
+      const user = await portfolioRepo.findUserByUsername(username);
 
       // Check if this is an old username that should redirect
       if (!user) {
@@ -152,6 +152,9 @@ export function createPortfolioService() {
         niche: profile?.niche ?? null,
         workAddress: profile?.workAddress ?? null,
         services: profile?.services ?? [],
+        bookingEnabled: profile?.bookingEnabled ?? false,
+        bookingPaymentMode: profile?.bookingPaymentMode ?? 'NONE',
+        bookingPrepaymentAmount: profile?.bookingPrepaymentAmount ?? null,
         masterTier: profile?.masterTier ?? 'JUNIOR',
         isVerified: profile?.verificationStatus === 'VERIFIED',
         badges: {

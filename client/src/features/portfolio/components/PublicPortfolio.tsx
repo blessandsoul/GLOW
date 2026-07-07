@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
     ArrowLeft, Share, InstagramLogo, PaperPlaneTilt,
@@ -23,6 +24,7 @@ import { useFavoriteStatus } from '@/features/favorites/hooks/useFavorites';
 import { MasterProductsSection } from '@/features/marketplace/components/MasterProductsSection';
 import type { PublicPortfolioData } from '../types/portfolio.types';
 import { cn } from '@/lib/utils';
+import { ROUTES } from '@/lib/constants/routes';
 
 interface PublicPortfolioProps {
     username: string;
@@ -60,7 +62,24 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
 
     const isFavorited = masterProfileId ? favoriteStatus?.masters?.[masterProfileId] ?? false : false;
     const lightboxImages = portfolio.items.map((item) => ({ imageUrl: item.imageUrl, title: item.title }));
-    const hasContacts = portfolio.instagram || portfolio.whatsapp || portfolio.telegram;
+    const hasContacts = Boolean(portfolio.instagram || portfolio.whatsapp || portfolio.telegram);
+    const hasOnlineBooking = portfolio.bookingEnabled === true;
+    const showStickyCta = !isOwnProfile && (hasOnlineBooking || hasContacts);
+    const ctaText = (key: string, kaFallback: string): string => (
+        language === 'en' ? t(key) : kaFallback
+    );
+    const stickyCtaLabel = hasOnlineBooking
+        ? portfolio.bookingPaymentMode === 'FULL'
+            ? ctaText('portfolio.book_and_pay', 'ჩაწერა და გადახდა')
+            : portfolio.bookingPaymentMode === 'DEPOSIT'
+                ? typeof portfolio.bookingPrepaymentAmount === 'number'
+                    ? ctaText(
+                        'portfolio.book_with_deposit',
+                        'ჩაწერა · დეპოზიტი {{amount}}₾',
+                    ).replace('{{amount}}', String(portfolio.bookingPrepaymentAmount))
+                    : ctaText('portfolio.book_with_deposit_noamount', 'ჩაწერა · დეპოზიტი')
+                : ctaText('portfolio.book_online', 'ონლაინ ჩაწერა')
+        : ctaText('portfolio.contact_book', 'ჩაწერა / დაკავშირება');
 
     return (
         <>
@@ -134,24 +153,31 @@ export function PublicPortfolio({ username }: PublicPortfolioProps): React.React
                     <ReviewForm masterId={portfolio.userId} />
                     <p className="text-center text-xs text-muted-foreground pb-4">
                         {t('ui.text_r4tl4y')}{' '}
-                        <a href="/" className="font-medium text-primary hover:underline">Glow.GE</a>
+                        <Link href={ROUTES.HOME} className="font-medium text-primary hover:underline">Glow.GE</Link>
                     </p>
                 </div>
             </main>
 
             {/* Sticky booking bar */}
-            {hasContacts && !isOwnProfile && (
+            {showStickyCta && (
                 <div className="fixed bottom-0 inset-x-0 z-50 p-4 flex justify-center">
                     <motion.button
                         type="button"
-                        onClick={() => setBookingOpen(true)}
-                        className="flex items-center gap-3 bg-primary text-primary-foreground px-10 py-4 rounded-2xl shadow-xl shadow-primary/25 text-sm font-semibold tracking-wide cursor-pointer active:scale-95 transition-transform"
+                        onClick={() => {
+                            if (hasOnlineBooking) {
+                                router.push(ROUTES.WAITLIST_JOIN(portfolio.username));
+                            } else {
+                                setBookingOpen(true);
+                            }
+                        }}
+                        className="flex max-w-[calc(100vw-2rem)] cursor-pointer items-center justify-center gap-3 rounded-2xl bg-primary px-6 py-4 text-center text-sm font-semibold tracking-wide text-primary-foreground shadow-xl shadow-primary/25 transition-transform active:scale-95 sm:px-10"
                         initial={{ y: 80, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 30 }}
+                        aria-label={stickyCtaLabel}
                     >
                         <CalendarBlank size={18} weight="fill" />
-                        ჩაწერა / დაკავშირება
+                        <span className="min-w-0 truncate">{stickyCtaLabel}</span>
                     </motion.button>
                 </div>
             )}

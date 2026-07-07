@@ -44,6 +44,9 @@ export interface PublicPortfolioData {
     niche: string | null;
     workAddress: string | null;
     services: { name: string; price: number; priceType?: 'fixed' | 'hourly'; startingFrom?: boolean }[];
+    bookingEnabled?: boolean;
+    bookingPaymentMode?: 'NONE' | 'DEPOSIT' | 'FULL';
+    bookingPrepaymentAmount?: number | null;
     items: PortfolioItem[];
     reviews: PublicReview[];
     reviewsCount: number;
