@@ -101,7 +101,7 @@ function buildWhere(opts?: {
   styleTagSlug?: string;
   bounds?: { swLat: number; swLng: number; neLat: number; neLng: number };
 }): Prisma.UserWhereInput {
-  const profileConditions: Record<string, unknown> = {};
+  const profileConditions: Record<string, unknown> = { isReviewProfile: false };
   if (opts?.niche) profileConditions.niche = opts.niche;
   if (opts?.city) {
     const cities = opts.city.split(',').map((c) => c.trim().toLowerCase()).filter(Boolean);
@@ -222,6 +222,7 @@ export const mastersRepo = {
       by: ['niche'],
       where: {
         niche: { not: null },
+        isReviewProfile: false,
         user: {
           isActive: true,
           deletedAt: null,
@@ -250,6 +251,7 @@ export const mastersRepo = {
       masterProfile: {
         is: {
           verificationStatus: 'VERIFIED',
+          isReviewProfile: false,
           ...(niche ? { niche } : {}),
         },
       },

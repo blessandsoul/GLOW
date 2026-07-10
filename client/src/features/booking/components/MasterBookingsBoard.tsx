@@ -113,7 +113,7 @@ function BookingRow({ booking, t }: { booking: MasterBooking; t: (key: string) =
 
                 {open && (
                     <div className="flex shrink-0 flex-wrap gap-2">
-                        {booking.depositStatus === 'AWAITING' && (
+                        {booking.paymentChannel === 'MANUAL' && booking.depositStatus === 'AWAITING' && (
                             <Button size="sm" variant="default" disabled={busy} onClick={() => markReceived(booking.id)}>
                                 {t('booking.action_deposit_received')}
                             </Button>

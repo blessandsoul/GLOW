@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 import { env } from '@/config/env.js';
 import { logger } from '@/libs/logger.js';
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '@/shared/errors/errors.js';
@@ -13,6 +14,9 @@ import {
 import { tbilisiNow } from '@/shared/time/tbilisi.js';
 import { assertOtpPhoneAllowed } from '@/shared/rate-limit/otp-throttle.js';
 import { bookingRepo } from './booking.repo.js';
+import { createBookingManageToken, hashBookingManageToken } from '@/modules/payments/manage-token.js';
+import { paymentsService } from '@/modules/payments/payments.instance.js';
+import { recordGatewayReversal } from '@/modules/payments/payments.repo.js';
 import { BOOKING_STATUSES, type BookingStatus } from './booking.schemas.js';
 import type { BookInput, MasterListQueryInput, RequestOtpInput } from './booking.schemas.js';
 
@@ -135,6 +139,14 @@ export function createBookingService() {
     if (!master.masterProfile.bookingEnabled) {
       throw new BadRequestError('This master does not accept online bookings', 'BOOKING_DISABLED');
     }
+    if (
+      master.masterProfile.bookingPaymentMode !== 'NONE'
+      && master.masterProfile.bookingPaymentChannel === 'FLITT'
+      && !env.BOOKING_ONLINE_PAYMENTS_ENABLED
+      && env.NODE_ENV !== 'test'
+    ) {
+      throw new BadRequestError('Online booking payments are temporarily unavailable', 'ONLINE_PAYMENTS_DISABLED');
+    }
     return master;
   }
 
@@ -181,6 +193,7 @@ export function createBookingService() {
         masterName: master.firstName,
         username: master.username,
         paymentMode: master.masterProfile!.bookingPaymentMode,
+        paymentChannel: master.masterProfile!.bookingPaymentChannel,
         depositAmount: master.masterProfile!.bookingPrepaymentAmount,
         paymentInfo: master.masterProfile!.bookingPaymentInfo,
         services: mapServices(master.masterProfile!.services),
@@ -239,6 +252,9 @@ export function createBookingService() {
       const svc = findService(mp.services, input.serviceName);
       const mode = mp.bookingPaymentMode; // NONE | DEPOSIT | FULL
       const prepay = mode !== 'NONE';
+      const paymentChannel = prepay
+        ? (mp.bookingPaymentChannel ?? 'MANUAL')
+        : 'MANUAL';
       const amount =
         mode === 'DEPOSIT'
           ? mp.bookingPrepaymentAmount ?? null
@@ -259,10 +275,27 @@ export function createBookingService() {
         );
       }
       const date = toDateOnly(input.date);
+      const amountMinor = amount === null ? null : Math.round(amount * 100);
+      const cancellationFeeAmountMinor = !prepay || amountMinor === null
+        ? null
+        : mode === 'DEPOSIT'
+          ? amountMinor
+          : Math.min(amountMinor, Math.round((mp.bookingPrepaymentAmount ?? amount ?? 0) * 100));
+      const onlinePayment = prepay && paymentChannel === 'FLITT';
+      if (onlinePayment && ((env.NODE_ENV !== 'test' && !env.BOOKING_ONLINE_PAYMENTS_ENABLED) || !isFlittConfigured())) {
+        throw new BadRequestError('Online booking payments are temporarily unavailable', 'PAYMENT_UNAVAILABLE');
+      }
+      const bookingId = randomUUID();
+      const manageToken = createBookingManageToken(bookingId);
+      const [endHour, endMinute] = endTime.split(':').map(Number);
+      const manageTokenExpiresAt = new Date(Date.UTC(
+        date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), endHour - 4, endMinute,
+      ) + 30 * 24 * 60 * 60 * 1000);
 
       let booking;
       try {
         booking = await bookingRepo.createBooking({
+          id: bookingId,
           masterProfileId: mp.id,
           clientName: input.clientName,
           clientPhone: input.clientPhone,
@@ -272,12 +305,17 @@ export function createBookingService() {
           startTime: input.startTime,
           endTime,
           paymentMode: mode,
+          paymentChannel,
           prepaymentRequired: prepay,
           prepaymentAmount: prepay ? amount : null,
+          prepaymentAmountMinor: prepay ? amountMinor : null,
+          cancellationFeeAmountMinor,
           depositStatus: prepay ? 'AWAITING' : 'NONE',
           status: prepay ? 'PENDING' : 'CONFIRMED',
           otpRequestId: input.otpRequestId,
           note: input.note,
+          manageTokenHash: hashBookingManageToken(manageToken),
+          manageTokenExpiresAt,
         });
       } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
@@ -294,48 +332,54 @@ export function createBookingService() {
         endTime: booking.endTime,
         serviceName: booking.serviceName,
         paymentMode: booking.paymentMode,
+        paymentChannel: booking.paymentChannel,
         prepaymentRequired: booking.prepaymentRequired,
         prepaymentAmount: booking.prepaymentAmount,
         depositStatus: booking.depositStatus,
-        paymentInfo: prepay ? mp.bookingPaymentInfo : null,
+        paymentInfo: prepay && paymentChannel === 'MANUAL' ? mp.bookingPaymentInfo : null,
+        manageUrl: `${env.APP_URL}/booking/manage/${manageToken}`,
       };
 
       // Online payment (Flitt): hold the slot as PENDING and redirect the client to pay.
       // The booking auto-confirms on the verified server callback, not on a manual click.
       // `amount` is guaranteed non-null here for a prepay booking (guarded above).
-      if (prepay && isFlittConfigured()) {
+      if (onlinePayment) {
         try {
-          const payment = await bookingRepo.createPayment({ bookingId: booking.id, amount: amount!, currency: 'GEL' });
+          const payment = await bookingRepo.createPayment({ bookingId: booking.id, amountMinor: amountMinor!, currency: 'GEL' });
           const redirectUrl = await createFlittCheckout({
             orderId: payment.id,
-            amountGel: amount!,
+            amountMinor: amountMinor!,
             description: `Glow Booking ${booking.id.slice(0, 8)}`,
             responseUrl: `${env.APP_URL}/booking/return`,
             serverCallbackUrl: `${env.PUBLIC_SERVER_URL}/api/v1/booking/payment/callback`,
           });
+          sendSms(input.clientPhone, `Glow.GE: ჯავშნის მართვა ${result.manageUrl}`).catch(() => {});
           logger.info({ username, bookingId: booking.id, paymentId: payment.id }, 'Booking awaiting payment');
           return { ...result, redirectUrl };
         } catch (err) {
-          logger.error({ err, bookingId: booking.id }, 'Flitt checkout failed, falling back to off-platform');
+          logger.error({ err, bookingId: booking.id }, 'Flitt checkout failed');
+          const payment = await bookingRepo.findPaymentByBookingId?.(booking.id);
+          if (payment) await bookingRepo.markPaymentFailed(payment.id, booking.id, true);
+          throw new BadRequestError('Could not start online payment. Please try again.', 'PAYMENT_CHECKOUT_FAILED');
         }
       }
 
-      // Off-platform path (gateway not configured, or online checkout failed).
+      // Explicit manual-payment path for masters who keep settlement outside Glow.
       // For a PREPAY booking this leaves a PENDING booking holding the slot with no
       // gateway timeout to release it. Anchor it with an `offline` PENDING Payment so the
       // stale-PENDING sweep (src/jobs) has a concrete, timestamped row to age out — the
       // sweep expires bookings whose offline payment has sat PENDING past its grace window.
       // (A NONE-mode booking is already CONFIRMED and needs no hold.)
-      if (prepay) {
+      if (prepay && paymentChannel === 'MANUAL') {
         try {
-          await bookingRepo.createOfflinePayment({ bookingId: booking.id, amount: amount!, currency: 'GEL' });
+          await bookingRepo.createOfflinePayment({ bookingId: booking.id, amount: amount!, amountMinor: amountMinor!, currency: 'GEL' });
         } catch (err) {
           // Never fail the booking on the hold-record write; log for the sweep's sake.
           logger.error({ err, bookingId: booking.id }, 'Failed to create offline payment hold');
         }
       }
 
-      // Notify the master now; the prepayment, if any, is settled manually off-platform.
+      // Notify the master now; any prepayment is settled manually off-platform.
       const masterPhone = mp.phone ?? master.phone;
       if (masterPhone) {
         sendSms(
@@ -343,6 +387,7 @@ export function createBookingService() {
           `Glow.GE: ახალი ჯავშანი ${dateKey(date)} ${input.startTime}, ${input.serviceName}.`,
         ).catch(() => {});
       }
+      sendSms(input.clientPhone, `Glow.GE: ჯავშნის მართვა ${result.manageUrl}`).catch(() => {});
 
       logger.info({ username, bookingId: booking.id }, 'Booking created');
       return { ...result, redirectUrl: null };
@@ -359,32 +404,16 @@ export function createBookingService() {
         return; // ack so Flitt stops retrying
       }
 
-      // Terminal-state guard: BOTH PAID and FAILED are terminal. Once a payment has
-      // settled either way, a later out-of-order callback (a stray 'approved' after a
-      // 'declined', or a duplicate 'approved') must not re-drive the booking. A 'reversed'
-      // /refund arriving after PAID is handled explicitly below.
-      if (payment.status === 'PAID' || payment.status === 'FAILED') {
-        if (isFlittTerminalFailure(body) && payment.status === 'PAID') {
-          // Money was captured then reversed/refunded on the gateway. We do NOT auto-cancel
-          // the (already CONFIRMED) booking here — a refund needs a deliberate operational
-          // path (notify master, decide slot release). Surfaced loudly for follow-up.
-          logger.warn(
-            { paymentId: payment.id, bookingId: payment.booking.id, orderStatus: body.order_status },
-            'REFUND/REVERSAL received on an already-PAID booking — manual refund/cancel path required (not yet built)',
-          );
-        }
-        return; // idempotent: already terminal
-      }
-
-      // Signature already proves the payload came from Flitt; additionally pin the
-      // merchant and currency so a callback for a different merchant/currency can't confirm.
+      // Pin every callback, including later reversal callbacks, to this merchant and currency.
       const bodyMerchantId = Number(body.merchant_id);
-      if (Number.isFinite(bodyMerchantId) && bodyMerchantId !== env.FLITT_MERCHANT_ID) {
+      if (!Number.isFinite(bodyMerchantId) || bodyMerchantId !== env.FLITT_MERCHANT_ID) {
+        await bookingRepo.markPaymentReconciliationRequired(payment.id);
         logger.warn({ paymentId: payment.id, bodyMerchantId }, 'Flitt callback merchant_id mismatch — ignored');
         return;
       }
       const bodyCurrency = typeof body.currency === 'string' ? body.currency : null;
-      if (bodyCurrency && bodyCurrency !== payment.currency) {
+      if (bodyCurrency !== payment.currency) {
+        await bookingRepo.markPaymentReconciliationRequired(payment.id);
         logger.warn(
           { paymentId: payment.id, bodyCurrency, expected: payment.currency },
           'Flitt callback currency mismatch — ignored',
@@ -392,8 +421,30 @@ export function createBookingService() {
         return;
       }
 
+      // Terminal-state guard: BOTH PAID and FAILED are terminal. Once a payment has
+      // settled either way, a later out-of-order callback (a stray 'approved' after a
+      // 'declined', or a duplicate 'approved') must not re-drive the booking. A 'reversed'
+      // /refund arriving after PAID is handled explicitly below.
+      if (['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED', 'FAILED'].includes(payment.status)) {
+        if (body.order_status === 'reversed' && ['PAID', 'PARTIALLY_REFUNDED'].includes(payment.status)) {
+          const reversalAmount = Number(body.reversal_amount);
+          if (Number.isFinite(reversalAmount) && reversalAmount > 0) {
+            await recordGatewayReversal({
+              paymentId: payment.id,
+              amountMinor: reversalAmount,
+              providerRefundId: typeof body.payment_id === 'string' ? body.payment_id : undefined,
+            });
+            logger.info({ paymentId: payment.id, bookingId: payment.booking.id }, 'Gateway reversal reconciled');
+          } else {
+            await bookingRepo.markPaymentReconciliationRequired(payment.id);
+            logger.warn({ paymentId: payment.id }, 'Gateway reversal callback missing a valid reversal_amount');
+          }
+        }
+        return; // idempotent: already terminal
+      }
+
       const paidCoins = Number(body.amount);
-      const amountMatches = Number.isFinite(paidCoins) && Math.round(payment.amount * 100) === paidCoins;
+      const amountMatches = Number.isFinite(paidCoins) && payment.amountMinor === paidCoins;
       const b = payment.booking;
       const masterPhone = b.masterProfile?.phone ?? b.masterProfile?.user?.phone ?? null;
       const flittPaymentId = typeof body.payment_id === 'string' ? body.payment_id : String(body.payment_id ?? '') || null;
@@ -405,12 +456,23 @@ export function createBookingService() {
         if (masterPhone) {
           sendSms(masterPhone, `Glow.GE: გადახდილი ჯავშანი ${dateKey(b.date)} ${b.startTime}, ${b.serviceName}.`).catch(() => {});
         }
-        sendSms(b.clientPhone, `Glow.GE: გადახდა მიღებულია, ჯავშანი დადასტურდა ${dateKey(b.date)} ${b.startTime}.`).catch(() => {});
+        const manageUrl = `${env.APP_URL}/booking/manage/${createBookingManageToken(b.id)}`;
+        sendSms(b.clientPhone, `Glow.GE: გადახდა მიღებულია, ჯავშანი დადასტურდა ${dateKey(b.date)} ${b.startTime}. მართვა: ${manageUrl}`).catch(() => {});
         logger.info({ paymentId: payment.id, bookingId: b.id }, 'Payment approved, booking confirmed');
         return;
       }
 
-      if (isFlittTerminalFailure(body) || (isFlittApproved(body) && !amountMatches)) {
+      if (isFlittApproved(body) && !amountMatches) {
+        if (Number.isFinite(paidCoins) && paidCoins > 0) {
+          await bookingRepo.markPaymentCapturedForReconciliation(payment.id, paidCoins, flittPaymentId);
+        } else {
+          await bookingRepo.markPaymentReconciliationRequired(payment.id);
+        }
+        logger.warn({ paymentId: payment.id, bookingId: b.id, paidCoins }, 'Captured payment amount mismatch — queued for reconciliation');
+        return;
+      }
+
+      if (isFlittTerminalFailure(body)) {
         await bookingRepo.markPaymentFailed(payment.id, b.id, true);
         logger.warn({ paymentId: payment.id, bookingId: b.id, status: body.order_status, amountMatches }, 'Payment failed, booking cancelled');
       }
@@ -476,15 +538,22 @@ export function createBookingService() {
           'PREPAYMENT_NOT_RECEIVED',
         );
       }
+      if (next === 'CANCELLED' || next === 'NO_SHOW') {
+        await paymentsService.cancelBooking({
+          bookingId,
+          actor: next === 'NO_SHOW' ? 'NO_SHOW' : 'MASTER',
+          actorUserId: userId,
+          reason: next === 'NO_SHOW' ? 'Client did not attend' : 'Master cancelled the booking',
+        });
+        return bookingRepo.findById(bookingId);
+      }
       // Keep depositStatus coherent: confirming a NONE-mode booking never touches the
       // deposit; the RECEIVED case is already RECEIVED. No override needed here.
 
       const updated = await bookingRepo.updateStatus(bookingId, status);
-      if (status === 'CONFIRMED' || status === 'CANCELLED') {
+      if (status === 'CONFIRMED') {
         const msg =
-          status === 'CONFIRMED'
-            ? `Glow.GE: თქვენი ჯავშანი დადასტურდა ${dateKey(booking.date)} ${booking.startTime}.`
-            : `Glow.GE: თქვენი ჯავშანი გაუქმდა ${dateKey(booking.date)} ${booking.startTime}.`;
+          `Glow.GE: თქვენი ჯავშანი დადასტურდა ${dateKey(booking.date)} ${booking.startTime}.`;
         sendSms(booking.clientPhone, msg).catch(() => {});
       }
       return updated;
@@ -497,6 +566,12 @@ export function createBookingService() {
       if (!booking) throw new NotFoundError('Booking not found', 'BOOKING_NOT_FOUND');
       if (booking.masterProfileId !== profile.id) {
         throw new ForbiddenError('You do not own this booking', 'NOT_OWNER');
+      }
+      if (booking.paymentChannel === 'FLITT') {
+        throw new ConflictError(
+          'Online payments can only be confirmed by the signed payment callback',
+          'ONLINE_PAYMENT_REQUIRES_CALLBACK',
+        );
       }
       const updated = await bookingRepo.setDepositReceived(bookingId);
       sendSms(

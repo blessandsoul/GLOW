@@ -1,6 +1,8 @@
 import { profilesRepo } from './profiles.repo.js';
 import { forwardGeocode } from '@/libs/geocode.js';
 import type { UpdateProfileInput } from './profiles.schemas.js';
+import { env } from '@/config/env.js';
+import { BadRequestError } from '@/shared/errors/errors.js';
 
 export function createProfilesService() {
   return {
@@ -9,6 +11,12 @@ export function createProfilesService() {
     },
 
     async saveProfile(userId: string, input: UpdateProfileInput) {
+      if (input.bookingPaymentChannel === 'FLITT' && !env.BOOKING_ONLINE_PAYMENTS_ENABLED) {
+        const existing = await profilesRepo.findByUserId(userId);
+        if (existing?.bookingPaymentChannel !== 'FLITT') {
+          throw new BadRequestError('Online booking payments are not enabled yet', 'ONLINE_PAYMENTS_DISABLED');
+        }
+      }
       // Auto-geocode workAddress if coordinates not provided
       if (input.workAddress && input.latitude == null && input.longitude == null) {
         const existing = await profilesRepo.findByUserId(userId);

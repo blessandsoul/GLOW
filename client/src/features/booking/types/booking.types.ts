@@ -1,6 +1,7 @@
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW';
 export type DepositStatus = 'NONE' | 'AWAITING' | 'RECEIVED';
 export type PaymentMode = 'NONE' | 'DEPOSIT' | 'FULL';
+export type PaymentChannel = 'MANUAL' | 'FLITT';
 
 export interface BookingServiceOption {
     name: string;
@@ -12,6 +13,7 @@ export interface PublicBookingInfo {
     masterName: string;
     username: string | null;
     paymentMode: PaymentMode;
+    paymentChannel?: PaymentChannel;
     depositAmount: number | null;
     paymentInfo: string | null;
     services: BookingServiceOption[];
@@ -46,11 +48,13 @@ export interface BookResult {
     endTime: string;
     serviceName: string;
     paymentMode: PaymentMode;
+    paymentChannel: PaymentChannel;
     prepaymentRequired: boolean;
     prepaymentAmount: number | null;
     depositStatus: DepositStatus;
     paymentInfo: string | null;
     redirectUrl: string | null;
+    manageUrl: string;
 }
 
 export interface MasterBooking {
@@ -64,6 +68,7 @@ export interface MasterBooking {
     endTime: string;
     status: BookingStatus;
     paymentMode: PaymentMode;
+    paymentChannel: PaymentChannel;
     prepaymentRequired: boolean;
     prepaymentAmount: number | null;
     depositStatus: DepositStatus;
@@ -100,6 +105,7 @@ export interface ProfileServiceItem {
 export interface BookingSettings {
     bookingEnabled: boolean;
     bookingPaymentMode: PaymentMode;
+    bookingPaymentChannel: PaymentChannel;
     bookingPrepaymentAmount: number | null;
     bookingPaymentInfo: string | null;
     workingHours: WorkingHours | null;
@@ -109,8 +115,48 @@ export interface BookingSettings {
 export interface BookingSettingsPayload {
     bookingEnabled?: boolean;
     bookingPaymentMode?: PaymentMode;
+    bookingPaymentChannel?: PaymentChannel;
     bookingPrepaymentAmount?: number | null;
     bookingPaymentInfo?: string | null;
     workingHours?: WorkingHours | null;
     services?: ProfileServiceItem[];
+}
+
+export interface ManagedBooking {
+    id: string;
+    status: BookingStatus;
+    date: string;
+    startTime: string;
+    endTime: string;
+    clientName: string;
+    serviceName: string;
+    currency: string;
+    cancellationDeadline: string;
+    policyCode: string;
+    refundAmountMinor: number;
+    retainedAmountMinor: number;
+}
+
+export interface ManagedCancellationResult {
+    bookingId: string;
+    policyCode: string;
+    refundAmountMinor: number;
+    retainedAmountMinor: number;
+    refundStatus: 'SUCCEEDED' | 'PROCESSING' | 'FAILED' | 'NOT_REQUIRED';
+}
+
+export interface MasterPaymentBalance {
+    currency: string;
+    availableMinor: number;
+    pendingMinor: number;
+    paidMinor: number;
+    payouts: Array<{
+        id: string;
+        amountMinor: number;
+        currency: string;
+        status: string;
+        transferReference: string | null;
+        paidAt: string | null;
+        createdAt: string;
+    }>;
 }

@@ -14,14 +14,22 @@ const BOOKING_SELECT = {
   endTime: true,
   status: true,
   paymentMode: true,
+  paymentChannel: true,
   prepaymentRequired: true,
   prepaymentAmount: true,
+  prepaymentAmountMinor: true,
+  cancellationFeeAmountMinor: true,
   depositStatus: true,
+  cancelledAt: true,
+  cancelledBy: true,
+  completedAt: true,
+  earningEligibleAt: true,
   note: true,
   createdAt: true,
 } as const;
 
 interface CreateBookingData {
+  id: string;
   masterProfileId: string;
   clientName: string;
   clientPhone: string;
@@ -31,8 +39,13 @@ interface CreateBookingData {
   startTime: string;
   endTime: string;
   paymentMode: string;
+  paymentChannel: string;
   prepaymentRequired: boolean;
   prepaymentAmount: number | null;
+  prepaymentAmountMinor: number | null;
+  cancellationFeeAmountMinor: number | null;
+  manageTokenHash: string;
+  manageTokenExpiresAt: Date;
   depositStatus: string;
   status: string;
   otpRequestId?: string;
@@ -56,6 +69,7 @@ export const bookingRepo = {
             workingHours: true,
             bookingEnabled: true,
             bookingPaymentMode: true,
+            bookingPaymentChannel: true,
             bookingPrepaymentAmount: true,
             bookingPaymentInfo: true,
           },
@@ -93,6 +107,7 @@ export const bookingRepo = {
   async createBooking(data: CreateBookingData) {
     return prisma.booking.create({
       data: {
+        id: data.id,
         masterProfileId: data.masterProfileId,
         clientName: data.clientName,
         clientPhone: data.clientPhone,
@@ -104,9 +119,14 @@ export const bookingRepo = {
         endTime: data.endTime,
         status: data.status,
         paymentMode: data.paymentMode,
+        paymentChannel: data.paymentChannel,
         prepaymentRequired: data.prepaymentRequired,
         prepaymentAmount: data.prepaymentAmount,
+        prepaymentAmountMinor: data.prepaymentAmountMinor,
+        cancellationFeeAmountMinor: data.cancellationFeeAmountMinor,
         depositStatus: data.depositStatus,
+        manageTokenHash: data.manageTokenHash,
+        manageTokenExpiresAt: data.manageTokenExpiresAt,
         otpRequestId: data.otpRequestId,
         note: data.note,
       },
@@ -160,6 +180,7 @@ export const bookingRepo = {
         clientPhone: true,
         status: true,
         paymentMode: true,
+        paymentChannel: true,
         depositStatus: true,
         date: true,
         startTime: true,
@@ -169,10 +190,36 @@ export const bookingRepo = {
   },
 
   async updateStatus(id: string, status: string) {
-    return prisma.booking.update({
-      where: { id },
-      data: { status },
-      select: BOOKING_SELECT,
+    if (status !== 'COMPLETED') {
+      return prisma.booking.update({ where: { id }, data: { status }, select: BOOKING_SELECT });
+    }
+    return prisma.$transaction(async (tx) => {
+      const completedAt = new Date();
+      const earningEligibleAt = new Date(completedAt.getTime() + 24 * 60 * 60 * 1000);
+      const booking = await tx.booking.update({
+        where: { id },
+        data: { status, completedAt, earningEligibleAt },
+        select: { ...BOOKING_SELECT, payment: { select: { id: true, amountMinor: true, refundedAmountMinor: true, currency: true, status: true } } },
+      });
+      if (booking.payment && ['PAID', 'PARTIALLY_REFUNDED'].includes(booking.payment.status)) {
+        await tx.masterLedgerEntry.upsert({
+          where: { sourceKey: `earning:${booking.payment.id}` },
+          create: {
+            masterProfileId: booking.masterProfileId,
+            bookingId: booking.id,
+            paymentId: booking.payment.id,
+            sourceKey: `earning:${booking.payment.id}`,
+            type: 'EARNING',
+            amountMinor: Math.max(0, booking.payment.amountMinor - booking.payment.refundedAmountMinor),
+            currency: booking.payment.currency,
+            availableAt: earningEligibleAt,
+          },
+          update: {},
+        });
+      }
+      const { payment, ...result } = booking;
+      void payment;
+      return result;
     });
   },
 
@@ -185,9 +232,14 @@ export const bookingRepo = {
   },
 
   // ── Flitt payment ────────────────────────────────────────────────
-  async createPayment(data: { bookingId: string; amount: number; currency: string }) {
+  async createPayment(data: { bookingId: string; amountMinor: number; currency: string }) {
     return prisma.payment.create({
-      data: { bookingId: data.bookingId, amount: data.amount, currency: data.currency },
+      data: {
+        bookingId: data.bookingId,
+        amount: Math.round(data.amountMinor / 100),
+        amountMinor: data.amountMinor,
+        currency: data.currency,
+      },
       select: { id: true },
     });
   },
@@ -196,12 +248,13 @@ export const bookingRepo = {
   // that never reached the gateway (unconfigured or checkout failed) so the stale-PENDING
   // sweep has a timestamped row to age out. Booking-Payment is 1:1 (Payment.bookingId is
   // @unique); if a Flitt payment already exists this is a no-op-safe upsert.
-  async createOfflinePayment(data: { bookingId: string; amount: number; currency: string }) {
+  async createOfflinePayment(data: { bookingId: string; amount: number; amountMinor?: number; currency: string }) {
     return prisma.payment.upsert({
       where: { bookingId: data.bookingId },
       create: {
         bookingId: data.bookingId,
         amount: data.amount,
+        amountMinor: data.amountMinor ?? Math.round(data.amount * 100),
         currency: data.currency,
         provider: 'offline',
         status: 'PENDING',
@@ -218,6 +271,8 @@ export const bookingRepo = {
         id: true,
         bookingId: true,
         amount: true,
+        amountMinor: true,
+        refundedAmountMinor: true,
         currency: true,
         status: true,
         booking: {
@@ -234,6 +289,27 @@ export const bookingRepo = {
     });
   },
 
+  async findPaymentByBookingId(bookingId: string) {
+    return prisma.payment.findUnique({ where: { bookingId }, select: { id: true } });
+  },
+
+  async markPaymentReconciliationRequired(id: string) {
+    await prisma.payment.update({ where: { id }, data: { reconciliationRequired: true } });
+  },
+
+  async markPaymentCapturedForReconciliation(id: string, amountMinor: number, flittPaymentId: string | null) {
+    await prisma.payment.updateMany({
+      where: { id, status: 'PENDING' },
+      data: {
+        amountMinor,
+        flittPaymentId,
+        status: 'PAID',
+        paidAt: new Date(),
+        reconciliationRequired: true,
+      },
+    });
+  },
+
   // The Payment update is scoped to a still-PENDING row (updateMany + WHERE status), so a
   // duplicate/out-of-order 'approved' callback that raced past the service's read-check
   // flips exactly zero rows and skips the booking write — closing the read-then-write
@@ -243,7 +319,7 @@ export const bookingRepo = {
     await prisma.$transaction(async (tx) => {
       const res = await tx.payment.updateMany({
         where: { id: paymentId, status: 'PENDING' },
-        data: { status: 'PAID', flittPaymentId },
+        data: { status: 'PAID', flittPaymentId, paidAt: new Date(), reconciliationRequired: false },
       });
       if (res.count === 0) return; // already terminal — nothing to confirm
       await tx.booking.updateMany({

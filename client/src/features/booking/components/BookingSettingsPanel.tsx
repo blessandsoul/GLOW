@@ -19,7 +19,7 @@ import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useBookingSettings } from '../hooks/useBookingSettings';
 import { WorkingHoursEditor } from './WorkingHoursEditor';
 import { ServiceDurations } from './ServiceDurations';
-import type { WorkingHours, ProfileServiceItem, PaymentMode } from '../types/booking.types';
+import type { WorkingHours, ProfileServiceItem, PaymentChannel, PaymentMode } from '../types/booking.types';
 
 function defaultWorkingHours(): WorkingHours {
     const day = [{ open: '10:00', close: '19:00' }];
@@ -37,9 +37,11 @@ function defaultWorkingHours(): WorkingHours {
 export function BookingSettingsPanel(): React.ReactElement {
     const { t } = useLanguage();
     const { settings, isLoading, save, isSaving } = useBookingSettings();
+    const onlinePaymentsEnabled = process.env.NEXT_PUBLIC_BOOKING_ONLINE_PAYMENTS_ENABLED === 'true';
 
     const [enabled, setEnabled] = useState(false);
     const [mode, setMode] = useState<PaymentMode>('NONE');
+    const [channel, setChannel] = useState<PaymentChannel>('MANUAL');
     const [amount, setAmount] = useState(20);
     const [paymentInfo, setPaymentInfo] = useState('');
     const [hours, setHours] = useState<WorkingHours>(defaultWorkingHours);
@@ -47,18 +49,22 @@ export function BookingSettingsPanel(): React.ReactElement {
 
     useEffect(() => {
         if (!settings) return;
+        /* eslint-disable react-hooks/set-state-in-effect -- hydrate the editable draft when server settings arrive */
         setEnabled(settings.bookingEnabled);
         setMode(settings.bookingPaymentMode);
+        setChannel(settings.bookingPaymentChannel);
         setAmount(settings.bookingPrepaymentAmount ?? 20);
         setPaymentInfo(settings.bookingPaymentInfo ?? '');
         setHours(settings.workingHours ?? defaultWorkingHours());
         setServices(settings.services ?? []);
+        /* eslint-enable react-hooks/set-state-in-effect */
     }, [settings]);
 
     async function handleSave(): Promise<void> {
         await save({
             bookingEnabled: enabled,
             bookingPaymentMode: mode,
+            bookingPaymentChannel: channel,
             bookingPrepaymentAmount: amount,
             bookingPaymentInfo: paymentInfo.trim() ? paymentInfo.trim() : null,
             workingHours: hours,
@@ -127,6 +133,24 @@ export function BookingSettingsPanel(): React.ReactElement {
                         </Select>
                     </div>
 
+                    {mode !== 'NONE' && (
+                        <div className="space-y-2">
+                            <Label htmlFor="bk-channel">გადახდის არხი</Label>
+                            <Select value={channel} onValueChange={(v) => setChannel(v as PaymentChannel)}>
+                                <SelectTrigger id="bk-channel" className="w-full sm:w-72"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="MANUAL">პირდაპირი / ხელით</SelectItem>
+                                    <SelectItem value="FLITT" disabled={!onlinePaymentsEnabled && channel !== 'FLITT'}>
+                                        ონლაინ ბარათით (Flitt){onlinePaymentsEnabled ? '' : ' — მალე'}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {channel === 'FLITT' && (
+                                <p className="text-xs text-muted-foreground">Glow იღებს გადახდას და თანხის დაბრუნებას 24-საათიანი გაუქმების წესით ამუშავებს.</p>
+                            )}
+                        </div>
+                    )}
+
                     {mode === 'DEPOSIT' && (
                         <div className="space-y-2">
                             <Label htmlFor="bk-amount">{t('booking.setting_amount')}</Label>
@@ -151,7 +175,7 @@ export function BookingSettingsPanel(): React.ReactElement {
                         </p>
                     )}
 
-                    {mode !== 'NONE' && (
+                    {mode !== 'NONE' && channel === 'MANUAL' && (
                         <div className="space-y-2">
                             <Label htmlFor="bk-payinfo">{t('booking.setting_payment_info')}</Label>
                             <Textarea

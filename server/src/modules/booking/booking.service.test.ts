@@ -15,6 +15,14 @@ vi.mock('../../libs/flitt.js', () => ({
   verifyFlittCallback: vi.fn(),
   isFlittApproved: vi.fn(),
   isFlittTerminalFailure: vi.fn(),
+  createFlittReversal: vi.fn(),
+  getFlittOrderStatus: vi.fn(),
+}));
+vi.mock('@/modules/payments/payments.instance.js', () => ({
+  paymentsService: { cancelBooking: vi.fn().mockResolvedValue({ refundStatus: 'NOT_REQUIRED' }) },
+}));
+vi.mock('@/modules/payments/payments.repo.js', () => ({
+  recordGatewayReversal: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock('../../shared/rate-limit/otp-throttle.js', () => ({
   assertOtpPhoneAllowed: vi.fn(),
@@ -36,6 +44,9 @@ vi.mock('./booking.repo.js', () => ({
     findPaymentWithBooking: vi.fn(),
     markPaymentPaid: vi.fn(),
     markPaymentFailed: vi.fn(),
+    markPaymentReconciliationRequired: vi.fn(),
+    markPaymentCapturedForReconciliation: vi.fn(),
+    findPaymentByBookingId: vi.fn(),
   },
 }));
 
@@ -50,6 +61,8 @@ import {
   isFlittTerminalFailure,
 } from '../../libs/flitt.js';
 import { assertOtpPhoneAllowed } from '../../shared/rate-limit/otp-throttle.js';
+import { recordGatewayReversal } from '@/modules/payments/payments.repo.js';
+import { env } from '@/config/env.js';
 
 const repo = vi.mocked(bookingRepo);
 const mockAssertOtpPhone = vi.mocked(assertOtpPhoneAllowed);
@@ -60,6 +73,7 @@ const mockIsConfigured = vi.mocked(isFlittConfigured);
 const mockVerifyCallback = vi.mocked(verifyFlittCallback);
 const mockIsApproved = vi.mocked(isFlittApproved);
 const mockIsTerminalFailure = vi.mocked(isFlittTerminalFailure);
+const mockRecordGatewayReversal = vi.mocked(recordGatewayReversal);
 
 // ─── Pure slot engine (deterministic) ─────────────────────────────
 describe('computeSlots', () => {
@@ -113,6 +127,7 @@ function masterFixture(overrides: Record<string, unknown> = {}) {
       workingHours: allDays(),
       bookingEnabled: true,
       bookingPaymentMode: 'NONE',
+      bookingPaymentChannel: 'MANUAL',
       bookingPrepaymentAmount: 20,
       bookingPaymentInfo: null,
       ...overrides,
@@ -169,7 +184,7 @@ describe('bookingService.verifyAndBook', () => {
     expect(repo.createBooking).toHaveBeenCalledWith(expect.objectContaining({
       masterProfileId: 'mp-1', startTime: '10:00', endTime: '11:00', durationMinutes: 60, status: 'CONFIRMED', paymentMode: 'NONE',
     }));
-    expect(mockSendSms).toHaveBeenCalledTimes(1);
+    expect(mockSendSms).toHaveBeenCalledTimes(2); // master notification + client management link
     expect(res).toMatchObject({ id: 'b-1', status: 'CONFIRMED' });
     expect(res).not.toHaveProperty('clientPhone');
   });
@@ -236,7 +251,7 @@ describe('bookingService.updateStatus', () => {
   function ownedBooking(over: Record<string, unknown> = {}) {
     return {
       id: 'b-1', masterProfileId: 'mp-1', clientName: 'X', clientPhone: PHONE,
-      status: 'PENDING', paymentMode: 'NONE', depositStatus: 'NONE',
+      status: 'PENDING', paymentMode: 'NONE', paymentChannel: 'MANUAL', depositStatus: 'NONE',
       date: FUTURE, startTime: '10:00', serviceName: 'Classic Lashes', ...over,
     };
   }
@@ -356,11 +371,11 @@ describe('bookingService.verifyAndBook — off-platform prepay hold (#7) + null-
 
 describe('bookingService.verifyAndBook (Flitt online payment)', () => {
   it('creates a payment and returns the Flitt redirect URL, deferring the master SMS', async () => {
-    repo.findMasterByUsername.mockResolvedValue(masterFixture({ bookingPaymentMode: 'FULL', bookingPaymentInfo: null }));
+    repo.findMasterByUsername.mockResolvedValue(masterFixture({ bookingPaymentMode: 'FULL', bookingPaymentChannel: 'FLITT', bookingPaymentInfo: null }));
     repo.findActiveBookingsForDay.mockResolvedValue([]);
     repo.createBooking.mockResolvedValue({
       id: 'b-9', status: 'PENDING', date: FUTURE, startTime: '10:00', endTime: '11:00',
-      serviceName: 'Classic Lashes', paymentMode: 'FULL', prepaymentRequired: true, prepaymentAmount: 80, depositStatus: 'AWAITING',
+      serviceName: 'Classic Lashes', paymentMode: 'FULL', paymentChannel: 'FLITT', prepaymentRequired: true, prepaymentAmount: 80, depositStatus: 'AWAITING',
     } as never);
     mockVerifyOtp.mockResolvedValue(true);
     mockIsConfigured.mockReturnValue(true);
@@ -369,18 +384,18 @@ describe('bookingService.verifyAndBook (Flitt online payment)', () => {
 
     const res = await bookingService.verifyAndBook(USERNAME, validBook);
 
-    expect(repo.createPayment).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 'b-9', amount: 80, currency: 'GEL' }));
-    expect(mockCreateCheckout).toHaveBeenCalledWith(expect.objectContaining({ orderId: 'pay-1', amountGel: 80 }));
+    expect(repo.createPayment).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 'b-9', amountMinor: 8000, currency: 'GEL' }));
+    expect(mockCreateCheckout).toHaveBeenCalledWith(expect.objectContaining({ orderId: 'pay-1', amountMinor: 8000 }));
     expect(res.redirectUrl).toBe('https://pay.flitt.com/checkout/abc');
-    expect(mockSendSms).not.toHaveBeenCalled(); // master is notified only after the payment is confirmed
+    expect(mockSendSms).toHaveBeenCalledTimes(1); // management link is sent; master waits for confirmation
   });
 
-  it('falls back to off-platform (no redirect) when the gateway is not configured', async () => {
+  it('preserves an explicitly configured manual-payment booking', async () => {
     repo.findMasterByUsername.mockResolvedValue(masterFixture({ bookingPaymentMode: 'DEPOSIT', bookingPrepaymentAmount: 20 }));
     repo.findActiveBookingsForDay.mockResolvedValue([]);
     repo.createBooking.mockResolvedValue({
       id: 'b-10', status: 'PENDING', date: FUTURE, startTime: '10:00', endTime: '11:00',
-      serviceName: 'Classic Lashes', paymentMode: 'DEPOSIT', prepaymentRequired: true, prepaymentAmount: 20, depositStatus: 'AWAITING',
+      serviceName: 'Classic Lashes', paymentMode: 'DEPOSIT', paymentChannel: 'MANUAL', prepaymentRequired: true, prepaymentAmount: 20, depositStatus: 'AWAITING',
     } as never);
     mockVerifyOtp.mockResolvedValue(true);
     mockIsConfigured.mockReturnValue(false);
@@ -389,15 +404,18 @@ describe('bookingService.verifyAndBook (Flitt online payment)', () => {
 
     expect(res.redirectUrl).toBeNull();
     expect(repo.createPayment).not.toHaveBeenCalled();
-    expect(mockSendSms).toHaveBeenCalledTimes(1); // off-platform: master notified now
+    expect(mockSendSms).toHaveBeenCalledTimes(2); // master notification + client management link
   });
 });
 
 describe('bookingService.handlePaymentCallback', () => {
-  const approvedBody = { order_id: 'pay-1', order_status: 'approved', amount: '8000', payment_id: 'flitt-77', signature: 'sig' };
+  const approvedBody = {
+    order_id: 'pay-1', order_status: 'approved', amount: '8000', currency: 'GEL',
+    merchant_id: env.FLITT_MERCHANT_ID, payment_id: 'flitt-77', signature: 'sig',
+  };
   function paymentFixture(overrides: Record<string, unknown> = {}) {
     return {
-      id: 'pay-1', bookingId: 'b-9', amount: 80, currency: 'GEL', status: 'PENDING',
+      id: 'pay-1', bookingId: 'b-9', amount: 80, amountMinor: 8000, refundedAmountMinor: 0, currency: 'GEL', status: 'PENDING',
       booking: {
         id: 'b-9', clientPhone: PHONE, date: FUTURE, startTime: '10:00', serviceName: 'Classic Lashes',
         masterProfile: { phone: '+995599111111', user: { phone: '+995599000000' } },
@@ -444,15 +462,50 @@ describe('bookingService.handlePaymentCallback', () => {
     expect(repo.markPaymentFailed).not.toHaveBeenCalled();
   });
 
+  it('queues a signed callback with no merchant id for reconciliation', async () => {
+    mockVerifyCallback.mockReturnValue(true);
+    mockIsApproved.mockReturnValue(true);
+    repo.findPaymentWithBooking.mockResolvedValue(paymentFixture() as never);
+    const withoutMerchant: Partial<typeof approvedBody> = { ...approvedBody };
+    delete withoutMerchant.merchant_id;
+
+    await bookingService.handlePaymentCallback(withoutMerchant);
+
+    expect(repo.markPaymentPaid).not.toHaveBeenCalled();
+    expect(repo.markPaymentReconciliationRequired).toHaveBeenCalledWith('pay-1');
+  });
+
   it('a reversal/refund on an already-PAID payment is not silently dropped and does not cancel', async () => {
     mockVerifyCallback.mockReturnValue(true);
     mockIsTerminalFailure.mockReturnValue(true); // reversed
     repo.findPaymentWithBooking.mockResolvedValue(paymentFixture({ status: 'PAID' }) as never);
 
+    await bookingService.handlePaymentCallback({ ...approvedBody, order_status: 'reversed', reversal_amount: '8000' });
+
+    expect(mockRecordGatewayReversal).toHaveBeenCalledWith(expect.objectContaining({ paymentId: 'pay-1' }));
+    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+  });
+
+  it('does not invent a refund from a delayed decline after payment was already captured', async () => {
+    mockVerifyCallback.mockReturnValue(true);
+    mockIsTerminalFailure.mockReturnValue(true);
+    repo.findPaymentWithBooking.mockResolvedValue(paymentFixture({ status: 'PAID' }) as never);
+
+    await bookingService.handlePaymentCallback({ ...approvedBody, order_status: 'declined' });
+
+    expect(mockRecordGatewayReversal).not.toHaveBeenCalled();
+    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+  });
+
+  it('queues a reversed callback with no reversal amount instead of assuming a full refund', async () => {
+    mockVerifyCallback.mockReturnValue(true);
+    mockIsTerminalFailure.mockReturnValue(true);
+    repo.findPaymentWithBooking.mockResolvedValue(paymentFixture({ status: 'PAID' }) as never);
+
     await bookingService.handlePaymentCallback({ ...approvedBody, order_status: 'reversed' });
 
-    // No auto-cancel of a confirmed+paid booking (refund path is a deliberate TODO).
-    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+    expect(mockRecordGatewayReversal).not.toHaveBeenCalled();
+    expect(repo.markPaymentReconciliationRequired).toHaveBeenCalledWith('pay-1');
   });
 
   it('ignores an approved callback whose currency does not match the payment currency', async () => {
@@ -464,6 +517,7 @@ describe('bookingService.handlePaymentCallback', () => {
 
     expect(repo.markPaymentPaid).not.toHaveBeenCalled();
     expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+    expect(repo.markPaymentReconciliationRequired).toHaveBeenCalledWith('pay-1');
   });
 
   it('cancels the booking on a terminal failure', async () => {
@@ -485,6 +539,43 @@ describe('bookingService.handlePaymentCallback', () => {
     await bookingService.handlePaymentCallback({ ...approvedBody, amount: '5000' }); // expected 8000
 
     expect(repo.markPaymentPaid).not.toHaveBeenCalled();
-    expect(repo.markPaymentFailed).toHaveBeenCalledWith('pay-1', 'b-9', true);
+    expect(repo.markPaymentCapturedForReconciliation).toHaveBeenCalledWith('pay-1', 5000, 'flitt-77');
+    expect(repo.markPaymentFailed).not.toHaveBeenCalled();
+  });
+});
+
+describe('bookingService.markDepositReceived', () => {
+  it('does not let a master bypass a FLITT payment callback', async () => {
+    repo.findMasterProfileByUserId.mockResolvedValue({ id: 'mp-1' } as never);
+    repo.findById.mockResolvedValue({
+      id: 'b-1', masterProfileId: 'mp-1', paymentChannel: 'FLITT', clientPhone: PHONE,
+      date: FUTURE, startTime: '10:00', status: 'PENDING',
+    } as never);
+
+    await expect(bookingService.markDepositReceived('user-1', 'b-1'))
+      .rejects.toMatchObject({ code: 'ONLINE_PAYMENT_REQUIRES_CALLBACK' });
+    expect(repo.setDepositReceived).not.toHaveBeenCalled();
+  });
+
+  it('fails closed instead of changing a failed FLITT checkout to manual payment', async () => {
+    repo.findMasterByUsername.mockResolvedValue(masterFixture({
+      bookingPaymentMode: 'FULL', bookingPaymentChannel: 'FLITT',
+    }));
+    repo.findActiveBookingsForDay.mockResolvedValue([]);
+    repo.createBooking.mockResolvedValue({
+      id: 'b-flitt-fail', status: 'PENDING', date: FUTURE, startTime: '10:00', endTime: '11:00',
+      serviceName: 'Classic Lashes', paymentMode: 'FULL', paymentChannel: 'FLITT',
+      prepaymentRequired: true, prepaymentAmount: 80, depositStatus: 'AWAITING',
+    } as never);
+    repo.createPayment.mockResolvedValue({ id: 'pay-fail' });
+    repo.findPaymentByBookingId.mockResolvedValue({ id: 'pay-fail' });
+    mockVerifyOtp.mockResolvedValue(true);
+    mockIsConfigured.mockReturnValue(true);
+    mockCreateCheckout.mockRejectedValue(new Error('gateway timeout'));
+
+    await expect(bookingService.verifyAndBook(USERNAME, validBook))
+      .rejects.toMatchObject({ code: 'PAYMENT_CHECKOUT_FAILED' });
+    expect(repo.markPaymentFailed).toHaveBeenCalledWith('pay-fail', 'b-flitt-fail', true);
+    expect(repo.createOfflinePayment).not.toHaveBeenCalled();
   });
 });

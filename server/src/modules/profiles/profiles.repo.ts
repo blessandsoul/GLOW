@@ -23,6 +23,7 @@ const PROFILE_SELECT = {
   isManualLocation: true,
   bookingEnabled: true,
   bookingPaymentMode: true,
+  bookingPaymentChannel: true,
   bookingPrepaymentAmount: true,
   bookingPaymentInfo: true,
   verificationStatus: true,

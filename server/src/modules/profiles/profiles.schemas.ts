@@ -47,6 +47,7 @@ export const UpdateProfileSchema = z.object({
   isManualLocation: z.boolean().optional(),
   bookingEnabled: z.boolean().optional(),
   bookingPaymentMode: z.enum(['NONE', 'DEPOSIT', 'FULL']).optional(),
+  bookingPaymentChannel: z.enum(['MANUAL', 'FLITT']).optional(),
   bookingPrepaymentAmount: z.number().int().min(0).max(100000).optional().nullable(),
   bookingPaymentInfo: z.string().max(500).optional().nullable(),
 });

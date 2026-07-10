@@ -11,6 +11,7 @@ import { ShareWaitlistLink } from '@/features/waitlist/components/ShareWaitlistL
 import { MasterWaitlistBoard } from '@/features/waitlist/components/MasterWaitlistBoard';
 import { MasterBookingsBoard } from '@/features/booking/components/MasterBookingsBoard';
 import { BookingSettingsPanel } from '@/features/booking/components/BookingSettingsPanel';
+import { MasterPaymentBalanceCard } from '@/features/booking/components/MasterPaymentBalanceCard';
 
 type TabKey = 'bookings' | 'waitlist' | 'settings';
 
@@ -64,6 +65,7 @@ export default function DashboardBookingsPage(): React.ReactElement {
                 </TabsList>
 
                 <TabsContent value="bookings">
+                    <MasterPaymentBalanceCard />
                     <MasterBookingsBoard />
                 </TabsContent>
                 <TabsContent value="waitlist">

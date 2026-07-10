@@ -12,6 +12,9 @@ import type {
     BookingStatus,
     BookingSettings,
     BookingSettingsPayload,
+    ManagedBooking,
+    MasterPaymentBalance,
+    ManagedCancellationResult,
 } from '../types/booking.types';
 
 class BookingService {
@@ -79,6 +82,7 @@ class BookingService {
         return {
             bookingEnabled: p.bookingEnabled ?? false,
             bookingPaymentMode: p.bookingPaymentMode ?? 'NONE',
+            bookingPaymentChannel: p.bookingPaymentChannel ?? 'MANUAL',
             bookingPrepaymentAmount: p.bookingPrepaymentAmount ?? 20,
             bookingPaymentInfo: p.bookingPaymentInfo ?? null,
             workingHours: p.workingHours ?? null,
@@ -88,6 +92,24 @@ class BookingService {
 
     async saveSettings(payload: BookingSettingsPayload): Promise<void> {
         await apiClient.put<ApiResponse<unknown>>(API_ENDPOINTS.PROFILES.ME, payload);
+    }
+
+    async getManagedBooking(token: string): Promise<ManagedBooking> {
+        const { data } = await apiClient.get<ApiResponse<ManagedBooking>>(API_ENDPOINTS.PAYMENTS.MANAGE(token));
+        return data.data;
+    }
+
+    async cancelManagedBooking(token: string, reason: string): Promise<ManagedCancellationResult> {
+        const { data } = await apiClient.post<ApiResponse<ManagedCancellationResult>>(
+            API_ENDPOINTS.PAYMENTS.MANAGE_CANCEL(token),
+            { reason },
+        );
+        return data.data;
+    }
+
+    async getPaymentBalance(): Promise<MasterPaymentBalance> {
+        const { data } = await apiClient.get<ApiResponse<MasterPaymentBalance>>(API_ENDPOINTS.PAYMENTS.MASTER_BALANCE);
+        return data.data;
     }
 }
 

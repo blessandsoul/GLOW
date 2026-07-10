@@ -2,7 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mutable env stub so verifyFlittCallback can be exercised both configured and not.
 // The pure signature helpers below pass the secret explicitly and ignore env.
-const envStub = { FLITT_MERCHANT_ID: 0, FLITT_SECRET_KEY: '' };
+const envStub = {
+  FLITT_MERCHANT_ID: 0,
+  FLITT_SECRET_KEY: '',
+  FLITT_API_URL: 'https://pay.flitt.com/api/checkout/url/',
+};
 vi.mock('@/config/env.js', () => ({
   get env(): typeof envStub {
     return envStub;
@@ -12,7 +16,13 @@ vi.mock('./logger.js', () => ({
   logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
-import { flittSignatureBase, flittSignature, verifyFlittCallback } from './flitt.js';
+import {
+  createFlittReversal,
+  getFlittOrderStatus,
+  flittSignatureBase,
+  flittSignature,
+  verifyFlittCallback,
+} from './flitt.js';
 
 // Locks the signature recipe to the example in https://docs.flitt.com/api/building-signature/
 describe('flittSignatureBase', () => {
@@ -87,5 +97,109 @@ describe('verifyFlittCallback — fail closed on an empty/unconfigured secret', 
     envStub.FLITT_MERCHANT_ID = 1549901;
     envStub.FLITT_SECRET_KEY = 'live-secret';
     expect(verifyFlittCallback({ order_id: 'O1', order_status: 'approved' })).toBe(false);
+  });
+});
+
+describe('createFlittReversal', () => {
+  beforeEach(() => {
+    envStub.FLITT_MERCHANT_ID = 1549901;
+    envStub.FLITT_SECRET_KEY = 'test-secret';
+    vi.unstubAllGlobals();
+  });
+
+  it('sends an idempotent reversal in minor units using protocol 1.0.1', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      response: {
+        response_status: 'success',
+        reverse_status: 'approved',
+        reversal_amount: '2500',
+        transaction_id: 'reverse-123',
+      },
+    }), { status: 200, headers: { 'content-type': 'application/json' } }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(createFlittReversal({
+      orderId: 'payment-1',
+      amountMinor: 2_500,
+      currency: 'GEL',
+      reverseId: 'refund-1',
+      comment: 'Client cancelled',
+    })).resolves.toEqual({
+      status: 'SUCCEEDED',
+      providerRefundId: 'reverse-123',
+      reversalAmountMinor: 2_500,
+    });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const parsed = JSON.parse(String(init.body)) as { request: Record<string, unknown> };
+    expect(parsed.request).toMatchObject({
+      version: '1.0.1',
+      order_id: 'payment-1',
+      merchant_id: '1549901',
+      amount: '2500',
+      currency: 'GEL',
+      reverse_id: 'refund-1',
+      comment: 'Client cancelled',
+    });
+    expect(parsed.request.signature).toMatch(/^[0-9a-f]{40}$/);
+  });
+
+  it('returns PROCESSING for a reversal that Flitt has accepted but not settled', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      response: {
+        response_status: 'success',
+        reverse_status: 'processing',
+        reversal_amount: '0',
+      },
+    }), { status: 200 })));
+
+    await expect(createFlittReversal({
+      orderId: 'payment-2',
+      amountMinor: 1_000,
+      currency: 'GEL',
+      reverseId: 'refund-2',
+    })).resolves.toMatchObject({ status: 'PROCESSING', reversalAmountMinor: 0 });
+  });
+
+  it('returns a structured failure without throwing away the gateway reason', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      response: {
+        response_status: 'success',
+        reverse_status: 'declined',
+        response_code: '1016',
+        response_description: 'Merchant not found',
+      },
+    }), { status: 200 })));
+
+    await expect(createFlittReversal({
+      orderId: 'payment-3',
+      amountMinor: 1_000,
+      currency: 'GEL',
+      reverseId: 'refund-3',
+    })).resolves.toEqual({
+      status: 'FAILED',
+      failureCode: '1016',
+      failureMessage: 'Merchant not found',
+      reversalAmountMinor: 0,
+    });
+  });
+});
+
+describe('getFlittOrderStatus', () => {
+  it('returns the gateway identity, captured amount and cumulative reversal amount', async () => {
+    envStub.FLITT_MERCHANT_ID = 1549901;
+    envStub.FLITT_SECRET_KEY = 'test-secret';
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ response: {
+      response_status: 'success', order_status: 'approved', actual_amount: '8000',
+      reversal_amount: '2000', currency: 'GEL', merchant_id: 1549901,
+    } }), { status: 200 })));
+
+    await expect(getFlittOrderStatus('payment-1')).resolves.toEqual({
+      orderStatus: 'approved',
+      actualAmountMinor: 8000,
+      reversalAmountMinor: 2000,
+      currency: 'GEL',
+      merchantId: 1549901,
+    });
   });
 });

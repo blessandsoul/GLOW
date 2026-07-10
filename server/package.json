@@ -24,6 +24,7 @@
     "prisma:seed": "prisma db seed",
     "prisma:studio": "prisma studio",
     "db:truncate": "tsx prisma/truncate.ts",
+    "reviewer:provision": "tsx scripts/provision-reviewer.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:api": "vitest run -c vitest.api.config.ts",

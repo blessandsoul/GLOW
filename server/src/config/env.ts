@@ -85,6 +85,8 @@ const envSchema = z.object({
   FLITT_MERCHANT_ID: z.coerce.number().int().default(0),
   FLITT_SECRET_KEY: z.string().default(''),
   FLITT_API_URL: z.string().url().default('https://pay.flitt.com/api/checkout/url/'),
+  // Separate booking gate: FLITT-channel bookings fail closed while disabled.
+  BOOKING_ONLINE_PAYMENTS_ENABLED: z.coerce.boolean().default(false),
   // How long (minutes) a booking may sit with a PENDING Flitt payment before the
   // stale-payment sweep fails the payment and cancels the booking to release the slot.
   // Should match / exceed the Flitt hosted-checkout order lifetime (~45 min).

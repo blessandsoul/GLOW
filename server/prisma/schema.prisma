@@ -269,8 +269,10 @@ model MasterProfile {
   // Booking / availability (slot-based)
   bookingEnabled          Boolean @default(false)
   bookingPaymentMode      String  @default("NONE")    // NONE | DEPOSIT | FULL
+  bookingPaymentChannel   String  @default("MANUAL")  // MANUAL | FLITT
   bookingPrepaymentAmount Int?    @default(20)         // GEL, deposit amount when mode = DEPOSIT
   bookingPaymentInfo      String? @db.VarChar(500)     // shown to client: pay-to instructions
+  isReviewProfile         Boolean @default(false)      // hidden from discovery, direct links remain available
 
   // Marketplace seller status
   sellerStatus            String    @default("NONE")  // NONE, PENDING, APPROVED, REJECTED
@@ -289,6 +291,8 @@ model MasterProfile {
   favoritedBy FavoriteMaster[]
   waitlistEntries WaitlistEntry[]
   bookings    Booking[]
+  ledgerEntries MasterLedgerEntry[]
+  payouts       Payout[]
 
   @@index([verificationStatus])
   @@index([districtId])
@@ -705,11 +709,22 @@ model Booking {
   // Lifecycle.
   status      String @default("PENDING") // PENDING | CONFIRMED | CANCELLED | COMPLETED | NO_SHOW
   paymentMode String @default("NONE")    // NONE | DEPOSIT | FULL (snapshot of master config)
+  paymentChannel String @default("MANUAL") // MANUAL | FLITT (snapshot of master config)
 
   // Off-platform payment for now (real auto-payment wired later, pending bank).
   prepaymentRequired Boolean @default(false)
   prepaymentAmount   Int?
+  prepaymentAmountMinor Int?
+  cancellationFeeAmountMinor Int?
   depositStatus      String  @default("NONE") // NONE | AWAITING | RECEIVED
+
+  manageTokenHash      String?   @unique @db.VarChar(64)
+  manageTokenExpiresAt DateTime?
+  cancelledAt          DateTime?
+  cancelledBy          String?   @db.VarChar(20) // CLIENT | MASTER | ADMIN | SYSTEM
+  cancellationReason   String?   @db.VarChar(500)
+  completedAt           DateTime?
+  earningEligibleAt     DateTime?
 
   otpRequestId String?  @db.VarChar(255)
   note         String?  @db.VarChar(300)
@@ -718,6 +733,7 @@ model Booking {
 
   masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
   payment       Payment?
+  ledgerEntries MasterLedgerEntry[]
 
   // One booking per master+date+startTime slot.
   @@unique([masterProfileId, date, startTime])
@@ -738,17 +754,108 @@ model Payment {
 
   provider String @default("flitt")
   amount   Int // GEL whole units (the charged prepayment: deposit or full price)
+  amountMinor Int @default(0)
+  refundedAmountMinor Int @default(0)
   currency String @default("GEL")
-  status   String @default("PENDING") // PENDING | PAID | FAILED
+  status   String @default("PENDING") // PENDING | PAID | FAILED | PARTIALLY_REFUNDED | REFUNDED
 
   flittPaymentId String?  @db.VarChar(64) // Flitt payment_id from the callback
+  paidAt         DateTime?
+  reconciliationRequired Boolean @default(false)
+  activeRefundId String? @unique
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  refunds Refund[]
+  ledgerEntries MasterLedgerEntry[]
 
   @@index([status])
   @@map("payments")
+}
+
+model Refund {
+  id          String @id @default(uuid())
+  paymentId   String
+  reverseId   String @unique @db.VarChar(64)
+  amountMinor Int
+  currency    String @default("GEL")
+  status      String @default("REQUESTED") // REQUESTED | PROCESSING | SUCCEEDED | FAILED
+  reason      String @db.VarChar(500)
+  actor       String @db.VarChar(20) // CLIENT | MASTER | ADMIN | SYSTEM
+  actorUserId String?
+  policyCode  String? @db.VarChar(40)
+  providerRefundId String? @db.VarChar(64)
+  failureCode String? @db.VarChar(100)
+  failureMessage String? @db.VarChar(500)
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId, status])
+  @@index([status, createdAt])
+  @@map("refunds")
+}
+
+model MasterLedgerEntry {
+  id              String @id @default(uuid())
+  masterProfileId String
+  bookingId       String?
+  paymentId       String?
+  sourceKey       String @unique @db.VarChar(191)
+  type            String @db.VarChar(30) // EARNING | REFUND_DEBIT | ADJUSTMENT
+  amountMinor     Int // signed; debits are negative
+  currency        String @default("GEL")
+  availableAt     DateTime
+  note            String? @db.VarChar(500)
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  payoutItem PayoutItem?
+
+  @@index([masterProfileId, availableAt])
+  @@index([paymentId])
+  @@index([createdByUserId])
+  @@map("master_ledger_entries")
+}
+
+model Payout {
+  id              String @id @default(uuid())
+  masterProfileId String
+  amountMinor     Int
+  currency        String @default("GEL")
+  status          String @default("DRAFT") // DRAFT | PAID | VOID
+  transferReference String? @db.VarChar(191)
+  createdByUserId String
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Restrict)
+  items PayoutItem[]
+
+  @@index([masterProfileId, status])
+  @@index([status, createdAt])
+  @@map("payouts")
+}
+
+model PayoutItem {
+  id            String @id @default(uuid())
+  payoutId      String
+  ledgerEntryId String @unique
+  amountMinor   Int
+  createdAt     DateTime @default(now())
+
+  payout Payout @relation(fields: [payoutId], references: [id], onDelete: Cascade)
+  ledgerEntry MasterLedgerEntry @relation(fields: [ledgerEntryId], references: [id], onDelete: Restrict)
+
+  @@index([payoutId])
+  @@map("payout_items")
 }
 
 // ─────────────────────────────────────────────
