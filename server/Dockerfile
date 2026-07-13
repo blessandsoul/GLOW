@@ -38,6 +38,7 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=deps /app/prisma ./prisma
+COPY --from=build /app/scripts ./scripts
 COPY package.json ./
 COPY ecosystem.config.cjs ./
 
@@ -48,4 +49,4 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && pm2-runtime start ecosystem.config.cjs"]
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ -n \"$REVIEWER_EMAIL\" ]; then npm run reviewer:provision; fi && pm2-runtime start ecosystem.config.cjs"]
