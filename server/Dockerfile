@@ -49,4 +49,4 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && if [ -n \"$REVIEWER_EMAIL\" ]; then npm run reviewer:provision; fi && pm2-runtime start ecosystem.config.cjs"]
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ -n \"$REVIEWER_EMAIL\" ]; then npm run reviewer:provision || echo 'Reviewer provisioning failed; continuing startup'; fi && pm2-runtime start ecosystem.config.cjs"]
