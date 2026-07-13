@@ -36,6 +36,7 @@ env:
   GLOW_PUBLIC_API_BASE_URL: ${{ vars.GLOW_PUBLIC_API_BASE_URL || 'https://api.glow.ge/api/v1' }}
   GLOW_PUBLIC_SITE_URL: ${{ vars.GLOW_PUBLIC_SITE_URL || 'https://glow.ge' }}
   GLOW_LAUNCH_MODE: ${{ vars.GLOW_LAUNCH_MODE || 'false' }}
+  GLOW_BOOKING_ONLINE_PAYMENTS_ENABLED: ${{ vars.GLOW_BOOKING_ONLINE_PAYMENTS_ENABLED || 'false' }}
   GLOW_GA_ID: ${{ vars.GLOW_GA_ID || '' }}
 
 jobs:
@@ -69,6 +70,7 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: ${{ env.GLOW_PUBLIC_API_BASE_URL }}
           NEXT_PUBLIC_SITE_URL: ${{ env.GLOW_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_LAUNCH_MODE: ${{ env.GLOW_LAUNCH_MODE }}
+          NEXT_PUBLIC_BOOKING_ONLINE_PAYMENTS_ENABLED: ${{ env.GLOW_BOOKING_ONLINE_PAYMENTS_ENABLED }}
           NEXT_PUBLIC_GA_ID: ${{ env.GLOW_GA_ID }}
 
   server:
@@ -115,6 +117,7 @@ jobs:
             --build-arg NEXT_PUBLIC_API_BASE_URL="${GLOW_PUBLIC_API_BASE_URL}" \
             --build-arg NEXT_PUBLIC_SITE_URL="${GLOW_PUBLIC_SITE_URL}" \
             --build-arg NEXT_PUBLIC_LAUNCH_MODE="${GLOW_LAUNCH_MODE}" \
+            --build-arg NEXT_PUBLIC_BOOKING_ONLINE_PAYMENTS_ENABLED="${GLOW_BOOKING_ONLINE_PAYMENTS_ENABLED}" \
             --build-arg NEXT_PUBLIC_GA_ID="${GLOW_GA_ID}" \
             -f client/Dockerfile client
 
